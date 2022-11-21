@@ -132,6 +132,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BackGroundRenderer.cpp" />
+    <ClCompile Include="CodeExecutor.cpp" />
+    <ClCompile Include="CodeExecutor_functions.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="Debug.cpp" />
@@ -167,6 +169,7 @@
     <ClCompile Include="vec2f.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CodeExecutor.h" />
     <ClInclude Include="ColorDefinitions.h" />
     <ClInclude Include="consola.h" />
     <ClInclude Include="Console.h" />

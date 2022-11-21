@@ -40,7 +40,7 @@ Core::Core()
     Consola = nullptr;
     fps = 0;
     frames = 0;
-    //_current_scene = nullptr;
+    _current_scene = nullptr;
     _show_fps = false;
     SettingsData = std::map<std::string, std::string>();
 }
@@ -403,7 +403,7 @@ int Core::Run()
 
     return EXIT_SUCCESS;
 }
-
+#include "CodeExecutor.h"
 bool Core::LoadData(int argc, char* args[])
 {
     GPU_Clear(GetScreenTarget());
@@ -414,7 +414,14 @@ bool Core::LoadData(int argc, char* args[])
     Core::BackGroundRenderer bgr = Core::BackGroundRenderer();
     bgr.Run();
 
+    _instance.Executor.MapFunctions();
+    bgr.SetProgress(10);
 
+    if (!_instance.Executor.LoadArtLib()) {
+        bgr.Stop();
+        return false;
+    }
+    bgr.SetProgress(20);
 
     bgr.SetProgress(100);
     bgr.Stop();

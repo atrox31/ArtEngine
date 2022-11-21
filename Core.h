@@ -16,6 +16,7 @@
 #include "Debug.h"
 #include "Scene.h"
 #include "ColorDefinitions.h"
+#include "CodeExecutor.h"
 
 class Scene;
 class Core
@@ -47,10 +48,11 @@ private:
 	// graphic
 	GPU_Target* _screenTarget;
 	// scene
-	Scene* _current_scene = nullptr;
+	Scene* _current_scene;
 public:
 	static GPU_Target* GetScreenTarget() { return _instance._screenTarget; }
-
+private:
+	CodeExecutor Executor;
 private:
 	// core data
 	class graphic {
@@ -127,17 +129,6 @@ private:
 	Uint64 NOW, LAST;
 	int frames;
 	bool _show_fps;
-
-private:
-	class GameExecutor {
-	public:
-		GameExecutor();
-		bool LoadArtLib();
-		bool LoadInstanceDefinitions();
-
-	private:
-
-	};
 
 public:
 	// getters

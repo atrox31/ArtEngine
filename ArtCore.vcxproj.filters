@@ -101,6 +101,12 @@
     <ClCompile Include="BackGroundRenderer.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="CodeExecutor.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="CodeExecutor_functions.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core.h">
@@ -165,6 +171,9 @@
     </ClInclude>
     <ClInclude Include="Event.h">
       <Filter>Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="CodeExecutor.h">
+      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
