@@ -98,6 +98,9 @@
     <ClCompile Include="Rect.cpp">
       <Filter>Structs</Filter>
     </ClCompile>
+    <ClCompile Include="BackGroundRenderer.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core.h">

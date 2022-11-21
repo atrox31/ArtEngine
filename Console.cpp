@@ -129,7 +129,8 @@ void Console::WriteLine(std::string text)
 
 void Console::BindFunction(std::string command, void(*function)(std::vector<std::string>args))
 {
-
+	std::vector<std::string> arg = Func::Explode(command, ' ');
+	m_console_fun[arg[0]] = function;
 }
 
 void Console::Execute(std::string command)
