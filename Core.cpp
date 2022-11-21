@@ -6,7 +6,7 @@
 #include "Render.h"
 #include "Event.h"
 
-Core Core::_instance;
+Core Core::_instance = Core::Core();
 Core::graphic Core::Graphic = Core::graphic();
 Core::audio Core::Audio = Core::audio();
 
@@ -61,7 +61,7 @@ Core::~Core()
 
 bool Core::Init()
 {
-    _instance = Core();
+    //Core::_instance = Core();
     Debug::LOG("ArtCore v0.3");
     if (SDL_Init(SDL_INIT_EVERYTHING) == -1) {
         Debug::ERROR({ "sdl_error: ", SDL_GetError() });
