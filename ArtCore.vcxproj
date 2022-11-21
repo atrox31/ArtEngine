@@ -91,7 +91,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -121,7 +121,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -131,7 +131,54 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Console.cpp" />
+    <ClCompile Include="Core.cpp" />
+    <ClCompile Include="Debug.cpp" />
+    <ClCompile Include="Func.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="physfs-3.0.2\src\physfs.c" />
+    <ClCompile Include="physfs-3.0.2\src\physfs_archiver_7z.c" />
+    <ClCompile Include="physfs-3.0.2\src\physfs_archiver_dir.c" />
+    <ClCompile Include="physfs-3.0.2\src\physfs_archiver_grp.c" />
+    <ClCompile Include="physfs-3.0.2\src\physfs_archiver_hog.c" />
+    <ClCompile Include="physfs-3.0.2\src\physfs_archiver_iso9660.c" />
+    <ClCompile Include="physfs-3.0.2\src\physfs_archiver_mvl.c" />
+    <ClCompile Include="physfs-3.0.2\src\physfs_archiver_qpak.c" />
+    <ClCompile Include="physfs-3.0.2\src\physfs_archiver_slb.c" />
+    <ClCompile Include="physfs-3.0.2\src\physfs_archiver_unpacked.c" />
+    <ClCompile Include="physfs-3.0.2\src\physfs_archiver_vdf.c" />
+    <ClCompile Include="physfs-3.0.2\src\physfs_archiver_wad.c" />
+    <ClCompile Include="physfs-3.0.2\src\physfs_archiver_zip.c" />
+    <ClCompile Include="physfs-3.0.2\src\physfs_byteorder.c" />
+    <ClCompile Include="physfs-3.0.2\src\physfs_platform_haiku.cpp" />
+    <ClCompile Include="physfs-3.0.2\src\physfs_platform_os2.c" />
+    <ClCompile Include="physfs-3.0.2\src\physfs_platform_posix.c" />
+    <ClCompile Include="physfs-3.0.2\src\physfs_platform_qnx.c" />
+    <ClCompile Include="physfs-3.0.2\src\physfs_platform_unix.c" />
+    <ClCompile Include="physfs-3.0.2\src\physfs_platform_windows.c" />
+    <ClCompile Include="physfs-3.0.2\src\physfs_platform_winrt.cpp" />
+    <ClCompile Include="physfs-3.0.2\src\physfs_unicode.c" />
+    <ClCompile Include="SDL2\SDL_FontCache-master\SDL_FontCache.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ColorDefinitions.h" />
+    <ClInclude Include="consola.h" />
+    <ClInclude Include="Console.h" />
+    <ClInclude Include="Core.h" />
+    <ClInclude Include="Debug.h" />
+    <ClInclude Include="Func.h" />
+    <ClInclude Include="physfs-3.0.2\src\physfs.h" />
+    <ClInclude Include="physfs-3.0.2\src\physfs_casefolding.h" />
+    <ClInclude Include="physfs-3.0.2\src\physfs_internal.h" />
+    <ClInclude Include="physfs-3.0.2\src\physfs_lzmasdk.h" />
+    <ClInclude Include="physfs-3.0.2\src\physfs_miniz.h" />
+    <ClInclude Include="physfs-3.0.2\src\physfs_platforms.h" />
+    <ClInclude Include="SDL2\SDL_FontCache-master\SDL_FontCache.h" />
+    <ClInclude Include="SDL_version.h" />
+    <ClInclude Include="SplashScreen.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="physfs-3.0.2\src\physfs_platform_apple.m" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

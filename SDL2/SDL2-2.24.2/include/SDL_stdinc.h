@@ -616,7 +616,7 @@ extern DECLSPEC int SDLCALL SDL_vasprintf(char **strp, const char *fmt, va_list 
 
 #ifndef HAVE_M_PI
 #ifndef M_PI
-#define M_PI    3.14159265358979323846264338327950288   /**< pi */
+//#define M_PI    3.14159265358979323846264338327950288   /**< pi */
 #endif
 #endif
 

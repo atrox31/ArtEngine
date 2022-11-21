@@ -2,5 +2,173 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Core.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug.cpp">
+      <Filter>Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Console.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="SDL2\SDL_FontCache-master\SDL_FontCache.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="Func.cpp">
+      <Filter>Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="physfs-3.0.2\src\physfs.c">
+      <Filter>physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="physfs-3.0.2\src\physfs_archiver_7z.c">
+      <Filter>physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="physfs-3.0.2\src\physfs_archiver_dir.c">
+      <Filter>physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="physfs-3.0.2\src\physfs_archiver_grp.c">
+      <Filter>physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="physfs-3.0.2\src\physfs_archiver_hog.c">
+      <Filter>physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="physfs-3.0.2\src\physfs_archiver_iso9660.c">
+      <Filter>physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="physfs-3.0.2\src\physfs_archiver_mvl.c">
+      <Filter>physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="physfs-3.0.2\src\physfs_archiver_qpak.c">
+      <Filter>physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="physfs-3.0.2\src\physfs_archiver_slb.c">
+      <Filter>physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="physfs-3.0.2\src\physfs_archiver_unpacked.c">
+      <Filter>physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="physfs-3.0.2\src\physfs_archiver_vdf.c">
+      <Filter>physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="physfs-3.0.2\src\physfs_archiver_wad.c">
+      <Filter>physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="physfs-3.0.2\src\physfs_archiver_zip.c">
+      <Filter>physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="physfs-3.0.2\src\physfs_byteorder.c">
+      <Filter>physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="physfs-3.0.2\src\physfs_platform_haiku.cpp">
+      <Filter>physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="physfs-3.0.2\src\physfs_platform_os2.c">
+      <Filter>physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="physfs-3.0.2\src\physfs_platform_posix.c">
+      <Filter>physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="physfs-3.0.2\src\physfs_platform_qnx.c">
+      <Filter>physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="physfs-3.0.2\src\physfs_platform_unix.c">
+      <Filter>physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="physfs-3.0.2\src\physfs_platform_windows.c">
+      <Filter>physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="physfs-3.0.2\src\physfs_platform_winrt.cpp">
+      <Filter>physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="physfs-3.0.2\src\physfs_unicode.c">
+      <Filter>physfs</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Core.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Debug.h">
+      <Filter>Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="SDL_version.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Console.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="consola.h">
+      <Filter>predefined_h</Filter>
+    </ClInclude>
+    <ClInclude Include="SplashScreen.h">
+      <Filter>predefined_h</Filter>
+    </ClInclude>
+    <ClInclude Include="SDL2\SDL_FontCache-master\SDL_FontCache.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorDefinitions.h">
+      <Filter>predefined_h</Filter>
+    </ClInclude>
+    <ClInclude Include="Func.h">
+      <Filter>Functions</Filter>
+    </ClInclude>
+    <ClInclude Include="physfs-3.0.2\src\physfs.h">
+      <Filter>physfs</Filter>
+    </ClInclude>
+    <ClInclude Include="physfs-3.0.2\src\physfs_casefolding.h">
+      <Filter>physfs</Filter>
+    </ClInclude>
+    <ClInclude Include="physfs-3.0.2\src\physfs_internal.h">
+      <Filter>physfs</Filter>
+    </ClInclude>
+    <ClInclude Include="physfs-3.0.2\src\physfs_lzmasdk.h">
+      <Filter>physfs</Filter>
+    </ClInclude>
+    <ClInclude Include="physfs-3.0.2\src\physfs_miniz.h">
+      <Filter>physfs</Filter>
+    </ClInclude>
+    <ClInclude Include="physfs-3.0.2\src\physfs_platforms.h">
+      <Filter>physfs</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Core">
+      <UniqueIdentifier>{54c85405-bada-4856-8036-32e13d5e0a18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Debug">
+      <UniqueIdentifier>{230f96f4-d969-4e4d-898d-9baa12ad07e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphic">
+      <UniqueIdentifier>{1848e1ae-5b82-46a6-8371-eaa01d71b5dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets">
+      <UniqueIdentifier>{1fd9c934-92cf-47a3-b115-bcb71133c7d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{bdb2ed98-b20e-48e0-94bf-6834f549d309}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Instance">
+      <UniqueIdentifier>{9f7c7a4c-da4d-4c21-8f61-22ca1414186f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include">
+      <UniqueIdentifier>{b71d52dc-ef25-4ca2-8115-c0d45170ff39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Structs">
+      <UniqueIdentifier>{920ebf6a-c3dd-4776-97c7-80015d7cacd4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="predefined_h">
+      <UniqueIdentifier>{1d40c797-4aa9-4fc4-9184-1eee4f68f918}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Functions">
+      <UniqueIdentifier>{091bf99e-c360-495f-a7d2-262bf448d736}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="physfs">
+      <UniqueIdentifier>{53f435f6-3aae-40ee-8611-bd419af5c2bf}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="physfs-3.0.2\src\physfs_platform_apple.m">
+      <Filter>physfs</Filter>
+    </None>
   </ItemGroup>
 </Project>
