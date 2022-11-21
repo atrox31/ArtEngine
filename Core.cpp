@@ -337,15 +337,7 @@ int Core::Run()
                 if (e.button.button == SDL_BUTTON_RIGHT) {
                     _instance->gMouse.RightEvent = Core::MouseState::ButtonState::PRESSED;
                 }
-                if (!_instance->_current_scene->_events[Event::EV_ONMOUSE_DOWN].empty()) {
-                    for (auto& ev : _instance->_current_scene->_events[Event::EV_ONMOUSE_DOWN]) {
-                        if (ev->Alive) {
-                            ev->E_MaskClicked = ev->Mask.PointInRect(_instance->gMouse.XY);
-                            //code_executor.Execute(ev, Core::Event::EV_ONMOUSE_DOWN);
-                            ev->E_MaskClicked = false;
-                        }
-                    }
-                }
+                
             }
             break;
             case SDL_MOUSEBUTTONUP: {
@@ -356,15 +348,7 @@ int Core::Run()
                 if (e.button.button == SDL_BUTTON_RIGHT) {
                     _instance->gMouse.RightEvent = Core::MouseState::ButtonState::RELASED;
                 }
-                if (!_instance->_current_scene->_events[Event::EV_ONMOUSE_UP].empty()) {
-                    for (auto& ev : _instance->_current_scene->_events[Event::EV_ONMOUSE_UP]) {
-                        if (ev->Alive) {
-                            ev->E_MaskClicked = ev->Mask.PointInRect(_instance->gMouse.XY);
-                            //code_executor.Execute(ev, Core::Event::EV_ONMOUSE_UP);
-                            ev->E_MaskClicked = false;
-                        }
-                    }
-                }
+                
             }
             break;
 
@@ -377,21 +361,11 @@ int Core::Run()
             case SDL_KEYDOWN:
                 _instance->Consola->ProcessKey((SDL_KeyCode)e.key.keysym.sym);
                 
-                if (!_instance->_current_scene->_events[Event::EV_ONKEY_DOWN].empty()) {
-                    for (auto& ev : _instance->_current_scene->_events[Event::EV_ONKEY_DOWN]) {
-                        if (ev->Alive) {}
-                            //code_executor.Execute(ev, Art::Event::EV_ONKEY_DOWN);
-                    }
-                }
+                
 
                 break;
             case SDL_KEYUP:
-                if (!_instance->_current_scene->_events[Event::EV_ONKEY_UP].empty()) {
-                    for (auto& ev : _instance->_current_scene->_events[Event::EV_ONKEY_UP]) {
-                        if (ev->Alive) {}
-                            //code_executor.Execute(ev, Art::Event::EV_ONKEY_UP);
-                    }
-                }
+                
 
                 break;
             }
