@@ -1,11 +1,15 @@
 #pragma once
 #include "SDL_version.h"
+#include <cmath>
+
 #pragma warning(push)
 #include SDL2_INCLUDE_DIR
 #pragma warning(pop)
 
 template <class T>
 class vec2 {
+private:
+	const double _M_PI = 3.141592653589793;
 public:
 	T x, y;
 
@@ -80,7 +84,7 @@ public:
 	}
 
 	void rotate(double deg) {
-		double theta = deg / 180.0 * M_PI;
+		double theta = deg / 180.0 * _M_PI;
 		double c = cos(theta);
 		double s = sin(theta);
 		double tx = x * c - y * s;

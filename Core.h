@@ -14,7 +14,9 @@
 #include "physfs-3.0.2/src/physfs.h"
 #include "plf_colony-master/plf_colony.h"
 #include "Debug.h"
+#include "Scene.h"
 
+class Scene;
 class Core
 {
 public:
@@ -28,6 +30,8 @@ public:
 private:
 	// graphic
 	GPU_Target* _screenTarget;
+	// scene
+	Scene* _current_scene = nullptr;
 public:
 	static GPU_Target* GetScreenTarget() { return _instance->_screenTarget; }
 
@@ -116,29 +120,6 @@ public:
 	int GetScreenHeight() {
 		return Graphic.GetWindowHeight();
 	}
-
-	enum class Event {
-		EV_ONCREATE,
-
-		EV_ONKEY_DOWN,
-		EV_ONKEY_UP,
-
-		EV_ONMOUSE_MOTION,
-		EV_ONMOUSE_WHEEL,
-		EV_ONMOUSE_DOWN,
-		EV_ONMOUSE_UP,
-
-		EV_ONCOLLISION,
-
-		EV_ONVIEW_ENTER,
-		EV_ONVIEW_LEAVE,
-
-		EV_CLICKED,
-		EV_TRIGGER,
-
-		EV_STEP,
-		EV_DRAW,
-	};
 
 	struct MouseState {
 		enum class ButtonState {

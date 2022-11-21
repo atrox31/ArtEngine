@@ -30,6 +30,10 @@ public:
 	void Show();
 	void Hide();
 
+	bool IsShown() {
+		return m_visibled;
+	};
+
 private:
 	// console functions
 	bool m_visibled;

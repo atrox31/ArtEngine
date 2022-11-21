@@ -1,17 +1,14 @@
 #pragma once
 // include all sdl systems
 #include "SDL_version.h"
+#include "vec2f.h"
+#include "Sprite.h"
 #pragma warning(push)
 #include SDL2_INCLUDE_DIR
 #include SDL2_IMAGE_INCLUDE_DIR
-#include SDL2_MIXER_INCLUDE_DIR
-#include SDL2_NET_INCLUDE_DIR
-#include SDL2_TTF_INCLUDE_DIR
 #include SDL2_GPU_INCLUDE_DIR
 #pragma warning(pop)
 
-#include "vec2f.h";
-#include "Sprite.h";
 
 class Render
 {

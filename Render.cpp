@@ -4,6 +4,9 @@ Render* Render::_instance = nullptr;
 
 void Render::CreateRender(int width, int height)
 {
+	if (_instance != nullptr) {
+		delete _instance;
+	}
 	_instance = new Render();
 
 	_instance->width = width;

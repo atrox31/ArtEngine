@@ -135,6 +135,7 @@
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="Func.cpp" />
+    <ClCompile Include="Instance.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="physfs-3.0.2\src\physfs.c" />
     <ClCompile Include="physfs-3.0.2\src\physfs_archiver_7z.c" />
@@ -158,7 +159,12 @@
     <ClCompile Include="physfs-3.0.2\src\physfs_platform_windows.c" />
     <ClCompile Include="physfs-3.0.2\src\physfs_platform_winrt.cpp" />
     <ClCompile Include="physfs-3.0.2\src\physfs_unicode.c" />
+    <ClCompile Include="Rect.cpp" />
+    <ClCompile Include="Render.cpp" />
+    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SDL2\SDL_FontCache-master\SDL_FontCache.c" />
+    <ClCompile Include="Sprite.cpp" />
+    <ClCompile Include="vec2f.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ColorDefinitions.h" />
@@ -166,16 +172,23 @@
     <ClInclude Include="Console.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="Debug.h" />
+    <ClInclude Include="Event.h" />
     <ClInclude Include="Func.h" />
+    <ClInclude Include="Instance.h" />
     <ClInclude Include="physfs-3.0.2\src\physfs.h" />
     <ClInclude Include="physfs-3.0.2\src\physfs_casefolding.h" />
     <ClInclude Include="physfs-3.0.2\src\physfs_internal.h" />
     <ClInclude Include="physfs-3.0.2\src\physfs_lzmasdk.h" />
     <ClInclude Include="physfs-3.0.2\src\physfs_miniz.h" />
     <ClInclude Include="physfs-3.0.2\src\physfs_platforms.h" />
+    <ClInclude Include="Rect.h" />
+    <ClInclude Include="Render.h" />
+    <ClInclude Include="Scene.h" />
     <ClInclude Include="SDL2\SDL_FontCache-master\SDL_FontCache.h" />
     <ClInclude Include="SDL_version.h" />
     <ClInclude Include="SplashScreen.h" />
+    <ClInclude Include="Sprite.h" />
+    <ClInclude Include="vec2f.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="physfs-3.0.2\src\physfs_platform_apple.m" />

@@ -83,6 +83,24 @@
     <ClCompile Include="physfs-3.0.2\src\physfs_unicode.c">
       <Filter>physfs</Filter>
     </ClCompile>
+    <ClCompile Include="vec2f.cpp">
+      <Filter>Structs</Filter>
+    </ClCompile>
+    <ClCompile Include="Render.cpp">
+      <Filter>Graphic</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite.cpp">
+      <Filter>Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Instance.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Rect.cpp">
+      <Filter>Structs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core.h">
@@ -130,6 +148,25 @@
     <ClInclude Include="physfs-3.0.2\src\physfs_platforms.h">
       <Filter>physfs</Filter>
     </ClInclude>
+    <ClInclude Include="vec2f.h">
+      <Filter>Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="Render.h">
+      <Filter>Graphic</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Instance.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Rect.h">
+      <Filter>Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="Event.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">

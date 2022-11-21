@@ -15,11 +15,17 @@ Console::Console()
 Console::~Console()
 {
 	FC_FreeFont(m_font);
-	delete m_font;
 }
 
 void Console::ProcessKey(SDL_KeyCode key)
 {
+	if (key == SDLK_HOME) {
+		m_visibled = !m_visibled;
+		if (m_visibled) Show(); else Hide();
+	}
+	if (!m_visibled) {
+		return;
+	}
 	switch (key) {
 	case SDLK_BACKSPACE:
 	{

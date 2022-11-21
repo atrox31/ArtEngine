@@ -3,6 +3,8 @@
 #include "ColorDefinitions.h"
 #include "SplashScreen.h"
 #include "Console.h"
+#include "Render.h"
+#include "Event.h"
 
 Core* Core::_instance = nullptr;
 Core::graphic Core::Graphic = Core::graphic();
@@ -20,7 +22,7 @@ void Core::graphic::Apply()
     else {
         SDL_GL_SetSwapInterval(1);
     }
-
+    Render::CreateRender(_window_width, _window_height);
 }
 
 void Core::audio::Apply()
@@ -198,6 +200,13 @@ bool Core::Init()
     _instance->LAST = 0;
     _instance->frames = 0;
     _instance->Consola = new Console();
+
+    //Render::CreateRender(SD_GetInt("DefaultResolution_x", 1920), SD_GetInt("DefaultResolution_y", 1080));
+    Graphic.SetScreenResolution(SD_GetInt("DefaultResolution_x", 1920), SD_GetInt("DefaultResolution_y", 1080));
+    Graphic.SetFramerate(SD_GetInt("DefaultFramerate", 60));
+    Graphic.SetFullScreen(SD_GetInt("FullScreen", 0) == 1);
+    //Graphic.Apply();
+
     Debug::LOG("rdy");
     return true;
 }
@@ -245,8 +254,166 @@ Uint32 Core::FpsCounterCallback(Uint32 interval, void* parms)
 
 int Core::Run()
 {
-    SDL_Delay(5000);
-    return 0;
+    GPU_Clear(GetScreenTarget());
+    SDL_SetWindowBordered(SDL_GetWindowFromID(_instance->_screenTarget->context->windowID), SDL_TRUE);
+    Graphic.Apply();
+    GPU_Flip(GetScreenTarget());
+
+    SDL_TimerID my_timer_id = SDL_AddTimer((Uint32)1000, FpsCounterCallback, NULL);
+
+    while (true) {
+        //Art::Core::GetInstance()->Run_prepare();
+        _instance->LAST = _instance->NOW;
+        _instance->NOW = SDL_GetTicks64();
+        _instance->DeltaTime = ((double)(_instance->NOW - _instance->LAST) / 1000.0);
+        _instance->frames++;
+
+        SDL_GetMouseState(&_instance->gMouse.X, &_instance->gMouse.Y);
+        _instance->gMouse.XY = { _instance->gMouse.X, _instance->gMouse.Y };
+
+        _instance->gMouse.LeftPressed = SDL_GetMouseState(NULL, NULL) == SDL_BUTTON(SDL_BUTTON_LEFT);
+        _instance->gMouse.RightPressed = SDL_GetMouseState(NULL, NULL) == SDL_BUTTON(SDL_BUTTON_RIGHT);
+        _instance->gMouse.WHELL = 0;
+        _instance->gMouse.LeftEvent = Core::MouseState::ButtonState::NONE;
+        _instance->gMouse.RightEvent = Core::MouseState::ButtonState::NONE;
+
+        //if (Art::Core::GetInstance()->Run_events()) break;
+        bool Ev_OnMouseInput = false;
+        bool Ev_OnKeyboardInput = false;
+        bool Ev_OnControllerInput = false;
+
+        SDL_Event e;
+        while (SDL_PollEvent(&e) != 0) {
+            switch (e.type) {
+            case SDL_QUIT:
+                Debug::LOG("exit request");
+                return true;
+                break;
+            case SDL_WINDOWEVENT:
+                if (e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+
+                }
+                break;
+
+            case SDL_CONTROLLERDEVICEADDED:
+
+                break;
+
+            case SDL_CONTROLLERDEVICEREMOVED:
+
+                break;
+
+            case SDL_RENDER_TARGETS_RESET:/**< The render targets have been reset and their contents need to be updated */
+            case SDL_RENDER_DEVICE_RESET: /**< The device has been reset and all textures need to be recreated */
+
+                break;
+
+            case SDL_CONTROLLERAXISMOTION:
+            case SDL_CONTROLLERBUTTONDOWN:
+            case SDL_CONTROLLERBUTTONUP:
+                /*
+                if (!_current_scene->_events[Art::Scene::Event::OnControllerInput].empty()) {
+                    for (auto& ev : _current_scene->_events[Art::Scene::Event::OnControllerInput]) {
+                        if(ev->Alive)
+                        ev->Ev_OnControllerInput();
+                    }
+                }
+                */
+                break;
+
+            case SDL_MOUSEWHEEL:
+                /*
+                if (!_current_scene->_events[Art::Scene::Event::OnMouseInput].empty()) {
+                    for (auto& ev : _current_scene->_events[Art::Scene::Event::OnMouseInput]) {
+                        gMouse.WHELL = e.wheel.y;
+                        if (ev->Alive)
+                        ev->Ev_OnMouseInput();
+                    }
+                }
+                */
+                break;
+
+            case SDL_MOUSEBUTTONDOWN:
+            {
+                if (e.button.button == SDL_BUTTON_LEFT) {
+                    _instance->gMouse.LeftEvent = Core::MouseState::ButtonState::PRESSED;
+                }
+                if (e.button.button == SDL_BUTTON_RIGHT) {
+                    _instance->gMouse.RightEvent = Core::MouseState::ButtonState::PRESSED;
+                }
+                if (!_instance->_current_scene->_events[Event::EV_ONMOUSE_DOWN].empty()) {
+                    for (auto& ev : _instance->_current_scene->_events[Event::EV_ONMOUSE_DOWN]) {
+                        if (ev->Alive) {
+                            ev->E_MaskClicked = ev->Mask.PointInRect(_instance->gMouse.XY);
+                            //code_executor.Execute(ev, Core::Event::EV_ONMOUSE_DOWN);
+                            ev->E_MaskClicked = false;
+                        }
+                    }
+                }
+            }
+            break;
+            case SDL_MOUSEBUTTONUP: {
+                Ev_OnMouseInput = true;
+                if (e.button.button == SDL_BUTTON_LEFT) {
+                    _instance->gMouse.LeftEvent = Core::MouseState::ButtonState::RELASED;
+                }
+                if (e.button.button == SDL_BUTTON_RIGHT) {
+                    _instance->gMouse.RightEvent = Core::MouseState::ButtonState::RELASED;
+                }
+                if (!_instance->_current_scene->_events[Event::EV_ONMOUSE_UP].empty()) {
+                    for (auto& ev : _instance->_current_scene->_events[Event::EV_ONMOUSE_UP]) {
+                        if (ev->Alive) {
+                            ev->E_MaskClicked = ev->Mask.PointInRect(_instance->gMouse.XY);
+                            //code_executor.Execute(ev, Core::Event::EV_ONMOUSE_UP);
+                            ev->E_MaskClicked = false;
+                        }
+                    }
+                }
+            }
+            break;
+
+            case SDL_TEXTINPUT:
+                if (_instance->Consola->IsShown()) {
+                    //_instance->Consola->ProcessKey(e.text.text)
+                }
+                break;
+
+            case SDL_KEYDOWN:
+                _instance->Consola->ProcessKey((SDL_KeyCode)e.key.keysym.sym);
+                
+                if (!_instance->_current_scene->_events[Event::EV_ONKEY_DOWN].empty()) {
+                    for (auto& ev : _instance->_current_scene->_events[Event::EV_ONKEY_DOWN]) {
+                        if (ev->Alive) {}
+                            //code_executor.Execute(ev, Art::Event::EV_ONKEY_DOWN);
+                    }
+                }
+
+                break;
+            case SDL_KEYUP:
+                if (!_instance->_current_scene->_events[Event::EV_ONKEY_UP].empty()) {
+                    for (auto& ev : _instance->_current_scene->_events[Event::EV_ONKEY_UP]) {
+                        if (ev->Alive) {}
+                            //code_executor.Execute(ev, Art::Event::EV_ONKEY_UP);
+                    }
+                }
+
+                break;
+            }
+        }
+        //Art::Core::GetInstance()->Run_sceneStep();
+
+        //Art::Core::GetInstance()->Run_sceneDraw();
+
+        //Art::Render::RenderToTarget(Art::Core::GetScreenTarget());
+        //Art::Render::RenderClear();
+
+        //Art::Core::GetInstance()->Draw_FPS();
+
+        //Art::Core::GetInstance()->ShowScreen();
+    }
+
+
+    return EXIT_SUCCESS;
 }
 
 void Core::Exit()
