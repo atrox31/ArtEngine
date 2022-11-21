@@ -19,7 +19,10 @@ public:
 	Console();
 	virtual ~Console();
 
-	void ProcessKey(SDL_KeyCode key);
+	void ProcessTextInput(std::string txinput);
+
+	// return true if hadled
+	bool ProcessKey(SDL_KeyCode key);
 
 	void WriteLine(std::string text);
 

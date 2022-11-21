@@ -41,6 +41,7 @@ Core::Core()
     fps = 0;
     frames = 0;
     //_current_scene = nullptr;
+    _show_fps = false;
     SettingsData = std::map<std::string, std::string>();
 }
 
@@ -307,6 +308,7 @@ int Core::Run()
             case SDL_CONTROLLERAXISMOTION:
             case SDL_CONTROLLERBUTTONDOWN:
             case SDL_CONTROLLERBUTTONUP:
+                if (_instance->Consola->IsShown()) break;
                 /*
                 if (!_current_scene->_events[Art::Scene::Event::OnControllerInput].empty()) {
                     for (auto& ev : _current_scene->_events[Art::Scene::Event::OnControllerInput]) {
@@ -318,6 +320,7 @@ int Core::Run()
                 break;
 
             case SDL_MOUSEWHEEL:
+                if (_instance->Consola->IsShown()) break;
                 /*
                 if (!_current_scene->_events[Art::Scene::Event::OnMouseInput].empty()) {
                     for (auto& ev : _current_scene->_events[Art::Scene::Event::OnMouseInput]) {
@@ -331,16 +334,18 @@ int Core::Run()
 
             case SDL_MOUSEBUTTONDOWN:
             {
+                if (_instance->Consola->IsShown()) break;
                 if (e.button.button == SDL_BUTTON_LEFT) {
                     _instance->gMouse.LeftEvent = Core::MouseState::ButtonState::PRESSED;
                 }
                 if (e.button.button == SDL_BUTTON_RIGHT) {
                     _instance->gMouse.RightEvent = Core::MouseState::ButtonState::PRESSED;
                 }
-                
+                Ev_OnMouseInput = true;
             }
             break;
             case SDL_MOUSEBUTTONUP: {
+                if (_instance->Consola->IsShown()) break;
                 Ev_OnMouseInput = true;
                 if (e.button.button == SDL_BUTTON_LEFT) {
                     _instance->gMouse.LeftEvent = Core::MouseState::ButtonState::RELASED;
@@ -348,25 +353,24 @@ int Core::Run()
                 if (e.button.button == SDL_BUTTON_RIGHT) {
                     _instance->gMouse.RightEvent = Core::MouseState::ButtonState::RELASED;
                 }
-                
+                Ev_OnMouseInput = true;
             }
             break;
 
             case SDL_TEXTINPUT:
                 if (_instance->Consola->IsShown()) {
-                    //_instance->Consola->ProcessKey(e.text.text)
+                    _instance->Consola->ProcessTextInput(e.text.text);
                 }
                 break;
 
             case SDL_KEYDOWN:
-                _instance->Consola->ProcessKey((SDL_KeyCode)e.key.keysym.sym);
-                
-                
-
+                if (!_instance->Consola->ProcessKey((SDL_KeyCode)e.key.keysym.sym)) {
+                    Ev_OnKeyboardInput = true;
+                }
                 break;
             case SDL_KEYUP:
-                
-
+                if (_instance->Consola->IsShown()) break;
+                    Ev_OnKeyboardInput = true;
                 break;
             }
         }
@@ -375,11 +379,27 @@ int Core::Run()
         //Art::Core::GetInstance()->Run_sceneDraw();
 
         //Art::Render::RenderToTarget(Art::Core::GetScreenTarget());
+        Render::RenderToTarget(Core::GetScreenTarget());
+        
         //Art::Render::RenderClear();
-
+        Render::RenderClear();
+        
+        // draw console
+        if (_instance->Consola->IsShown()) {
+            _instance->Consola->RenderConsole();
+        }
         //Art::Core::GetInstance()->Draw_FPS();
+        if (_instance->_show_fps) {
+            GPU_ActivateShaderProgram(0, NULL);
 
+            GPU_Rect rect = FC_GetBounds(_instance->_global_font, 2, 2, FC_ALIGN_LEFT, FC_Scale(1, 1), "%d", _instance->fps);
+
+            GPU_RectangleFilled2(_instance->_screenTarget, rect, C_BLACK);
+            FC_DrawColor(_instance->_global_font, _instance->_screenTarget, 2, 2, C_RED, "%d", _instance->fps);
+        }
         //Art::Core::GetInstance()->ShowScreen();
+        GPU_Flip(_instance->_screenTarget);
+        GPU_ClearColor(_instance->_screenTarget, C_LGRAY);
     }
 
 

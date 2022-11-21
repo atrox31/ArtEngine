@@ -160,7 +160,9 @@
     <ClInclude Include="Rect.h">
       <Filter>Structs</Filter>
     </ClInclude>
-    <ClInclude Include="Event.h" />
+    <ClInclude Include="Event.h">
+      <Filter>Structs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">

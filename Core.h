@@ -126,6 +126,7 @@ public:
 private:
 	Uint64 NOW, LAST;
 	int frames;
+	bool _show_fps;
 
 public:
 	// getters

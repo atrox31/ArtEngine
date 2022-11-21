@@ -3,6 +3,7 @@
 #include "consola.h"
 #include <math.h>
 #include "Core.h"
+#include "Func.h"
 
 Console::Console()
 {
@@ -17,14 +18,41 @@ Console::~Console()
 	FC_FreeFont(m_font);
 }
 
-void Console::ProcessKey(SDL_KeyCode key)
+void Console::ProcessTextInput(std::string txinput) {
+	m_console_buf += txinput;
+	m_console_shadow = "";
+	std::string prediction = "";
+	for (const auto& [key, value] : m_console_fun) {
+		bool find = false;
+		for (int i = 0; i < std::min(m_console_buf.length(), key.length()); i++) {
+			if (key[i] == m_console_buf[i]) {
+				find = true;
+			}
+			else {
+				find = false;
+			}
+		}
+		if (find) {
+			prediction = key;
+		}
+	}
+	if (prediction.length() > 0) {
+		m_console_shadow = prediction;
+	}
+	else {
+		m_console_shadow = "";
+	}
+}
+
+bool Console::ProcessKey(SDL_KeyCode key)
 {
 	if (key == SDLK_HOME) {
 		m_visibled = !m_visibled;
 		if (m_visibled) Show(); else Hide();
+		return true;
 	}
 	if (!m_visibled) {
-		return;
+		return false;
 	}
 	switch (key) {
 	case SDLK_BACKSPACE:
@@ -42,7 +70,14 @@ void Console::ProcessKey(SDL_KeyCode key)
 	case SDLK_RETURN:
 	{
 		if (m_console_buf.length() > 0) {
-			m_console_str_history.insert(m_console_str_history.begin(), m_console_buf);
+			if (m_console_str_history.size() > 0 && m_console_str_history[0] != m_console_buf) {
+				m_console_str_history.insert(m_console_str_history.begin(), m_console_buf);
+			}
+			else {
+				if (m_console_str_history.size() == 0) {
+					m_console_str_history.insert(m_console_str_history.begin(), m_console_buf);
+				}
+			}
 			Execute(m_console_buf);
 			m_console_buf = "";
 			m_console_shadow = "";
@@ -84,34 +119,12 @@ void Console::ProcessKey(SDL_KeyCode key)
 		}
 	}break;
 	}
-	m_console_buf += SDL_GetKeyName(key);
-	m_console_shadow = "";
-	std::string prediction = "";
-	for (const auto& [key, value] : m_console_fun) {
-		bool find = false;
-		for (int i = 0; i < std::min(m_console_buf.length(), key.length()); i++) {
-			if (key[i] == m_console_buf[i]) {
-				find = true;
-			}
-			else {
-				find = false;
-			}
-		}
-		if (find) {
-			prediction = key;
-		}
-	}
-	if (prediction.length() > 0) {
-		m_console_shadow = prediction;
-	}
-	else {
-		m_console_shadow = "";
-	}
+	return m_visibled;
 }
 
 void Console::WriteLine(std::string text)
 {
-	m_console_str_history.insert(m_console_str_history.begin(), text);
+	m_console_str.insert(m_console_str.begin(), text);
 }
 
 void Console::BindFunction(std::string command, void(*function)(std::vector<std::string>args))
@@ -121,6 +134,14 @@ void Console::BindFunction(std::string command, void(*function)(std::vector<std:
 
 void Console::Execute(std::string command)
 {
+	std::vector<std::string> arg = Func::Explode(command, ' ');
+	if (m_console_fun.find(arg[0]) != m_console_fun.end()) {
+		WriteLine(command);
+		m_console_fun[arg[0]](arg);
+	}
+	else {
+		WriteLine("err: " + arg[0] + " - not found");
+	}
 }
 
 void Console::RenderConsole()
@@ -146,6 +167,7 @@ void Console::RenderConsole()
 
 void Console::Show()
 {
+	SDL_StartTextInput();
 	m_visibled = true;
 	m_console_buf = "";
 	m_console_shadow = "";
@@ -156,5 +178,6 @@ void Console::Show()
 
 void Console::Hide()
 {
+	SDL_StopTextInput();
 	m_visibled = false;
 }
