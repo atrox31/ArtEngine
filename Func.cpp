@@ -80,6 +80,25 @@ unsigned char* Func::GetFileBytes(std::string file, Sint64* len)
 	Debug::WARNING("File not exists in archive: '" + file + "'!");
 	return nullptr;
 }
+SDL_RWops* Func::GetFileRWops(std::string file, Sint64* len)
+{
+	if (PHYSFS_exists(file.c_str()))
+	{
+		PHYSFS_File* myfile = PHYSFS_openRead(file.c_str());
+		auto fileLngth = PHYSFS_fileLength(myfile);
+
+		void* buffer = malloc((size_t)fileLngth);
+		auto length_read = PHYSFS_readBytes(myfile, buffer, fileLngth);
+
+		PHYSFS_close(myfile);
+		if (len != nullptr) {
+			*len = (Sint64)fileLngth;
+		}
+		return SDL_RWFromMem(buffer, (int)length_read);
+	}
+	Debug::WARNING("File not exists in archive: '" + file + "'!");
+	return nullptr;
+}
 
 SDL_GLattr Func::get_sdl_attr_from_string(std::string arg, bool* error)
 {

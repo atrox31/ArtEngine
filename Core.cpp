@@ -254,11 +254,7 @@ Uint32 Core::FpsCounterCallback(Uint32 interval, void* parms)
 
 int Core::Run()
 {
-    GPU_Clear(GetScreenTarget());
-    SDL_SetWindowBordered(SDL_GetWindowFromID(_instance->_screenTarget->context->windowID), SDL_TRUE);
-    Graphic.Apply();
-    GPU_Flip(GetScreenTarget());
-
+    
     SDL_TimerID my_timer_id = SDL_AddTimer((Uint32)1000, FpsCounterCallback, NULL);
 
     while (true) {
@@ -418,7 +414,21 @@ int Core::Run()
 
 bool Core::LoadData(int argc, char* args[])
 {
+    GPU_Clear(GetScreenTarget());
+    SDL_SetWindowBordered(SDL_GetWindowFromID(_instance->_screenTarget->context->windowID), SDL_TRUE);
+    Graphic.Apply();
+    GPU_Flip(GetScreenTarget());
 
+    Core::BackGroundRenderer bgr = Core::BackGroundRenderer();
+    bgr.Run();
+
+    for (int i = 10; i < 100; i += 10) {
+        SDL_Delay(1000);
+        bgr.SetProgress(i);
+    }
+    SDL_Delay(1000);
+    bgr.SetProgress(100);
+    bgr.Stop();
 
     return true;
 }
@@ -432,12 +442,11 @@ void Core::Exit()
 
 SDL_sem* Core::BackGroundRenderer::bg_data_lock = nullptr;
 int Core::BackGroundRenderer::bg_target_percent = 0;
-Core::BackGroundRenderer::BackGroundRenderer(std::string bg_img, SDL_Color bg_color)
+Core::BackGroundRenderer::BackGroundRenderer()
 {
     bg_data_lock = SDL_CreateSemaphore(1);
     bg_target_percent = 0;
     bg_renderer = nullptr;
-    bg_data = data(bg_color, bg_img);
 }
 
 void Core::BackGroundRenderer::SetProgress(int progress)
@@ -471,7 +480,7 @@ void Core::BackGroundRenderer::Run()
         Debug::WARNING("BackGroundRenderer: can not start process, thread is running!");
         return;
     }
-    bg_renderer = SDL_CreateThread(BackGroundRenderer::ThreadDrawingFunction, "bg_renderer", &bg_data);
+    bg_renderer = SDL_CreateThread(BackGroundRenderer::ThreadDrawingFunction, "bg_renderer", nullptr);
     
 }
 int Core::BackGroundRenderer::ThreadDrawingFunction(void* data)
@@ -484,36 +493,61 @@ int Core::BackGroundRenderer::ThreadDrawingFunction(void* data)
     SDL_Surface* surface = SDL_GetWindowSurface(Core::GetInstance()->GetWindowHandle());
     SDL_Renderer* renderer = SDL_CreateSoftwareRenderer(surface);
 
+    // grafika
+    SDL_Texture* bc_img = nullptr;
+    bool bc_have_img = false;
+    Sint64 siz;
+    SDL_RWops* tmp_img = Func::GetFileRWops("bg_img.png", &siz);
+    if (tmp_img != NULL) {
+        bc_img = IMG_LoadTexture_RW(renderer, tmp_img, 1);
+        if (bc_img != nullptr) {
+            bc_have_img = true;
+        }
+    }
+
     // prostok¹t ekranu ³adowania
-    SDL_Rect bg_rect = { (int)(0.86f * (float)Core::GetInstance()->GetScreenWidth()),(int)(0.94f * (float)Core::GetInstance()->GetScreenHeight()),256,48 };
-    SDL_Rect in_rect = { bg_rect.x + 4,bg_rect.y + 4,256 - 8,48 - 8 };
+    SDL_Rect bg_rect = { 
+        (int)(0.25f * (float)Core::GetInstance()->GetScreenWidth()),
+        (int)(0.8f * (float)Core::GetInstance()->GetScreenHeight()),
+        
+        (int)(0.5f * (float)Core::GetInstance()->GetScreenWidth()),
+        48 
+    };
+    SDL_Rect in_rect = { bg_rect.x + 4,bg_rect.y + 4,bg_rect.w - 8,bg_rect.h - 8 };
 
     while (true) {
         // pobierz aktualny procent
         SDL_SemWait(Core::BackGroundRenderer::bg_data_lock);
         d_level = Core::BackGroundRenderer::bg_target_percent;
         SDL_SemPost(Core::BackGroundRenderer::bg_data_lock);
-
         // STOP
         if (d_level == -1) {
             break;
         }
-
         // koniec ³adowania
         if (c_level == 100) {
             break;
         }
-
+        // dodawanie procenta
         if (c_level < d_level) {
             c_level++;
         }
-
+        // czyszczenie ekranu
         SDL_SetRenderDrawColor(renderer, C_BLACK.r, C_BLACK.g, C_BLACK.b, C_BLACK.a);
         SDL_RenderClear(renderer);
+        // rysowanei obrazka t³a
+        if (bc_have_img) {
+            SDL_RenderCopy(renderer, bc_img, NULL, NULL);
+        }
+        // rysowanie czarnego prostok¹ta pod pasek ³¹dowania
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderFillRect(renderer,
+            &bg_rect);
+        // ramka paska ³adowania
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_RenderDrawRect(renderer,
             &bg_rect);
-
+        // procent ³adowania
         SDL_Rect tmp_in_rect = {
             in_rect.x,
             in_rect.y,
@@ -525,6 +559,10 @@ int Core::BackGroundRenderer::ThreadDrawingFunction(void* data)
         SDL_UpdateWindowSurface(Core::GetInstance()->GetWindowHandle());
 
         SDL_Delay(1000 / 60);
+    }
+    if (bc_img != nullptr) {
+        SDL_DestroyTexture(bc_img);
+        bc_img = nullptr;
     }
     //surface = nullptr;
     SDL_DestroyRenderer(renderer);

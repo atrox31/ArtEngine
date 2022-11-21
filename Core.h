@@ -31,7 +31,7 @@ public:
 private:
 	class BackGroundRenderer {
 	public:
-		BackGroundRenderer(std::string bg_img, SDL_Color bg_color);
+		BackGroundRenderer();
 		void SetProgress(int progress);
 		void Stop();
 		void Run();
@@ -41,21 +41,6 @@ private:
 		static int bg_target_percent;
 		static SDL_sem* bg_data_lock;
 		SDL_Thread* bg_renderer;
-
-		struct data {
-		public:
-			SDL_Color bc_color;
-			std::string bg_img;
-			data(SDL_Color color, std::string img) {
-				bc_color = color;
-				bg_img = img;
-			}
-			data() {
-				bc_color = C_WHITE;
-				bg_img = "";
-			}
-		};
-		data bg_data;
 	};
 
 private:

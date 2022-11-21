@@ -24,6 +24,7 @@ public:
 
 	static char* GetFileBuf(std::string file, Sint64* len);
 	static unsigned char* GetFileBytes(std::string file, Sint64* len);
+	static SDL_RWops* GetFileRWops(std::string file, Sint64* len);
 
 	static SDL_GLattr get_sdl_attr_from_string(std::string arg, bool* error);
 
