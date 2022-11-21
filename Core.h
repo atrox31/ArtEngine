@@ -15,6 +15,7 @@
 #include "plf_colony-master/plf_colony.h"
 #include "Debug.h"
 #include "Scene.h"
+#include "ColorDefinitions.h"
 
 class Scene;
 class Core
@@ -25,7 +26,37 @@ public:
 	static Core* GetInstance() { return Core::_instance; }
 	static bool Init();
 	static int Run();
+	static bool LoadData(int argc, char* args[]);
 	void Exit();
+private:
+	class BackGroundRenderer {
+	public:
+		BackGroundRenderer(std::string bg_img, SDL_Color bg_color);
+		void SetProgress(int progress);
+		void Stop();
+		void Run();
+	private:
+		static int ThreadDrawingFunction(void* data);
+
+		static int bg_target_percent;
+		static SDL_sem* bg_data_lock;
+		SDL_Thread* bg_renderer;
+
+		struct data {
+		public:
+			SDL_Color bc_color;
+			std::string bg_img;
+			data(SDL_Color color, std::string img) {
+				bc_color = color;
+				bg_img = img;
+			}
+			data() {
+				bc_color = C_WHITE;
+				bg_img = "";
+			}
+		};
+		data bg_data;
+	};
 
 private:
 	// graphic

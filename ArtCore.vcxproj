@@ -135,7 +135,6 @@
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="Func.cpp" />
-    <ClCompile Include="Instance.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="physfs-3.0.2\src\physfs.c" />
     <ClCompile Include="physfs-3.0.2\src\physfs_archiver_7z.c" />
@@ -174,7 +173,6 @@
     <ClInclude Include="Debug.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="Func.h" />
-    <ClInclude Include="Instance.h" />
     <ClInclude Include="physfs-3.0.2\src\physfs.h" />
     <ClInclude Include="physfs-3.0.2\src\physfs_casefolding.h" />
     <ClInclude Include="physfs-3.0.2\src\physfs_internal.h" />

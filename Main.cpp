@@ -50,6 +50,7 @@ int protected_main(int argc, char* args[]) {
 	Core::Init();
 
 	// arguments
+	if (!Core::LoadData(argc, args)) return EXIT_FAILURE;
 
 	return Core::Run();
 }

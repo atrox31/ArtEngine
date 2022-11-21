@@ -416,9 +416,117 @@ int Core::Run()
     return EXIT_SUCCESS;
 }
 
+bool Core::LoadData(int argc, char* args[])
+{
+
+
+    return true;
+}
+
 void Core::Exit()
 {
     SDL_Event* sdlevent = new SDL_Event();
     sdlevent->type = SDL_QUIT;
     SDL_PushEvent(sdlevent);
+}
+
+SDL_sem* Core::BackGroundRenderer::bg_data_lock = nullptr;
+int Core::BackGroundRenderer::bg_target_percent = 0;
+Core::BackGroundRenderer::BackGroundRenderer(std::string bg_img, SDL_Color bg_color)
+{
+    bg_data_lock = SDL_CreateSemaphore(1);
+    bg_target_percent = 0;
+    bg_renderer = nullptr;
+    bg_data = data(bg_color, bg_img);
+}
+
+void Core::BackGroundRenderer::SetProgress(int progress)
+{
+    if (bg_renderer == nullptr) {
+        Debug::WARNING("BackGroundRenderer: can not set progress, thread is not running!");
+        return;
+    }
+    SDL_SemWait(bg_data_lock);
+    bg_target_percent = progress;
+    SDL_SemPost(bg_data_lock);
+}
+
+void Core::BackGroundRenderer::Stop()
+{
+    if (bg_renderer == nullptr) {
+        Debug::WARNING("BackGroundRenderer: can not stop process, thread is not running!");
+        return;
+    }
+    SetProgress(-1);
+    SDL_WaitThread(bg_renderer, NULL);
+    SDL_DestroySemaphore(bg_data_lock);
+    bg_data_lock = nullptr;
+    bg_renderer = nullptr;
+    bg_target_percent = 0;
+}
+
+void Core::BackGroundRenderer::Run()
+{
+    if (bg_renderer != nullptr) {
+        Debug::WARNING("BackGroundRenderer: can not start process, thread is running!");
+        return;
+    }
+    bg_renderer = SDL_CreateThread(BackGroundRenderer::ThreadDrawingFunction, "bg_renderer", &bg_data);
+    
+}
+int Core::BackGroundRenderer::ThreadDrawingFunction(void* data)
+{
+    // procenty wyœwietlania
+    int c_level = 0;
+    int d_level = 0;
+
+    // surface i renderer dla procesu
+    SDL_Surface* surface = SDL_GetWindowSurface(Core::GetInstance()->GetWindowHandle());
+    SDL_Renderer* renderer = SDL_CreateSoftwareRenderer(surface);
+
+    // prostok¹t ekranu ³adowania
+    SDL_Rect bg_rect = { (int)(0.86f * (float)Core::GetInstance()->GetScreenWidth()),(int)(0.94f * (float)Core::GetInstance()->GetScreenHeight()),256,48 };
+    SDL_Rect in_rect = { bg_rect.x + 4,bg_rect.y + 4,256 - 8,48 - 8 };
+
+    while (true) {
+        // pobierz aktualny procent
+        SDL_SemWait(Core::BackGroundRenderer::bg_data_lock);
+        d_level = Core::BackGroundRenderer::bg_target_percent;
+        SDL_SemPost(Core::BackGroundRenderer::bg_data_lock);
+
+        // STOP
+        if (d_level == -1) {
+            break;
+        }
+
+        // koniec ³adowania
+        if (c_level == 100) {
+            break;
+        }
+
+        if (c_level < d_level) {
+            c_level++;
+        }
+
+        SDL_SetRenderDrawColor(renderer, C_BLACK.r, C_BLACK.g, C_BLACK.b, C_BLACK.a);
+        SDL_RenderClear(renderer);
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_RenderDrawRect(renderer,
+            &bg_rect);
+
+        SDL_Rect tmp_in_rect = {
+            in_rect.x,
+            in_rect.y,
+            (int)((float)in_rect.w * ((float)c_level / 100.0f)),
+            in_rect.h
+        };
+        SDL_RenderFillRect(renderer,&tmp_in_rect);
+
+        SDL_UpdateWindowSurface(Core::GetInstance()->GetWindowHandle());
+
+        SDL_Delay(1000 / 60);
+    }
+    //surface = nullptr;
+    SDL_DestroyRenderer(renderer);
+    return 0;
 }

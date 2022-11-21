@@ -95,9 +95,6 @@
     <ClCompile Include="Scene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Instance.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
     <ClCompile Include="Rect.cpp">
       <Filter>Structs</Filter>
     </ClCompile>
@@ -158,9 +155,6 @@
       <Filter>Assets</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Instance.h">
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="Rect.h">
