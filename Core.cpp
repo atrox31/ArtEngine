@@ -6,7 +6,7 @@
 #include "Render.h"
 #include "Event.h"
 
-Core* Core::_instance = nullptr;
+Core Core::_instance;
 Core::graphic Core::Graphic = Core::graphic();
 Core::audio Core::Audio = Core::audio();
 
@@ -15,7 +15,7 @@ void Core::graphic::Apply()
     GPU_SetFullscreen(_window_fullscreen, false);
     GPU_SetWindowResolution((Uint16)_window_width, (Uint16)_window_height);
     if (!_window_fullscreen)
-        SDL_SetWindowPosition(_instance->GetWindowHandle(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+        SDL_SetWindowPosition(_instance.GetWindowHandle(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
     if (_window_vsync == 0) {
         SDL_GL_SetSwapInterval(0);
     }
@@ -61,7 +61,7 @@ Core::~Core()
 
 bool Core::Init()
 {
-    _instance = new Core();
+    _instance = Core();
     Debug::LOG("ArtCore v0.3");
     if (SDL_Init(SDL_INIT_EVERYTHING) == -1) {
         Debug::ERROR({ "sdl_error: ", SDL_GetError() });
@@ -105,7 +105,7 @@ bool Core::Init()
                         }
                     }
                     else {
-                        _instance->SettingsData.insert(std::make_pair(line[0], line[1]));
+                        _instance.SettingsData.insert(std::make_pair(line[0], line[1]));
                     }
                 }
                 else {
@@ -119,17 +119,17 @@ bool Core::Init()
     GPU_SetDebugLevel(GPU_DEBUG_LEVEL_MAX);
 #endif // _DEBUG
 
-    _instance->_screenTarget = GPU_Init(255, 255, GPU_INIT_DISABLE_VSYNC);
-    if (_instance->_screenTarget == NULL) {
+    _instance._screenTarget = GPU_Init(255, 255, GPU_INIT_DISABLE_VSYNC);
+    if (_instance._screenTarget == NULL) {
         Debug::SDL_ERROR("GPU_Init: ");
         return false;
     }Debug::LOG("GPU_Init");
 
-    SDL_SetWindowBordered(SDL_GetWindowFromID(_instance->_screenTarget->context->windowID), SDL_FALSE);
+    SDL_SetWindowBordered(SDL_GetWindowFromID(_instance._screenTarget->context->windowID), SDL_FALSE);
     SDL_SetHint(SDL_HINT_RENDER_LINE_METHOD, "3");
 
     // splash screen for core loading
-    GPU_Clear(_instance->_screenTarget);
+    GPU_Clear(_instance._screenTarget);
     GPU_Image* splash = GPU_CopyImageFromSurface(SDL_LoadBMP_RW(SDL_RWFromConstMem(eula, 8190), 1));
     if (splash == NULL)
     {
@@ -137,9 +137,9 @@ bool Core::Init()
     }
     else
     {
-        GPU_BlitRect(splash, NULL, _instance->_screenTarget, NULL);
-        GPU_Flip(_instance->_screenTarget);
-        GPU_Clear(_instance->_screenTarget);
+        GPU_BlitRect(splash, NULL, _instance._screenTarget, NULL);
+        GPU_Flip(_instance._screenTarget);
+        GPU_Clear(_instance._screenTarget);
     }
     GPU_FreeImage(splash);
     splash = nullptr;
@@ -189,18 +189,18 @@ bool Core::Init()
     {
         Sint64 len = 0;
         const char* buf = Func::GetFileBuf("files/TitilliumWeb-Light.ttf", &len);
-        _instance->_global_font = FC_CreateFont();
+        _instance._global_font = FC_CreateFont();
         if (buf != nullptr)
-            FC_LoadFont_RW(_instance->_global_font, SDL_RWFromConstMem(buf, (int)len), 1, 24, C_BLACK, TTF_STYLE_NORMAL);
+            FC_LoadFont_RW(_instance._global_font, SDL_RWFromConstMem(buf, (int)len), 1, 24, C_BLACK, TTF_STYLE_NORMAL);
     }Debug::LOG("TitilliumWeb-Light.ttf");
 
     srand((unsigned int)time(NULL));
 
-    _instance->DeltaTime = 0.0;
-    _instance->NOW = SDL_GetTicks64();
-    _instance->LAST = 0;
-    _instance->frames = 0;
-    _instance->Consola = new Console();
+    _instance.DeltaTime = 0.0;
+    _instance.NOW = SDL_GetTicks64();
+    _instance.LAST = 0;
+    _instance.frames = 0;
+    _instance.Consola = new Console();
 
     //Render::CreateRender(SD_GetInt("DefaultResolution_x", 1920), SD_GetInt("DefaultResolution_y", 1080));
     Graphic.SetScreenResolution(SD_GetInt("DefaultResolution_x", 1920), SD_GetInt("DefaultResolution_y", 1080));
@@ -215,32 +215,32 @@ bool Core::Init()
 
 SDL_Window* Core::GetWindowHandle()
 {
-    if (_instance) {
-        return SDL_GetWindowFromID(_instance->_screenTarget->context->windowID);
+    if (_instance._screenTarget) {
+        return SDL_GetWindowFromID(_instance._screenTarget->context->windowID);
     }
     return nullptr;
 }
 
 int Core::SD_GetInt(std::string field, int _default)
 {
-    if (_instance->SettingsData.find(field) != _instance->SettingsData.end()) {
-        return std::stoi(_instance->SettingsData[field]);
+    if (_instance.SettingsData.find(field) != _instance.SettingsData.end()) {
+        return std::stoi(_instance.SettingsData[field]);
     }
     return _default;
 }
 
 float Core::SD_GetFloat(std::string field, float _default)
 {
-    if (_instance->SettingsData.find(field) != _instance->SettingsData.end()) {
-        return std::stof(_instance->SettingsData[field]);
+    if (_instance.SettingsData.find(field) != _instance.SettingsData.end()) {
+        return std::stof(_instance.SettingsData[field]);
     }
     return _default;
 }
 
 std::string Core::SD_GetString(std::string field, std::string _default)
 {
-    if (_instance->SettingsData.find(field) != _instance->SettingsData.end()) {
-        return _instance->SettingsData[field];
+    if (_instance.SettingsData.find(field) != _instance.SettingsData.end()) {
+        return _instance.SettingsData[field];
     }
     return _default;
 }
@@ -258,19 +258,19 @@ int Core::Run()
     SDL_TimerID my_timer_id = SDL_AddTimer((Uint32)1000, FpsCounterCallback, NULL);
     while (true) {
         //Art::Core::GetInstance()->Run_prepare();
-        _instance->LAST = _instance->NOW;
-        _instance->NOW = SDL_GetTicks64();
-        _instance->DeltaTime = ((double)(_instance->NOW - _instance->LAST) / 1000.0);
-        _instance->frames++;
+        _instance.LAST = _instance.NOW;
+        _instance.NOW = SDL_GetTicks64();
+        _instance.DeltaTime = ((double)(_instance.NOW - _instance.LAST) / 1000.0);
+        _instance.frames++;
 
-        SDL_GetMouseState(&_instance->gMouse.X, &_instance->gMouse.Y);
-        _instance->gMouse.XY = { _instance->gMouse.X, _instance->gMouse.Y };
+        SDL_GetMouseState(&_instance.gMouse.X, &_instance.gMouse.Y);
+        _instance.gMouse.XY = { _instance.gMouse.X, _instance.gMouse.Y };
 
-        _instance->gMouse.LeftPressed = SDL_GetMouseState(NULL, NULL) == SDL_BUTTON(SDL_BUTTON_LEFT);
-        _instance->gMouse.RightPressed = SDL_GetMouseState(NULL, NULL) == SDL_BUTTON(SDL_BUTTON_RIGHT);
-        _instance->gMouse.WHELL = 0;
-        _instance->gMouse.LeftEvent = Core::MouseState::ButtonState::NONE;
-        _instance->gMouse.RightEvent = Core::MouseState::ButtonState::NONE;
+        _instance.gMouse.LeftPressed = SDL_GetMouseState(NULL, NULL) == SDL_BUTTON(SDL_BUTTON_LEFT);
+        _instance.gMouse.RightPressed = SDL_GetMouseState(NULL, NULL) == SDL_BUTTON(SDL_BUTTON_RIGHT);
+        _instance.gMouse.WHELL = 0;
+        _instance.gMouse.LeftEvent = Core::MouseState::ButtonState::NONE;
+        _instance.gMouse.RightEvent = Core::MouseState::ButtonState::NONE;
 
         //if (Art::Core::GetInstance()->Run_events()) break;
         bool Ev_OnMouseInput = false;
@@ -306,7 +306,7 @@ int Core::Run()
             case SDL_CONTROLLERAXISMOTION:
             case SDL_CONTROLLERBUTTONDOWN:
             case SDL_CONTROLLERBUTTONUP:
-                if (_instance->Consola->IsShown()) break;
+                if (_instance.Consola->IsShown()) break;
                 /*
                 if (!_current_scene->_events[Art::Scene::Event::OnControllerInput].empty()) {
                     for (auto& ev : _current_scene->_events[Art::Scene::Event::OnControllerInput]) {
@@ -318,7 +318,7 @@ int Core::Run()
                 break;
 
             case SDL_MOUSEWHEEL:
-                if (_instance->Consola->IsShown()) break;
+                if (_instance.Consola->IsShown()) break;
                 /*
                 if (!_current_scene->_events[Art::Scene::Event::OnMouseInput].empty()) {
                     for (auto& ev : _current_scene->_events[Art::Scene::Event::OnMouseInput]) {
@@ -332,42 +332,42 @@ int Core::Run()
 
             case SDL_MOUSEBUTTONDOWN:
             {
-                if (_instance->Consola->IsShown()) break;
+                if (_instance.Consola->IsShown()) break;
                 if (e.button.button == SDL_BUTTON_LEFT) {
-                    _instance->gMouse.LeftEvent = Core::MouseState::ButtonState::PRESSED;
+                    _instance.gMouse.LeftEvent = Core::MouseState::ButtonState::PRESSED;
                 }
                 if (e.button.button == SDL_BUTTON_RIGHT) {
-                    _instance->gMouse.RightEvent = Core::MouseState::ButtonState::PRESSED;
+                    _instance.gMouse.RightEvent = Core::MouseState::ButtonState::PRESSED;
                 }
                 Ev_OnMouseInput = true;
             }
             break;
             case SDL_MOUSEBUTTONUP: {
-                if (_instance->Consola->IsShown()) break;
+                if (_instance.Consola->IsShown()) break;
                 Ev_OnMouseInput = true;
                 if (e.button.button == SDL_BUTTON_LEFT) {
-                    _instance->gMouse.LeftEvent = Core::MouseState::ButtonState::RELASED;
+                    _instance.gMouse.LeftEvent = Core::MouseState::ButtonState::RELASED;
                 }
                 if (e.button.button == SDL_BUTTON_RIGHT) {
-                    _instance->gMouse.RightEvent = Core::MouseState::ButtonState::RELASED;
+                    _instance.gMouse.RightEvent = Core::MouseState::ButtonState::RELASED;
                 }
                 Ev_OnMouseInput = true;
             }
             break;
 
             case SDL_TEXTINPUT:
-                if (_instance->Consola->IsShown()) {
-                    _instance->Consola->ProcessTextInput(e.text.text);
+                if (_instance.Consola->IsShown()) {
+                    _instance.Consola->ProcessTextInput(e.text.text);
                 }
                 break;
 
             case SDL_KEYDOWN:
-                if (!_instance->Consola->ProcessKey((SDL_KeyCode)e.key.keysym.sym)) {
+                if (!_instance.Consola->ProcessKey((SDL_KeyCode)e.key.keysym.sym)) {
                     Ev_OnKeyboardInput = true;
                 }
                 break;
             case SDL_KEYUP:
-                if (_instance->Consola->IsShown()) break;
+                if (_instance.Consola->IsShown()) break;
                     Ev_OnKeyboardInput = true;
                 break;
             }
@@ -383,21 +383,21 @@ int Core::Run()
         Render::RenderClear();
         
         // draw console
-        if (_instance->Consola->IsShown()) {
-            _instance->Consola->RenderConsole();
+        if (_instance.Consola->IsShown()) {
+            _instance.Consola->RenderConsole();
         }
         //Art::Core::GetInstance()->Draw_FPS();
-        if (_instance->_show_fps) {
+        if (_instance._show_fps) {
             GPU_ActivateShaderProgram(0, NULL);
 
-            GPU_Rect rect = FC_GetBounds(_instance->_global_font, 2, 2, FC_ALIGN_LEFT, FC_Scale(1, 1), "%d", _instance->fps);
+            GPU_Rect rect = FC_GetBounds(_instance._global_font, 2, 2, FC_ALIGN_LEFT, FC_Scale(1, 1), "%d", _instance.fps);
 
-            GPU_RectangleFilled2(_instance->_screenTarget, rect, C_BLACK);
-            FC_DrawColor(_instance->_global_font, _instance->_screenTarget, 2, 2, C_RED, "%d", _instance->fps);
+            GPU_RectangleFilled2(_instance._screenTarget, rect, C_BLACK);
+            FC_DrawColor(_instance._global_font, _instance._screenTarget, 2, 2, C_RED, "%d", _instance.fps);
         }
         //Art::Core::GetInstance()->ShowScreen();
-        GPU_Flip(_instance->_screenTarget);
-        GPU_ClearColor(_instance->_screenTarget, C_LGRAY);
+        GPU_Flip(_instance._screenTarget);
+        GPU_ClearColor(_instance._screenTarget, C_LGRAY);
     }
 
 
@@ -407,21 +407,17 @@ int Core::Run()
 bool Core::LoadData(int argc, char* args[])
 {
     GPU_Clear(GetScreenTarget());
-    SDL_SetWindowBordered(SDL_GetWindowFromID(_instance->_screenTarget->context->windowID), SDL_TRUE);
+    SDL_SetWindowBordered(SDL_GetWindowFromID(_instance._screenTarget->context->windowID), SDL_TRUE);
     Graphic.Apply();
     GPU_Flip(GetScreenTarget());
 
     Core::BackGroundRenderer bgr = Core::BackGroundRenderer();
     bgr.Run();
 
-    for (int i = 10; i < 100; i += 10) {
-        SDL_Delay(1000);
-        bgr.SetProgress(i);
-    }
-    SDL_Delay(1000);
+
+
     bgr.SetProgress(100);
     bgr.Stop();
-
     return true;
 }
 

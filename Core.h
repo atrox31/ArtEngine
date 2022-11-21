@@ -23,7 +23,7 @@ class Core
 public:
 	Core();
 	virtual ~Core();
-	static Core* GetInstance() { return Core::_instance; }
+	static Core* GetInstance() { return &Core::_instance; }
 	static bool Init();
 	static int Run();
 	static bool LoadData(int argc, char* args[]);
@@ -49,7 +49,7 @@ private:
 	// scene
 	Scene* _current_scene = nullptr;
 public:
-	static GPU_Target* GetScreenTarget() { return _instance->_screenTarget; }
+	static GPU_Target* GetScreenTarget() { return _instance._screenTarget; }
 
 private:
 	// core data
@@ -128,6 +128,17 @@ private:
 	int frames;
 	bool _show_fps;
 
+private:
+	class GameExecutor {
+	public:
+		GameExecutor();
+		bool LoadArtLib();
+		bool LoadInstanceDefinitions();
+
+	private:
+
+	};
+
 public:
 	// getters
 	SDL_Window* GetWindowHandle();
@@ -165,7 +176,7 @@ public:
 	// members
 	Console* Consola;
 private:
-	static Core* _instance;
+	static Core _instance;
 	SDL_Window* m_window;
 };
 
