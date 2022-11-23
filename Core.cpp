@@ -59,10 +59,24 @@ Core::~Core()
     SDL_Quit();
 }
 
-bool Core::Init()
+#define get_next (i+1<argc?args[++i]:"");continue;
+#include "main.h"
+bool Core::Init(int argc, char* args[])
 {
-    //Core::_instance = Core();
-    Debug::LOG("ArtCore v0.3");
+    // flags
+    const char* FL_game_dat_file = "game.dat";
+    const char* FL_assets_file = "assets.pak";
+    // args
+    for (int i = 1; i < argc; i++) {
+        if (args[i] == "-game_dat") FL_game_dat_file = get_next
+        if (args[i] == "-assets") FL_assets_file = get_next
+
+        if (args[i] == "-version") {
+            std::cout << std::to_string(VERSION_MAIN) + '.' + std::to_string(VERSION_MINOR)+ '.' + std::to_string(VERSION_PATH) << std::endl;
+        }
+    }
+    
+    Debug::LOG("ArtCore v" + std::to_string(VERSION_MAIN) + '.' + std::to_string(VERSION_MINOR));
     if (SDL_Init(SDL_INIT_EVERYTHING) == -1) {
         Debug::ERROR({ "sdl_error: ", SDL_GetError() });
         return false;
@@ -73,7 +87,7 @@ bool Core::Init()
         return false;
     }Debug::LOG("PHYSFS_init");
     // primary game data
-    if (!PHYSFS_mount("game.dat", NULL, 0))
+    if (!PHYSFS_mount(FL_game_dat_file, NULL, 0))
     {
         Debug::ERROR({ "Error when reading 'game.dat'. Reason: " , PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()) });
         return false;
@@ -145,7 +159,7 @@ bool Core::Init()
     splash = nullptr;
     Debug::LOG("Splash screen");
 
-    if (!PHYSFS_mount("assets.pak", NULL, 0))
+    if (!PHYSFS_mount(FL_assets_file, NULL, 0))
     {
         Debug::ERROR({ "Error when reading 'assets.pak'. Reason: " , PHYSFS_getLastError() });
         return false;
@@ -404,7 +418,7 @@ int Core::Run()
     return EXIT_SUCCESS;
 }
 #include "CodeExecutor.h"
-bool Core::LoadData(int argc, char* args[])
+bool Core::LoadData()
 {
     GPU_Clear(GetScreenTarget());
     SDL_SetWindowBordered(SDL_GetWindowFromID(_instance._screenTarget->context->windowID), SDL_TRUE);

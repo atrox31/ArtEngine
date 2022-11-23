@@ -47,10 +47,10 @@ extern "C"
 #include "Core.h"
 
 int protected_main(int argc, char* args[]) {
-	Core::Init();
+	Core::Init(argc, args);
 
 	// arguments
-	if (!Core::LoadData(argc, args)) return EXIT_FAILURE;
+	if (!Core::LoadData()) return EXIT_FAILURE;
 
 	return Core::Run();
 }

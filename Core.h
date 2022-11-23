@@ -25,9 +25,9 @@ public:
 	Core();
 	virtual ~Core();
 	static Core* GetInstance() { return &Core::_instance; }
-	static bool Init();
+	static bool Init(int argc, char* args[]);
 	static int Run();
-	static bool LoadData(int argc, char* args[]);
+	static bool LoadData();
 	void Exit();
 private:
 	class BackGroundRenderer {

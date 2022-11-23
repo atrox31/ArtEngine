@@ -184,6 +184,7 @@
     <ClInclude Include="Instance.h">
       <Filter>Scene</Filter>
     </ClInclude>
+    <ClInclude Include="main.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">

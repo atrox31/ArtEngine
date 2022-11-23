@@ -179,6 +179,7 @@
     <ClInclude Include="Event.h" />
     <ClInclude Include="Func.h" />
     <ClInclude Include="Instance.h" />
+    <ClInclude Include="main.h" />
     <ClInclude Include="physfs-3.0.2\src\physfs.h" />
     <ClInclude Include="physfs-3.0.2\src\physfs_casefolding.h" />
     <ClInclude Include="physfs-3.0.2\src\physfs_internal.h" />
