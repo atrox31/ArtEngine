@@ -42,7 +42,6 @@ void Core::BackGroundRenderer::Run()
         return;
     }
     bg_renderer = SDL_CreateThread(BackGroundRenderer::ThreadDrawingFunction, "bg_renderer", nullptr);
-
 }
 int Core::BackGroundRenderer::ThreadDrawingFunction(void* data)
 {

@@ -12,9 +12,27 @@
 #include SDL2_GPU_INCLUDE_DIR
 #pragma warning(pop)
 
+#include <iostream>
+#include <iomanip>
+/*
+	std::cout << std::endl;
+	for (Sint64 i = 0; i < c; i++) {
+		std::cout << "" << std::setw(2) << std::setfill('0') << std::hex << (int)_code[i] << " ";
+		if (i % 16 == 0 && i != 0) std::cout << std::endl;
+	}
+	std::cout << std::endl;
+	for (Sint64 i = 0; i < c; i++) {
+		std::cout << "" << (char)_code[i] << " ";
+		if (i % 16 == 0 && i != 0) std::cout << std::endl;
+	}
+	*/
 class Func
 {
 public:
+
+	static const std::string GetHexTable(const unsigned char* data, int size, int group = 16);
+
+	// chek if file exists
 	static bool FileExists(std::string FileName);
 
 	// good for big data, for small use split

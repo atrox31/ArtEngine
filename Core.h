@@ -10,13 +10,13 @@
 #include SDL2_GPU_INCLUDE_DIR
 #pragma warning(pop)
 
+#include "CodeExecutor.h"
 #include "Console.h"
 #include "physfs-3.0.2/src/physfs.h"
 #include "plf_colony-master/plf_colony.h"
 #include "Debug.h"
 #include "Scene.h"
 #include "ColorDefinitions.h"
-#include "CodeExecutor.h"
 
 class Scene;
 class Core

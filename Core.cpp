@@ -414,14 +414,21 @@ bool Core::LoadData(int argc, char* args[])
     Core::BackGroundRenderer bgr = Core::BackGroundRenderer();
     bgr.Run();
 
-    _instance.Executor.MapFunctions();
-    bgr.SetProgress(10);
-
     if (!_instance.Executor.LoadArtLib()) {
         bgr.Stop();
         return false;
     }
+    bgr.SetProgress(10);
+    
+    if (!_instance.Executor.LoadObjectDefinitions()) {
+        bgr.Stop();
+        return false;
+    }
     bgr.SetProgress(20);
+
+
+
+
 
     bgr.SetProgress(100);
     bgr.Stop();

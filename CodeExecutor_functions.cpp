@@ -207,3 +207,15 @@ void CodeExecutor::math_max() {
 void CodeExecutor::global_get_mouse() {
 
 }
+//null set_self_sprite(sprite spr); Set self sprite to <sprite> with default scale, angle, speed, loop; You can mod sprite via set_sprite_ etc.;
+void CodeExecutor::set_self_sprite() {
+
+}
+//float get_pos_x(); Get x coords of instance;
+void CodeExecutor::get_pos_x() {
+
+}
+//float get_pos_y(); Get y coords of instance;
+void CodeExecutor::get_pos_y() {
+
+}

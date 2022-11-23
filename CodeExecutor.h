@@ -2,6 +2,22 @@
 #include <map>
 #include <string>
 #include <vector>
+
+#include "SDL_version.h"
+
+// include all sdl systems
+#pragma warning(push)
+#include SDL2_INCLUDE_DIR
+#include SDL2_IMAGE_INCLUDE_DIR
+#include SDL2_MIXER_INCLUDE_DIR
+#include SDL2_NET_INCLUDE_DIR
+#include SDL2_TTF_INCLUDE_DIR
+#include SDL2_GPU_INCLUDE_DIR
+#pragma warning(pop)
+
+#include "Instance.h"
+#include "Event.h"
+
 class CodeExecutor
 {
 public:
@@ -9,9 +25,37 @@ public:
 	CodeExecutor();
 	void MapFunctions();
 	bool LoadArtLib();
+	bool LoadObjectDefinitions();
 
-	// exec
-
+private:
+	struct InstanceDefinition {
+	public:
+		std::map<Event, const unsigned char*> _events;
+		//		type, fields
+		std::map<int, int> _varibles;
+		std::string _name;
+		InstanceDefinition() {
+			_name = "";
+			_varibles = std::map<int, int>();
+			_events = std::map<Event, const unsigned char*>();
+		}
+		void AddVarible(int type) {
+			auto f = _varibles.find(type);
+			if (f == _varibles.end()) {
+				_varibles.insert(std::pair(type, 0));
+			}
+			else {
+				f->second++;
+			}
+		}
+	};
+	std::vector< InstanceDefinition > InstanceDefinitions;
+	InstanceDefinition* FindInstance(std::string name) {
+		for (auto& it : InstanceDefinitions) {
+			if (it._name == name) return &it;
+		}
+		return nullptr;
+	}
 
 private:
 	std::map<std::string, void(CodeExecutor::*)()> FunctionsMap;
@@ -37,8 +81,13 @@ private:
 			// polecenia
 			TYPE, IF_BODY, IF_TEST, ELSE,
 			END,
+
+
+			// tylko w silniku, zawsze ostatnia
+			INWALID
 		};
 
+		// not used now
 		const std::string operators[6] = {
 		"+",
 		"-",
@@ -49,15 +98,15 @@ private:
 		};
 
 		const std::string operators2[8] = {
-			//logic
-			"||",
-			"&&",
-			"<<",
-			">>",
-			">=",
-			"<=",
-			"!=",
-			"=="
+		//logic
+		"||",
+		"&&",
+		"<<",
+		">>",
+		">=",
+		"<=",
+		"!=",
+		"=="
 		};
 
 		const std::string varible_type[15] = {
@@ -84,6 +133,104 @@ private:
 		"end",
 		"else",
 		};
+	};
+
+	class  Inspector {
+	public:
+		Inspector(const unsigned char* code, Sint64 len) {
+			_code = code;
+			_size = len - 1;
+			_pos = -1;
+			_current_bit = '\0';
+		}
+
+		virtual ~Inspector() {
+			delete _code;
+		}
+
+		bool IsEnd() {
+			return (_pos >= _size);
+		}
+
+		std::string GetString() {
+			_pos++;
+			std::string _string = "";
+			while (_pos < _size) {
+				if (IsEnd()) return "";
+				if (_code[_pos] == '\1') {
+					//_pos++;
+					_current_bit = _code[_pos];
+					return _string;
+				}
+				_string += _code[_pos++];
+			}
+			return "";
+		}
+
+		// skip x bytes and return isEnd()
+		bool Skip(int count) {
+			_pos += count;
+			if (IsEnd()) {
+				_pos = _size;
+				return true;
+			}
+			return false;
+		}
+
+		ArtCode::Command GetNextCommand() {
+			_current_bit = _code[++_pos];
+			return (ArtCode::Command)_code[_pos];
+		}
+		
+		ArtCode::Command GetCurrentCommand() {
+			_current_bit = _code[_pos];
+			return (ArtCode::Command)_code[_pos];
+		}
+
+		unsigned char Current() {
+			if (_pos < _size) return _code[_pos];
+			return '\0';
+		}
+
+		unsigned char SeekNext() {
+			if (_pos + 1 <= _size) return _code[_pos + 1];
+			return '\0';
+		}
+		ArtCode::Command SeekNextCommand() {
+			if (_pos + 1 <= _size) return  (ArtCode::Command)_code[_pos + 1];
+			return ArtCode::Command::INWALID;
+		}
+
+		const unsigned char* GetChunk(const int count) {
+			
+			unsigned char* _return = (unsigned char* )malloc(count+1);
+			memcpy_s(_return, count, _code + _pos + 1, count);
+			if (_return) {
+				_return[count] = '\0';
+			}
+			Skip(count);
+			return _return;
+
+		}
+
+		unsigned char GetBit() {
+			_current_bit = _code[++_pos];
+			return _code[_pos];
+		}
+
+		int GetInt() {
+			return std::stoi(GetString());
+		}
+
+		float GetFloat() {
+			return std::stof(GetString());
+		}
+
+	private:
+		const unsigned char* _code;
+		Sint64 _size;
+		Sint64 _pos;
+		unsigned char _current_bit;
 	};
 
 private:
@@ -176,5 +323,12 @@ private:
 	// globals
 		//point global_get_mouse();Get point of current mouse postion;If map is bigger than screen this give map coords not screen;
 		void global_get_mouse();
+	// set
+		//null set_self_sprite(sprite spr); Set self sprite to <sprite> with default scale, angle, speed, loop; You can mod sprite via set_sprite_ etc.;
+		void set_self_sprite(); 
+		//float get_pos_x(); Get x coords of instance;
+		void get_pos_x();
+		//float get_pos_y(); Get y coords of instance;
+		void get_pos_y(); 
 };
 

@@ -4,8 +4,9 @@
 
 CodeExecutor::CodeExecutor()
 {
-	//FunctionsMap = std::map<std::string, void(CodeExecutor::*)()>();
-	//FunctionsList = std::vector<void(CodeExecutor::*)()>() ;
+	FunctionsMap = std::map<std::string, void(CodeExecutor::*)()>();
+	FunctionsList = std::vector<void(CodeExecutor::*)()>() ;
+	InstanceDefinitions = std::vector<InstanceDefinition>();
 }
 
 void CodeExecutor::MapFunctions()
@@ -52,11 +53,15 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["math_min"] = &CodeExecutor::math_min;
 	FunctionsMap["math_max"] = &CodeExecutor::math_max;
 	FunctionsMap["global_get_mouse"] = &CodeExecutor::global_get_mouse;
+	FunctionsMap["set_self_sprite"] = &CodeExecutor::set_self_sprite;
+	FunctionsMap["get_pos_x"] = &CodeExecutor::get_pos_x;
+	FunctionsMap["get_pos_y"] = &CodeExecutor::get_pos_y;
 
 }
 
 bool CodeExecutor::LoadArtLib()
 {
+	MapFunctions();
 	char* buffer = Func::GetFileBuf("AScript.lib", nullptr);
 	if (buffer == NULL) {
 		return false;
@@ -100,6 +105,7 @@ bool CodeExecutor::LoadArtLib()
 					}
 					else {
 						FunctionsList.push_back(nullptr);
+						Debug::WARNING("function '"+ tmp+ "' not found");
 					}
 
 					tmp = "";
@@ -117,3 +123,93 @@ bool CodeExecutor::LoadArtLib()
 	FunctionsMap.clear();
 	return true;
 }
+
+#define command CodeExecutor::ArtCode::Command
+#define err(x,y) Debug::ERROR("expected " + x + " but " + std::to_string(y) + " is given"); return false;
+
+
+
+bool CodeExecutor::LoadObjectDefinitions()
+{
+	CodeExecutor::ArtCode ac;
+	Sint64 c = 0;
+	const unsigned char* _code = Func::GetFileBytes("object_compile.acp", &c);
+	if (_code == nullptr) return false;
+	Inspector code(_code, c);
+
+	// definicje objektów
+	while (!code.IsEnd()) {
+		// first is OBJECT_DEFINITION command
+		if (code.GetNextCommand() != command::OBJECT_DEFINITION) {
+			// last is end
+			if (code.GetCurrentCommand() == command::END && code.IsEnd()) {
+				break;
+			}
+			Debug::ERROR("expected 'OBJECT_DEFINITION' but " + std::to_string(code.Current()) + " is given");SDL_assert(false); return false;
+		}
+
+		InstanceDefinition instance;
+		// seccond is string object name
+		std::string o_name = code.GetString();
+		instance._name = o_name;
+
+		// varibles
+		while (code.GetNextCommand() != command::END || code.IsEnd()) {
+			/*
+			 WriteCommand(Command::LOCAL_VARIBLE_DEFINITION);
+			 WriteBit(getVaribleIndex(local.Type));
+			 WriteBit(local.index);
+			 WriteString(local.Name);
+			 WriteBit(local.ReadOnly);
+			* */
+			if (code.GetCurrentCommand() == command::LOCAL_VARIBLE_DEFINITION) {
+				int varible_type = code.GetBit();
+				// not used now, maby later for debug
+				int varible_index = code.GetBit();
+				std::string varible_name = code.GetString();
+				bool varible_read_only = (bool)code.GetBit();
+				//
+				instance.AddVarible(varible_type);
+			}
+			else {
+				
+				Debug::ERROR("instance: '"+ o_name+ "' - expected 'LOCAL_VARIBLE_DEFINITION' but " + std::to_string(code.Current()) + " is given");SDL_assert(false); return false;
+			}
+		} // varibles
+
+		// events
+		while (code.GetNextCommand() != command::END || code.IsEnd()) {
+			if (code.GetCurrentCommand() == command::FUNCTION_DEFINITION) {
+				std::string e_name = code.GetString();
+				int f_size = code.GetBit();
+				const unsigned char* f_code = code.GetChunk(f_size);
+				if ((ArtCode::Command)f_code[f_size - 1] != command::END) {
+
+					Debug::ERROR("instance: '" + o_name + "' - expected 'END' but " + std::to_string(f_code[f_size - 1]) + " is given"); SDL_assert(false); return false;
+				}
+				
+				//instance._events
+				if (Event_fromString(e_name) == Event::Invalid) {
+					Debug::ERROR("instance: '" + o_name + "' - wrong event '" + e_name + "'"); SDL_assert(false); return false;
+				}
+
+				instance._events[Event_fromString(e_name)] = f_code;
+			}
+			else {
+				Debug::ERROR("instance: '" + o_name + "' - expected 'FUNCTION_DEFINITION' but " + std::to_string(code.Current()) + " is given"); SDL_assert(false); return false;
+			}
+		} //ebvents
+
+		// expected end
+		if (code.GetCurrentCommand() != command::END) {
+			
+			Debug::ERROR("expected 'END' but " + std::to_string(code.Current()) + " is given");SDL_assert(false); return false;
+		}
+
+		// all ok, populate
+		InstanceDefinitions.push_back(instance);
+	}
+
+	return (InstanceDefinitions.size() > 0);
+}
+#undef command

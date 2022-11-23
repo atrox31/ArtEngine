@@ -107,6 +107,9 @@
     <ClCompile Include="CodeExecutor_functions.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Instance.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core.h">
@@ -175,6 +178,12 @@
     <ClInclude Include="CodeExecutor.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="VaribleMap.h">
+      <Filter>Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="Instance.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">
@@ -191,9 +200,6 @@
     </Filter>
     <Filter Include="Scene">
       <UniqueIdentifier>{bdb2ed98-b20e-48e0-94bf-6834f549d309}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Instance">
-      <UniqueIdentifier>{9f7c7a4c-da4d-4c21-8f61-22ca1414186f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Include">
       <UniqueIdentifier>{b71d52dc-ef25-4ca2-8115-c0d45170ff39}</UniqueIdentifier>

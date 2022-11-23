@@ -2,6 +2,19 @@
 #include "physfs-3.0.2/src/physfs.h"
 #include "Debug.h"
 
+std::string const Func::GetHexTable(const unsigned char* data, int size, int group)
+{
+	std::stringstream sstr;
+	sstr << std::endl;
+
+	for (int i = 0; i < size; i++) {
+		std::cout << "" << std::setw(2) << std::setfill('0') << std::hex << (int)data[i] << " ";
+		if (i % group == 0 && i != 0) std::cout << std::endl;
+	}
+
+	return sstr.str();
+}
+
 bool Func::FileExists(std::string FileName)
 {
 	struct stat buffer;

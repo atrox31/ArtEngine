@@ -2,34 +2,21 @@
 #include "Core.h"
 #include "Rect.h"
 #include "Event.h"
+#include "Instance.h"
+#include "plf_colony-master/plf_colony.h"
+class Instance;
 class Scene
 {
-	class Instance {
-	public:
-		Instance();
-		virtual ~Instance();
-		Uint64 GetId() { return _id; };
-		void Delete() { Alive = false; };
-
-		bool Alive;
-		std::string Tag;
-		bool InView;
-		bool E_MaskClicked = false;
-		Rect Mask;
-
-	private:
-		Uint64 _id;
-		static Uint64 _cid;
-	};
+	
 public:
 	Scene();
 	virtual ~Scene();
 
-	virtual void OnEnter() {};
-	virtual void OnExit() {};
+	int SceneStep();
+	int SceneDraw();
 
-	Scene::Instance* CreateInstance(Instance*);
-	void DeleteInstance(Instance*);
+	//Instance* CreateInstance(Instance*);
+	//void DeleteInstance(Instance*);
 	bool IsAnyInstances() { return _instances_size > 0; }
 
 	//private:
