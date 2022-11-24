@@ -140,50 +140,80 @@ bool AssetManager::LoadData(BackGroundRenderer* bgr, int p_min, int p_max)
 
 Sprite* AssetManager::GetSprite(int id)
 {
+	if (id < List_sprite_id.size()) {
+		return List_sprite_id[id];
+	}
 	return nullptr;
 }
 
 Sprite* AssetManager::GetSprite(std::string name)
 {
+	if (List_sprite_name.find(name) != List_sprite_name.end()) {
+		return List_sprite_name[name];
+	}
 	return nullptr;
 }
 
 GPU_Image* AssetManager::GetTexture(int id)
 {
+	if (id < List_texture_id.size()) {
+		return List_texture_id[id];
+	}
 	return nullptr;
 }
 
 GPU_Image* AssetManager::GetTexture(std::string name)
 {
+	if (List_texture_name.find(name) != List_texture_name.end()) {
+		return List_texture_name[name];
+	}
 	return nullptr;
 }
 
 Mix_Music* AssetManager::GetMusic(int id)
 {
+	if (id < List_music_id.size()) {
+		return List_music_id[id];
+	}
 	return nullptr;
 }
 
 Mix_Music* AssetManager::GetMusic(std::string name)
 {
+	if (List_music_name.find(name) != List_music_name.end()) {
+		return List_music_name[name];
+	}
 	return nullptr;
 }
 
 Mix_Chunk* AssetManager::GetSound(int id)
 {
+	if (id < List_sound_id.size()) {
+		return List_sound_id[id];
+	}
 	return nullptr;
 }
 
 Mix_Chunk* AssetManager::GetSound(std::string name)
 {
+	if (List_sound_name.find(name) != List_sound_name.end()) {
+		return List_sound_name[name];
+	}
 	return nullptr;
 }
 
 FC_Font* AssetManager::GetFont(int id)
 {
+	if (id < List_font_id.size()) {
+		return List_font_id[id];
+	}
 	return nullptr;
 }
 
 FC_Font* AssetManager::GetFont(std::string name)
 {
+	if (List_font_name.find(name) != List_font_name.end()) {
+		return List_font_name[name];
+	}
 	return nullptr;
 }
