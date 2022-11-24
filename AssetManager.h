@@ -12,6 +12,7 @@
 #include <map>
 #include "Sprite.h"
 #include <string>
+#include "BackGroundRenderer.h"
 
 class AssetManager
 {
@@ -19,7 +20,7 @@ public:
 	AssetManager();
 	virtual ~AssetManager();
 
-	bool LoadData();
+	bool LoadData(BackGroundRenderer* bgr);
 	void ClearData();
 
 	Sprite* GetSprite(int id);

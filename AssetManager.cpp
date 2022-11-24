@@ -51,7 +51,7 @@ AssetManager::~AssetManager()
 	ClearData();
 }
 
-bool AssetManager::LoadData()
+bool AssetManager::LoadData(BackGroundRenderer* bgr)
 {
 	
 	Sint64 buffer_size(0);
@@ -60,6 +60,11 @@ bool AssetManager::LoadData()
 
 	std::vector<std::string> data = Func::Explode(buffer, '\n');
 	if (data.size() == 0) return false;
+
+	int c_pos = 0;
+	int m_pos = (int)data.size();
+
+	int ff = (int)Func::
 
 	for (std::string& file : data) {
 		std::vector<std::string> path = Func::Split(file, '\\');
@@ -73,6 +78,7 @@ bool AssetManager::LoadData()
 			List_texture_id.push_back(tmp);
 			List_texture_name.insert({ name, tmp });
 			Debug::LOG("AssetManager::LoadData - file loaded: " + file);
+			//bgr->SetProgress( (int)Func::LinearScale(c_pos,   ) );
 
 		}elseif(path[0] == "Sprites") {
 

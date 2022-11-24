@@ -2,6 +2,13 @@
 #include "physfs-3.0.2/src/physfs.h"
 #include "Debug.h"
 
+template <class T>
+T Func::LinearScale(T value, T valueMin, T valueMax, T scaleMin, T scaleMax)
+{
+	T percentOfValue = ((value - valueMin) / (valueMax - valueMin));
+	return percentOfValue * (scaleMax - scaleMin) + scaleMin;
+}
+
 std::string const Func::GetHexTable(const unsigned char* data, int size, int group)
 {
 	std::stringstream sstr;

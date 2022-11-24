@@ -30,6 +30,8 @@
 class Func
 {
 public:
+	template <class T>
+	static T LinearScale(T value, T valueMin, T valueMax, T scaleMin, T scaleMax);
 	static const std::string GetHexTable(const unsigned char* data, int size, int group = 16);
 
 	// chek if file exists

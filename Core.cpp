@@ -443,7 +443,7 @@ bool Core::LoadData()
     bgr.SetProgress(20);
 
     // load assets
-    if (!Core::GetInstance()->assetManager.LoadData()) {
+    if (!Core::GetInstance()->assetManager.LoadData(&bgr)) {
         bgr.Stop();
         return false;
     }
