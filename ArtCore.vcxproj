@@ -131,6 +131,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="BackGroundRenderer.cpp" />
     <ClCompile Include="CodeExecutor.cpp" />
     <ClCompile Include="CodeExecutor_functions.cpp" />
@@ -170,6 +171,8 @@
     <ClCompile Include="vec2f.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AssetManager.h" />
+    <ClInclude Include="BackGroundRenderer.h" />
     <ClInclude Include="CodeExecutor.h" />
     <ClInclude Include="ColorDefinitions.h" />
     <ClInclude Include="consola.h" />

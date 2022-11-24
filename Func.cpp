@@ -174,6 +174,7 @@ Func::DataValues::DataValues(const char* data, int size)
 	for (std::string& v : values) {
 		if (v[0] == '[') {
 			// section
+			if (v[1] == '/') continue; // niektóre pliki maj¹ zamkniêcia w sekcjach [aaa] ... [/aaa]
 			c_section = v.substr(1, v.size() - 2);
 			if (_data.find(c_section) != _data.end()) {
 				Debug::WARNING("DataValues: section '" + c_section + "' is exists!");

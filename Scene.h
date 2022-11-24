@@ -11,17 +11,15 @@ class Scene
 public:
 	Scene();
 	virtual ~Scene();
+	bool Load(std::string name);
 
-	int SceneStep();
-	int SceneDraw();
-
-	//Instance* CreateInstance(Instance*);
-	//void DeleteInstance(Instance*);
+	// instances
+public:
 	bool IsAnyInstances() { return _instances_size > 0; }
-
-	private:
+private:
 	int _instances_size;
 	plf::colony<Instance*> _instances;
 	std::vector<Instance*> _instances_new;
+
 };
 

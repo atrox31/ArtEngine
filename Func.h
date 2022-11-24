@@ -102,6 +102,9 @@ public:
 		virtual ~DataValues();
 		std::string GetData(std::string section, std::string field);
 		std::vector<std::string> GetSection(std::string section);
+		bool IsOk() {
+			return _data.size() > 0;
+		}
 	private:
 		std::map <std::string, std::vector <std::string>> _data;
 	};

@@ -1,16 +1,15 @@
-#include "Core.h"
-#include "Func.h"
+#include "BackGroundRenderer.h"
 
-SDL_sem* Core::BackGroundRenderer::bg_data_lock = nullptr;
-int Core::BackGroundRenderer::bg_target_percent = 0;
-Core::BackGroundRenderer::BackGroundRenderer()
+SDL_sem* BackGroundRenderer::bg_data_lock = nullptr;
+int BackGroundRenderer::bg_target_percent = 0;
+BackGroundRenderer::BackGroundRenderer()
 {
     bg_data_lock = SDL_CreateSemaphore(1);
     bg_target_percent = 0;
     bg_renderer = nullptr;
 }
 
-void Core::BackGroundRenderer::SetProgress(int progress)
+void BackGroundRenderer::SetProgress(int progress)
 {
     if (bg_renderer == nullptr) {
         Debug::WARNING("BackGroundRenderer: can not set progress, thread is not running!");
@@ -21,7 +20,7 @@ void Core::BackGroundRenderer::SetProgress(int progress)
     SDL_SemPost(bg_data_lock);
 }
 
-void Core::BackGroundRenderer::Stop()
+void BackGroundRenderer::Stop()
 {
     if (bg_renderer == nullptr) {
         Debug::WARNING("BackGroundRenderer: can not stop process, thread is not running!");
@@ -35,7 +34,7 @@ void Core::BackGroundRenderer::Stop()
     bg_target_percent = 0;
 }
 
-void Core::BackGroundRenderer::Run()
+void BackGroundRenderer::Run()
 {
     if (bg_renderer != nullptr) {
         Debug::WARNING("BackGroundRenderer: can not start process, thread is running!");
@@ -43,7 +42,7 @@ void Core::BackGroundRenderer::Run()
     }
     bg_renderer = SDL_CreateThread(BackGroundRenderer::ThreadDrawingFunction, "bg_renderer", nullptr);
 }
-int Core::BackGroundRenderer::ThreadDrawingFunction(void* data)
+int BackGroundRenderer::ThreadDrawingFunction(void* data)
 {
     // procenty wyœwietlania
     int c_level = 0;
@@ -77,9 +76,9 @@ int Core::BackGroundRenderer::ThreadDrawingFunction(void* data)
 
     while (true) {
         // pobierz aktualny procent
-        SDL_SemWait(Core::BackGroundRenderer::bg_data_lock);
-        d_level = Core::BackGroundRenderer::bg_target_percent;
-        SDL_SemPost(Core::BackGroundRenderer::bg_data_lock);
+        SDL_SemWait(BackGroundRenderer::bg_data_lock);
+        d_level = BackGroundRenderer::bg_target_percent;
+        SDL_SemPost(BackGroundRenderer::bg_data_lock);
         // STOP
         if (d_level == -1) {
             break;

@@ -17,6 +17,8 @@
 #include "Debug.h"
 #include "Scene.h"
 #include "ColorDefinitions.h"
+#include "AssetManager.h"
+#include "BackGroundRenderer.h"
 
 class Scene;
 class Core
@@ -29,20 +31,6 @@ public:
 	static int Run();
 	static bool LoadData();
 	void Exit();
-private:
-	class BackGroundRenderer {
-	public:
-		BackGroundRenderer();
-		void SetProgress(int progress);
-		void Stop();
-		void Run();
-	private:
-		static int ThreadDrawingFunction(void* data);
-
-		static int bg_target_percent;
-		static SDL_sem* bg_data_lock;
-		SDL_Thread* bg_renderer;
-	};
 
 private:
 	// graphic
@@ -164,6 +152,7 @@ public:
 	// font
 	FC_Font* _global_font;
 	std::vector<std::string> ProgramArguments;
+	AssetManager assetManager;
 
 	// members
 	Console* Consola;

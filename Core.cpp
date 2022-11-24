@@ -48,6 +48,7 @@ Core::Core()
 
 Core::~Core()
 {
+    assetManager.ClearData();
     GPU_FreeTarget(_screenTarget);
     delete Consola;
     SettingsData.clear();
@@ -421,12 +422,12 @@ int Core::Run()
 #include "CodeExecutor.h"
 bool Core::LoadData()
 {
-    GPU_Clear(GetScreenTarget());
     SDL_SetWindowBordered(SDL_GetWindowFromID(_instance._screenTarget->context->windowID), SDL_TRUE);
     Graphic.Apply();
+    GPU_Clear(GetScreenTarget());
     GPU_Flip(GetScreenTarget());
 
-    Core::BackGroundRenderer bgr = Core::BackGroundRenderer();
+    BackGroundRenderer bgr = BackGroundRenderer();
     bgr.Run();
 
     if (!_instance.Executor.LoadArtLib()) {
@@ -441,8 +442,12 @@ bool Core::LoadData()
     }
     bgr.SetProgress(20);
 
-
-
+    // load assets
+    if (!Core::GetInstance()->assetManager.LoadData()) {
+        bgr.Stop();
+        return false;
+    }
+    bgr.SetProgress(80);
 
 
     bgr.SetProgress(100);

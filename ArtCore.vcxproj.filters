@@ -11,77 +11,74 @@
     <ClCompile Include="Console.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="SDL2\SDL_FontCache-master\SDL_FontCache.c">
-      <Filter>Include</Filter>
-    </ClCompile>
     <ClCompile Include="Func.cpp">
       <Filter>Functions</Filter>
     </ClCompile>
     <ClCompile Include="physfs-3.0.2\src\physfs.c">
-      <Filter>physfs</Filter>
+      <Filter>Include\physfs</Filter>
     </ClCompile>
     <ClCompile Include="physfs-3.0.2\src\physfs_archiver_7z.c">
-      <Filter>physfs</Filter>
+      <Filter>Include\physfs</Filter>
     </ClCompile>
     <ClCompile Include="physfs-3.0.2\src\physfs_archiver_dir.c">
-      <Filter>physfs</Filter>
+      <Filter>Include\physfs</Filter>
     </ClCompile>
     <ClCompile Include="physfs-3.0.2\src\physfs_archiver_grp.c">
-      <Filter>physfs</Filter>
+      <Filter>Include\physfs</Filter>
     </ClCompile>
     <ClCompile Include="physfs-3.0.2\src\physfs_archiver_hog.c">
-      <Filter>physfs</Filter>
+      <Filter>Include\physfs</Filter>
     </ClCompile>
     <ClCompile Include="physfs-3.0.2\src\physfs_archiver_iso9660.c">
-      <Filter>physfs</Filter>
+      <Filter>Include\physfs</Filter>
     </ClCompile>
     <ClCompile Include="physfs-3.0.2\src\physfs_archiver_mvl.c">
-      <Filter>physfs</Filter>
+      <Filter>Include\physfs</Filter>
     </ClCompile>
     <ClCompile Include="physfs-3.0.2\src\physfs_archiver_qpak.c">
-      <Filter>physfs</Filter>
+      <Filter>Include\physfs</Filter>
     </ClCompile>
     <ClCompile Include="physfs-3.0.2\src\physfs_archiver_slb.c">
-      <Filter>physfs</Filter>
+      <Filter>Include\physfs</Filter>
     </ClCompile>
     <ClCompile Include="physfs-3.0.2\src\physfs_archiver_unpacked.c">
-      <Filter>physfs</Filter>
+      <Filter>Include\physfs</Filter>
     </ClCompile>
     <ClCompile Include="physfs-3.0.2\src\physfs_archiver_vdf.c">
-      <Filter>physfs</Filter>
+      <Filter>Include\physfs</Filter>
     </ClCompile>
     <ClCompile Include="physfs-3.0.2\src\physfs_archiver_wad.c">
-      <Filter>physfs</Filter>
+      <Filter>Include\physfs</Filter>
     </ClCompile>
     <ClCompile Include="physfs-3.0.2\src\physfs_archiver_zip.c">
-      <Filter>physfs</Filter>
+      <Filter>Include\physfs</Filter>
     </ClCompile>
     <ClCompile Include="physfs-3.0.2\src\physfs_byteorder.c">
-      <Filter>physfs</Filter>
+      <Filter>Include\physfs</Filter>
     </ClCompile>
     <ClCompile Include="physfs-3.0.2\src\physfs_platform_haiku.cpp">
-      <Filter>physfs</Filter>
+      <Filter>Include\physfs</Filter>
     </ClCompile>
     <ClCompile Include="physfs-3.0.2\src\physfs_platform_os2.c">
-      <Filter>physfs</Filter>
+      <Filter>Include\physfs</Filter>
     </ClCompile>
     <ClCompile Include="physfs-3.0.2\src\physfs_platform_posix.c">
-      <Filter>physfs</Filter>
+      <Filter>Include\physfs</Filter>
     </ClCompile>
     <ClCompile Include="physfs-3.0.2\src\physfs_platform_qnx.c">
-      <Filter>physfs</Filter>
+      <Filter>Include\physfs</Filter>
     </ClCompile>
     <ClCompile Include="physfs-3.0.2\src\physfs_platform_unix.c">
-      <Filter>physfs</Filter>
+      <Filter>Include\physfs</Filter>
     </ClCompile>
     <ClCompile Include="physfs-3.0.2\src\physfs_platform_windows.c">
-      <Filter>physfs</Filter>
+      <Filter>Include\physfs</Filter>
     </ClCompile>
     <ClCompile Include="physfs-3.0.2\src\physfs_platform_winrt.cpp">
-      <Filter>physfs</Filter>
+      <Filter>Include\physfs</Filter>
     </ClCompile>
     <ClCompile Include="physfs-3.0.2\src\physfs_unicode.c">
-      <Filter>physfs</Filter>
+      <Filter>Include\physfs</Filter>
     </ClCompile>
     <ClCompile Include="vec2f.cpp">
       <Filter>Structs</Filter>
@@ -110,6 +107,12 @@
     <ClCompile Include="Instance.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <ClCompile Include="SDL2\SDL_FontCache-master\SDL_FontCache.c">
+      <Filter>Include\SDL_FontCahe</Filter>
+    </ClCompile>
+    <ClCompile Include="AssetManager.cpp">
+      <Filter>Assets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core.h">
@@ -125,37 +128,34 @@
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="consola.h">
-      <Filter>predefined_h</Filter>
+      <Filter>Include\predefined_h</Filter>
     </ClInclude>
     <ClInclude Include="SplashScreen.h">
-      <Filter>predefined_h</Filter>
-    </ClInclude>
-    <ClInclude Include="SDL2\SDL_FontCache-master\SDL_FontCache.h">
-      <Filter>Include</Filter>
+      <Filter>Include\predefined_h</Filter>
     </ClInclude>
     <ClInclude Include="ColorDefinitions.h">
-      <Filter>predefined_h</Filter>
+      <Filter>Include\predefined_h</Filter>
     </ClInclude>
     <ClInclude Include="Func.h">
       <Filter>Functions</Filter>
     </ClInclude>
     <ClInclude Include="physfs-3.0.2\src\physfs.h">
-      <Filter>physfs</Filter>
+      <Filter>Include\physfs</Filter>
     </ClInclude>
     <ClInclude Include="physfs-3.0.2\src\physfs_casefolding.h">
-      <Filter>physfs</Filter>
+      <Filter>Include\physfs</Filter>
     </ClInclude>
     <ClInclude Include="physfs-3.0.2\src\physfs_internal.h">
-      <Filter>physfs</Filter>
+      <Filter>Include\physfs</Filter>
     </ClInclude>
     <ClInclude Include="physfs-3.0.2\src\physfs_lzmasdk.h">
-      <Filter>physfs</Filter>
+      <Filter>Include\physfs</Filter>
     </ClInclude>
     <ClInclude Include="physfs-3.0.2\src\physfs_miniz.h">
-      <Filter>physfs</Filter>
+      <Filter>Include\physfs</Filter>
     </ClInclude>
     <ClInclude Include="physfs-3.0.2\src\physfs_platforms.h">
-      <Filter>physfs</Filter>
+      <Filter>Include\physfs</Filter>
     </ClInclude>
     <ClInclude Include="vec2f.h">
       <Filter>Structs</Filter>
@@ -185,6 +185,15 @@
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="main.h" />
+    <ClInclude Include="SDL2\SDL_FontCache-master\SDL_FontCache.h">
+      <Filter>Include\SDL_FontCahe</Filter>
+    </ClInclude>
+    <ClInclude Include="AssetManager.h">
+      <Filter>Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="BackGroundRenderer.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">
@@ -208,19 +217,22 @@
     <Filter Include="Structs">
       <UniqueIdentifier>{920ebf6a-c3dd-4776-97c7-80015d7cacd4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="predefined_h">
-      <UniqueIdentifier>{1d40c797-4aa9-4fc4-9184-1eee4f68f918}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Functions">
       <UniqueIdentifier>{091bf99e-c360-495f-a7d2-262bf448d736}</UniqueIdentifier>
     </Filter>
-    <Filter Include="physfs">
+    <Filter Include="Include\physfs">
       <UniqueIdentifier>{53f435f6-3aae-40ee-8611-bd419af5c2bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\SDL_FontCahe">
+      <UniqueIdentifier>{9403d712-db6c-4f4d-81ed-22ce28039493}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\predefined_h">
+      <UniqueIdentifier>{1d40c797-4aa9-4fc4-9184-1eee4f68f918}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="physfs-3.0.2\src\physfs_platform_apple.m">
-      <Filter>physfs</Filter>
+      <Filter>Include\physfs</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -9,13 +9,19 @@
 #pragma warning(pop)
 
 #include "Rect.h"
+#include "Func.h"
+// for string enum
+#include "Event.h"
 
 class Sprite
 {
 public:
-	enum class MaskType {
-		NON, CIRCLE, RECT, PERPIXEL
-	};
+	ENUM_WITH_STRING_CONVERSION(MaskType,(none) (circle) (rectangle) (perpixel))
+
+	Sprite();
+	virtual ~Sprite();
+	static void Delete(Sprite*);
+	static Sprite* Load(const char* data, Sint64 size);
 
 private:
 	int m_width;
@@ -24,8 +30,7 @@ private:
 	std::vector<GPU_Image*> m_texture;
 	int m_texture_size;
 
-	Rect m_mask_rect;
-	float m_mask_circle;
+	float m_mask_value;
 	MaskType m_mask_type;
 
 	int m_center_x;
