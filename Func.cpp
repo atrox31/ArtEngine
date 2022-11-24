@@ -150,3 +150,74 @@ SDL_GLattr Func::get_sdl_attr_from_string(std::string arg, bool* error)
 
 	}
 }
+
+Func::DataValues::DataValues(const char* data, int size)
+{
+	_data = std::map <std::string, std::vector <std::string>>();
+	if (size == 0) {
+		Debug::WARNING("DataValues: size is 0");
+		return;
+	}
+	std::vector<std::string> values = std::vector<std::string>();
+	std::string tmp_value = "";
+	int pos = 0;
+	while (pos++ < size) {
+		if (data[pos] == '\n') {
+			values.push_back(tmp_value);
+			tmp_value = "";
+		}
+		else {
+			tmp_value += data[pos];
+		}
+	}
+	std::string c_section = "";
+	for (std::string& v : values) {
+		if (v[0] == '[') {
+			// section
+			c_section = v.substr(1, v.size() - 2);
+			if (_data.find(c_section) != _data.end()) {
+				Debug::WARNING("DataValues: section '" + c_section + "' is exists!");
+			}
+			else {
+				_data.insert({ c_section, std::vector<std::string>() });
+			}
+			continue;
+		}
+		_data[c_section].push_back(v);
+	}
+}
+
+Func::DataValues::~DataValues()
+{
+	_data.clear();
+}
+
+std::string Func::DataValues::GetData(std::string section, std::string field)
+{
+	if (_data.find(section) == _data.end()) {
+		Debug::WARNING("DataValues: section '" + section + "' not found!");
+		return "NULL";
+	}
+
+	for (std::string& v : _data[section]) {
+		std::vector<std::string> data = Func::Split(v, '=');
+		if (data[0] != field) continue;
+		if (data.size() == 1) {
+			// not have value at all
+			return "";
+		}
+		return data[1];
+	}
+	Debug::WARNING("DataValues: section '" + section + "' field '"+field+"' not found!");
+	return "";
+}
+
+std::vector<std::string> Func::DataValues::GetSection(std::string section)
+{
+	if (_data.find(section) == _data.end()) {
+		Debug::WARNING("DataValues: section '" + section + "' not found!");
+		std::vector<std::string> _return = std::vector<std::string>();
+		return _return;
+	}
+	return _data[section];
+}

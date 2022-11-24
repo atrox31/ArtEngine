@@ -43,6 +43,7 @@ Core::Core()
     _current_scene = nullptr;
     _show_fps = false;
     SettingsData = std::map<std::string, std::string>();
+    _scene_list = std::vector<Scene*>();
 }
 
 Core::~Core()

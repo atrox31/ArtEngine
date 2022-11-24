@@ -14,6 +14,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <map>
 /*
 	std::cout << std::endl;
 	for (Sint64 i = 0; i < c; i++) {
@@ -29,7 +30,6 @@
 class Func
 {
 public:
-
 	static const std::string GetHexTable(const unsigned char* data, int size, int group = 16);
 
 	// chek if file exists
@@ -96,5 +96,14 @@ public:
 		GPU_FreeShaderProgram(p);
 	}
 
+	struct DataValues {
+	public:
+		DataValues(const char* data, int size);
+		virtual ~DataValues();
+		std::string GetData(std::string section, std::string field);
+		std::vector<std::string> GetSection(std::string section);
+	private:
+		std::map <std::string, std::vector <std::string>> _data;
+	};
 };
 

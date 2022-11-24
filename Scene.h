@@ -19,7 +19,7 @@ public:
 	//void DeleteInstance(Instance*);
 	bool IsAnyInstances() { return _instances_size > 0; }
 
-	//private:
+	private:
 	int _instances_size;
 	plf::colony<Instance*> _instances;
 	std::vector<Instance*> _instances_new;

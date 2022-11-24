@@ -49,6 +49,7 @@ private:
 	GPU_Target* _screenTarget;
 	// scene
 	Scene* _current_scene;
+	std::vector<Scene*> _scene_list;
 public:
 	static GPU_Target* GetScreenTarget() { return _instance._screenTarget; }
 private:
