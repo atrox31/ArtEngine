@@ -30,9 +30,9 @@
 class Func
 {
 public:
-	template <class T>
-	static T LinearScale(T value, T valueMin, T valueMax, T scaleMin, T scaleMax);
+	static float LinearScale(float value, float valueMin, float valueMax, float scaleMin, float scaleMax);
 	static const std::string GetHexTable(const unsigned char* data, int size, int group = 16);
+	static std::size_t replace_all(std::string& inout, std::string what, std::string with);
 
 	// chek if file exists
 	static bool FileExists(std::string FileName);

@@ -2,10 +2,9 @@
 #include "physfs-3.0.2/src/physfs.h"
 #include "Debug.h"
 
-template <class T>
-T Func::LinearScale(T value, T valueMin, T valueMax, T scaleMin, T scaleMax)
+float Func::LinearScale(float value, float valueMin, float valueMax, float scaleMin, float scaleMax)
 {
-	T percentOfValue = ((value - valueMin) / (valueMax - valueMin));
+	float percentOfValue = ((value - valueMin) / (valueMax - valueMin));
 	return percentOfValue * (scaleMax - scaleMin) + scaleMin;
 }
 
@@ -20,6 +19,17 @@ std::string const Func::GetHexTable(const unsigned char* data, int size, int gro
 	}
 
 	return sstr.str();
+}
+
+std::size_t Func::replace_all(std::string& inout, std::string what, std::string with)
+{
+	std::size_t count{};
+	for (std::string::size_type pos{};
+		inout.npos != (pos = inout.find(what.data(), pos, what.length()));
+		pos += with.length(), ++count) {
+		inout.replace(pos, what.length(), with.data(), with.length());
+	}
+	return count;
 }
 
 bool Func::FileExists(std::string FileName)
@@ -167,7 +177,7 @@ Func::DataValues::DataValues(const char* data, int size)
 	}
 	std::vector<std::string> values = std::vector<std::string>();
 	std::string tmp_value = "";
-	int pos = 0;
+	int pos = -1;
 	while (pos++ < size) {
 		if (data[pos] == '\n') {
 			values.push_back(tmp_value);

@@ -14,13 +14,14 @@
 #include <string>
 #include "BackGroundRenderer.h"
 
+class BackGroundRenderer;
 class AssetManager
 {
 public:
 	AssetManager();
 	virtual ~AssetManager();
 
-	bool LoadData(BackGroundRenderer* bgr);
+	bool LoadData(BackGroundRenderer* bgr, int p_min, int p_max);
 	void ClearData();
 
 	Sprite* GetSprite(int id);
@@ -33,7 +34,7 @@ public:
 	Mix_Music* GetMusic(std::string name);
 	
 	Mix_Chunk* GetSound(int id);
-	Mix_Chunk* GetSOund(std::string name);
+	Mix_Chunk* GetSound(std::string name);
 	
 	FC_Font* GetFont(int id);
 	FC_Font* GetFont(std::string name);

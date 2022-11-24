@@ -21,6 +21,7 @@
 #include "BackGroundRenderer.h"
 
 class Scene;
+class AssetManager;
 class Core
 {
 public:
@@ -152,7 +153,7 @@ public:
 	// font
 	FC_Font* _global_font;
 	std::vector<std::string> ProgramArguments;
-	AssetManager assetManager;
+	AssetManager* assetManager;
 
 	// members
 	Console* Consola;

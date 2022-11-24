@@ -42,7 +42,7 @@ Sprite* Sprite::Load(const char* data, Sint64 size)
 	int textures_count = std::stoi(dv.GetData("image_list", "count"));
 	if (textures_count > 0) {
 		for (int i = 0; i < textures_count; i++) {
-			std::string tname = "Sprites\\" + dv.GetData("sprite", "name") + "\\" + std::to_string(i) + ".png";
+			std::string tname = "Sprites/" + dv.GetData("sprite", "name") + "/" + std::to_string(i) + ".png";
 			GPU_Image* tmp = GPU_LoadImage_RW(Func::GetFileRWops(tname, nullptr), 1);
 			if (tmp != nullptr) {
 				nSprite->m_texture.push_back(tmp);

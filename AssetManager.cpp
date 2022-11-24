@@ -51,7 +51,7 @@ AssetManager::~AssetManager()
 	ClearData();
 }
 
-bool AssetManager::LoadData(BackGroundRenderer* bgr)
+bool AssetManager::LoadData(BackGroundRenderer* bgr, int p_min, int p_max)
 {
 	
 	Sint64 buffer_size(0);
@@ -61,15 +61,22 @@ bool AssetManager::LoadData(BackGroundRenderer* bgr)
 	std::vector<std::string> data = Func::Explode(buffer, '\n');
 	if (data.size() == 0) return false;
 
-	int c_pos = 0;
-	int m_pos = (int)data.size();
+	// oczyszcza z \r na koñcu
+	for (std::string& file : data) {
+		if(file[file.length()-1] == '\r')
+		file = file.substr(0, file.length() - 1);
+		Func::replace_all(file, "\\", "/");
+	}
 
-	int ff = (int)Func::
+	float c_pos = 0;
+	float m_pos = (float)data.size();
+	float fp_min = (float)p_min;
+	float fp_max = (float)p_max;
 
 	for (std::string& file : data) {
-		std::vector<std::string> path = Func::Split(file, '\\');
+		std::vector<std::string> path = Func::Split(file, '/');
 		if (path.size() == 0) return false;
-
+		
 		if (path[0] == "Textures") {
 
 			std::string name = Func::Explode(path[1], '.')[0];
@@ -78,17 +85,20 @@ bool AssetManager::LoadData(BackGroundRenderer* bgr)
 			List_texture_id.push_back(tmp);
 			List_texture_name.insert({ name, tmp });
 			Debug::LOG("AssetManager::LoadData - file loaded: " + file);
-			//bgr->SetProgress( (int)Func::LinearScale(c_pos,   ) );
+			bgr->SetProgress((int) Func::LinearScale(c_pos++, 0.0f, m_pos, fp_min, fp_max) );
 
 		}elseif(path[0] == "Sprites") {
 
 			std::string name = Func::Explode(path[1], '.')[0];
 			Sint64 size(0);
-			Sprite* tmp = Sprite::Load(Func::GetFileBuf(file, &size), size);
+			// size
+			const char* buffer = Func::GetFileBuf(file, &size);
+			Sprite* tmp = Sprite::Load(buffer, size);
 			if (tmp == nullptr) return false;
 			List_sprite_id.push_back(tmp);
 			List_sprite_name.insert({ name, tmp });
 			Debug::LOG("AssetManager::LoadData - file loaded: " + file);
+			bgr->SetProgress((int)Func::LinearScale(c_pos++, 0.0f, m_pos, fp_min, fp_max));
 
 		}elseif(path[0] == "Music") {
 
@@ -98,6 +108,7 @@ bool AssetManager::LoadData(BackGroundRenderer* bgr)
 			List_music_id.push_back(tmp);
 			List_music_name.insert({ name, tmp });
 			Debug::LOG("AssetManager::LoadData - file loaded: " + file);
+			bgr->SetProgress((int)Func::LinearScale(c_pos++, 0.0f, m_pos, fp_min, fp_max));
 
 		}elseif(path[0] == "Sounds") {
 
@@ -107,6 +118,7 @@ bool AssetManager::LoadData(BackGroundRenderer* bgr)
 			List_sound_id.push_back(tmp);
 			List_sound_name.insert({ name, tmp });
 			Debug::LOG("AssetManager::LoadData - file loaded: " + file);
+			bgr->SetProgress((int)Func::LinearScale(c_pos++, 0.0f, m_pos, fp_min, fp_max));
 
 		}elseif(path[0] == "Fonts") {
 
@@ -117,9 +129,11 @@ bool AssetManager::LoadData(BackGroundRenderer* bgr)
 			List_font_id.push_back(tmp);
 			List_font_name.insert({ name, tmp });
 			Debug::LOG("AssetManager::LoadData - file loaded: " + file);
+			bgr->SetProgress((int)Func::LinearScale(c_pos++, 0.0f, m_pos, fp_min, fp_max));
 
 		}
 	}
+	bgr->SetProgress((int)Func::LinearScale(fp_max, 0.0f, fp_max, fp_min, fp_max));
 	return true;
 }
 
@@ -159,7 +173,7 @@ Mix_Chunk* AssetManager::GetSound(int id)
 	return nullptr;
 }
 
-Mix_Chunk* AssetManager::GetSOund(std::string name)
+Mix_Chunk* AssetManager::GetSound(std::string name)
 {
 	return nullptr;
 }

@@ -44,11 +44,13 @@ Core::Core()
     _show_fps = false;
     SettingsData = std::map<std::string, std::string>();
     _scene_list = std::vector<Scene*>();
+    assetManager = new AssetManager();
 }
 
 Core::~Core()
 {
-    assetManager.ClearData();
+    assetManager->ClearData();
+    delete assetManager;
     GPU_FreeTarget(_screenTarget);
     delete Consola;
     SettingsData.clear();
@@ -443,7 +445,7 @@ bool Core::LoadData()
     bgr.SetProgress(20);
 
     // load assets
-    if (!Core::GetInstance()->assetManager.LoadData(&bgr)) {
+    if (!Core::GetInstance()->assetManager->LoadData(&bgr, 20, 80)) {
         bgr.Stop();
         return false;
     }
