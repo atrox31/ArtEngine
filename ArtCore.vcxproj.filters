@@ -95,15 +95,6 @@
     <ClCompile Include="Rect.cpp">
       <Filter>Structs</Filter>
     </ClCompile>
-    <ClCompile Include="BackGroundRenderer.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="CodeExecutor.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="CodeExecutor_functions.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="Instance.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
@@ -116,7 +107,18 @@
     <ClCompile Include="Stack.cpp">
       <Filter>Structs</Filter>
     </ClCompile>
-    <ClCompile Include="Memory.cpp" />
+    <ClCompile Include="CodeExecutor.cpp">
+      <Filter>Core\ArtCode</Filter>
+    </ClCompile>
+    <ClCompile Include="CodeExecutor_functions.cpp">
+      <Filter>Core\ArtCode</Filter>
+    </ClCompile>
+    <ClCompile Include="BackGroundRenderer.cpp">
+      <Filter>Graphic</Filter>
+    </ClCompile>
+    <ClCompile Include="Memory.cpp">
+      <Filter>Debug</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core.h">
@@ -179,9 +181,6 @@
     <ClInclude Include="Event.h">
       <Filter>Structs</Filter>
     </ClInclude>
-    <ClInclude Include="CodeExecutor.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="Instance.h">
       <Filter>Scene</Filter>
     </ClInclude>
@@ -192,18 +191,23 @@
     <ClInclude Include="AssetManager.h">
       <Filter>Assets</Filter>
     </ClInclude>
-    <ClInclude Include="BackGroundRenderer.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="Stack.h">
       <Filter>Structs</Filter>
     </ClInclude>
-    <ClInclude Include="Memory.h" />
-    <ClInclude Include="Inspector.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="ArtCode.h">
-      <Filter>Core</Filter>
+      <Filter>Core\ArtCode</Filter>
+    </ClInclude>
+    <ClInclude Include="CodeExecutor.h">
+      <Filter>Core\ArtCode</Filter>
+    </ClInclude>
+    <ClInclude Include="Inspector.h">
+      <Filter>Core\ArtCode</Filter>
+    </ClInclude>
+    <ClInclude Include="BackGroundRenderer.h">
+      <Filter>Graphic</Filter>
+    </ClInclude>
+    <ClInclude Include="Memory.h">
+      <Filter>Debug</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -239,6 +243,9 @@
     </Filter>
     <Filter Include="Include\predefined_h">
       <UniqueIdentifier>{1d40c797-4aa9-4fc4-9184-1eee4f68f918}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\ArtCode">
+      <UniqueIdentifier>{19d6ba34-0d49-410c-ab16-ab8b04ac5439}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
