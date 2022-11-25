@@ -2,6 +2,18 @@
 #include "physfs-3.0.2/src/physfs.h"
 #include "Debug.h"
 
+SDL_Color Func::TextToColor(std::string color)
+{
+	std::vector<std::string> colors = Split(color, ',');
+	if (colors.size() == 3) {
+		return { (Uint8)std::stoi(colors[0]), (Uint8)std::stoi(colors[1]), (Uint8)std::stoi(colors[2]), (Uint8)255  };
+	}
+	if (colors.size() == 4) {
+		return { (Uint8)std::stoi(colors[0]), (Uint8)std::stoi(colors[1]), (Uint8)std::stoi(colors[2]), (Uint8)std::stoi(colors[3]), };
+	}
+	return SDL_Color();
+}
+
 float Func::LinearScale(float value, float valueMin, float valueMax, float scaleMin, float scaleMax)
 {
 	float percentOfValue = ((value - valueMin) / (valueMax - valueMin));
@@ -65,6 +77,30 @@ const std::vector<std::string> Func::Split(std::string& String, const char Delim
 	}
 
 	return internal;
+}
+
+std::vector<std::string> Func::GetFileText(std::string file, int* size, bool replace_slashes)
+{
+	std::vector<std::string> _return = std::vector<std::string>();
+	if(size != nullptr)
+		*size = 0;
+	std::string buffer(GetFileBuf(file, nullptr));
+	if (buffer.length() == 0) return _return;
+
+	std::vector<std::string> data = Func::Explode(buffer, '\n');
+	if (data.size() == 0) return _return;
+
+	// oczyszcza z \r na koñcu
+	for (std::string& line : data) {
+		if (line[line.length() - 1] == '\r')
+			line = line.substr(0, line.length() - 1);
+		if(replace_slashes)
+			Func::replace_all(line, "\\", "/");
+		_return.push_back(line);
+	}
+	if (size != nullptr)
+		*size = (int)_return.size();
+	return _return;
 }
 
 char* Func::GetFileBuf(std::string file, Sint64* len)
@@ -187,12 +223,17 @@ Func::DataValues::DataValues(const char* data, int size)
 			tmp_value += data[pos];
 		}
 	}
+
 	std::string c_section = "";
 	for (std::string& v : values) {
 		if (v[0] == '[') {
 			// section
 			if (v[1] == '/') continue; // niektóre pliki maj¹ zamkniêcia w sekcjach [aaa] ... [/aaa]
 			c_section = v.substr(1, v.size() - 2);
+
+			//oczyszczenie z \r
+			Func::replace_all(c_section, "\r", "");
+
 			if (_data.find(c_section) != _data.end()) {
 				Debug::WARNING("DataValues: section '" + c_section + "' is exists!");
 			}

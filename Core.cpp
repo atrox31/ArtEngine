@@ -43,7 +43,7 @@ Core::Core()
     _current_scene = nullptr;
     _show_fps = false;
     SettingsData = std::map<std::string, std::string>();
-    _scene_list = std::vector<Scene*>();
+    _scene_list = std::vector<Scene>();
     assetManager = new AssetManager();
 }
 
@@ -445,12 +445,47 @@ bool Core::LoadData()
     bgr.SetProgress(20);
 
     // load assets
-    if (!Core::GetInstance()->assetManager->LoadData(&bgr, 20, 80)) {
+    if (!_instance.assetManager->LoadData(&bgr, 20, 80)) {
         bgr.Stop();
         return false;
     }
     bgr.SetProgress(80);
 
+    // load scenes
+    std::vector<std::string> scene_list(Func::GetFileText("scene/list.txt", nullptr, false));
+    if (scene_list.size() == 0) return false;
+    for (std::string scene : scene_list) {
+        std::string fname = "scene/" + scene + "/" + scene + ".asd";
+            if (PHYSFS_exists(fname.c_str())) {
+                _instance._scene_list.push_back(Scene());
+                if (!_instance._scene_list.back().Load(fname)) return false;
+            }
+            else {
+                Debug::WARNING("scene '" + fname + "' not exists!");
+                return false;
+            }
+    }
+    bgr.SetProgress(90);
+
+    std::string start_scene = Func::GetFileText("scene/StartingScene.txt", nullptr, false)[0];
+    for (auto& scene : _instance._scene_list) {
+        if (scene.GetName() == start_scene) {
+            if (!_instance.ChangeScene(start_scene)) {
+                return false;
+            }
+            break;
+        }
+    }
+    if (_instance._current_scene == nullptr) {
+        if (_instance._scene_list.size() == 0) {
+            Debug::WARNING("there is no scenes!");
+            return false;
+        }
+        if (!_instance.ChangeScene(_instance._scene_list[0].GetName())) {
+            return false;
+        }
+        Debug::WARNING("starting scene '" + start_scene + "' not exists!");
+    }
 
     bgr.SetProgress(100);
     bgr.Stop();
@@ -462,4 +497,27 @@ void Core::Exit()
     SDL_Event* sdlevent = new SDL_Event();
     sdlevent->type = SDL_QUIT;
     SDL_PushEvent(sdlevent);
+}
+
+bool Core::ChangeScene(std::string name)
+{
+    if (_instance._current_scene != nullptr) {
+        // exit scene
+        _current_scene->Exit();
+    }
+    if (_instance._scene_list.size() == 0) {
+        Debug::WARNING("there is no scenes!");
+        return false;
+    }
+    for (auto& scene : _instance._scene_list) {
+        if (scene.GetName() == name) {
+            
+            _current_scene = &scene;
+            _current_scene->Start();
+
+            return true;
+        }
+    }
+    Debug::WARNING("starting scene '" + name + "' not exists!");
+    return false;
 }

@@ -33,12 +33,11 @@ public:
 	static bool LoadData();
 	void Exit();
 
+	bool ChangeScene(std::string name);
+
 private:
 	// graphic
 	GPU_Target* _screenTarget;
-	// scene
-	Scene* _current_scene;
-	std::vector<Scene*> _scene_list;
 public:
 	static GPU_Target* GetScreenTarget() { return _instance._screenTarget; }
 private:
@@ -150,10 +149,13 @@ public:
 	static float SD_GetFloat(std::string field, float _default);
 	static std::string SD_GetString(std::string field, std::string _default);
 
-	// font
+	// inner list
 	FC_Font* _global_font;
 	std::vector<std::string> ProgramArguments;
 	AssetManager* assetManager;
+	// scene
+	Scene* _current_scene;
+	std::vector<Scene> _scene_list;
 
 	// members
 	Console* Consola;

@@ -131,7 +131,7 @@ bool CodeExecutor::LoadArtLib()
 
 bool CodeExecutor::LoadObjectDefinitions()
 {
-	CodeExecutor::ArtCode ac;
+	//CodeExecutor::ArtCode ac;
 	Sint64 c = 0;
 	const unsigned char* _code = Func::GetFileBytes("object_compile.acp", &c);
 	if (_code == nullptr) return false;

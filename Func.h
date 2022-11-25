@@ -30,6 +30,7 @@
 class Func
 {
 public:
+	static SDL_Color TextToColor(std::string);
 	static float LinearScale(float value, float valueMin, float valueMax, float scaleMin, float scaleMax);
 	static const std::string GetHexTable(const unsigned char* data, int size, int group = 16);
 	static std::size_t replace_all(std::string& inout, std::string what, std::string with);
@@ -42,6 +43,7 @@ public:
 	// good for small data, for big use explode
 	static const std::vector<std::string> Split(std::string& String, const char Delim);
 
+	static std::vector<std::string> GetFileText(std::string file, int* size, bool replace_slashes = false);
 	static char* GetFileBuf(std::string file, Sint64* len);
 	static unsigned char* GetFileBytes(std::string file, Sint64* len);
 	static SDL_RWops* GetFileRWops(std::string file, Sint64* len);

@@ -23,6 +23,8 @@ public:
 	static void Delete(Sprite*);
 	static Sprite* Load(const char* data, Sint64 size);
 
+	GPU_Image* GetFrame(int frame);
+
 private:
 	int m_width;
 	int m_height;

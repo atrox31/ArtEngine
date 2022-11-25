@@ -65,3 +65,11 @@ Sprite* Sprite::Load(const char* data, Sint64 size)
 	nSprite->m_center_y = std::stoi(dv.GetData("sprite", "sprite_center_y"));
 	return nSprite;
 }
+
+GPU_Image* Sprite::GetFrame(int frame)
+{
+	if (frame < m_texture_size) {
+		return m_texture[frame];
+	}
+	return nullptr;
+}
