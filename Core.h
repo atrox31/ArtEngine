@@ -40,7 +40,7 @@ private:
 	GPU_Target* _screenTarget;
 public:
 	static GPU_Target* GetScreenTarget() { return _instance._screenTarget; }
-private:
+public:
 	CodeExecutor Executor;
 private:
 	// core data

@@ -113,6 +113,9 @@
     <ClCompile Include="AssetManager.cpp">
       <Filter>Assets</Filter>
     </ClCompile>
+    <ClCompile Include="Stack.cpp">
+      <Filter>Structs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core.h">
@@ -178,9 +181,6 @@
     <ClInclude Include="CodeExecutor.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="VaribleMap.h">
-      <Filter>Structs</Filter>
-    </ClInclude>
     <ClInclude Include="Instance.h">
       <Filter>Scene</Filter>
     </ClInclude>
@@ -193,6 +193,9 @@
     </ClInclude>
     <ClInclude Include="BackGroundRenderer.h">
       <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Stack.h">
+      <Filter>Structs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

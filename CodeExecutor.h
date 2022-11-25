@@ -17,6 +17,7 @@
 
 #include "Instance.h"
 #include "Event.h"
+#include "Stack.h"
 
 class CodeExecutor
 {
@@ -30,14 +31,26 @@ public:
 private:
 	struct InstanceDefinition {
 	public:
-		std::map<Event, const unsigned char*> _events;
+		struct EventData {
+		public:
+			Event event;
+			int size;
+			const unsigned char* data;
+
+			bool operator < (const EventData& str) const
+			{
+				return (event < str.event);
+			}
+		}; 
+		std::vector<EventData> _events;
+		
 		//		type, fields
 		std::map<int, int> _varibles;
 		std::string _name;
 		InstanceDefinition() {
 			_name = "";
 			_varibles = std::map<int, int>();
-			_events = std::map<Event, const unsigned char*>();
+			_events = std::vector<EventData>();
 		}
 		void AddVarible(int type) {
 			auto f = _varibles.find(type);
@@ -48,7 +61,9 @@ private:
 				f->second++;
 			}
 		}
+		
 	};
+	InstanceDefinition::EventData* GetEventData(int, Event);
 	std::vector< InstanceDefinition > InstanceDefinitions;
 	InstanceDefinition* FindInstance(std::string name) {
 		for (auto& it : InstanceDefinitions) {
@@ -56,6 +71,14 @@ private:
 		}
 		return nullptr;
 	}
+
+public:
+	Instance* SpawnInstance(std::string name);
+	void ExecuteScript(Instance* instance, Event script);
+private:
+	void ExecuteFunction(std::string function, Instance* sender);
+
+	
 
 private:
 	std::map<std::string, void(CodeExecutor::*)()> FunctionsMap;
@@ -145,7 +168,7 @@ private:
 		}
 
 		virtual ~Inspector() {
-			delete _code;
+			//delete _code;
 		}
 
 		bool IsEnd() {

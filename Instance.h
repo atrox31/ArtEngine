@@ -10,22 +10,38 @@
 #include SDL2_GPU_INCLUDE_DIR
 #pragma warning(pop)
 #include "Rect.h"
+#include "Sprite.h"
 #include <string>
 
 class Instance {
 public:
-	Instance();
+	Instance(int InstanceDefinitionId);
 	virtual ~Instance();
-	Uint64 GetId() { return _id; };
-	void Delete() { Alive = false; };
 
-	bool Alive;
+	Uint64 GetId() { return _id; }
+	void Delete() { Alive = false; }
+	int GetInstanceDefinitionId() {	return _instanceDefinitionId; }
+
 	std::string Tag;
+	std::string Name;
+
 	bool InView;
-	bool E_MaskClicked = false;
+	bool Alive;
+
+	bool E_MaskClicked;
 	Rect Mask;
 
+	float PosX;
+	float PosY;
+	float Direction;
+
+	Sprite* SelfSprite;
+	float SpriteScaleX;
+	float SpriteScaleY;
+	float SpriteCurrentFrame;
+	float SpriteAngle;
 private:
 	Uint64 _id;
 	static Uint64 _cid;
+	int _instanceDefinitionId;
 };

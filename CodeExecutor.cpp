@@ -1,6 +1,7 @@
 #include "CodeExecutor.h"
 #include "Func.h"
 #include "Debug.h"
+#include <algorithm>
 
 CodeExecutor::CodeExecutor()
 {
@@ -193,7 +194,7 @@ bool CodeExecutor::LoadObjectDefinitions()
 					Debug::ERROR("instance: '" + o_name + "' - wrong event '" + e_name + "'"); SDL_assert(false); return false;
 				}
 
-				instance._events[Event_fromString(e_name)] = f_code;
+				instance._events.push_back(InstanceDefinition::EventData{ Event_fromString(e_name), f_size, f_code });
 			}
 			else {
 				Debug::ERROR("instance: '" + o_name + "' - expected 'FUNCTION_DEFINITION' but " + std::to_string(code.Current()) + " is given"); SDL_assert(false); return false;
@@ -206,10 +207,95 @@ bool CodeExecutor::LoadObjectDefinitions()
 			Debug::ERROR("expected 'END' but " + std::to_string(code.Current()) + " is given");SDL_assert(false); return false;
 		}
 
+		// sort events
+		std::sort(instance._events.begin(), instance._events.end());
+
 		// all ok, populate
 		InstanceDefinitions.push_back(instance);
 	}
 
 	return (InstanceDefinitions.size() > 0);
 }
+
+Instance* CodeExecutor::SpawnInstance(std::string name)
+{
+	int id = -1;
+	for (auto& ins : InstanceDefinitions) {
+		id++;
+		if (ins._name == name) {
+
+			Instance* instance = new Instance(id);
+			ExecuteScript(instance, Event::DEF_VALUES);
+			return instance;
+		}
+	}
+	return nullptr;
+}
+
+void CodeExecutor::ExecuteScript(Instance* instance, Event script)
+{
+	if (instance == nullptr) return;
+	if (script == Event::Invalid) return;
+	CodeExecutor::InstanceDefinition::EventData* code_data = CodeExecutor::GetEventData(instance->GetInstanceDefinitionId(), script);
+	// no error becouse GetEventData print error
+	if (code_data == nullptr) return;
+
+	Inspector code(code_data->data, code_data->size);
+	while (!code.IsEnd()) {
+		switch (code.GetNextCommand()) {
+		case command::SET:
+			// varible - type,value
+			// varible to set
+			int type = (int)code.GetBit();
+			int value = (int)code.GetBit();
+			switch (code.GetNextCommand()) {
+			case command::FUNCTION:
+
+				break;
+			case command::LOCAL_VARIBLE:
+
+				break;
+			case command::VALUE:
+
+				break;
+			case command::NULL_VALUE:
+
+				break;
+			default:
+
+				break;
+			}
+			break;
+
+		}
+	}
+}
+
+void CodeExecutor::ExecuteFunction(std::string function, Instance* sender)
+{
+
+}
+
+
 #undef command
+CodeExecutor::InstanceDefinition::EventData* CodeExecutor::GetEventData(int _id, Event _Event)
+{
+	for (auto& e : InstanceDefinitions[_id]._events) {
+
+		if (_Event == e.event) {
+			return &e;
+		}
+		else {
+			if (_Event > e.event) {
+				if (_Event == Event::DEF_VALUES) return nullptr;
+				Debug::WARNING("Event '" + Event_toString(_Event) + "' not found for instance '" + InstanceDefinitions[_id]._name + "'");
+				InstanceDefinitions[_id]._events.push_back({ _Event, 0, nullptr });
+				// sort events
+				std::sort(InstanceDefinitions[_id]._events.begin(), InstanceDefinitions[_id]._events.end());
+				return nullptr;
+			}
+		}
+		
+	}
+	return nullptr;
+}

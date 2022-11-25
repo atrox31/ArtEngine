@@ -1,7 +1,7 @@
 #include "Scene.h"
 #include "Debug.h"
 #include "Event.h"
-#include "VaribleMap.h"
+#include "CodeExecutor.h"
 
 Scene::Scene()
 {
@@ -91,6 +91,15 @@ bool Scene::Load(std::string name)
 }
 void Scene::Start()
 {
+	for (Spawner& instance : BeginInstances) {
+		// executor do DEF_VALUES event
+		Instance* ins = Core::GetInstance()->Executor.SpawnInstance(instance._instance);
+		if (ins != nullptr) {
+			_instances.insert(ins);
+			ins->PosX = instance.x;
+			ins->PosY = instance.y;
+		}
+	}
 }
 void Scene::Exit()
 {
