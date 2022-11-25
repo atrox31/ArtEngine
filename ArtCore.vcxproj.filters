@@ -116,6 +116,7 @@
     <ClCompile Include="Stack.cpp">
       <Filter>Structs</Filter>
     </ClCompile>
+    <ClCompile Include="Memory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core.h">
@@ -197,6 +198,7 @@
     <ClInclude Include="Stack.h">
       <Filter>Structs</Filter>
     </ClInclude>
+    <ClInclude Include="Memory.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">
