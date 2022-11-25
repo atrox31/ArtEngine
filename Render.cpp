@@ -33,6 +33,28 @@ void Render::CreateRender(int width, int height)
 
 }
 
+void Render::DestroyRender()
+{
+	if (_instance == nullptr) return;
+	GPU_FreeTarget(_instance->_screenTexture_target);
+	GPU_FreeImage(_instance->_screenTexture);
+	_instance->_screenTexture = nullptr;
+	_instance->_screenTexture_target = nullptr;
+
+	GPU_FreeTarget(_instance->_bloomTexture_target);
+	GPU_FreeImage(_instance->_bloomTexture);
+	_instance->_bloomTexture_target = nullptr;
+	_instance->_bloomTexture = nullptr;
+
+	GPU_FreeTarget(_instance->_brightTexture_target);
+	GPU_FreeImage(_instance->_brightTexture);
+	_instance->_brightTexture_target = nullptr;
+	_instance->_brightTexture = nullptr;
+
+	GPU_FreeShaderProgram(_instance->_shader_bloom);
+	GPU_FreeShaderProgram(_instance->_shader_bright);
+}
+
 void Render::LoadShaders() {
 	_instance->_shader_bloom = 0;
 	_instance->_shader_bloom_block = Func::load_shader_program(&_instance->_shader_bloom, "files/common.vert", "files/bloom.frag");
@@ -52,23 +74,7 @@ Render::Render()
 
 Render::~Render()
 {
-	GPU_FreeTarget(_screenTexture_target);
-	GPU_FreeImage(_screenTexture);
-	_screenTexture = nullptr;
-	_screenTexture_target = nullptr;
-
-	GPU_FreeTarget(_bloomTexture_target);
-	GPU_FreeImage(_bloomTexture);
-	_bloomTexture_target = nullptr;
-	_bloomTexture = nullptr;
-
-	GPU_FreeTarget(_brightTexture_target);
-	GPU_FreeImage(_brightTexture);
-	_brightTexture_target = nullptr;
-	_brightTexture = nullptr;
-
-	GPU_FreeShaderProgram(_shader_bloom);
-	GPU_FreeShaderProgram(_shader_bright);
+	DestroyRender();
 }
 
 void Render::DrawTexture(GPU_Image* texture, vec2f postion, vec2f scale, float angle)

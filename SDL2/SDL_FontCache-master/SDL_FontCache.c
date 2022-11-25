@@ -4,7 +4,9 @@ by Jonathan Dearborn
 
 See SDL_FontCache.h for license info.
 */
-
+#pragma warning(push)
+#pragma warning(disable : 4267)
+#pragma warning(disable : 4244)
 #include "SDL_FontCache.h"
 
 #include <stdio.h>
@@ -138,8 +140,10 @@ static char* new_concat(const char* a, const char* b)
     _Notnull_ char* new_string = (char*)malloc(size+1);
 
     // Concatenate strings in the new buffer
-    strcpy_s(new_string, size, a);
-    strcat_s(new_string, size, b);
+    if (new_string != NULL) {
+        strcpy_s(new_string, size, a);
+        strcat_s(new_string, size, b);
+    }
 
     return new_string;
 }
@@ -2923,3 +2927,4 @@ void FC_SetDefaultColor(FC_Font* font, SDL_Color color)
 
     font->default_color = color;
 }
+#pragma warning(pop)

@@ -45,6 +45,7 @@ extern "C"
 #include "Debug.h"
 #include "SplashScreen.h"
 #include "Core.h"
+#include "Stack.h"
 
 int protected_main(int argc, char* args[]) {
 	Core::Init(argc, args);
@@ -56,7 +57,24 @@ int protected_main(int argc, char* args[]) {
 }
 
 int main(int argc, char* args[]) {
+	/*
+	AStack<int> Stack;
+	Stack.Add(10);
+	Stack.Add(20);
+	Stack.Add(30);
+	std::cout << Stack.Get() << std::endl;
+	std::cout << Stack.Get() << std::endl;
+	Stack.Add(50);
+	std::cout << Stack.Get() << std::endl;
+	Stack.Add(60);
+	Stack.Add(70);
+	Stack.Add(80);
+	while (Stack.IsEmpty() == false) {
+		std::cout << Stack.Get() << std::endl;
+	}
 
+	return 0;
+	*/
 	try
 	{
 		return protected_main(argc, args);

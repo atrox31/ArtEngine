@@ -14,6 +14,7 @@ class Render
 {
 public:
 	static void CreateRender(int width, int height);
+	static void DestroyRender();
 	static void LoadShaders();
 
 	// drawing
@@ -38,12 +39,12 @@ public:
 	// post procesing
 	static void SetBloom(bool state) { _instance->UseBloom = state; };
 
-	virtual ~Render();
 private:
 	// post process
 	void ApplyBloom();
 
 private:
+	virtual ~Render();
 	Render();
 	// using shaders
 	bool UseBloom;

@@ -96,8 +96,8 @@ void Scene::Start()
 		Instance* ins = Core::GetInstance()->Executor.SpawnInstance(instance._instance);
 		if (ins != nullptr) {
 			_instances.insert(ins);
-			ins->PosX = instance.x;
-			ins->PosY = instance.y;
+			ins->PosX = (float)instance.x;
+			ins->PosY = (float)instance.y;
 		}
 	}
 }

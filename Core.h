@@ -1,6 +1,5 @@
 #pragma once
 
-#pragma warning(push)
 #include "SDL_version.h"
 #include SDL2_INCLUDE_DIR
 #include SDL2_IMAGE_INCLUDE_DIR
@@ -8,7 +7,6 @@
 #include SDL2_NET_INCLUDE_DIR
 #include SDL2_TTF_INCLUDE_DIR
 #include SDL2_GPU_INCLUDE_DIR
-#pragma warning(pop)
 
 #include "CodeExecutor.h"
 #include "Console.h"

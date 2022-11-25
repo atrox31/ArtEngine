@@ -54,13 +54,18 @@ Core::~Core()
     GPU_FreeTarget(_screenTarget);
     delete Consola;
     SettingsData.clear();
+    if(_global_font!=nullptr)
+    FC_FreeFont(_global_font);
+    Render::DestroyRender();
     
-    GPU_Quit();
-    IMG_Quit();
-    TTF_Quit();
-    Mix_CloseAudio();
-    SDLNet_Quit();
-    SDL_Quit();
+    if (SDL_WasInit(0) != 0) {
+        GPU_Quit();
+        IMG_Quit();
+        TTF_Quit();
+        Mix_CloseAudio();
+        SDLNet_Quit();
+        SDL_Quit();
+    }
 }
 
 #define get_next (i+1<argc?args[++i]:"");continue;
