@@ -275,6 +275,7 @@ int Core::Run()
 {
     SDL_TimerID my_timer_id = SDL_AddTimer((Uint32)1000, FpsCounterCallback, NULL);
     while (true) {
+        if (_instance._current_scene == nullptr) return EXIT_FAILURE;
         //Art::Core::GetInstance()->Run_prepare();
         _instance.LAST = _instance.NOW;
         _instance.NOW = SDL_GetTicks64();
@@ -300,7 +301,7 @@ int Core::Run()
             switch (e.type) {
             case SDL_QUIT:
                 Debug::LOG("exit request");
-                return true;
+                return EXIT_SUCCESS;
                 break;
             case SDL_WINDOWEVENT:
                 if (e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
@@ -466,28 +467,31 @@ bool Core::LoadData()
             }
     }
     bgr.SetProgress(90);
-
+    // if no scenes exit
+    if (_instance._scene_list.size() == 0) {
+        Debug::WARNING("there is no scenes!");
+        return false;
+    }
+    // set starting scene
     std::string start_scene = Func::GetFileText("scene/StartingScene.txt", nullptr, false)[0];
     for (auto& scene : _instance._scene_list) {
         if (scene.GetName() == start_scene) {
             if (!_instance.ChangeScene(start_scene)) {
-                return false;
+                Debug::WARNING("starting scene '" + start_scene + "' not exists!");
             }
             break;
         }
     }
-    if (_instance._current_scene == nullptr) {
-        if (_instance._scene_list.size() == 0) {
-            Debug::WARNING("there is no scenes!");
-            return false;
-        }
+    // if error try set first scene
+    if (_instance._current_scene == nullptr) {  
         if (!_instance.ChangeScene(_instance._scene_list[0].GetName())) {
+            Debug::WARNING("starting scene '" + start_scene + "' not exists!");
             return false;
         }
-        Debug::WARNING("starting scene '" + start_scene + "' not exists!");
     }
 
     bgr.SetProgress(100);
+    SDL_Delay(1000);
     bgr.Stop();
     return true;
 }

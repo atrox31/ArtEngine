@@ -62,7 +62,7 @@ void CodeExecutor::MapFunctions()
 bool CodeExecutor::LoadArtLib()
 {
 	MapFunctions();
-	char* buffer = Func::GetFileBuf("AScript.lib", nullptr);
+	char* buffer = Func::GetFileBuf("files/AScript.lib", nullptr);
 	if (buffer == NULL) {
 		return false;
 	}

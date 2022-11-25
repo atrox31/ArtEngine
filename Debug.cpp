@@ -67,6 +67,7 @@ void Debug::WARNING(std::initializer_list<std::string> messages, bool new_line)
 
 void Debug::WARNING(std::string message)
 {
+	SDL_TriggerBreakpoint();
 	message = "[!]" + message;
 	write(message);
 }

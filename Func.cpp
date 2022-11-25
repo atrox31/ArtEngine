@@ -215,6 +215,7 @@ Func::DataValues::DataValues(const char* data, int size)
 	std::string tmp_value = "";
 	int pos = -1;
 	while (pos++ < size) {
+		if (data[pos] == '\r') continue;
 		if (data[pos] == '\n') {
 			values.push_back(tmp_value);
 			tmp_value = "";
@@ -229,10 +230,9 @@ Func::DataValues::DataValues(const char* data, int size)
 		if (v[0] == '[') {
 			// section
 			if (v[1] == '/') continue; // niektóre pliki maj¹ zamkniêcia w sekcjach [aaa] ... [/aaa]
-			c_section = v.substr(1, v.size() - 2);
-
 			//oczyszczenie z \r
-			Func::replace_all(c_section, "\r", "");
+			//Func::replace_all(v, "\r", "");
+			c_section = v.substr(1, v.size() - 2);
 
 			if (_data.find(c_section) != _data.end()) {
 				Debug::WARNING("DataValues: section '" + c_section + "' is exists!");
