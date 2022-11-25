@@ -18,6 +18,8 @@
 #include "Instance.h"
 #include "Event.h"
 #include "Stack.h"
+#include "ArtCode.h"
+#include "Inspector.h"
 
 class CodeExecutor
 {
@@ -71,7 +73,6 @@ private:
 		}
 		return nullptr;
 	}
-
 public:
 	Instance* SpawnInstance(std::string name);
 	void ExecuteScript(Instance* instance, Event script);
@@ -84,177 +85,14 @@ private:
 	std::map<std::string, void(CodeExecutor::*)()> FunctionsMap;
 	std::vector<void(CodeExecutor::*)()> FunctionsList;
 
-	struct ArtCode {
-	public:
-		enum class Command {
-			// definicje
-			OBJECT_DEFINITION,
-			FUNCTION_DEFINITION,
-			LOCAL_VARIBLE_DEFINITION,
-			TYPEDEF,
-			// odwo³ania
-			OBJECT,
-			OBJECT_VARIBLE,
-			LOCAL_VARIBLE,
-			VALUE, NULL_VALUE,
-			FUNCTION,
-			// operatory
-			SET,
-			OPERATOR,
-			// polecenia
-			TYPE, IF_BODY, IF_TEST, ELSE,
-			END,
+	
 
 
-			// tylko w silniku, zawsze ostatnia
-			INWALID
-		};
+private:
+	// helpers
+	//void h_add_varible_to_instance(Instance* target, ArtCode::varible_type
 
-		// not used now
-		const std::string operators[6] = {
-		"+",
-		"-",
-		"*",
-		"/",
-		"!",
-		"."
-		};
-
-		const std::string operators2[8] = {
-		//logic
-		"||",
-		"&&",
-		"<<",
-		">>",
-		">=",
-		"<=",
-		"!=",
-		"=="
-		};
-
-		const std::string varible_type[15] = {
-		"null",
-		"int",
-		"float",
-		"bool",
-		"instance",
-		"object",
-		"sprite",
-		"texture",
-		"sound",
-		"music",
-		"font",
-		"point",
-		"rectangle",
-		"color",
-		"string"
-		};
-
-		const std::string keywords[4] = {
-		"set",
-		"if",
-		"end",
-		"else",
-		};
-	};
-
-	class  Inspector {
-	public:
-		Inspector(const unsigned char* code, Sint64 len) {
-			_code = code;
-			_size = len - 1;
-			_pos = -1;
-			_current_bit = '\0';
-		}
-
-		virtual ~Inspector() {
-			//delete _code;
-		}
-
-		bool IsEnd() {
-			return (_pos >= _size);
-		}
-
-		std::string GetString() {
-			_pos++;
-			std::string _string = "";
-			while (_pos < _size) {
-				if (IsEnd()) return "";
-				if (_code[_pos] == '\1') {
-					//_pos++;
-					_current_bit = _code[_pos];
-					return _string;
-				}
-				_string += _code[_pos++];
-			}
-			return "";
-		}
-
-		// skip x bytes and return isEnd()
-		bool Skip(int count) {
-			_pos += count;
-			if (IsEnd()) {
-				_pos = _size;
-				return true;
-			}
-			return false;
-		}
-
-		ArtCode::Command GetNextCommand() {
-			_current_bit = _code[++_pos];
-			return (ArtCode::Command)_code[_pos];
-		}
-		
-		ArtCode::Command GetCurrentCommand() {
-			_current_bit = _code[_pos];
-			return (ArtCode::Command)_code[_pos];
-		}
-
-		unsigned char Current() {
-			if (_pos < _size) return _code[_pos];
-			return '\0';
-		}
-
-		unsigned char SeekNext() {
-			if (_pos + 1 <= _size) return _code[_pos + 1];
-			return '\0';
-		}
-		ArtCode::Command SeekNextCommand() {
-			if (_pos + 1 <= _size) return  (ArtCode::Command)_code[_pos + 1];
-			return ArtCode::Command::INWALID;
-		}
-
-		const unsigned char* GetChunk(const int count) {
-			
-			unsigned char* _return = (unsigned char* )malloc((size_t)(count+1));
-			memcpy_s(_return, count, _code + _pos + 1, count);
-			if (_return) {
-				_return[count] = '\0';
-			}
-			Skip(count);
-			return _return;
-
-		}
-
-		unsigned char GetBit() {
-			_current_bit = _code[++_pos];
-			return _code[_pos];
-		}
-
-		int GetInt() {
-			return std::stoi(GetString());
-		}
-
-		float GetFloat() {
-			return std::stof(GetString());
-		}
-
-	private:
-		const unsigned char* _code;
-		Sint64 _size;
-		Sint64 _pos;
-		unsigned char _current_bit;
-	};
+	
 
 private:
 	// makers

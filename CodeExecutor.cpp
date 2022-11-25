@@ -125,7 +125,7 @@ bool CodeExecutor::LoadArtLib()
 	return true;
 }
 
-#define command CodeExecutor::ArtCode::Command
+#define command ArtCode::Command
 #define err(x,y) Debug::ERROR("expected " + x + " but " + std::to_string(y) + " is given"); return false;
 
 
@@ -248,6 +248,7 @@ void CodeExecutor::ExecuteScript(Instance* instance, Event script)
 			// varible to set
 			int type = (int)code.GetBit();
 			int value = (int)code.GetBit();
+
 			switch (code.GetNextCommand()) {
 			case command::FUNCTION:
 

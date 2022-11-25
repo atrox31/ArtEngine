@@ -177,6 +177,7 @@
     <ClCompile Include="vec2f.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ArtCode.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="BackGroundRenderer.h" />
     <ClInclude Include="CodeExecutor.h" />
@@ -187,6 +188,7 @@
     <ClInclude Include="Debug.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="Func.h" />
+    <ClInclude Include="Inspector.h" />
     <ClInclude Include="Instance.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="Memory.h" />

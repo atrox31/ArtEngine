@@ -199,6 +199,12 @@
       <Filter>Structs</Filter>
     </ClInclude>
     <ClInclude Include="Memory.h" />
+    <ClInclude Include="Inspector.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="ArtCode.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">
