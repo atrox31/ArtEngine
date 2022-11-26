@@ -60,6 +60,9 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["set_self_sprite"] = &CodeExecutor::set_self_sprite;
 	FunctionsMap["get_pos_x"] = &CodeExecutor::get_pos_x;
 	FunctionsMap["get_pos_y"] = &CodeExecutor::get_pos_y;
+	FunctionsMap["direction_to_point"] = &CodeExecutor::direction_to_point;
+	FunctionsMap["direction_beetwen_point"] = &CodeExecutor::direction_beetwen_point;
+	FunctionsMap["direction_to_instance"] = &CodeExecutor::direction_to_instance;
 
 }
 
@@ -106,6 +109,7 @@ bool CodeExecutor::LoadArtLib()
 
 					if (FunctionsMap.find(tmp) != FunctionsMap.end()) {
 						FunctionsList.push_back(FunctionsMap[tmp]);
+						FunctionsMap.erase(tmp);
 					}
 					else {
 						FunctionsList.push_back(nullptr);
@@ -120,6 +124,11 @@ bool CodeExecutor::LoadArtLib()
 				}
 				break;
 			}
+		}
+	}
+	if (FunctionsMap.size() > 0) {
+		for (auto& f : FunctionsMap) {
+			Debug::LOG("Function: '" + f.first + "' not found");
 		}
 	}
 	FunctionsList.shrink_to_fit();
@@ -275,8 +284,6 @@ void CodeExecutor::h_execute_script(Inspector* code, Instance* instance)
 			ArtCode::varible_type type = (ArtCode::varible_type)code->GetBit();
 			ASSERT(type != ArtCode::varible_type::Invalid)
 				int index = (int)code->GetBit();
-			// for get current command
-			code->Skip(1);
 			h_get_value(code, instance);
 			instance->Varibles[type][index] = GlobalStack.Get();
 		}break;
@@ -298,61 +305,66 @@ int CodeExecutor::h_if_test(Inspector* code, Instance* instance) {
 	bool have_operator = false;
 	int operator_index = -1;
 	// get value to compare
-	switch (code->GetNextCommand()) {
-	case command::LOCAL_VARIBLE:
-	{
-		h_get_local_value(code, instance);
-	}break;
+	while (!code->IsEnd()) {
+		switch (code->GetNextCommand()) {
+		case command::LOCAL_VARIBLE:
+		{
+			h_get_local_value(code, instance);
+		}break;
 
-	case command::FUNCTION:
-	{
-		h_execute_function(code, instance);
-		// add on stack return value
-	}break;
+		case command::FUNCTION:
+		{
+			h_execute_function(code, instance);
+			// add on stack return value
+		}break;
 
-	case command::VALUE:
-	{
-		if (have_operator) {
-			h_get_value(code, instance);
-		}
-		else {
-			Break();
-		}
-	}break;
-
-	case command::OPERATOR:
-	{
-		int index = (int)code->GetBit();
-		if (index > 7) {
-			Break();
-		}
-		operator_index = index;
-		have_operator = true;
-	}break;
-
-	case command::IF_BODY: {
-		int skip = (int)code->GetBit();
-		if (have_operator) {
-			GlobalStack.Add(std::to_string(operator_index));
-			if (h_compare(code, instance)) {
-				return 0;
+		case command::VALUE:
+		{
+			if (have_operator) {
+				// in thic sace return to previous command
+				code->Skip(-1);
+				h_get_value(code, instance);
 			}
 			else {
-				return skip;
+				Break();
 			}
-		}
-		else {
-			bool test = Func::Str2Bool(GlobalStack.Get());
-			if (test) {
-				return 0;
+		}break;
+
+		case command::OPERATOR:
+		{
+			int index = (int)code->GetBit();
+			if (index > 7) {
+				Break();
+			}
+			operator_index = index;
+			have_operator = true;
+		}break;
+
+		case command::IF_BODY: {
+			int skip = (int)code->GetBit();
+			if (have_operator) {
+				GlobalStack.Add(std::to_string(operator_index));
+				if (h_compare(code, instance)) {
+					return 0;
+				}
+				else {
+					return skip;
+				}
 			}
 			else {
-				return skip;
+				bool test = Func::Str2Bool(GlobalStack.Get());
+				if (test) {
+					return 0;
+				}
+				else {
+					return skip;
+				}
 			}
-		}
-	}break;
+		}break;
 
+		}
 	}
+	// coœ posz³o nie tak, lepiej olaæ skrypt
 	Break();
 	return 0;
 }
@@ -436,12 +448,12 @@ void CodeExecutor::h_get_local_value(Inspector* code, Instance* instance)
 
 void CodeExecutor::h_get_value(Inspector* code, Instance* instance) {
 	if (_break) return;
-	switch (code->GetCurrentCommand()) {
+	switch (code->GetNextCommand()) {
 	case command::FUNCTION:
 		h_execute_function(code, instance);
 		break;
 	case command::LOCAL_VARIBLE:
-
+		h_get_local_value(code, instance);
 		break;
 	case command::VALUE: {
 		int type = (int)code->GetBit(); // ignore for now
@@ -449,7 +461,7 @@ void CodeExecutor::h_get_value(Inspector* code, Instance* instance) {
 	}
 		break;
 	case command::NULL_VALUE:
-
+		GlobalStack.Add("nul");
 		break;
 	default:
 
@@ -470,6 +482,7 @@ void CodeExecutor::h_execute_function(Inspector* code, Instance* instance)
 			h_get_value(code, instance);
 		}
 		FunctionsList[function_index](instance);
+		break;
 	}
 
 }

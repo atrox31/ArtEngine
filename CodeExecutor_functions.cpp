@@ -3,15 +3,71 @@
 #include "Core.h"
 #include "Debug.h"
 #include "Render.h"
+#include "Func.h"
+
 
 #define StackIn CodeExecutor::GlobalStack.Get()
+#define StackIn_b Func::Str2Bool(StackIn)
+#define StackIn_p Func::Str2Point(StackIn)
 #define StackOut CodeExecutor::GlobalStack.Add
+
+#ifdef _DEBUG
+int TryToGetInt(const std::string& str) {
+	int a = -1;
+	try {
+		a = std::stoi(str);
+	}
+	catch (const std::invalid_argument& ia) {
+		ASSERT(false);
+		std::cerr << "Invalid argument: " << ia.what() << std::endl;
+		return -1;
+	}
+	catch (const std::out_of_range& oor) {
+		std::cerr << "Out of Range error: " << oor.what() << std::endl;
+		return -2;
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "Undefined error: " << e.what() << std::endl;
+		return -3;
+	}
+	return a;
+}
+float TryToGetFloat(const std::string& str) {
+	float a = -1.0f;
+	try {
+		a = std::stof(str);
+	}
+	catch (const std::invalid_argument& ia) {
+		ASSERT(false);
+		std::cerr << "Invalid argument: " << ia.what() << std::endl;
+		return -1;
+	}
+	catch (const std::out_of_range& oor) {
+		std::cerr << "Out of Range error: " << oor.what() << std::endl;
+		return -2;
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "Undefined error: " << e.what() << std::endl;
+		return -3;
+	}
+	return a;
+}
+
+#define StackIn_f TryToGetFloat(StackIn)
+#define StackIn_i TryToGetInt(StackIn)
+#else
+#define StackIn_f std::stof(StackIn)
+#define StackIn_i std::stoi(StackIn)
+#endif
+
 
 // makers
 	//point new_point(float x, float y);Make point (<float>, <float>).;New point from value or other.
 void CodeExecutor::new_point(Instance*) {
-	float p1 = std::stof(StackIn);
-	float p2 = std::stof(StackIn);
+	float p1 = StackIn_f;
+	float p2 = StackIn_f;
 	StackOut(std::to_string(p2) + "," + std::to_string(p1));
 }
 
@@ -100,18 +156,22 @@ void CodeExecutor::sprite_get_frames(Instance*) {
 
 //null sprite_set_animation_speed(float speed);Set animation speed for <sprite> value <float> frames per seccond;Every sprite can have own animation speed
 void CodeExecutor::sprite_set_animation_speed(Instance* instance) {
-	instance->SpriteAnimationSpeed = std::stof(StackIn);
+	instance->SpriteAnimationSpeed = StackIn_f;
 }
 
 //null sprite_set_animation_loop(bool loop);Set animation loop for <sprite> value <bool>;Every animation end generate event ON_ANIMATION_END
 void CodeExecutor::sprite_set_animation_loop(Instance* instance) {
-	instance->SpriteAnimationLoop = Func::Str2Bool(StackIn);
+	instance->SpriteAnimationLoop = StackIn_b;
 }
 
 // moving
 	//null move_to_point(point p, float speed);Move current instance to <point> with <speed> px per seccond.;Call it every frame.
-void CodeExecutor::move_to_point(Instance*) {
-
+void CodeExecutor::move_to_point(Instance* instance) {
+	float speed = StackIn_f;
+	SDL_FPoint dest = StackIn_p;
+	float direction = std::atan2f(dest.y - instance->PosY, dest.x - instance->PosX);
+	instance->PosX += std::cosf(direction) * speed * (float)Core::GetInstance()->DeltaTime;
+	instance->PosY += std::sinf(direction) * speed * (float)Core::GetInstance()->DeltaTime;
 }
 
 //null move_forward(float speed);Move current instance forward with <speed> px per seccond.;Call it every frame. Function give build-in direction varible.
@@ -131,19 +191,44 @@ void CodeExecutor::move_to_direction(Instance*) {
 
 // mesurment
 	//float distance_to_point(point p);Give distance to <point>;Measure from current instance to target point.
-void CodeExecutor::distance_to_point(Instance*) {
-
+void CodeExecutor::distance_to_point(Instance* instance) {
+	SDL_FPoint dest = StackIn_p;
+	SDL_FPoint src = {instance->PosX, instance->PosY};
+	float distance = Func::Distance(src, dest);
+	StackOut(std::to_string(distance));
 }
 
 //float distance_beetwen_point(point p1, point p2);Give distance from <point> to <point>;Measure distance.
 void CodeExecutor::distance_beetwen_point(Instance*) {
-
+	SDL_FPoint dest = StackIn_p;
+	SDL_FPoint src = StackIn_p;
+	float distance = Func::Distance(src, dest);
+	StackOut(std::to_string(distance));
 }
 
 //float distance_to_instance(instance i);Give distance to <point>;Measure from current instance to target point.
 void CodeExecutor::distance_to_instance(Instance*) {
 
 }
+	//float direction_to_point(point p);Give direction to <point>;Measure from current instance to target point.
+void CodeExecutor::direction_to_point(Instance* instance) {
+	SDL_FPoint dest = StackIn_p;
+	float direction = std::atan2f(instance->PosY - dest.y, instance->PosX - dest.x);
+	StackOut(std::to_string(direction));
+}
+
+//float direction_beetwen_point(point p1, point p2);Give direction from <point> to <point>;Measure distance.
+void CodeExecutor::direction_beetwen_point(Instance*) {
+	SDL_FPoint dest = StackIn_p;
+	SDL_FPoint src = StackIn_p;
+	float direction = std::atan2f(src.y - dest.y, src.x - dest.x);
+	StackOut(std::to_string(direction));
+}
+//float direction_to_instance(instance i);Give direction to <instance>;Measure from current instance to target point.
+void CodeExecutor::direction_to_instance(Instance*) {
+
+}
+
 
 // drawing
 	//null draw_sprite(sprite spr, float x, float y, float frame);Draw <sprite> on location (<float>,<float>) with target frame <frame>;Draw default sprite. To more options use draw_sprite_ex
@@ -151,14 +236,17 @@ void CodeExecutor::draw_sprite(Instance*) {
 
 }
 
-//null draw_sprite_ex(sprite spr, float x, float y, float frame, float x_scale, float y_scale, float angle, float alpha);Draw <sprite> on location (<float>,<float>) with target frame <frame>;Draw sprite.
+//null draw_sprite_ex(sprite spr, float x, float y, float frame, float x_scale, float y_scale, float x_center, float y_center, float angle, float alpha);
 void CodeExecutor::draw_sprite_ex(Instance*) {
 
 }
 
 //null draw_texture(texture tex, float x, float y);Draw <texture> on (<float>,<float>).;Draw standard texture with it normal dimensions. For extended option use 'Draw texture extended';
 void CodeExecutor::draw_texture(Instance*) {
-
+	float y = StackIn_f;
+	float x = StackIn_f;
+	int textureId = StackIn_i;
+	Render::DrawTexture(Core::GetInstance()->assetManager->GetTexture(textureId), { x,y }, { 1.0f, 1.0f }, 0.0f);
 }
 
 //null draw_texture_ex(texture tex, float x, float y, float x_scale, float y_scale, float angle, float alpha);Draw <texture> on (<float>,<float>), with scale (<float>,<float>), angle <float> and aplha <float>;Angle range is (0 - 359) alpha (0.0f - 1.0f).
@@ -241,7 +329,7 @@ void CodeExecutor::global_get_mouse(Instance*) {
 }
 //null set_self_sprite(sprite spr); Set self sprite to <sprite> with default scale, angle, speed, loop; You can mod sprite via set_sprite_ etc.;
 void CodeExecutor::set_self_sprite(Instance* instance) {
-	int spriteId = std::stoi(StackIn);
+	int spriteId = StackIn_i;
 	if (spriteId != -1) {
 		Sprite* sprite = Core::GetInstance()->assetManager->GetSprite(spriteId);
 		if (sprite != nullptr) {

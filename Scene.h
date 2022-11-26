@@ -16,6 +16,12 @@ public:
 	void Start();
 	void Exit();
 
+	void CreateInstance(std::string name, float x, float y);
+private:
+	bool _is_any_new_instances;
+public:
+	void SpawnAll();
+
 	std::string GetName() {
 		return Name;
 	}

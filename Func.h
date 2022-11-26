@@ -30,6 +30,8 @@
 class Func
 {
 public:
+	static const float Distance(SDL_FPoint&, SDL_FPoint&);
+	static const SDL_FPoint Str2Point(std::string);
 	// fast text to bool converter, ony check first char
 	static const bool Str2Bool(std::string&);
 	// fast text to bool converter, ony check first char

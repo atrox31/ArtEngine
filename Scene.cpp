@@ -9,6 +9,7 @@ Scene::Scene()
 	//_instances_new = std::vector<Instance*>();
 	//BeginInstances = std::vector<Spawner>();
 	_instances_size = 0;
+	_is_any_new_instances = false;
 }
 
 Scene::~Scene()
@@ -92,14 +93,30 @@ bool Scene::Load(std::string name)
 void Scene::Start()
 {
 	for (Spawner& instance : BeginInstances) {
-		// executor do DEF_VALUES event
-		Instance* ins = Core::GetInstance()->Executor.SpawnInstance(instance._instance);
-		if (ins != nullptr) {
-			_instances.insert(ins);
-			ins->PosX = (float)instance.x;
-			ins->PosY = (float)instance.y;
+		CreateInstance(instance._instance, (float)instance.x, (float)instance.y);
+	}
+}
+void Scene::CreateInstance(std::string name, float x, float y)
+{
+	Instance* ins = Core::GetInstance()->Executor.SpawnInstance(name);
+	if (ins == nullptr) return;
+	ins->PosX = x;
+	ins->PosY = y;
+	_instances_new.push_back(ins);
+	_is_any_new_instances = true;
+}
+void Scene::SpawnAll()
+{
+	if (_is_any_new_instances) {
+		size_t ins_siz = _instances_new.size();
+		while (ins_siz) {
+			Core::GetInstance()->Executor.ExecuteScript(_instances_new.back(), Event::EV_ONCREATE);
+			_instances.insert(_instances_new.back());
+			_instances_new.pop_back();
+			--ins_siz;
 			_instances_size++;
 		}
+		_is_any_new_instances = false;
 	}
 }
 void Scene::Exit()

@@ -68,20 +68,38 @@ Core::~Core()
         SDL_Quit();
     }
 }
-
-#define get_next (i+1<argc?args[++i]:"");continue;
 #include "main.h"
 bool Core::Init(int argc, char* args[])
 {
+    Debug::LOG("start");
     // flags
     const char* FL_game_dat_file = "game.dat";
     const char* FL_assets_file = "assets.pak";
     // args
     for (int i = 1; i < argc; i++) {
-        if (args[i] == "-game_dat") FL_game_dat_file = get_next
-        if (args[i] == "-assets") FL_assets_file = get_next
+        std::string argument(args[i]);
+        if (argument == "-game_dat") {
+            if (i + 1 < argc) {
+                FL_game_dat_file = args[i+1];
+                Debug::LOG( "FL_game_dat_file set to: '" + std::string(FL_game_dat_file) + "'");
+                ++i;
+            }
+            else {
+                Debug::WARNING("FL_game_dat_file error, wrong arg");
+            }
+        }
+        if (argument == "-assets") {
+            if (i + 1 < argc) {
+                FL_assets_file = args[i + 1];
+                Debug::LOG("FL_assets_file set to: '" + std::string(FL_assets_file) + "'");
+                ++i;
+            }
+            else {
+                Debug::WARNING("FL_assets_file error, wrong arg");
+            }
+        }
 
-        if (args[i] == "-version") {
+        if (argument == "-version") {
             std::cout << std::to_string(VERSION_MAIN) + '.' + std::to_string(VERSION_MINOR)+ '.' + std::to_string(VERSION_PATH) << std::endl;
         }
     }
@@ -99,7 +117,8 @@ bool Core::Init(int argc, char* args[])
     // primary game data
     if (!PHYSFS_mount(FL_game_dat_file, NULL, 0))
     {
-        Debug::ERROR({ "Error when reading 'game.dat'. Reason: " , PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()) });
+        std::string err(PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+        Debug::ERROR( "Error when reading 'game.dat'. Reason: " + err + "\n" + FL_game_dat_file);
         return false;
     }Debug::LOG("PHYSFS_mount game.dat");
     // read data from setup.ini
@@ -279,6 +298,7 @@ Uint32 Core::FpsCounterCallback(Uint32 interval, void* parms)
 
 int Core::Run()
 {
+    Render::SetBloom(false);
     SDL_TimerID my_timer_id = SDL_AddTimer((Uint32)1000, FpsCounterCallback, NULL);
     while (true) {
         if (_instance._current_scene == nullptr) return EXIT_FAILURE;
@@ -369,7 +389,6 @@ int Core::Run()
             break;
             case SDL_MOUSEBUTTONUP: {
                 if (_instance.Consola->IsShown()) break;
-                Ev_OnMouseInput = true;
                 if (e.button.button == SDL_BUTTON_LEFT) {
                     _instance.gMouse.LeftEvent = Core::MouseState::ButtonState::RELASED;
                 }
@@ -398,6 +417,22 @@ int Core::Run()
             }
         }
         //Art::Core::GetInstance()->Run_sceneStep();
+        _instance._current_scene->SpawnAll();
+        if (_instance._current_scene->IsAnyInstances()) {
+            plf::colony<Instance*>* AllInstances = _instance._current_scene->GetAllInstances();
+            for (plf::colony<Instance*>::iterator it = AllInstances->begin(); it != AllInstances->end();) {
+                if ((*it)->Alive) {
+                    _instance.Executor.ExecuteScript((*it), Event::EV_STEP);
+                    if (Ev_OnMouseInput) _instance.Executor.ExecuteScript((*it), Event::EV_ONMOUSE_DOWN);
+                    //if(Ev_OnKeyboardInput) _instance.Executor.ExecuteScript((*it), Event::EV_STEP);
+                    ++it;
+                }
+                else {
+                    //TODO: Event::EV_ONDESTROY
+                    it = AllInstances->erase(it);
+                }
+            }
+        }
 
         //Art::Core::GetInstance()->Run_sceneDraw();
         if (_instance._current_scene->IsAnyInstances()){
