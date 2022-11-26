@@ -5,9 +5,9 @@
 
 Scene::Scene()
 {
-	_instances = plf::colony<Instance*>();
-	_instances_new = std::vector<Instance*>();
-	BeginInstances = std::vector<Spawner>();
+	//_instances = plf::colony<Instance*>();
+	//_instances_new = std::vector<Instance*>();
+	//BeginInstances = std::vector<Spawner>();
 	_instances_size = 0;
 }
 

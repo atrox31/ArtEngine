@@ -223,13 +223,22 @@ Instance* CodeExecutor::SpawnInstance(std::string name)
 	for (auto& ins : InstanceDefinitions) {
 		id++;
 		if (ins._name == name) {
-
-			Instance* instance = new Instance(id);
-			ExecuteScript(instance, Event::DEF_VALUES);
-			return instance;
+			return SpawnInstance(id);
 		}
 	}
 	return nullptr;
+}
+
+Instance* CodeExecutor::SpawnInstance(int id)
+{
+	Instance* instance = new Instance(id);
+	instance->Name = InstanceDefinitions[id]._name;
+	for (auto& var : InstanceDefinitions[id]._varibles) {
+		// inicialize all varibles
+		instance->Varibles[var.first].insert(instance->Varibles[var.first].end(), var.second, "nul");//Inserting "nul",  var.second times to the vector
+	}
+	ExecuteScript(instance, Event::DEF_VALUES);
+	return instance;
 }
 
 void CodeExecutor::ExecuteScript(Instance* instance, Event script)
@@ -244,10 +253,13 @@ void CodeExecutor::ExecuteScript(Instance* instance, Event script)
 	while (!code.IsEnd()) {
 		switch (code.GetNextCommand()) {
 		case command::SET:
-			// varible - type,value
+			// varible - type,index
 			// varible to set
-			int type = (int)code.GetBit();
-			int value = (int)code.GetBit();
+			ArtCode::varible_type type = (ArtCode::varible_type)code.GetBit();
+			if (type == ArtCode::varible_type::Invalid) {
+				SDL_assert(true); return;
+			}
+			int index = (int)code.GetBit();
 
 			switch (code.GetNextCommand()) {
 			case command::FUNCTION:

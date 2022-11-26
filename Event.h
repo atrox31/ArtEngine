@@ -25,7 +25,8 @@
 #define ENUM_WITH_STRING_CONVERSION(name, enumerators)               \
     enum name {                                                      \
         Invalid,                                                     \
-        BOOST_PP_SEQ_ENUM(enumerators)                               \
+        BOOST_PP_SEQ_ENUM(enumerators),                               \
+        END                                                             \
     };                                                               \
                                                                      \
     inline name name##_fromString(const std::string & str)           \

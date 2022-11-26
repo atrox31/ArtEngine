@@ -23,6 +23,13 @@ Instance::Instance(int InstanceDefinitionId)
 	this->SpriteScaleY = 0.0f;
 	this->SpriteCurrentFrame = 0.0f;
 	this->SpriteAngle = 0.0f;
+
+	
+	for (int e = ArtCode::varible_type::Invalid+1; e < ArtCode::varible_type::END; e++) {
+		// Do job with e
+		Varibles.push_back(std::vector<std::string>());
+	}
+
 }
 
 Instance::~Instance()

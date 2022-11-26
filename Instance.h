@@ -1,17 +1,16 @@
 #pragma once
 
-#pragma warning(push)
 #include "SDL_version.h"
 #include SDL2_INCLUDE_DIR
-#include SDL2_IMAGE_INCLUDE_DIR
+//#include SDL2_IMAGE_INCLUDE_DIR
 #include SDL2_MIXER_INCLUDE_DIR
 #include SDL2_NET_INCLUDE_DIR
 #include SDL2_TTF_INCLUDE_DIR
 #include SDL2_GPU_INCLUDE_DIR
-#pragma warning(pop)
 #include "Rect.h"
 #include "Sprite.h"
 #include <string>
+#include "ArtCode.h"
 
 class Instance {
 public:
@@ -40,6 +39,8 @@ public:
 	float SpriteScaleY;
 	float SpriteCurrentFrame;
 	float SpriteAngle;
+
+	std::vector<std::vector<std::string>> Varibles;
 private:
 	Uint64 _id;
 	static Uint64 _cid;

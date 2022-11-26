@@ -75,19 +75,14 @@ private:
 	}
 public:
 	Instance* SpawnInstance(std::string name);
+	// not safe! use only in inner functions. this not error-proof
+	Instance* SpawnInstance(int id); 
 	void ExecuteScript(Instance* instance, Event script);
 private:
 	void ExecuteFunction(std::string function, Instance* sender);
-
-	
-
 private:
 	std::map<std::string, void(CodeExecutor::*)()> FunctionsMap;
 	std::vector<void(CodeExecutor::*)()> FunctionsList;
-
-	
-
-
 private:
 	// helpers
 	//void h_add_varible_to_instance(Instance* target, ArtCode::varible_type
