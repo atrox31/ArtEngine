@@ -57,7 +57,7 @@ private:
 		void AddVarible(int type) {
 			auto f = _varibles.find(type);
 			if (f == _varibles.end()) {
-				_varibles.insert(std::pair(type, 0));
+				_varibles.insert(std::pair(type, 1));
 			}
 			else {
 				f->second++;
@@ -79,13 +79,13 @@ public:
 	Instance* SpawnInstance(int id); 
 	void ExecuteScript(Instance* instance, Event script);
 private:
-	void ExecuteFunction(std::string function, Instance* sender);
-private:
 	std::map<std::string, void(CodeExecutor::*)()> FunctionsMap;
 	std::vector<void(CodeExecutor::*)()> FunctionsList;
+	AStack<std::string> GlobalStack;
 private:
 	// helpers
-	//void h_add_varible_to_instance(Instance* target, ArtCode::varible_type
+	void h_execute_function(Inspector* , Instance*);
+	void h_get_value(Inspector*, Instance*);
 
 	
 

@@ -3,6 +3,8 @@
 #include "Debug.h"
 #include <algorithm>
 
+
+
 CodeExecutor::CodeExecutor()
 {
 	FunctionsMap = std::map<std::string, void(CodeExecutor::*)()>();
@@ -248,44 +250,63 @@ void CodeExecutor::ExecuteScript(Instance* instance, Event script)
 	CodeExecutor::InstanceDefinition::EventData* code_data = CodeExecutor::GetEventData(instance->GetInstanceDefinitionId(), script);
 	// no error becouse GetEventData print error
 	if (code_data == nullptr) return;
-
+	GlobalStack.Erase();
 	Inspector code(code_data->data, code_data->size);
 	while (!code.IsEnd()) {
 		switch (code.GetNextCommand()) {
-		case command::SET:
+		case command::SET: {
 			// varible - type,index
 			// varible to set
 			ArtCode::varible_type type = (ArtCode::varible_type)code.GetBit();
-			if (type == ArtCode::varible_type::Invalid) {
-				SDL_assert(true); return;
-			}
-			int index = (int)code.GetBit();
-
-			switch (code.GetNextCommand()) {
-			case command::FUNCTION:
-
-				break;
-			case command::LOCAL_VARIBLE:
-
-				break;
-			case command::VALUE:
-
-				break;
-			case command::NULL_VALUE:
-
-				break;
-			default:
-
-				break;
+			ASSERT(type != ArtCode::varible_type::Invalid)
+				int index = code.GetInt();
+			h_get_value(&code, instance);
+			instance->Varibles[type][index] = GlobalStack.Get();
+		}
+			break;
+		case command::FUNCTION:{
+			h_execute_function(&code, instance);
 			}
 			break;
-
 		}
 	}
 }
 
-void CodeExecutor::ExecuteFunction(std::string function, Instance* sender)
+void CodeExecutor::h_get_value(Inspector* code, Instance* instance) {
+	
+	switch (code->GetNextCommand()) {
+	case command::FUNCTION:
+		h_execute_function(code, instance);
+		break;
+	case command::LOCAL_VARIBLE:
+
+		break;
+	case command::VALUE: {
+		int type = (int)code->GetBit(); // ignore for now
+		GlobalStack.Add(code->GetString());
+	}
+		break;
+	case command::NULL_VALUE:
+
+		break;
+	default:
+
+		break;
+	}
+
+}
+
+void CodeExecutor::h_execute_function(Inspector* code, Instance* instance)
 {
+	
+	while (!code->IsEnd()) {
+		int function_index = (int)code->GetBit();
+		int args = code->GetInt();
+		while (args-- > 0) {
+			h_get_value(code, instance);
+		}
+		FunctionsList[function_index];
+	}
 
 }
 
@@ -299,6 +320,7 @@ CodeExecutor::InstanceDefinition::EventData* CodeExecutor::GetEventData(int _id,
 			return &e;
 		}
 		else {
+			/* TODO: cos z tym jest nie tak
 			if (_Event > e.event) {
 				if (_Event == Event::DEF_VALUES) return nullptr;
 				Debug::WARNING("Event '" + Event_toString(_Event) + "' not found for instance '" + InstanceDefinitions[_id]._name + "'");
@@ -307,6 +329,7 @@ CodeExecutor::InstanceDefinition::EventData* CodeExecutor::GetEventData(int _id,
 				std::sort(InstanceDefinitions[_id]._events.begin(), InstanceDefinitions[_id]._events.end());
 				return nullptr;
 			}
+			*/
 		}
 		
 	}

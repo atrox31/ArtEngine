@@ -36,6 +36,12 @@ public:
 	constexpr inline int Size() {
 		return (int)_size;
 	}
+	void Erase() {
+		_size = 0;
+		free(_data);
+		_next_resize = _default_stack_size;
+		_data = (T*)malloc(_default_stack_size * sizeof(T));
+	}
 	AStack(size_t DefaultStackSize = 4) {
 		_default_stack_size = DefaultStackSize;
 		_size = 0;

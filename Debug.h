@@ -4,6 +4,14 @@
 #include SDL2_INCLUDE_DIR
 #include SDL2_GPU_INCLUDE_DIR
 
+// rid of SDL do while thing
+#ifdef _DEBUG
+#define ASSERT(CONDITION) \
+SDL_assert(CONDITION);
+#else
+#define ASSERT(CONDITION)
+#endif
+
 class Debug
 {
 public:
