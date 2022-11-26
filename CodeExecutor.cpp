@@ -10,6 +10,7 @@ CodeExecutor::CodeExecutor()
 	FunctionsMap = std::map<std::string, void(*)(Instance*)>();
 	FunctionsList = std::vector<void(*)(Instance*)>() ;
 	InstanceDefinitions = std::vector<InstanceDefinition>();
+	_break = false;
 }
 
 void CodeExecutor::MapFunctions()
@@ -245,6 +246,7 @@ Instance* CodeExecutor::SpawnInstance(int id)
 
 void CodeExecutor::ExecuteScript(Instance* instance, Event script)
 {
+	_break = false;
 	if (instance == nullptr) return;
 	if (script == Event::Invalid) return;
 	CodeExecutor::InstanceDefinition::EventData* code_data = CodeExecutor::GetEventData(instance->GetInstanceDefinitionId(), script);
@@ -252,29 +254,189 @@ void CodeExecutor::ExecuteScript(Instance* instance, Event script)
 	if (code_data == nullptr) return;
 	GlobalStack.Erase();
 	Inspector code(code_data->data, code_data->size);
-	while (!code.IsEnd()) {
-		switch (code.GetNextCommand()) {
+	h_execute_script(&code, instance);
+}
+
+void CodeExecutor::Break()
+{
+	_break = true;
+	ASSERT(false);
+}
+
+void CodeExecutor::h_execute_script(Inspector* code, Instance* instance)
+{
+	if (_break) return;
+	while (!code->IsEnd()) {
+		if (_break) return;
+		switch (code->GetNextCommand()) {
 		case command::SET: {
 			// varible - type,index
 			// varible to set
-			ArtCode::varible_type type = (ArtCode::varible_type)code.GetBit();
+			ArtCode::varible_type type = (ArtCode::varible_type)code->GetBit();
 			ASSERT(type != ArtCode::varible_type::Invalid)
-				int index = code.GetInt();
-			h_get_value(&code, instance);
+				int index = (int)code->GetBit();
+			// for get current command
+			code->Skip(1);
+			h_get_value(code, instance);
 			instance->Varibles[type][index] = GlobalStack.Get();
-		}
-			break;
-		case command::FUNCTION:{
-			h_execute_function(&code, instance);
-			}
-			break;
+		}break;
+
+		case command::FUNCTION: {
+			h_execute_function(code, instance);
+		} break;
+
+		case command::IF_TEST: {
+			code->Skip(h_if_test(code, instance));
+		} break;
+
 		}
 	}
 }
 
-void CodeExecutor::h_get_value(Inspector* code, Instance* instance) {
-	
+int CodeExecutor::h_if_test(Inspector* code, Instance* instance) {
+	if (_break) return 0;
+	bool have_operator = false;
+	int operator_index = -1;
+	// get value to compare
 	switch (code->GetNextCommand()) {
+	case command::LOCAL_VARIBLE:
+	{
+		h_get_local_value(code, instance);
+	}break;
+
+	case command::FUNCTION:
+	{
+		h_execute_function(code, instance);
+		// add on stack return value
+	}break;
+
+	case command::VALUE:
+	{
+		if (have_operator) {
+			h_get_value(code, instance);
+		}
+		else {
+			Break();
+		}
+	}break;
+
+	case command::OPERATOR:
+	{
+		int index = (int)code->GetBit();
+		if (index > 7) {
+			Break();
+		}
+		operator_index = index;
+		have_operator = true;
+	}break;
+
+	case command::IF_BODY: {
+		int skip = (int)code->GetBit();
+		if (have_operator) {
+			GlobalStack.Add(std::to_string(operator_index));
+			if (h_compare(code, instance)) {
+				return 0;
+			}
+			else {
+				return skip;
+			}
+		}
+		else {
+			bool test = Func::Str2Bool(GlobalStack.Get());
+			if (test) {
+				return 0;
+			}
+			else {
+				return skip;
+			}
+		}
+	}break;
+
+	}
+	Break();
+	return 0;
+}
+
+bool CodeExecutor::h_compare(Inspector*, Instance*)
+{
+	//	0		1		2		3		4		5		6		7
+	//	"||",	"&&",	"<<",	">>",	">=",	"<=",	"!=",	"=="
+	int oper = std::stoi(GlobalStack.Get());
+	switch (oper) {
+	case 0://	"||",
+	{
+		bool com2 = Func::Str2Bool(GlobalStack.Get());
+		bool com1 = Func::Str2Bool(GlobalStack.Get());
+		return (com2 || com1);
+	}
+		break;
+	case 1://	"&&",
+	{
+		bool com2 = Func::Str2Bool(GlobalStack.Get());
+		bool com1 = Func::Str2Bool(GlobalStack.Get());
+		return (com2 && com1);
+	}
+		break;
+	case 2://	"<<",
+	{
+		float com2 = std::stof(GlobalStack.Get());
+		float com1 = std::stof(GlobalStack.Get());
+		return (com1 < com2);
+	}
+		break;
+	case 3://	">>"
+	{
+		float com2 = std::stof(GlobalStack.Get());
+		float com1 = std::stof(GlobalStack.Get());
+		return (com1 > com2);
+	}
+		break;
+	case 4://	">=",
+	{
+		float com2 = std::stof(GlobalStack.Get());
+		float com1 = std::stof(GlobalStack.Get());
+		return (com1 >= com2);
+	}
+		break;
+	case 5://	"<=",
+	{
+		float com2 = std::stof(GlobalStack.Get());
+		float com1 = std::stof(GlobalStack.Get());
+		return (com1 <= com2);
+	}
+		break;
+	case 6://	"!=",
+	{
+		std::string com2 = GlobalStack.Get();
+		std::string com1 = GlobalStack.Get();
+		return (com1 != com2);
+	}
+		break;
+	case 7://	"=="
+	{
+		std::string com2 = GlobalStack.Get();
+		std::string com1 = GlobalStack.Get();
+		return (com1 == com2);
+	}
+		break;
+	default://	
+		Break();
+		return false;
+		break;
+	}
+}
+
+void CodeExecutor::h_get_local_value(Inspector* code, Instance* instance)
+{
+	ArtCode::varible_type type = (ArtCode::varible_type)code->GetBit();
+	ASSERT(type != ArtCode::varible_type::Invalid);
+	int index = (int)code->GetBit();
+	GlobalStack.Add(instance->Varibles[type][index]);
+}
+
+void CodeExecutor::h_get_value(Inspector* code, Instance* instance) {
+	if (_break) return;
+	switch (code->GetCurrentCommand()) {
 	case command::FUNCTION:
 		h_execute_function(code, instance);
 		break;
@@ -283,7 +445,7 @@ void CodeExecutor::h_get_value(Inspector* code, Instance* instance) {
 		break;
 	case command::VALUE: {
 		int type = (int)code->GetBit(); // ignore for now
-		GlobalStack.Add(code->GetString().c_str());
+		GlobalStack.Add(code->GetString());
 	}
 		break;
 	case command::NULL_VALUE:
@@ -296,10 +458,12 @@ void CodeExecutor::h_get_value(Inspector* code, Instance* instance) {
 
 }
 
+
 void CodeExecutor::h_execute_function(Inspector* code, Instance* instance)
 {
-	
+	if (_break) return;
 	while (!code->IsEnd()) {
+		if (_break) return;
 		int function_index = (int)code->GetBit();
 		int args = (int)code->GetBit();
 		while (args-- > 0) {

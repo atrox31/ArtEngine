@@ -27,7 +27,7 @@ public:
 			_data.pop();
 			return temp;
 		}
-		return NULL;
+		return T();
 	}
 	constexpr inline bool IsEmpty() {
 		return (_size == 0);

@@ -73,7 +73,7 @@ public:
 
 	const unsigned char* GetChunk(const int count) {
 
-		unsigned char* _return = (unsigned char*)malloc((size_t)(count + 1));
+		unsigned char* _return = (unsigned char*)malloc(((size_t)count + 1));
 		memcpy_s(_return, count, _code + _pos + 1, count);
 		if (_return) {
 			_return[count] = '\0';

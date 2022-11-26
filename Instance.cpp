@@ -45,10 +45,9 @@ Instance::~Instance()
 
 void Instance::DrawSelf()
 {
-	SpriteAnimationSpeed = 6.0f;
 	SpriteAnimationFrame += (float)((double)SpriteAnimationSpeed * Core::GetInstance()->DeltaTime);
 	if (!SpriteAnimationLoop && SpriteAnimationFrame > SelfSprite->GetMaxFrame()) {
-		SpriteAnimationSpeed == 0.0f;
+		SpriteAnimationSpeed = 0.0f;
 	}
 	Render::DrawSprite_ex(SelfSprite, PosX, PosY , (int)SpriteAnimationFrame,  SpriteScaleX, SpriteScaleY, SpriteCenterX, SpriteCenterY, SpriteAngle);
 }

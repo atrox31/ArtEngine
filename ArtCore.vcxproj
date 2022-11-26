@@ -135,6 +135,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ArtCode.cpp" />
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="BackGroundRenderer.cpp" />
     <ClCompile Include="CodeExecutor.cpp" />

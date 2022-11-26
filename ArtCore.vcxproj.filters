@@ -122,6 +122,9 @@
     <ClCompile Include="Time.cpp">
       <Filter>Debug</Filter>
     </ClCompile>
+    <ClCompile Include="ArtCode.cpp">
+      <Filter>Core\ArtCode</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core.h">

@@ -84,8 +84,15 @@ private:
 	static AStack<std::string> GlobalStack;
 private:
 	// helpers
+	bool _break;
+	// Break from current script, rise ASSERTif in debug mode
+	void Break();
+	void h_execute_script(Inspector*, Instance*);
 	void h_execute_function(Inspector* , Instance*);
 	void h_get_value(Inspector*, Instance*);
+	int	 h_if_test(Inspector* code, Instance* instance);
+	void h_get_local_value(Inspector* code, Instance* instance);
+	bool h_compare(Inspector*, Instance*);
 
 	
 

@@ -4,12 +4,15 @@
 #include "Debug.h"
 #include "Render.h"
 
-#define Stack CodeExecutor::GlobalStack.Get()
+#define StackIn CodeExecutor::GlobalStack.Get()
+#define StackOut CodeExecutor::GlobalStack.Add
 
 // makers
 	//point new_point(float x, float y);Make point (<float>, <float>).;New point from value or other.
 void CodeExecutor::new_point(Instance*) {
-
+	float p1 = std::stof(StackIn);
+	float p2 = std::stof(StackIn);
+	StackOut(std::to_string(p2) + "," + std::to_string(p1));
 }
 
 //float new_direction(point from, point to);Make direction from <point> to <point>.;Value are from 0 to 359.
@@ -35,7 +38,7 @@ void CodeExecutor::new_mask_from_sprite(Instance*) {
 // assets
 	//sprite get_sprite(string name);Get asset handle by name <string>;Expensive function, try to not call it every frame. Call it to function and store.
 void CodeExecutor::get_sprite(Instance*) {
-	std::string name = CodeExecutor::GlobalStack.Get();
+	std::string name = StackIn;
 	int sprite = Core::GetInstance()->assetManager->GetSpriteId(name);
 	if (sprite == -1) {
 		Debug::WARNING("CodeExecutor::get_sprite() - '" + name + "' not found");
@@ -45,8 +48,8 @@ void CodeExecutor::get_sprite(Instance*) {
 
 //texture get_texture(string name);Get asset handle by name <string>;Expensive function, try to not call it every frame. Call it to function and store.
 void CodeExecutor::get_texture(Instance*) {
-	std::string name = CodeExecutor::GlobalStack.Get();
-	int texture = Core::GetInstance()->assetManager->GetSpriteId(name);
+	std::string name = StackIn;
+	int texture = Core::GetInstance()->assetManager->GetTextureId(name);
 	if (texture == -1) {
 		Debug::WARNING("CodeExecutor::get_texture() - '" + name + "' not found");
 	}
@@ -56,8 +59,8 @@ void CodeExecutor::get_texture(Instance*) {
 //music get_music(string name);Get asset handle by name <string>;Expensive function, try to not call it every frame. Call it to function and store.
 void CodeExecutor::get_music(Instance*) {
 
-	std::string name = CodeExecutor::GlobalStack.Get();
-	int texture = Core::GetInstance()->assetManager->GetSpriteId(name);
+	std::string name = StackIn;
+	int texture = Core::GetInstance()->assetManager->GetMusicId(name);
 	if (texture == -1) {
 		Debug::WARNING("CodeExecutor::get_music() - '" + name + "' not found");
 	}
@@ -66,7 +69,7 @@ void CodeExecutor::get_music(Instance*) {
 
 //sound get_sound(string name);Get asset handle by name <string>;Expensive function, try to not call it every frame. Call it to function and store.
 void CodeExecutor::get_sound(Instance*) {
-	std::string name = CodeExecutor::GlobalStack.Get();
+	std::string name = StackIn;
 	int texture = Core::GetInstance()->assetManager->GetSoundId(name);
 	if (texture == -1) {
 		Debug::WARNING("CodeExecutor::get_sound() - '" + name + "' not found");
@@ -97,12 +100,12 @@ void CodeExecutor::sprite_get_frames(Instance*) {
 
 //null sprite_set_animation_speed(float speed);Set animation speed for <sprite> value <float> frames per seccond;Every sprite can have own animation speed
 void CodeExecutor::sprite_set_animation_speed(Instance* instance) {
-	instance->SpriteAnimationSpeed = std::stof(Stack);
+	instance->SpriteAnimationSpeed = std::stof(StackIn);
 }
 
 //null sprite_set_animation_loop(bool loop);Set animation loop for <sprite> value <bool>;Every animation end generate event ON_ANIMATION_END
 void CodeExecutor::sprite_set_animation_loop(Instance* instance) {
-	instance->SpriteAnimationLoop = Func::Str2Bool(Stack);
+	instance->SpriteAnimationLoop = Func::Str2Bool(StackIn);
 }
 
 // moving
@@ -234,11 +237,11 @@ void CodeExecutor::math_max(Instance*) {
 // globals
 	//point global_get_mouse();Get point of current mouse postion;If map is bigger than screen this give map coords not screen;
 void CodeExecutor::global_get_mouse(Instance*) {
-
+	StackOut(std::to_string( Core::GetInstance()->gMouse.X ) + "," + std::to_string(Core::GetInstance()->gMouse.Y));
 }
 //null set_self_sprite(sprite spr); Set self sprite to <sprite> with default scale, angle, speed, loop; You can mod sprite via set_sprite_ etc.;
 void CodeExecutor::set_self_sprite(Instance* instance) {
-	int spriteId = std::stoi(CodeExecutor::GlobalStack.Get());
+	int spriteId = std::stoi(StackIn);
 	if (spriteId != -1) {
 		Sprite* sprite = Core::GetInstance()->assetManager->GetSprite(spriteId);
 		if (sprite != nullptr) {
@@ -271,10 +274,10 @@ void CodeExecutor::set_self_sprite(Instance* instance) {
 	instance->SpriteAnimationLoop = false;
 }
 //float get_pos_x(); Get x coords of instance;
-void CodeExecutor::get_pos_x(Instance*) {
-
+void CodeExecutor::get_pos_x(Instance* instance) {
+	StackOut(std::to_string(instance->PosX));
 }
 //float get_pos_y(); Get y coords of instance;
-void CodeExecutor::get_pos_y(Instance*) {
-
+void CodeExecutor::get_pos_y(Instance* instance) {
+	StackOut(std::to_string(instance->PosY));
 }

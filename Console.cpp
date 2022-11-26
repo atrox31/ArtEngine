@@ -156,7 +156,7 @@ void Console::RenderConsole()
 	int _screen_width = Core::GetInstance()->GetScreenWidth();
 	GPU_RectangleFilled(Core::GetInstance()->GetScreenTarget(), 0, (float)_screen_height, (float)_screen_width, (float)(_screen_height - block_size * m_console_block), C_DGRAY);
 	FC_SetDefaultColor(m_font, C_GREEN);
-	for (int i = 0; i < std::min(m_console_str.size(), (size_t)(m_console_block - 1)); i++) {
+	for (int i = 0; i < std::min(m_console_str.size(), ((size_t)m_console_block - 1)); i++) {
 		FC_DrawAlign(m_font, Core::GetInstance()->GetScreenTarget(), 2.0f, float(_screen_height - (block_size) * (i + 2) - 4), FC_AlignEnum::FC_ALIGN_LEFT, m_console_str[(size_t)(i + m_console_page)].c_str());
 	}
 	FC_SetDefaultColor(m_font, C_DGREEN);

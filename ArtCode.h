@@ -38,17 +38,8 @@ public:
 	"."
 	};
 
-	const std::string operators2[8] = {
-		//logic
-		"||",
-		"&&",
-		"<<",
-		">>",
-		">=",
-		"<=",
-		"!=",
-		"=="
-	};
+	static const std::string operators2[];
+
 	ENUM_WITH_STRING_CONVERSION(varible_type,
 		(NUL)
 		(INT)
