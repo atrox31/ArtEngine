@@ -154,6 +154,18 @@ Sprite* AssetManager::GetSprite(std::string name)
 	return nullptr;
 }
 
+int AssetManager::GetSpriteId(std::string name)
+{
+	int i = -1;
+	for (auto& v : List_sprite_name) {
+		if (v.first == name) {
+			return ++i;
+		}
+		++i;
+	}
+	return -1;
+}
+
 GPU_Image* AssetManager::GetTexture(int id)
 {
 	if (id < List_texture_id.size()) {
@@ -168,6 +180,18 @@ GPU_Image* AssetManager::GetTexture(std::string name)
 		return List_texture_name[name];
 	}
 	return nullptr;
+}
+
+int AssetManager::GetTextureId(std::string name)
+{
+	int i = -1;
+	for (auto& v : List_texture_name) {
+		if (v.first == name) {
+			return ++i;
+		}
+		++i;
+	}
+	return -1;
 }
 
 Mix_Music* AssetManager::GetMusic(int id)
@@ -186,6 +210,18 @@ Mix_Music* AssetManager::GetMusic(std::string name)
 	return nullptr;
 }
 
+int AssetManager::GetMusicId(std::string name)
+{
+	int i = -1;
+	for (auto& v : List_music_name) {
+		if (v.first == name) {
+			return ++i;
+		}
+		++i;
+	}
+	return -1;
+}
+
 Mix_Chunk* AssetManager::GetSound(int id)
 {
 	if (id < List_sound_id.size()) {
@@ -202,6 +238,18 @@ Mix_Chunk* AssetManager::GetSound(std::string name)
 	return nullptr;
 }
 
+int AssetManager::GetSoundId(std::string name)
+{
+	int i = -1;
+	for (auto& v : List_sound_name) {
+		if (v.first == name) {
+			return ++i;
+		}
+		++i;
+	}
+	return -1;
+}
+
 FC_Font* AssetManager::GetFont(int id)
 {
 	if (id < List_font_id.size()) {
@@ -216,4 +264,16 @@ FC_Font* AssetManager::GetFont(std::string name)
 		return List_font_name[name];
 	}
 	return nullptr;
+}
+
+int AssetManager::GetFontId(std::string name)
+{
+	int i = -1;
+	for (auto& v : List_font_name) {
+		if (v.first == name) {
+			return ++i;
+		}
+		++i;
+	}
+	return -1;
 }

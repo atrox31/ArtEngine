@@ -26,18 +26,23 @@ public:
 
 	Sprite* GetSprite(int id);
 	Sprite* GetSprite(std::string name);
+	int GetSpriteId(std::string name);
 	
 	GPU_Image* GetTexture(int id);
 	GPU_Image* GetTexture(std::string name);
+	int GetTextureId(std::string name);
 	
 	Mix_Music* GetMusic(int id);
 	Mix_Music* GetMusic(std::string name);
+	int GetMusicId(std::string name);
 	
 	Mix_Chunk* GetSound(int id);
 	Mix_Chunk* GetSound(std::string name);
+	int GetSoundId(std::string name);
 	
 	FC_Font* GetFont(int id);
 	FC_Font* GetFont(std::string name);
+	int GetFontId(std::string name);
 
 private:
 	std::vector<Sprite*> List_sprite_id;
