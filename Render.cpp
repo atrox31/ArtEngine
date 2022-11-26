@@ -81,12 +81,25 @@ void Render::DrawTexture(GPU_Image* texture, vec2f postion, vec2f scale, float a
 {
 	GPU_BlitTransform(texture, NULL, _instance->_screenTexture_target, postion.x, postion.y, angle, scale.x, scale.y);
 }
-void Render::DrawSprite(Sprite* sprite, vec2f postion, float frame) {
-	//sprite->Draw(postion.x, postion.y, frame);
+void Render::DrawSprite(Sprite* sprite, vec2f postion, int frame) {
+	DrawSprite_ex(sprite, postion.x, postion.y, frame, 1.0f, 1.0f, sprite->GetCenterX(), sprite->GetCenterY(), 0.0f);
 }
 
-void Render::DrawSprite_ex(Sprite* sprite, vec2f postion, float frame, vec2f scale, float angle) {
-	//sprite->DrawEx(postion.x, postion.y, frame, scale.x, scale.y, angle);
+void Render::DrawSprite_ex(Sprite* sprite, float posX, float posY, int frame, float scaleX, float scaleY, float centerX, float centerY, float angle) {
+	if (sprite == nullptr) return;
+
+	if (frame > sprite->GetMaxFrame()) {
+		frame = frame % sprite->GetMaxFrame();
+	}
+	GPU_BlitTransformX(
+		sprite->GetFrame(frame),
+		NULL,
+		_instance->_screenTexture_target,
+		posX, posY,
+		centerX, centerY,
+		angle,
+		scaleX, scaleY
+	);
 }
 
 void Render::DrawRect(GPU_Rect rect, SDL_Color color)

@@ -1,4 +1,5 @@
 #include "Instance.h"
+#include "Core.h"
 
 Uint64 Instance::_cid = 0;
 Instance::Instance(int InstanceDefinitionId)
@@ -21,8 +22,13 @@ Instance::Instance(int InstanceDefinitionId)
 	this->SelfSprite = nullptr;
 	this->SpriteScaleX = 0.0f;
 	this->SpriteScaleY = 0.0f;
-	this->SpriteCurrentFrame = 0.0f;
+	this->SpriteCenterX = 0.0f;
+	this->SpriteCenterY = 0.0f;
 	this->SpriteAngle = 0.0f;
+
+	this->SpriteAnimationFrame = 0.0f;
+	this->SpriteAnimationSpeed = 60.0f;
+	this->SpriteAnimationLoop = true;
 
 	
 	for (int e = ArtCode::varible_type::Invalid+1; e < ArtCode::varible_type::END; e++) {
@@ -35,4 +41,14 @@ Instance::Instance(int InstanceDefinitionId)
 Instance::~Instance()
 {
 
+}
+
+void Instance::DrawSelf()
+{
+	SpriteAnimationSpeed = 6.0f;
+	SpriteAnimationFrame += (float)((double)SpriteAnimationSpeed * Core::GetInstance()->DeltaTime);
+	if (!SpriteAnimationLoop && SpriteAnimationFrame > SelfSprite->GetMaxFrame()) {
+		SpriteAnimationSpeed == 0.0f;
+	}
+	Render::DrawSprite_ex(SelfSprite, PosX, PosY , (int)SpriteAnimationFrame,  SpriteScaleX, SpriteScaleY, SpriteCenterX, SpriteCenterY, SpriteAngle);
 }

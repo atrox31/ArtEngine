@@ -53,7 +53,7 @@ Sprite* Sprite::Load(const char* data, Sint64 size)
 		}	
 	}
 
-	nSprite->m_texture_size = (int)(nSprite->m_texture.size());
+	nSprite->m_texture_size = (int)(nSprite->m_texture.size())-1;
 	if (nSprite->m_texture_size == 0) {
 		Debug::WARNING("Sprite::Load - " + dv.GetData("sprite", "name") + " 0 textures found");
 	}
@@ -68,8 +68,8 @@ Sprite* Sprite::Load(const char* data, Sint64 size)
 
 GPU_Image* Sprite::GetFrame(int frame)
 {
-	if (frame < m_texture_size) {
+	//if (frame < m_texture_size) {
 		return m_texture[frame];
-	}
-	return nullptr;
+	//}
+	//return nullptr;
 }

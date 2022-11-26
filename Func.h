@@ -30,6 +30,15 @@
 class Func
 {
 public:
+	// fast text to bool converter, ony check first char
+	static const bool Str2Bool(std::string&);
+	// fast text to bool converter, ony check first char
+	static const bool Str2Bool(std::string text);
+	// fast text to bool converter, ony check first char
+	static const bool Str2Bool(const char text);
+	// fast text to bool converter, ony check first char
+	static const bool Str2Bool(const char& text);
+
 	static SDL_Color TextToColor(std::string);
 	static float LinearScale(float value, float valueMin, float valueMax, float scaleMin, float scaleMax);
 	static const std::string GetHexTable(const unsigned char* data, int size, int group = 16);

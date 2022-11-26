@@ -24,6 +24,23 @@ public:
 	static Sprite* Load(const char* data, Sint64 size);
 
 	GPU_Image* GetFrame(int frame);
+	int GetMaxFrame() {
+		return m_texture_size;
+	};
+
+	constexpr inline int GetCenterX() {
+		return m_center_x;
+	};
+	constexpr inline int GetCenterY() {
+		return m_center_y;
+	};
+	
+	constexpr inline int GetWidth() {
+		return m_width;
+	};
+	constexpr inline int GetHeight() {
+		return m_height;
+	};
 
 private:
 	int m_width;

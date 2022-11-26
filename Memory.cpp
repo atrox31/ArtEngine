@@ -1,3 +1,4 @@
+#ifdef _DEBUG
 #include "Memory.h"
 
 void Memory::StartSnapshot()
@@ -18,3 +19,4 @@ void Memory::EndSnapshoot()
         _CrtDumpMemoryLeaks();
     }
 }
+#endif

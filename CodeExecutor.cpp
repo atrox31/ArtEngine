@@ -3,12 +3,12 @@
 #include "Debug.h"
 #include <algorithm>
 
-
+AStack<std::string> CodeExecutor::GlobalStack = AStack<std::string>();
 
 CodeExecutor::CodeExecutor()
 {
-	FunctionsMap = std::map<std::string, void(CodeExecutor::*)()>();
-	FunctionsList = std::vector<void(CodeExecutor::*)()>() ;
+	FunctionsMap = std::map<std::string, void(*)(Instance*)>();
+	FunctionsList = std::vector<void(*)(Instance*)>() ;
 	InstanceDefinitions = std::vector<InstanceDefinition>();
 }
 
@@ -283,7 +283,7 @@ void CodeExecutor::h_get_value(Inspector* code, Instance* instance) {
 		break;
 	case command::VALUE: {
 		int type = (int)code->GetBit(); // ignore for now
-		GlobalStack.Add(code->GetString());
+		GlobalStack.Add(code->GetString().c_str());
 	}
 		break;
 	case command::NULL_VALUE:
@@ -301,11 +301,11 @@ void CodeExecutor::h_execute_function(Inspector* code, Instance* instance)
 	
 	while (!code->IsEnd()) {
 		int function_index = (int)code->GetBit();
-		int args = code->GetInt();
+		int args = (int)code->GetBit();
 		while (args-- > 0) {
 			h_get_value(code, instance);
 		}
-		FunctionsList[function_index];
+		FunctionsList[function_index](instance);
 	}
 
 }

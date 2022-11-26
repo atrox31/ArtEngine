@@ -119,6 +119,9 @@
     <ClCompile Include="Memory.cpp">
       <Filter>Debug</Filter>
     </ClCompile>
+    <ClCompile Include="Time.cpp">
+      <Filter>Debug</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core.h">
@@ -207,6 +210,9 @@
       <Filter>Graphic</Filter>
     </ClInclude>
     <ClInclude Include="Memory.h">
+      <Filter>Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Time.h">
       <Filter>Debug</Filter>
     </ClInclude>
   </ItemGroup>

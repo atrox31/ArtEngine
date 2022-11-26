@@ -20,6 +20,8 @@ public:
 		return Name;
 	}
 
+	plf::colony<Instance*>* GetAllInstances();
+
 private:
 	//TODO GUI GuiFile
 	int Width;

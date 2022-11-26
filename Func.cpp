@@ -2,6 +2,29 @@
 #include "physfs-3.0.2/src/physfs.h"
 #include "Debug.h"
 
+const bool Func::Str2Bool(std::string& text)
+{
+	if (text.length() == 0)return false;
+	if (text[0] == 't' || text[0] == 'T' || text[0] == '1') return true;
+	return false;
+}
+const bool Func::Str2Bool(std::string text)
+{
+	if (text.length() == 0)return false;
+	if (text[0] == 't' || text[0] == 'T' || text[0] == '1') return true;
+	return false;
+}
+const bool Func::Str2Bool(const char text)
+{
+	if (text == 't' || text == 'T' || text == '1') return true;
+	return false;
+}
+const bool Func::Str2Bool(const char& text)
+{
+	if (text == 't' || text == 'T' || text == '1') return true;
+	return false;
+}
+
 SDL_Color Func::TextToColor(std::string color)
 {
 	std::vector<std::string> colors = Split(color, ',');

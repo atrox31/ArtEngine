@@ -98,6 +98,7 @@ void Scene::Start()
 			_instances.insert(ins);
 			ins->PosX = (float)instance.x;
 			ins->PosY = (float)instance.y;
+			_instances_size++;
 		}
 	}
 }
@@ -121,6 +122,11 @@ void Scene::Exit()
 	_instances_new.clear();
 	// TODO: triggers
 	// TODO: regions
+}
+plf::colony<Instance*>* Scene::GetAllInstances()
+{
+	//TODO: add new instances to current
+	return &_instances;
 }
 /*
 Instance* Scene::CreateInstance(Instance* Instance)

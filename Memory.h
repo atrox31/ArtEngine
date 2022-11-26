@@ -1,4 +1,6 @@
 #pragma once
+#ifdef _DEBUG
+
 #include <iostream>
 
 #include "windows.h"
@@ -16,3 +18,5 @@ public:
     void EndSnapshoot();
 };
 
+
+#endif // _DEBUG

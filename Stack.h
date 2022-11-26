@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <stack>
 
 //AStack<const char*> : 147.586ms   !!!!
 //AStack<float>:151.597ms
@@ -8,6 +9,45 @@
 //VectorStack<std::string> : 1178.31ms
 //std::stack<float> : 2286.32ms
 
+template <typename T>
+struct AStack {
+private:
+	size_t _size;
+	std::stack<T> _data;
+public:
+	// Add varible to stack, does not call for contructor so object must be created first
+	void Add(T value) {
+		_data.push(value);
+		_size++;
+	}
+	// Get fresh value on stack or return NULL
+	T Get() {
+		if (_size > 0) {
+			T temp = _data.top();
+			_data.pop();
+			return temp;
+		}
+		return NULL;
+	}
+	constexpr inline bool IsEmpty() {
+		return (_size == 0);
+	}
+	constexpr inline int Size() {
+		return (int)_size;
+	}
+	void Erase() {
+		_size = 0;
+		_data = std::stack<T>();
+	}
+	AStack(size_t DefaultStackSize = 4) {
+		_size = 0;
+	}
+	virtual ~AStack() {
+		_size = 0;
+	}
+};
+
+/* TODO: Add(T value) -> musi kopiowaæ wartoœæ cost char*
 template <typename T>
 struct AStack{
 	 static_assert(!std::is_class_v<T>, "AStack<std::string> is not valid, use 'const char*'");
@@ -61,3 +101,4 @@ public:
 		free(_data);
 	}
 };
+*/

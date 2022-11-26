@@ -174,6 +174,7 @@
     <ClCompile Include="SDL2\SDL_FontCache-master\SDL_FontCache.c" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Stack.cpp" />
+    <ClCompile Include="Time.cpp" />
     <ClCompile Include="vec2f.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -206,6 +207,7 @@
     <ClInclude Include="SplashScreen.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Stack.h" />
+    <ClInclude Include="Time.h" />
     <ClInclude Include="vec2f.h" />
   </ItemGroup>
   <ItemGroup>

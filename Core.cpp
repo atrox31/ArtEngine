@@ -5,6 +5,7 @@
 #include "Console.h"
 #include "Render.h"
 #include "Event.h"
+#include "CodeExecutor.h"
 
 Core Core::_instance = Core::Core();
 Core::graphic Core::Graphic = Core::graphic();
@@ -399,6 +400,12 @@ int Core::Run()
         //Art::Core::GetInstance()->Run_sceneStep();
 
         //Art::Core::GetInstance()->Run_sceneDraw();
+        if (_instance._current_scene->IsAnyInstances()){
+            plf::colony<Instance*>* AllInstances = _instance._current_scene->GetAllInstances();
+            for (plf::colony<Instance*>::iterator it = AllInstances->begin(); it != AllInstances->end(); ++it) {
+                _instance.Executor.ExecuteScript((*it), Event::EV_DRAW);
+            }
+        }
 
         //Art::Render::RenderToTarget(Art::Core::GetScreenTarget());
         Render::RenderToTarget(Core::GetScreenTarget());
@@ -411,7 +418,7 @@ int Core::Run()
             _instance.Consola->RenderConsole();
         }
         //Art::Core::GetInstance()->Draw_FPS();
-        if (_instance._show_fps) {
+        if (_instance._show_fps || true) {
             GPU_ActivateShaderProgram(0, NULL);
 
             GPU_Rect rect = FC_GetBounds(_instance._global_font, 2, 2, FC_ALIGN_LEFT, FC_Scale(1, 1), "%d", _instance.fps);
@@ -427,7 +434,7 @@ int Core::Run()
 
     return EXIT_SUCCESS;
 }
-#include "CodeExecutor.h"
+
 bool Core::LoadData()
 {
     SDL_SetWindowBordered(SDL_GetWindowFromID(_instance._screenTarget->context->windowID), SDL_TRUE);

@@ -20,8 +20,8 @@ public:
 	// drawing
 	static void DrawTexture(GPU_Image* texture, vec2f postion, vec2f scale, float angle);
 
-	static void DrawSprite(Sprite* sprite, vec2f postion, float frame);
-	static void DrawSprite_ex(Sprite* sprite, vec2f postion, float frame, vec2f scale, float angle);
+	static void DrawSprite(Sprite* sprite, vec2f postion, int frame);
+	static void DrawSprite_ex(Sprite* sprite, float posX, float posY, int frame, float scaleX, float scaleY, float centerX, float centerY, float angle);
 
 	static void DrawRect(GPU_Rect rect, SDL_Color color);
 	static void DrawRectFilled(GPU_Rect rect, SDL_Color color);

@@ -11,6 +11,7 @@
 #include "Sprite.h"
 #include <string>
 #include "ArtCode.h"
+#include "Render.h"
 
 class Instance {
 public:
@@ -20,6 +21,8 @@ public:
 	Uint64 GetId() { return _id; }
 	void Delete() { Alive = false; }
 	int GetInstanceDefinitionId() {	return _instanceDefinitionId; }
+
+	void DrawSelf();
 
 	std::string Tag;
 	std::string Name;
@@ -37,8 +40,13 @@ public:
 	Sprite* SelfSprite;
 	float SpriteScaleX;
 	float SpriteScaleY;
-	float SpriteCurrentFrame;
+	float SpriteCenterX;
+	float SpriteCenterY;
 	float SpriteAngle;
+
+	float SpriteAnimationFrame;
+	float SpriteAnimationSpeed;
+	bool SpriteAnimationLoop;
 
 	std::vector<std::vector<std::string>> Varibles;
 private:
