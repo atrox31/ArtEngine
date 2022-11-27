@@ -58,14 +58,14 @@ bool Scene::Load(std::string name)
 		if (txt == nullptr) {
 			Debug::WARNING("Background texture not exists '"+ dv.GetData("setup", "BackGroundTexture_name") + "'");
 			BackGround.type = Scene::BackGround::BType::DrawColor;
-			BackGround.color = SDL_Color(0, 0, 0, 255);
+			BackGround.color = SDL_Color({ 0, 0, 0, 255 });
 		}
 		//BackGroundWrapMode   type_wrap
 	}
 	else {
 		Debug::WARNING("new_scene.BackGround.type unknown");
 		BackGround.type = Scene::BackGround::BType::DrawColor;
-		BackGround.color = SDL_Color( 0,0,0,255 );
+		BackGround.color = SDL_Color({ 0,0,0,255 });
 	}
 
 	// regions

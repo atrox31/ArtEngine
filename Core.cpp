@@ -102,6 +102,10 @@ bool Core::Init(int argc, char* args[])
         if (argument == "-version") {
             std::cout << std::to_string(VERSION_MAIN) + '.' + std::to_string(VERSION_MINOR)+ '.' + std::to_string(VERSION_PATH) << std::endl;
         }
+        if (argument == "-debug") {
+            std::cout << "debug mode" << std::endl;
+            Debug::SetOutputFile("console.log");
+        }
     }
     
     Debug::LOG("ArtCore v" + std::to_string(VERSION_MAIN) + '.' + std::to_string(VERSION_MINOR));
@@ -110,7 +114,7 @@ bool Core::Init(int argc, char* args[])
         return false;
     }Debug::LOG("SDL_Init");
 
-    if (!PHYSFS_init(NULL)) {
+    if (!PHYSFS_init(args[0])) {
         Debug::ERROR({ "For some reason cant init archive reader libray... game not be able to run, sorry. Reason: " , PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()) });
         return false;
     }Debug::LOG("PHYSFS_init");
@@ -126,11 +130,11 @@ bool Core::Init(int argc, char* args[])
         std::string string_data = std::string(Func::GetFileBuf("setup.ini", nullptr));
 
         for (std::string data : Func::Split(string_data, '\n')) {
-            if (data.starts_with("//")) continue;
+            if (data.substr(0, 2) == "//") continue;
             std::vector<std::string> line = Func::Split(data, '=');
             if (line.size() > 0) {
                 if (line.size() == 2) {
-                    if (line[0].starts_with("SDL_GL_")) {
+                    if (line[0].substr(0, 2) == "SDL_GL_") {
                         bool error = false;
                         SDL_GLattr attr = Func::get_sdl_attr_from_string(line[0], &error);
                         if (!error) {
@@ -142,7 +146,7 @@ bool Core::Init(int argc, char* args[])
                             Debug::WARNING("unknown property '" + data + "'");
                         }
                     }
-                    else if (line[0].starts_with("SDL_")) {
+                    else if (line[0].substr(0, 2) == "SDL_") {
                         if (SDL_SetHint(line[0].c_str(), line[1].c_str()) == SDL_FALSE) {
                             Debug::WARNING({ "sdl_error: -SDL_SetHint-", SDL_GetError() });
                         }
@@ -456,7 +460,7 @@ int Core::Run()
         if (_instance._show_fps || true) {
             GPU_ActivateShaderProgram(0, NULL);
 
-            GPU_Rect rect = FC_GetBounds(_instance._global_font, 2, 2, FC_ALIGN_LEFT, FC_Scale(1, 1), "%d", _instance.fps);
+            GPU_Rect rect = FC_GetBounds(_instance._global_font, 2, 2, FC_ALIGN_LEFT, FC_Scale({ 1, 1 }), "%d", _instance.fps);
 
             GPU_RectangleFilled2(_instance._screenTarget, rect, C_BLACK);
             FC_DrawColor(_instance._global_font, _instance._screenTarget, 2, 2, C_RED, "%d", _instance.fps);

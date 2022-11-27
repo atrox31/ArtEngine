@@ -6,10 +6,13 @@
 
 // rid of SDL do while thing
 #ifdef _DEBUG
-#define ASSERT(CONDITION) \
-SDL_assert(CONDITION);
+	#ifdef DEBUG_EDITOR
+		#define ASSERT(condition, message) std::cout << "ERROR: " << __FILE__ << ",  obj: " << __FUNCTION__ << ", line: " << __LINE__ << "' msg: '" << message << "'" << std::endl;
+	#else
+		#define ASSERT(CONDITION, message) SDL_assert(CONDITION);
+	#endif
 #else
-#define ASSERT(CONDITION)
+	#define ASSERT(CONDITION, message)
 #endif
 
 class Debug

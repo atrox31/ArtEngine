@@ -3,13 +3,18 @@
 #include <fstream>
 #include "Core.h"
 
+#ifdef _DEBUG
+
 bool Debug::WRITE_TO_FILE = false;
 bool Debug::WRITE_TO_GAME_CONSOLE = true;
-#ifdef _DEBUG
 bool Debug::WRITE_TO_SYSTEM_CONSOLE = true;
 #else
-bool Art::Debug::WRITE_TO_SYSTEM_CONSOLE = false;
+
+bool Debug::WRITE_TO_FILE = false;
+bool Debug::WRITE_TO_GAME_CONSOLE = true;
+bool Debug::WRITE_TO_SYSTEM_CONSOLE = false;
 #endif
+
 std::string Debug::OUTPUT_FILE = "console.log";
 
 void Debug::SetOutputFile(std::string output_file)
@@ -67,7 +72,10 @@ void Debug::WARNING(std::initializer_list<std::string> messages, bool new_line)
 
 void Debug::WARNING(std::string message)
 {
+#ifndef DEBUG_EDITOR
 	SDL_TriggerBreakpoint();
+#endif // !DEBUG_EDITOR
+
 	message = "[!]" + message;
 	write(message);
 }
@@ -115,7 +123,7 @@ void Debug::write_to_file(std::string& string)
 
 void Debug::write_to_core_console(std::string& string)
 {
-	//Core::GetConsoleHandle()->WriteLine(string);
+	Core::GetInstance()->Consola->WriteLine(string);
 }
 
 void Debug::write_to_windows_console(std::string& string)

@@ -45,7 +45,6 @@ extern "C"
 #include "Debug.h"
 #include "SplashScreen.h"
 #include "Core.h"
-#include "Stack.h"
 
 int protected_main(int argc, char* args[]) {
 	Core::Init(argc, args);

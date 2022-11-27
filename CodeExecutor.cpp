@@ -86,7 +86,7 @@ bool CodeExecutor::LoadArtLib()
 	FunctionsList.reserve(FunctionsMap.size());
 
 	for (std::string& line : lines) {
-		if (line.starts_with("//")) continue;
+		if (line.substr(0,2) == "//") continue;
 		//point new_point(float x,float y)
 		
 		// tokenize
@@ -271,7 +271,7 @@ void CodeExecutor::ExecuteScript(Instance* instance, Event script)
 void CodeExecutor::Break()
 {
 	_break = true;
-	ASSERT(false);
+	ASSERT(false, "CodeExecutor::Break");
 }
 
 void CodeExecutor::h_execute_script(Inspector* code, Instance* instance)
@@ -284,7 +284,7 @@ void CodeExecutor::h_execute_script(Inspector* code, Instance* instance)
 			// varible - type,index
 			// varible to set
 			ArtCode::varible_type type = (ArtCode::varible_type)code->GetBit();
-			ASSERT(type != ArtCode::varible_type::Invalid)
+			ASSERT(type != ArtCode::varible_type::Invalid, "command::SET")
 				int index = (int)code->GetBit();
 			h_get_value(code, instance);
 			instance->Varibles[type][index] = GlobalStack.Get();
@@ -443,7 +443,7 @@ bool CodeExecutor::h_compare(Inspector*, Instance*)
 void CodeExecutor::h_get_local_value(Inspector* code, Instance* instance)
 {
 	ArtCode::varible_type type = (ArtCode::varible_type)code->GetBit();
-	ASSERT(type != ArtCode::varible_type::Invalid);
+	ASSERT(type != ArtCode::varible_type::Invalid, "varible_type::Invalid");
 	int index = (int)code->GetBit();
 	GlobalStack.Add(instance->Varibles[type][index]);
 }

@@ -153,7 +153,7 @@ void Rect::Rotate(float deg)
 
 SDL_FPoint Rect::GetCenter()
 {
-	return SDL_FPoint((x + w) * 0.5f, (y + h) * 0.5f);
+	return SDL_FPoint { (x + w) * 0.5f, (y + h) * 0.5f };
 }
 
 bool Rect::PointInRect(SDL_Point& p)
@@ -176,30 +176,30 @@ bool Rect::PointInRect(vec2f& p)
 
 const GPU_Rect Rect::ToGPU_Rect()
 {
-	return GPU_Rect(x, y, w, h);
+	return GPU_Rect{x, y, w, h};
 }
 
 const SDL_Rect Rect::ToSDL_Rect()
 {
-	return SDL_Rect((int)x, (int)y, (int)w, (int)h);
+	return SDL_Rect{(int)x, (int)y, (int)w, (int)h};
 }
 
 const SDL_FRect Rect::ToSDL_FRect()
 {
-	return SDL_FRect(x, y, w, h);
+	return SDL_FRect{x, y, w, h};
 }
 
 const GPU_Rect Rect::ToGPU_Rect_wh()
 {
-	return GPU_Rect(x, y, x - w, x - h);
+	return GPU_Rect{x, y, x - w, x - h};
 }
 
 const SDL_Rect Rect::ToSDL_Rect_wh()
 {
-	return SDL_Rect((int)x, (int)y, (int)x - (int)w, (int)x - (int)h);
+	return SDL_Rect{(int)x, (int)y, (int)x - (int)w, (int)x - (int)h};
 }
 
 const SDL_FRect Rect::ToSDL_FRect_wh()
 {
-	return SDL_FRect(x, y, x - w, x - h);
+	return SDL_FRect{ x, y, x - w, x - h };
 }

@@ -15,7 +15,7 @@ const SDL_FPoint Func::Str2Point(std::string text)
 		return SDL_FPoint();
 	}
 	auto pos = text.find(',', 0);
-	return SDL_FPoint( std::stof( text.substr(0,pos) ), std::stof(text.substr(pos+1, len - pos)) );
+	return SDL_FPoint({ std::stof(text.substr(0,pos)), std::stof(text.substr(pos + 1, len - pos)) });
 }
 
 const float Func::Distance(SDL_FPoint& p1, SDL_FPoint& p2)
