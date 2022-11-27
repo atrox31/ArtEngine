@@ -200,6 +200,9 @@ private:
 	Script(get_pos_x);
 	//float get_pos_y(); Get y coords of instance;
 	Script(get_pos_y);
+	//
+	Script(sound_play);
+	Script(music_play);
 #undef Script
 };
 

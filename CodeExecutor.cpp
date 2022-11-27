@@ -63,6 +63,8 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["direction_to_point"] = &CodeExecutor::direction_to_point;
 	FunctionsMap["direction_beetwen_point"] = &CodeExecutor::direction_beetwen_point;
 	FunctionsMap["direction_to_instance"] = &CodeExecutor::direction_to_instance;
+	FunctionsMap["sound_play"] = &CodeExecutor::sound_play;
+	FunctionsMap["music_play"] = &CodeExecutor::music_play;
 
 }
 

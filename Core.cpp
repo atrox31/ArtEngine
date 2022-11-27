@@ -497,7 +497,7 @@ bool Core::LoadData()
         bgr.Stop();
         return false;
     }
-    bgr.SetProgress(80);
+    bgr.SetProgress(85);
 
     // load scenes
     std::vector<std::string> scene_list(Func::GetFileText("scene/list.txt", nullptr, false));

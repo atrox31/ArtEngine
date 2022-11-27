@@ -16,6 +16,7 @@ void BackGroundRenderer::SetProgress(int progress)
         return;
     }
     SDL_SemWait(bg_data_lock);
+    std::cout << progress << "%" << std::endl;
     bg_target_percent = progress;
     SDL_SemPost(bg_data_lock);
 }
@@ -54,14 +55,9 @@ int BackGroundRenderer::ThreadDrawingFunction(void* data)
 
     // grafika
     SDL_Texture* bc_img = nullptr;
-    bool bc_have_img = false;
-    Sint64 siz;
-    SDL_RWops* tmp_img = Func::GetFileRWops("bg_img.png", &siz);
+    SDL_RWops* tmp_img = Func::GetFileRWops("bg_img.png", nullptr);
     if (tmp_img != NULL) {
         bc_img = IMG_LoadTexture_RW(renderer, tmp_img, 1);
-        if (bc_img != nullptr) {
-            bc_have_img = true;
-        }
     }
 
     // prostok¹t ekranu ³adowania
@@ -95,7 +91,7 @@ int BackGroundRenderer::ThreadDrawingFunction(void* data)
         SDL_SetRenderDrawColor(renderer, C_BLACK.r, C_BLACK.g, C_BLACK.b, C_BLACK.a);
         SDL_RenderClear(renderer);
         // rysowanei obrazka t³a
-        if (bc_have_img) {
+        if (bc_img != NULL) {
             SDL_RenderCopy(renderer, bc_img, NULL, NULL);
         }
         // rysowanie czarnego prostok¹ta pod pasek ³¹dowania
@@ -119,7 +115,7 @@ int BackGroundRenderer::ThreadDrawingFunction(void* data)
 
         SDL_Delay(1000 / 60);
     }
-    if (bc_img != nullptr) {
+    if (bc_img != NULL) {
         SDL_DestroyTexture(bc_img);
         bc_img = nullptr;
     }

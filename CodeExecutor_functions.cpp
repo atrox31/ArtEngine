@@ -229,7 +229,6 @@ void CodeExecutor::direction_to_instance(Instance*) {
 
 }
 
-
 // drawing
 	//null draw_sprite(sprite spr, float x, float y, float frame);Draw <sprite> on location (<float>,<float>) with target frame <frame>;Draw default sprite. To more options use draw_sprite_ex
 void CodeExecutor::draw_sprite(Instance*) {
@@ -368,4 +367,17 @@ void CodeExecutor::get_pos_x(Instance* instance) {
 //float get_pos_y(); Get y coords of instance;
 void CodeExecutor::get_pos_y(Instance* instance) {
 	StackOut(std::to_string(instance->PosY));
+}
+
+void CodeExecutor::sound_play(Instance*) {
+	int SoundId = StackIn_i;
+	Mix_Chunk* sound = Core::GetInstance()->assetManager->GetSound(SoundId);
+	if (sound == nullptr) return;
+	Mix_PlayChannel(-1, sound, 0);
+}
+void CodeExecutor::music_play(Instance*) {
+	int SoundId = StackIn_i;
+	Mix_Music* music = Core::GetInstance()->assetManager->GetMusic(SoundId);
+	if (music == nullptr) return;
+	Mix_PlayMusic(music, 0);
 }
