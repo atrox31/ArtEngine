@@ -16,6 +16,8 @@ bool Debug::WRITE_TO_SYSTEM_CONSOLE = false;
 #endif
 
 std::string Debug::OUTPUT_FILE = "console.log";
+std::string Debug::last_WARNING = "";
+int Debug::last_WARNING_c = 0;
 
 void Debug::SetOutputFile(std::string output_file)
 {
@@ -77,7 +79,21 @@ void Debug::WARNING(std::string message)
 #endif // !DEBUG_EDITOR
 
 	message = "[!]" + message;
-	write(message);
+
+	if (last_WARNING == message) {
+		last_WARNING_c++;
+	}
+	else {
+		if (last_WARNING_c > 0) {
+			message = std::to_string(last_WARNING_c) + message;
+			write(message);
+			last_WARNING_c = 0;
+		}
+		else {
+			write(message);
+		}
+		last_WARNING = message;
+	}
 }
 
 void Debug::ERROR(std::string message)

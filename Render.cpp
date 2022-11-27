@@ -36,20 +36,20 @@ void Render::CreateRender(int width, int height)
 void Render::DestroyRender()
 {
 	if (_instance == nullptr) return;
-	GPU_FreeTarget(_instance->_screenTexture_target);
-	GPU_FreeImage(_instance->_screenTexture);
-	_instance->_screenTexture = nullptr;
-	_instance->_screenTexture_target = nullptr;
+	GPU_FreeTarget(_instance->_brightTexture_target);
+	GPU_FreeImage(_instance->_brightTexture);
+	_instance->_brightTexture_target = nullptr;
+	_instance->_brightTexture = nullptr;
 
 	GPU_FreeTarget(_instance->_bloomTexture_target);
 	GPU_FreeImage(_instance->_bloomTexture);
 	_instance->_bloomTexture_target = nullptr;
 	_instance->_bloomTexture = nullptr;
 
-	GPU_FreeTarget(_instance->_brightTexture_target);
-	GPU_FreeImage(_instance->_brightTexture);
-	_instance->_brightTexture_target = nullptr;
-	_instance->_brightTexture = nullptr;
+	GPU_FreeTarget(_instance->_screenTexture_target);
+	GPU_FreeImage(_instance->_screenTexture);
+	_instance->_screenTexture = nullptr;
+	_instance->_screenTexture_target = nullptr;
 
 	GPU_FreeShaderProgram(_instance->_shader_bloom);
 	GPU_FreeShaderProgram(_instance->_shader_bright);
@@ -74,6 +74,7 @@ Render::Render()
 
 Render::~Render()
 {
+	if(_instance->_brightTexture_target != nullptr)
 	DestroyRender();
 }
 

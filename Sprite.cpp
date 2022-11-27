@@ -53,7 +53,7 @@ Sprite* Sprite::Load(const char* data, Sint64 size)
 		}	
 	}
 
-	nSprite->m_texture_size = (int)(nSprite->m_texture.size())-1;
+	nSprite->m_texture_size = (int)(nSprite->m_texture.size());
 	if (nSprite->m_texture_size == 0) {
 		Debug::WARNING("Sprite::Load - " + dv.GetData("sprite", "name") + " 0 textures found");
 	}

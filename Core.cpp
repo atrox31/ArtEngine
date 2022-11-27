@@ -38,7 +38,7 @@ Core::Core()
     LAST = 0;
     NOW = 0;
     _global_font = nullptr;
-    Consola = nullptr;
+    _instance.Consola = new Console();
     fps = 0;
     frames = 0;
     _current_scene = nullptr;
@@ -50,6 +50,7 @@ Core::Core()
 
 Core::~Core()
 {
+    Render::DestroyRender();
     assetManager->ClearData();
     delete assetManager;
     GPU_FreeTarget(_screenTarget);
@@ -57,7 +58,6 @@ Core::~Core()
     SettingsData.clear();
     if(_global_font!=nullptr)
     FC_FreeFont(_global_font);
-    Render::DestroyRender();
     
     if (SDL_WasInit(0) != 0) {
         GPU_Quit();
@@ -243,11 +243,12 @@ bool Core::Init(int argc, char* args[])
 
     srand((unsigned int)time(NULL));
 
+    _instance.Consola->Init();
+
     _instance.DeltaTime = 0.0;
     _instance.NOW = SDL_GetTicks64();
     _instance.LAST = 0;
     _instance.frames = 0;
-    _instance.Consola = new Console();
 
     //Render::CreateRender(SD_GetInt("DefaultResolution_x", 1920), SD_GetInt("DefaultResolution_y", 1080));
     Graphic.SetScreenResolution(SD_GetInt("DefaultResolution_x", 1920), SD_GetInt("DefaultResolution_y", 1080));
