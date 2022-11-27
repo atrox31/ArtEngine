@@ -7,10 +7,13 @@
 
 Console::Console()
 {
-	m_font = FC_CreateFont();
-	FC_LoadFont_RW(m_font, SDL_RWFromConstMem(consola_ttf, 459181), 1, 20, C_BLACK, TTF_STYLE_NORMAL);
 	m_console_str = std::vector<std::string>();
-	 m_console_str_history = std::vector<std::string>();
+	m_console_str_history = std::vector<std::string>();
+}
+
+void Console::Init() {
+	m_font = FC_CreateFont();
+	FC_LoadFont_RW(m_font, SDL_RWFromConstMem(consola_ttf, 459181), 1, 16, C_BLACK, TTF_STYLE_NORMAL);
 }
 
 Console::~Console()
@@ -149,7 +152,7 @@ void Console::RenderConsole()
 {
 	if (!m_visibled) return;
 	GPU_ActivateShaderProgram(0, NULL);
-	const int block_size = FC_GetLineHeight(m_font) - 6;
+	const int block_size = FC_GetLineHeight(m_font) - 2;
 	// draw back
 	
 	int _screen_height = Core::GetInstance()->GetScreenHeight();
@@ -162,7 +165,13 @@ void Console::RenderConsole()
 	FC_SetDefaultColor(m_font, C_DGREEN);
 	FC_DrawAlign(m_font, Core::GetInstance()->GetScreenTarget(), 2.0f, float(_screen_height - (block_size)-4), FC_AlignEnum::FC_ALIGN_LEFT, m_console_shadow.c_str());
 	FC_SetDefaultColor(m_font, C_GREEN);
-	FC_DrawAlign(m_font, Core::GetInstance()->GetScreenTarget(), 2.0f, float(_screen_height - (block_size)-4), FC_AlignEnum::FC_ALIGN_LEFT, m_console_buf.c_str());
+	m_suror_interval += Core::GetInstance()->DeltaTime;
+	if (m_suror_interval > 0.5) {
+		m_suror_interval = 0.0;
+		m_show_cursor = !m_show_cursor;
+	}
+	std::string content = ">" + m_console_buf + (m_show_cursor ? "|" : "");
+	FC_DrawAlign(m_font, Core::GetInstance()->GetScreenTarget(), 2.0f, float(_screen_height - (block_size)-4), FC_AlignEnum::FC_ALIGN_LEFT, content.c_str());
 
 }
 
