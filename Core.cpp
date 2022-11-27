@@ -511,8 +511,13 @@ bool Core::LoadData()
     for (std::string scene : scene_list) {
         std::string fname = "scene/" + scene + "/" + scene + ".asd";
             if (PHYSFS_exists(fname.c_str())) {
-                _instance._scene_list.push_back(Scene());
-                if (!_instance._scene_list.back().Load(fname)) return false;
+                Scene tmp_scene;
+                if (tmp_scene.Load(fname)) {
+                    _instance._scene_list.push_back(tmp_scene);
+                }
+                else {
+                    return false;
+                }
             }
             else {
                 Debug::WARNING("scene '" + fname + "' not exists!");

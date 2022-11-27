@@ -38,7 +38,11 @@ Instance* Instance::GiveId()
 
 Instance::~Instance()
 {
-
+	std::cout << "delete instance '" << Name << "'";
+	if (this->_id == 0) {
+		std::cout << " template";
+	}
+	std::cout << std::endl;
 }
 
 void Instance::DrawSelf()

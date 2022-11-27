@@ -10,11 +10,30 @@ Scene::Scene()
 	//BeginInstances = std::vector<Spawner>();
 	_instances_size = 0;
 	_is_any_new_instances = false;
+	Width = 1;
+	Height = 1;
+	BackGround.type = Scene::BackGround::BType::DrawColor;
+	BackGround.color = SDL_Color({ 0,0,0,255 });
+	BackGround.texture = nullptr;
+	BackGround.type_wrap = (BackGround::BTypeWrap)0;
 }
 
 Scene::~Scene()
 {
+	if (_instances.size() > 0) {
+		for (plf::colony<Instance*>::iterator it = _instances.begin(); it != _instances.end(); ++it) {
+			delete (*it);
+			it = _instances.erase(it);
+		}
+	}
 	_instances.clear();
+
+	if (_instances_new.size() > 0) {
+		for (std::vector<Instance*>::iterator it = _instances_new.begin(); it != _instances_new.end(); ++it) {
+			delete (*it);
+			it = _instances_new.erase(it);
+		}
+	}
 	_instances_new.clear();
 }
 bool Scene::Load(std::string name)
