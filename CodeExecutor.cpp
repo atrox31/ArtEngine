@@ -221,14 +221,34 @@ bool CodeExecutor::LoadObjectDefinitions()
 			Debug::ERROR("expected 'END' but " + std::to_string(code.Current()) + " is given");SDL_assert(false); return false;
 		}
 
-		// sort events
-		std::sort(instance._events.begin(), instance._events.end());
+		// load cmplite, now insert default data
+		instance._template = new Instance((int)InstanceDefinitions.size());
 
-		// all ok, populate
-		InstanceDefinitions.push_back(instance);
+		// prepare default values
+		instance._template->Varibles.resize(ArtCode::varible_type::END, std::vector<std::string>());
+		instance._template->Name = o_name;
+
+		for (auto& var : instance._varibles) {
+			// inicialize all varibles
+			instance._template->Varibles[var.first].insert(instance._template->Varibles[var.first].end(), var.second, "nul");//Inserting "nul",  var.second times to the vector
+		}
+
+		// if have at leat one event sort and add to definitions
+		if (instance._events.size() > 0) {
+			std::sort(instance._events.begin(), instance._events.end());
+			InstanceDefinitions.push_back(instance);
+			ExecuteScript(instance._template, Event::DEF_VALUES);
+		}
 	}
-
 	return (InstanceDefinitions.size() > 0);
+}
+
+void CodeExecutor::Delete()
+{
+	for (auto& def : InstanceDefinitions) {
+		delete def._template;
+	}
+	InstanceDefinitions.clear();
 }
 
 Instance* CodeExecutor::SpawnInstance(std::string name)
@@ -245,14 +265,8 @@ Instance* CodeExecutor::SpawnInstance(std::string name)
 
 Instance* CodeExecutor::SpawnInstance(int id)
 {
-	Instance* instance = new Instance(id);
-	instance->Name = InstanceDefinitions[id]._name;
-	for (auto& var : InstanceDefinitions[id]._varibles) {
-		// inicialize all varibles
-		instance->Varibles[var.first].insert(instance->Varibles[var.first].end(), var.second, "nul");//Inserting "nul",  var.second times to the vector
-	}
-	ExecuteScript(instance, Event::DEF_VALUES);
-	return instance;
+	Instance* instance = new Instance(*InstanceDefinitions[id]._template);
+	return instance->GiveId();
 }
 
 void CodeExecutor::ExecuteScript(Instance* instance, Event script)

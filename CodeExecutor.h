@@ -29,6 +29,7 @@ public:
 	void MapFunctions();
 	bool LoadArtLib();
 	bool LoadObjectDefinitions();
+	void Delete();
 
 private:
 	struct InstanceDefinition {
@@ -49,10 +50,11 @@ private:
 		//		type, fields
 		std::map<int, int> _varibles;
 		std::string _name;
+		Instance* _template;
 		InstanceDefinition() {
 			_name = "";
 			_varibles = std::map<int, int>();
-			_events = std::vector<EventData>();
+			_events = std::vector<EventData>(); 
 		}
 		void AddVarible(int type) {
 			auto f = _varibles.find(type);

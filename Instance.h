@@ -16,6 +16,7 @@
 class Instance {
 public:
 	Instance(int InstanceDefinitionId);
+	Instance* GiveId();
 	virtual ~Instance();
 
 	Uint64 GetId() { return _id; }
@@ -50,7 +51,7 @@ public:
 
 	std::vector<std::vector<std::string>> Varibles;
 private:
-	Uint64 _id;
+	Uint64 _id = 0;
 	static Uint64 _cid;
 	int _instanceDefinitionId;
 };

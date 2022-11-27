@@ -5,7 +5,6 @@ Uint64 Instance::_cid = 0;
 Instance::Instance(int InstanceDefinitionId)
 {
 	this->_instanceDefinitionId = InstanceDefinitionId;
-	this->_id = _cid++;
 	this->Tag = "undefined";
 	this->Name = "no_name";
 
@@ -29,13 +28,12 @@ Instance::Instance(int InstanceDefinitionId)
 	this->SpriteAnimationFrame = 0.0f;
 	this->SpriteAnimationSpeed = 60.0f;
 	this->SpriteAnimationLoop = true;
+}
 
-	
-	for (int e = ArtCode::varible_type::Invalid+1; e < ArtCode::varible_type::END; e++) {
-		// Do job with e
-		Varibles.push_back(std::vector<std::string>());
-	}
-
+Instance* Instance::GiveId()
+{
+	this->_id = ++_cid;
+	return this;
 }
 
 Instance::~Instance()

@@ -50,12 +50,17 @@ Core::Core()
 
 Core::~Core()
 {
+    Executor.Delete();
     Render::DestroyRender();
     assetManager->ClearData();
     delete assetManager;
     GPU_FreeTarget(_screenTarget);
-    delete Consola;
     SettingsData.clear();
+    /// <summary>
+    /// After this point not alllow DEBUG::
+    /// </summary>
+    delete Consola;
+
     if(_global_font!=nullptr)
     FC_FreeFont(_global_font);
     
@@ -444,8 +449,8 @@ int Core::Run()
             plf::colony<Instance*>* AllInstances = _instance._current_scene->GetAllInstances();
             for (plf::colony<Instance*>::iterator it = AllInstances->begin(); it != AllInstances->end(); ++it) {
                 _instance.Executor.ExecuteScript((*it), Event::EV_DRAW);
-                std::string name = (*it)->Name;
-                FC_DrawAlign(_instance._global_font, _instance._screenTarget, (*it)->PosX, (*it)->PosY, FC_AlignEnum::FC_ALIGN_CENTER, name.c_str());
+                //std::string name = (*it)->Name;
+                //FC_DrawAlign(_instance._global_font, _instance._screenTarget, (*it)->PosX, (*it)->PosY, FC_AlignEnum::FC_ALIGN_CENTER, name.c_str());
             }
         }
 
@@ -491,20 +496,14 @@ bool Core::LoadData()
         bgr.Stop();
         return false;
     }
-    bgr.SetProgress(10);
+    bgr.SetProgress(5);
     
-    if (!_instance.Executor.LoadObjectDefinitions()) {
-        bgr.Stop();
-        return false;
-    }
-    bgr.SetProgress(20);
-
     // load assets
-    if (!_instance.assetManager->LoadData(&bgr, 20, 80)) {
+    if (!_instance.assetManager->LoadData(&bgr, 5, 60)) {
         bgr.Stop();
         return false;
     }
-    bgr.SetProgress(85);
+    bgr.SetProgress(60);
 
     // load scenes
     std::vector<std::string> scene_list(Func::GetFileText("scene/list.txt", nullptr, false));
@@ -520,12 +519,21 @@ bool Core::LoadData()
                 return false;
             }
     }
-    bgr.SetProgress(90);
+    bgr.SetProgress(69);
     // if no scenes exit
     if (_instance._scene_list.size() == 0) {
         Debug::WARNING("there is no scenes!");
         return false;
     }
+    bgr.SetProgress(70);
+
+
+    if (!_instance.Executor.LoadObjectDefinitions()) {
+        bgr.Stop();
+        return false;
+    }
+    bgr.SetProgress(98);
+
     // set starting scene
     std::string start_scene = Func::GetFileText("scene/StartingScene.txt", nullptr, false)[0];
     for (auto& scene : _instance._scene_list) {
@@ -536,6 +544,8 @@ bool Core::LoadData()
             break;
         }
     }
+
+    bgr.SetProgress(99);
     // if error try set first scene
     if (_instance._current_scene == nullptr) {  
         if (!_instance.ChangeScene(_instance._scene_list[0].GetName())) {
