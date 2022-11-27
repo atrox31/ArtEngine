@@ -17,6 +17,9 @@
 
 class Debug
 {
+private:
+	static std::string last_WARNING;
+	static int last_WARNING_c;
 public:
 	static bool WRITE_TO_FILE;
 	static bool WRITE_TO_GAME_CONSOLE;
