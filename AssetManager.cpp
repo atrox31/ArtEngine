@@ -10,11 +10,11 @@ AssetManager::AssetManager()
 	List_sound_id = std::vector<Mix_Chunk*>();
 	List_font_id = std::vector<FC_Font*>();
 
-	List_sprite_name = std::map < std::string, Sprite*>();
-	List_texture_name = std::map < std::string, GPU_Image*>();
-	List_music_name = std::map < std::string, Mix_Music*>();
-	List_sound_name = std::map < std::string, Mix_Chunk*>();
-	List_font_name = std::map < std::string, FC_Font*>();
+	List_sprite_name = std::unordered_map < std::string, Sprite*>();
+	List_texture_name = std::unordered_map < std::string, GPU_Image*>();
+	List_music_name = std::unordered_map < std::string, Mix_Music*>();
+	List_sound_name = std::unordered_map < std::string, Mix_Chunk*>();
+	List_font_name = std::unordered_map < std::string, FC_Font*>();
 }
 
 void AssetManager::ClearData()
