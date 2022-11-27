@@ -41,7 +41,7 @@ public:
 private:
 	// console functions
 	bool m_show_cursor = false;
-	double m_suror_interval = 0.0;
+	double m_cursor_interval = 0.0;
 	bool m_visibled;
 	std::vector<std::string> m_console_str;
 	std::vector<std::string> m_console_str_history;

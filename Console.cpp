@@ -165,9 +165,9 @@ void Console::RenderConsole()
 	FC_SetDefaultColor(m_font, C_DGREEN);
 	FC_DrawAlign(m_font, Core::GetInstance()->GetScreenTarget(), 2.0f, float(_screen_height - (block_size)-4), FC_AlignEnum::FC_ALIGN_LEFT, m_console_shadow.c_str());
 	FC_SetDefaultColor(m_font, C_GREEN);
-	m_suror_interval += Core::GetInstance()->DeltaTime;
-	if (m_suror_interval > 0.5) {
-		m_suror_interval = 0.0;
+	m_cursor_interval += Core::GetInstance()->DeltaTime;
+	if (m_cursor_interval > 0.5) {
+		m_cursor_interval = 0.0;
 		m_show_cursor = !m_show_cursor;
 	}
 	std::string content = ">" + m_console_buf + (m_show_cursor ? "|" : "");
