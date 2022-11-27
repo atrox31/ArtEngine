@@ -444,6 +444,8 @@ int Core::Run()
             plf::colony<Instance*>* AllInstances = _instance._current_scene->GetAllInstances();
             for (plf::colony<Instance*>::iterator it = AllInstances->begin(); it != AllInstances->end(); ++it) {
                 _instance.Executor.ExecuteScript((*it), Event::EV_DRAW);
+                std::string name = (*it)->Name;
+                FC_DrawAlign(_instance._global_font, _instance._screenTarget, (*it)->PosX, (*it)->PosY, FC_AlignEnum::FC_ALIGN_CENTER, name.c_str());
             }
         }
 

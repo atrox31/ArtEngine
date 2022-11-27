@@ -13,6 +13,7 @@
 #include "Sprite.h"
 #include <string>
 #include "BackGroundRenderer.h"
+#include <unordered_map>
 
 class BackGroundRenderer;
 class AssetManager
@@ -51,10 +52,10 @@ private:
 	std::vector<Mix_Chunk*> List_sound_id;
 	std::vector<FC_Font*> List_font_id;
 
-	std::map < std::string, Sprite*> List_sprite_name;
-	std::map < std::string, GPU_Image*> List_texture_name;
-	std::map < std::string, Mix_Music*> List_music_name;
-	std::map < std::string, Mix_Chunk*> List_sound_name;
-	std::map < std::string, FC_Font*> List_font_name;
+	std::unordered_map < std::string, Sprite*> List_sprite_name;
+	std::unordered_map < std::string, GPU_Image*> List_texture_name;
+	std::unordered_map < std::string, Mix_Music*> List_music_name;
+	std::unordered_map < std::string, Mix_Chunk*> List_sound_name;
+	std::unordered_map < std::string, FC_Font*> List_font_name;
 };
 
