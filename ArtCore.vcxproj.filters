@@ -125,6 +125,12 @@
     <ClCompile Include="ArtCode.cpp">
       <Filter>Core\ArtCode</Filter>
     </ClCompile>
+    <ClCompile Include="Convert.cpp">
+      <Filter>Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="CodeExecutor_functions_map.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core.h">
@@ -217,6 +223,9 @@
     </ClInclude>
     <ClInclude Include="Time.h">
       <Filter>Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Convert.h">
+      <Filter>Functions</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

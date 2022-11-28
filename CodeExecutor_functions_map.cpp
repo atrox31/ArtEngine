@@ -1,5 +1,5 @@
 #include "CodeExecutor.h"
-//this file is auto generated from ArtLibGenerator
+
 void CodeExecutor::MapFunctions()
 {
 	FunctionsMap.clear();
@@ -25,9 +25,6 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["distance_to_point"] = &CodeExecutor::distance_to_point;
 	FunctionsMap["distance_beetwen_point"] = &CodeExecutor::distance_beetwen_point;
 	FunctionsMap["distance_to_instance"] = &CodeExecutor::distance_to_instance;
-	FunctionsMap["direction_to_point"] = &CodeExecutor::direction_to_point;
-	FunctionsMap["direction_beetwen_point"] = &CodeExecutor::direction_beetwen_point;
-	FunctionsMap["direction_to_instance"] = &CodeExecutor::direction_to_instance;
 	FunctionsMap["draw_sprite"] = &CodeExecutor::draw_sprite;
 	FunctionsMap["draw_sprite_ex"] = &CodeExecutor::draw_sprite_ex;
 	FunctionsMap["draw_texture"] = &CodeExecutor::draw_texture;
@@ -49,7 +46,10 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["set_self_sprite"] = &CodeExecutor::set_self_sprite;
 	FunctionsMap["get_pos_x"] = &CodeExecutor::get_pos_x;
 	FunctionsMap["get_pos_y"] = &CodeExecutor::get_pos_y;
+	FunctionsMap["direction_to_point"] = &CodeExecutor::direction_to_point;
+	FunctionsMap["direction_beetwen_point"] = &CodeExecutor::direction_beetwen_point;
+	FunctionsMap["direction_to_instance"] = &CodeExecutor::direction_to_instance;
 	FunctionsMap["sound_play"] = &CodeExecutor::sound_play;
 	FunctionsMap["music_play"] = &CodeExecutor::music_play;
+
 }
-//end of file

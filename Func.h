@@ -15,33 +15,18 @@
 #include <iostream>
 #include <iomanip>
 #include <map>
-/*
-	std::cout << std::endl;
-	for (Sint64 i = 0; i < c; i++) {
-		std::cout << "" << std::setw(2) << std::setfill('0') << std::hex << (int)_code[i] << " ";
-		if (i % 16 == 0 && i != 0) std::cout << std::endl;
-	}
-	std::cout << std::endl;
-	for (Sint64 i = 0; i < c; i++) {
-		std::cout << "" << (char)_code[i] << " ";
-		if (i % 16 == 0 && i != 0) std::cout << std::endl;
-	}
-	*/
+#include "Rect.h"
+
 class Func
 {
 public:
+	// return distance from point to point
 	static const float Distance(SDL_FPoint&, SDL_FPoint&);
-	static const SDL_FPoint Str2Point(std::string);
-	// fast text to bool converter, ony check first char
-	static const bool Str2Bool(std::string&);
-	// fast text to bool converter, ony check first char
-	static const bool Str2Bool(std::string text);
-	// fast text to bool converter, ony check first char
-	static const bool Str2Bool(const char text);
-	// fast text to bool converter, ony check first char
-	static const bool Str2Bool(const char& text);
 
-	static SDL_Color TextToColor(std::string);
+	
+
+	static bool IsHex(std::string&);
+
 	static float LinearScale(float value, float valueMin, float valueMax, float scaleMin, float scaleMax);
 	static const std::string GetHexTable(const unsigned char* data, int size, int group = 16);
 	static std::size_t replace_all(std::string& inout, std::string what, std::string with);

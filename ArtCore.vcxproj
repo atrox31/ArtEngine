@@ -194,7 +194,9 @@
     <ClCompile Include="BackGroundRenderer.cpp" />
     <ClCompile Include="CodeExecutor.cpp" />
     <ClCompile Include="CodeExecutor_functions.cpp" />
+    <ClCompile Include="CodeExecutor_functions_map.cpp" />
     <ClCompile Include="Console.cpp" />
+    <ClCompile Include="Convert.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="Func.cpp" />
@@ -240,6 +242,7 @@
     <ClInclude Include="ColorDefinitions.h" />
     <ClInclude Include="consola.h" />
     <ClInclude Include="Console.h" />
+    <ClInclude Include="Convert.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="Event.h" />

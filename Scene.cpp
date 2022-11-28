@@ -2,6 +2,7 @@
 #include "Debug.h"
 #include "Event.h"
 #include "CodeExecutor.h"
+#include "Convert.h"
 
 Scene::Scene()
 {
@@ -51,7 +52,7 @@ bool Scene::Load(std::string name)
 
 	if (dv.GetData("setup", "BackGroundType") == "DrawColor") {
 		BackGround.type = Scene::BackGround::BType::DrawColor;
-		BackGround.color = Func::TextToColor(dv.GetData("setup", "BackGroundColor"));
+		BackGround.color = Convert::Str2Color(dv.GetData("setup", "BackGroundColor"));
 	}else if (dv.GetData("setup", "BackGroundType") == "DrawTexture") {
 		BackGround.type = Scene::BackGround::BType::DrawTexture;
 		if (dv.GetData("setup", "BackGroundWrapMode") == "Tile") {

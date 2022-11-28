@@ -2,54 +2,25 @@
 #include "physfs-3.0.2/src/physfs.h"
 #include "Debug.h"
 
-const bool Func::Str2Bool(std::string& text)
-{
-	if (text.length() == 0)return false;
-	if (text[0] == 't' || text[0] == 'T' || text[0] == '1') return true;
-	return false;
-}
-const SDL_FPoint Func::Str2Point(std::string text)
-{
-	size_t len = text.length();
-	if (len == 0) {
-		return SDL_FPoint();
-	}
-	auto pos = text.find(',', 0);
-	return SDL_FPoint({ std::stof(text.substr(0,pos)), std::stof(text.substr(pos + 1, len - pos)) });
-}
-
 const float Func::Distance(SDL_FPoint& p1, SDL_FPoint& p2)
 {
-	return (float)std::sqrt(std::pow(p2.x - p1.x, 2) + std::pow(p2.y - p1.y, 2));
+	return (float)(std::sqrt(std::pow(p2.x - p1.x, 2) + std::pow(p2.y - p1.y, 2)));
 }
 
-const bool Func::Str2Bool(std::string text)
+bool Func::IsHex(std::string& value)
 {
-	if (text.length() == 0)return false;
-	if (text[0] == 't' || text[0] == 'T' || text[0] == '1') return true;
-	return false;
-}
-const bool Func::Str2Bool(const char text)
-{
-	if (text == 't' || text == 'T' || text == '1') return true;
-	return false;
-}
-const bool Func::Str2Bool(const char& text)
-{
-	if (text == 't' || text == 'T' || text == '1') return true;
-	return false;
-}
-
-SDL_Color Func::TextToColor(std::string color)
-{
-	std::vector<std::string> colors = Split(color, ',');
-	if (colors.size() == 3) {
-		return { (Uint8)std::stoi(colors[0]), (Uint8)std::stoi(colors[1]), (Uint8)std::stoi(colors[2]), (Uint8)255  };
+	const int len = (int)value.length();
+	// rgb or rgba
+	if (!(len == 7 || len == 9)) return false;
+	if (value[0] != '#') return false;
+	for (int i = 1; i < len; i++) {
+		if ((
+			(value[i] >= '0' && value[i] <= '9') ||
+			(value[i] >= 'a' && value[i] <= 'f') ||
+			(value[i] >= 'A' && value[i] <= 'F')
+			) == false) return false;
 	}
-	if (colors.size() == 4) {
-		return { (Uint8)std::stoi(colors[0]), (Uint8)std::stoi(colors[1]), (Uint8)std::stoi(colors[2]), (Uint8)std::stoi(colors[3]), };
-	}
-	return SDL_Color();
+	return true;
 }
 
 float Func::LinearScale(float value, float valueMin, float valueMax, float scaleMin, float scaleMax)
