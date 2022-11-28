@@ -64,8 +64,12 @@ float TryToGetFloat(const std::string& str) {
 #endif
 
 
-// makers
-	//point new_point(float x, float y);Make point (<float>, <float>).;New point from value or other.
+
+
+
+//#AUTO_GENERATOR_START
+// 
+//point new_point(float x, float y);Make point (<float>, <float>).;New point from value or other.
 void CodeExecutor::new_point(Instance*) {
 	float p1 = StackIn_f;
 	float p2 = StackIn_f;
@@ -93,8 +97,7 @@ void CodeExecutor::new_mask_from_sprite(Instance*) {
 
 }
 
-// assets
-	//sprite get_sprite(string name);Get asset handle by name <string>;Expensive function, try to not call it every frame. Call it to function and store.
+//sprite get_sprite(string name);Get asset handle by name <string>;Expensive function, try to not call it every frame. Call it to function and store.
 void CodeExecutor::get_sprite(Instance*) {
 	std::string name = StackIn;
 	int sprite = Core::GetInstance()->assetManager->GetSpriteId(name);
@@ -140,8 +143,7 @@ void CodeExecutor::get_font(Instance*) {
 
 }
 
-// sprite
-	//int sprite_get_width(sprite spr);Get width of <sprite>;Get int value.
+//int sprite_get_width(sprite spr);Get width of <sprite>;Get int value.
 void CodeExecutor::sprite_get_width(Instance*) {
 
 }
@@ -166,8 +168,7 @@ void CodeExecutor::sprite_set_animation_loop(Instance* instance) {
 	instance->SpriteAnimationLoop = StackIn_b;
 }
 
-// moving
-	//null move_to_point(point p, float speed);Move current instance to <point> with <speed> px per seccond.;Call it every frame.
+//null move_to_point(point p, float speed);Move current instance to <point> with <speed> px per seccond.;Call it every frame.
 void CodeExecutor::move_to_point(Instance* instance) {
 	float speed = StackIn_f;
 	SDL_FPoint dest = StackIn_p;
@@ -191,8 +192,7 @@ void CodeExecutor::move_to_direction(Instance*) {
 
 }
 
-// mesurment
-	//float distance_to_point(point p);Give distance to <point>;Measure from current instance to target point.
+//float distance_to_point(point p);Give distance to <point>;Measure from current instance to target point.
 void CodeExecutor::distance_to_point(Instance* instance) {
 	SDL_FPoint dest = StackIn_p;
 	SDL_FPoint src = { instance->PosX, instance->PosY };
@@ -231,8 +231,7 @@ void CodeExecutor::direction_to_instance(Instance*) {
 
 }
 
-// drawing
-	//null draw_sprite(sprite spr, float x, float y, float frame);Draw <sprite> on location (<float>,<float>) with target frame <frame>;Draw default sprite. To more options use draw_sprite_ex
+//null draw_sprite(sprite spr, float x, float y, float frame);Draw <sprite> on location (<float>,<float>) with target frame <frame>;Draw default sprite. To more options use draw_sprite_ex
 void CodeExecutor::draw_sprite(Instance*) {
 
 }
@@ -261,8 +260,7 @@ void CodeExecutor::draw_sprite_self(Instance* instance) {
 	instance->DrawSelf();
 }
 
-// draw shapes
-	//null draw_shape_rectangle(float x1, float y2, float x2, float y2, color color);Draw frame of rectangle from (<float>,<float>) to (<float>,<float>) with color <color>.;Draw rectangle on final coords;
+//null draw_shape_rectangle(float x1, float y2, float x2, float y2, color color);Draw frame of rectangle from (<float>,<float>) to (<float>,<float>) with color <color>.;Draw rectangle on final coords;
 void CodeExecutor::draw_shape_rectangle(Instance*) {
 
 }
@@ -302,8 +300,7 @@ void CodeExecutor::draw_shape_circle_filled_p(Instance*) {
 
 }
 
-// math
-	//int math_min_i(int a, int b);Get minimum value from <int> or <int>;
+//int math_min_i(int a, int b);Get minimum value from <int> or <int>;
 void CodeExecutor::math_min_i(Instance*) {
 
 }
@@ -323,8 +320,7 @@ void CodeExecutor::math_max(Instance*) {
 
 }
 
-// globals
-	//point global_get_mouse();Get point of current mouse postion;If map is bigger than screen this give map coords not screen;
+//point global_get_mouse();Get point of current mouse postion;If map is bigger than screen this give map coords not screen;
 void CodeExecutor::global_get_mouse(Instance*) {
 	StackOut(std::to_string(Core::GetInstance()->gMouse.X) + "," + std::to_string(Core::GetInstance()->gMouse.Y));
 }
@@ -362,10 +358,12 @@ void CodeExecutor::set_self_sprite(Instance* instance) {
 	instance->SpriteAnimationSpeed = 0.0f;
 	instance->SpriteAnimationLoop = false;
 }
+
 //float get_pos_x(); Get x coords of instance;
 void CodeExecutor::get_pos_x(Instance* instance) {
 	StackOut(std::to_string(instance->PosX));
 }
+
 //float get_pos_y(); Get y coords of instance;
 void CodeExecutor::get_pos_y(Instance* instance) {
 	StackOut(std::to_string(instance->PosY));
@@ -377,6 +375,7 @@ void CodeExecutor::sound_play(Instance*) {
 	if (sound == nullptr) return;
 	Mix_PlayChannel(-1, sound, 0);
 }
+
 void CodeExecutor::music_play(Instance*) {
 	int SoundId = StackIn_i;
 	Mix_Music* music = Core::GetInstance()->assetManager->GetMusic(SoundId);
