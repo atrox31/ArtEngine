@@ -1,5 +1,6 @@
 #include "Render.h"
 #include "Func.h"
+#include "ColorDefinitions.h"
 Render* Render::_instance = nullptr;
 
 void Render::CreateRender(int width, int height)
@@ -78,22 +79,47 @@ Render::~Render()
 	DestroyRender();
 }
 
-void Render::DrawTexture(GPU_Image* texture, vec2f postion, vec2f scale, float angle)
+void Render::DrawTexture(GPU_Image* texture, vec2f postion, vec2f scale, float angle, float alpha)
 {
+	bool alpha_flag = alpha < 1.0f;
+	if (alpha_flag) {
+		if (alpha < 0.0f) alpha = 0.0f;
+		if (alpha > 1.0f) alpha = 1.0f;
+		GPU_SetBlending(texture, true);
+		//GPU_GetBlendModeFromPreset(GPU_BlendPresetEnum::GPU_BLEND_MOD_ALPHA);
+		GPU_SetColor(texture, { (Uint8)255,(Uint8)255,(Uint8)255,(Uint8)(alpha * 255) });
+	}
 	GPU_BlitTransform(texture, NULL, _instance->_screenTexture_target, postion.x, postion.y, angle, scale.x, scale.y);
+	if (alpha_flag) {
+		GPU_SetBlending(texture, false);
+
+		GPU_SetColor(texture, C_FULL);
+	}
 }
 void Render::DrawSprite(Sprite* sprite, vec2f postion, int frame) {
-	DrawSprite_ex(sprite, postion.x, postion.y, frame, 1.0f, 1.0f, (float)sprite->GetCenterX(), (float)sprite->GetCenterY(), 0.0f);
+	DrawSprite_ex(sprite, postion.x, postion.y, frame, 1.0f, 1.0f, (float)sprite->GetCenterX(), (float)sprite->GetCenterY(), 0.0f, 1.0f);
 }
 
-void Render::DrawSprite_ex(Sprite* sprite, float posX, float posY, int frame, float scaleX, float scaleY, float centerX, float centerY, float angle) {
+void Render::DrawSprite_ex(Sprite* sprite, float posX, float posY, int frame, float scaleX, float scaleY, float centerX, float centerY, float angle, float alpha) {
 	if (sprite == nullptr) return;
 
 	if (frame > sprite->GetMaxFrame()) {
 		frame = frame % sprite->GetMaxFrame();
 	}
+
+	GPU_Image* target = sprite->GetFrame(frame);
+
+	bool alpha_flag = alpha < 1.0f;
+	if (alpha_flag) {
+		if (alpha < 0.0f) alpha = 0.0f;
+		if (alpha > 1.0f) alpha = 1.0f;
+		GPU_SetBlending(target, true);
+		//GPU_GetBlendModeFromPreset(GPU_BlendPresetEnum::GPU_BLEND_MOD_ALPHA);
+		GPU_SetColor(target, { (Uint8)255,(Uint8)255,(Uint8)255,(Uint8)(alpha * 255) });
+	}
+
 	GPU_BlitTransformX(
-		sprite->GetFrame(frame),
+		target,
 		NULL,
 		_instance->_screenTexture_target,
 		posX, posY,
@@ -101,6 +127,11 @@ void Render::DrawSprite_ex(Sprite* sprite, float posX, float posY, int frame, fl
 		angle,
 		scaleX, scaleY
 	);
+
+	if (alpha_flag) {
+		GPU_SetBlending(target, false);
+		GPU_SetColor(target, C_FULL);
+	}
 }
 
 void Render::DrawRect(GPU_Rect rect, SDL_Color color)

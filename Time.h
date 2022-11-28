@@ -19,6 +19,7 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const Time& dt) {
 		return os << dt.time.count() << "ms ";
 	}
+
 private:
 	std::chrono::steady_clock::time_point start;
 	std::chrono::steady_clock::time_point end; 

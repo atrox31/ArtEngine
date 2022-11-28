@@ -100,71 +100,36 @@ private:
 
 private:
 #define Script(x) static void x(Instance*);
-	// makers
-		//point new_point(float x, float y);Make point (<float>, <float>).;New point from value or other.
+//#AUTO_GENERATOR_START
 	Script(new_point);
-		//float new_direction(point from, point to);Make direction from <point> to <point>.;Value are from 0 to 359.
 	Script(new_direction)
-		//rectangle new_rectangle(int x1, int y1, int x2, int y2);Make rectangle from <int>, <int> to <int>, <int>.;This is const rectangle, not width and height.
 	Script(new_rectangle)
-		//rectangle new_rectangle_f(float x1, float y1, float x2, float y2);Make rectangle from <float>, <float> to <float>, <float>.;This is const rectangle, not width and height.
 	Script(new_rectangle_f);
-		//rectangle new_mask_from_sprite(sprite spr);Make rectangle mask from <sprite>;Cirkle mask is not supported yet.
 	Script(new_mask_from_sprite);
-	// assets
-		//sprite get_sprite(string name);Get asset handle by name <string>;Expensive function, try to not call it every frame. Call it to function and store.
 	Script(get_sprite);
-	//texture get_texture(string name);Get asset handle by name <string>;Expensive function, try to not call it every frame. Call it to function and store.
 	Script(get_texture);
-	//music get_music(string name);Get asset handle by name <string>;Expensive function, try to not call it every frame. Call it to function and store.
 	Script(get_music);
-	//sound get_sound(string name);Get asset handle by name <string>;Expensive function, try to not call it every frame. Call it to function and store.
 	Script(get_sound);
-	//font get_font(string name);Get asset handle by name <string>;Expensive function, try to not call it every frame. Call it to function and store.
 	Script(get_font);
-	// sprite
-		//int sprite_get_width(sprite spr);Get width of <sprite>;Get int value.
 	Script(sprite_get_width);
-	//int sprite_get_height(sprite spr);Get height of <sprite>;Get int value.
 	Script(sprite_get_height);
-	//int sprite_get_frames(sprite spr);Get frames number of <sprite>;Get int value.
 	Script(sprite_get_frames);
-	//null sprite_set_animation_speed(sprite spr, float speed);Set animation speed for <sprite> value <float> frames per seccond;Every sprite can have own animation speed
 	Script(sprite_set_animation_speed);
-	//null sprite_set_animation_loop(sprite spr, bool loop);Set animation loop for <sprite> value <bool>;Every animation end generate event ON_ANIMATION_END
 	Script(sprite_set_animation_loop);
-	// moving
-		//null move_to_point(point p, float speed);Move current instance to <point> with <speed> px per seccond.;Call it every frame.
 	Script(move_to_point);
-	//null move_forward(float speed);Move current instance forward with <speed> px per seccond.;Call it every frame. Function give build-in direction varible.
 	Script(move_forward);
-	//null move_instant(point p);Move instantly to target <point>;This changes x and y. Not cheking for collision;
 	Script(move_instant);
-	//null move_to_direction(float direction, float speed);Move instance toward direction of <float> (0-359) with <float> speed px per seccond;If direction is not in range its clipped to 360.
 	Script(move_to_direction);
-	// mesurment
-		// float direction_to_point(point p);Give direction to <point>;Measure distance from current instance to target point.
 	Script(direction_to_point);
-	// float direction_beetwen_point(point p1, point p2); Give direction from <point> to <point>; Measure distance.
 	Script(direction_beetwen_point);
-	// float direction_to_instance(instance i); Give direction to <instance>; Measure from current instance to target point.
 	Script(direction_to_instance);
-	//float distance_to_point(point p);Give distance to <point>;Measure from current instance to target point.
 	Script(distance_to_point);
-	//float distance_beetwen_point(point p1, point p2);Give distance from <point> to <point>;Measure distance.
 	Script(distance_beetwen_point);
-	//float distance_to_instance(instance i);Give distance to <point>;Measure from current instance to target point.
 	Script(distance_to_instance);
-	// drawing
-		//null draw_sprite(sprite spr, float x, float y, float frame);Draw <sprite> on location (<float>,<float>) with target frame <frame>;Draw default sprite. To more options use draw_sprite_ex
 	Script(draw_sprite);
-	//null draw_sprite_ex(sprite spr, float x, float y, float frame, float x_scale, float y_scale, float angle, float alpha);Draw <sprite> on location (<float>,<float>) with target frame <frame>;Draw sprite.
 	Script(draw_sprite_ex);
-	//null draw_texture(texture tex, float x, float y);Draw <texture> on (<float>,<float>).;Draw standard texture with it normal dimensions. For extended option use 'Draw texture extended';
 	Script(draw_texture);
-	//null draw_texture_ex(texture tex, float x, float y, float x_scale, float y_scale, float angle, float alpha);Draw <texture> on (<float>,<float>), with scale (<float>,<float>), angle <float> and aplha <float>;Angle range is (0 - 359) alpha (0.0f - 1.0f).
 	Script(draw_texture_ex);
-	//null draw_sprite_self();Draw self sprite on self coords with sprite scale and angle;Use build-in varibles;
 	Script(draw_sprite_self);
 	// draw shapes
 		//null draw_shape_rectangle(float x1, float y2, float x2, float y2, color color);Draw frame of rectangle from (<float>,<float>) to (<float>,<float>) with color <color>.;Draw rectangle on final coords;

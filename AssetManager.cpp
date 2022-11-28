@@ -1,4 +1,4 @@
-#include "AssetManager.h"
+#include "assetManager.h"
 #include "Debug.h"
 #define elseif else if
 

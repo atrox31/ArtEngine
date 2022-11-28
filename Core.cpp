@@ -42,7 +42,8 @@ Core::Core()
     fps = 0;
     frames = 0;
     _current_scene = nullptr;
-    _show_fps = false;
+    _show_fps = false; 
+    assetManager = new AssetManager();
     //SettingsData = std::map<std::string, std::string>();
     //_scene_list = std::vector<Scene>();
 }
@@ -51,8 +52,8 @@ Core::~Core()
 {
     Executor.Delete();
     Render::DestroyRender();
-    assetManager.ClearData();
-    //delete assetManager;
+    assetManager->ClearData();
+    delete assetManager;
     GPU_FreeTarget(_screenTarget);
     SettingsData.clear();
     /// <summary>

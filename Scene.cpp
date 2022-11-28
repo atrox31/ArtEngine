@@ -165,17 +165,40 @@ plf::colony<Instance*>* Scene::GetAllInstances()
 	//TODO: add new instances to current
 	return &_instances;
 }
-/*
-Instance* Scene::CreateInstance(Instance* Instance)
+Instance* Scene::GetInstanceById(int id)
 {
-	_instances_size++;
-	_instances_new.push_back(Instance);
-	//Instance->Parrent = this;
-	return Instance;
+	for (Instance* instance : _instances) {
+		if (instance->GetId() == id) return instance;
+	}
+	return nullptr;
 }
-
-void Scene::DeleteInstance(Instance*)
+Instance* Scene::GetInstanceByTag(std::string tag)
 {
-	_instances_size--;
+	for (Instance* instance : _instances) {
+		if (instance->Tag == tag) return instance;
+	}
+	return nullptr;
 }
-*/
+Instance* Scene::GetInstanceByName(std::string name)
+{
+	for (Instance* instance : _instances) {
+		if (instance->Name == name) return instance;
+	}
+	return nullptr;
+}
+std::vector<Instance*> Scene::GetInstancesByTag(std::string tag)
+{
+	std::vector<Instance*> _return;
+	for (Instance* instance : _instances) {
+		if (instance->Tag == tag) _return.push_back(instance);
+	}
+	return _return;
+}
+std::vector<Instance*> Scene::GetInstancesByName(std::string name)
+{
+	std::vector<Instance*> _return;
+	for (Instance* instance : _instances) {
+		if (instance->Name == name) _return.push_back(instance);
+	}
+	return _return;
+}

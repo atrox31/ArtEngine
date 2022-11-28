@@ -28,6 +28,13 @@ public:
 
 	plf::colony<Instance*>* GetAllInstances();
 
+	Instance* GetInstanceById(int);
+	Instance* GetInstanceByTag(std::string);
+	Instance* GetInstanceByName(std::string);
+
+	std::vector < Instance* > GetInstancesByTag(std::string);
+	std::vector < Instance* > GetInstancesByName(std::string);
+
 private:
 	//TODO GUI GuiFile
 	int Width;

@@ -51,5 +51,5 @@ void Instance::DrawSelf()
 	if (!SpriteAnimationLoop && SpriteAnimationFrame > SelfSprite->GetMaxFrame()) {
 		SpriteAnimationSpeed = 0.0f;
 	}
-	Render::DrawSprite_ex(SelfSprite, PosX, PosY , (int)SpriteAnimationFrame,  SpriteScaleX, SpriteScaleY, SpriteCenterX, SpriteCenterY, SpriteAngle);
+	Render::DrawSprite_ex(SelfSprite, PosX, PosY , (int)SpriteAnimationFrame,  SpriteScaleX, SpriteScaleY, SpriteCenterX, SpriteCenterY, SpriteAngle, 1.0f);
 }
