@@ -497,7 +497,12 @@ void CodeExecutor::h_execute_function(Inspector* code, Instance* instance)
 		while (args-- > 0) {
 			h_get_value(code, instance);
 		}
-		FunctionsList[function_index](instance);
+		if (FunctionsList[function_index] != nullptr) {
+			FunctionsList[function_index](instance);
+		}
+		else {
+			//TODO: error?
+		}
 		break;
 	}
 

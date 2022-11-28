@@ -22,7 +22,7 @@
 #ifdef _DEBUG
 	#pragma comment(lib, "SDL2/SDL2_gpu-0.12.0-msvc/SDL2_gpu/debug/x64/SDL2_gpu.lib")
 #else
-	#pragma comment(lib, "SDL2/SDL2_gpu-0.12.0-msvc/SDL2_gpu/debug/x64/SDL2_gpu.lib")
+	#pragma comment(lib, "SDL2/SDL2_gpu-0.12.0-msvc/SDL2_gpu/release/x64/SDL2_gpu.lib")
 #endif
 
 // for using graphic card

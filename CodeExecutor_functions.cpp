@@ -73,7 +73,8 @@ void CodeExecutor::new_point(Instance*) {
 
 //float new_direction(point from, point to);Make direction from <point> to <point>.;Value are from 0 to 359.
 void CodeExecutor::new_direction(Instance*) {
-
+	//redirect
+	direction_beetwen_point(nullptr);
 }
 
 //rectangle new_rectangle(int x1, int y1, int x2, int y2);Make rectangle from <int>, <int> to <int>, <int>.;This is const rectangle, not width and height.
