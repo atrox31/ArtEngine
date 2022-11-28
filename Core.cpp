@@ -78,8 +78,14 @@ bool Core::Init(int argc, char* args[])
 {
     Debug::LOG("start");
     // flags
+#ifdef _DEBUG
     const char* FL_game_dat_file = "test\\game.dat";
     const char* FL_assets_file = "test\\assets.pak";
+#else //release
+    const char* FL_game_dat_file = "game.dat";
+    const char* FL_assets_file = "assets.pak";
+#endif// _DEBUG
+
     // args
     for (int i = 1; i < argc; i++) {
         std::string argument(args[i]);
