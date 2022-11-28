@@ -24,8 +24,12 @@ Sprite::~Sprite()
 	m_texture.clear();
 }
 
-void Sprite::Delete(Sprite*)
+void Sprite::Delete(Sprite* target)
 {
+	for (auto t : target->m_texture) {
+		GPU_FreeImage(t);
+	}
+	target->m_texture.clear();
 }
 
 Sprite* Sprite::Load(const char* data, Sint64 size)
