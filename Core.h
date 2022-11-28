@@ -150,7 +150,7 @@ public:
 	// inner list
 	FC_Font* _global_font;
 	std::vector<std::string> ProgramArguments;
-	AssetManager* assetManager;
+	AssetManager assetManager;
 	// scene
 	Scene* _current_scene;
 	std::vector<Scene> _scene_list;
