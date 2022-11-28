@@ -102,8 +102,8 @@ private:
 #define Script(x) static void x(Instance*);
 //#AUTO_GENERATOR_START
 	Script(new_point);
-	Script(new_direction)
-	Script(new_rectangle)
+	Script(new_direction);
+	Script(new_rectangle);
 	Script(new_rectangle_f);
 	Script(new_mask_from_sprite);
 	Script(get_sprite);
@@ -120,56 +120,35 @@ private:
 	Script(move_forward);
 	Script(move_instant);
 	Script(move_to_direction);
-	Script(direction_to_point);
-	Script(direction_beetwen_point);
-	Script(direction_to_instance);
 	Script(distance_to_point);
 	Script(distance_beetwen_point);
 	Script(distance_to_instance);
+	Script(direction_to_point);
+	Script(direction_beetwen_point);
+	Script(direction_to_instance);
 	Script(draw_sprite);
 	Script(draw_sprite_ex);
 	Script(draw_texture);
 	Script(draw_texture_ex);
 	Script(draw_sprite_self);
-	// draw shapes
-		//null draw_shape_rectangle(float x1, float y2, float x2, float y2, color color);Draw frame of rectangle from (<float>,<float>) to (<float>,<float>) with color <color>.;Draw rectangle on final coords;
 	Script(draw_shape_rectangle);
-	//null draw_shape_rectangle_r(rectangle rect, color color);Draw frame of <rectangle> with color <color>.;Draw rectangle;
 	Script(draw_shape_rectangle_r);
-	//null draw_shape_rectangle_filled(float x1, float y2, float x2, float y2, color color);Draw filled of rectangle from (<float>,<float>) to (<float>,<float>) with color <color>.;Draw rectangle on final coords;
 	Script(draw_shape_rectangle_filled);
-	//null draw_shape_rectangle_filled_r(rectangle rect, color color);Draw filled <rectangle> with color <color>.;Draw rectangle;
 	Script(draw_shape_rectangle_filled_r);
-	//null draw_shape_circle(float x, float y, float radius, color color);Draw circle in point (<float>,<float>) with radius <float> and color <color>;
 	Script(draw_shape_circle);
-	//null draw_shape_circle_p(point p, float radius, color color);Draw circle in point <point> with radius <float> and color <color>;
 	Script(draw_shape_circle_p);
-	//null draw_shape_circle_filled(float x, float y, float radius, color color);Draw filled circle in point (<float>,<float>) with radius <float> and color <color>;
 	Script(draw_shape_circle_filled);
-	//null draw_shape_circle_filled_p(point p, float radius, color color);Draw filled circle in point <point> with radius <float> and color <color>;
 	Script(draw_shape_circle_filled_p);
-	// math
-		//int math_min_i(int a, int b);Get minimum value from <int> or <int>;
 	Script(math_min_i);
-	//int math_max_i(int a, int b);Get maximum value from <int> or <int>;
 	Script(math_max_i);
-	//float math_min(float a, float b);Get minimum value from <float> or <float>;
 	Script(math_min);
-	//float math_max(float a, float b);Get maximum value from <float> or <float>;
 	Script(math_max);
-	// globals
-		//point global_get_mouse();Get point of current mouse postion;If map is bigger than screen this give map coords not screen;
 	Script(global_get_mouse);
-	// set
-		//null set_self_sprite(sprite spr); Set self sprite to <sprite> with default scale, angle, speed, loop; You can mod sprite via set_sprite_ etc.;
 	Script(set_self_sprite);
-	//float get_pos_x(); Get x coords of instance;
 	Script(get_pos_x);
-	//float get_pos_y(); Get y coords of instance;
 	Script(get_pos_y);
-	//
 	Script(sound_play);
 	Script(music_play);
 #undef Script
 };
-
+//end of file

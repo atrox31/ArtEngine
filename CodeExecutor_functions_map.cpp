@@ -1,5 +1,6 @@
 #include "CodeExecutor.h"
 //this file is auto generated from ArtLibGenerator
+//do not edit anything bellow
 void CodeExecutor::MapFunctions()
 {
 	FunctionsMap.clear();
