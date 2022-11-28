@@ -129,7 +129,7 @@
       <Filter>Functions</Filter>
     </ClCompile>
     <ClCompile Include="CodeExecutor_functions_map.cpp">
-      <Filter>Core</Filter>
+      <Filter>Core\ArtCode</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
