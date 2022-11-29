@@ -2398,6 +2398,34 @@ FC_Rect FC_DrawScale(FC_Font* font, FC_Target* dest, float x, float y, FC_Scale 
     return FC_RenderLeft(font, dest, x, y, scale, fc_buffer);
 }
 
+FC_Rect FC_DrawAlignColor(FC_Font* font, FC_Target* dest, float x, float y, FC_AlignEnum align, SDL_Color color, const char* formatted_text, ...)
+{
+    if (formatted_text == NULL || font == NULL)
+        return FC_MakeRect(x, y, 0, 0);
+
+    FC_EXTRACT_VARARGS(fc_buffer, formatted_text);
+
+    set_color_for_all_caches(font, color);
+
+    FC_Rect result;
+    switch (align)
+    {
+    case FC_ALIGN_LEFT:
+        result = FC_RenderLeft(font, dest, x, y, FC_MakeScale(1, 1), fc_buffer);
+        break;
+    case FC_ALIGN_CENTER:
+        result = FC_RenderCenter(font, dest, x, y, FC_MakeScale(1, 1), fc_buffer);
+        break;
+    case FC_ALIGN_RIGHT:
+        result = FC_RenderRight(font, dest, x, y, FC_MakeScale(1, 1), fc_buffer);
+        break;
+    default:
+        result = FC_MakeRect(x, y, 0, 0);
+        break;
+    }
+
+    return result;
+}
 FC_Rect FC_DrawAlign(FC_Font* font, FC_Target* dest, float x, float y, FC_AlignEnum align, const char* formatted_text, ...)
 {
     if(formatted_text == NULL || font == NULL)
