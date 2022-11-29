@@ -2,6 +2,7 @@
 #ifdef _DEBUG
 #include <chrono>
 #include <ostream>
+#include <iostream>
 using std::chrono::high_resolution_clock;
 using std::chrono::duration_cast;
 using std::chrono::duration;
@@ -18,6 +19,9 @@ public:
 	}
 	friend std::ostream& operator<<(std::ostream& os, const Time& dt) {
 		return os << dt.time.count() << "ms ";
+	}
+	void PrintTest(std::string test) {
+		std::cout << "test '" << test << "' complite. Time: " << time.count() << std::endl;
 	}
 
 private:
