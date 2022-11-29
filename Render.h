@@ -3,6 +3,7 @@
 #include "SDL_version.h"
 #include "vec2f.h"
 #include "Sprite.h"
+#include "SDL2/SDL_FontCache-master/SDL_FontCache.h"
 #pragma warning(push)
 #include SDL2_INCLUDE_DIR
 #include SDL2_IMAGE_INCLUDE_DIR
@@ -31,6 +32,10 @@ public:
 
 	static void DrawTriangle(vec2f a, vec2f b, vec2f c, SDL_Color color);
 	static void DrawTriangleFilled(vec2f a, vec2f b, vec2f c, SDL_Color color);
+
+	// text
+	static void DrawText(std::string, FC_Font*, vec2f, SDL_Color);
+	static void DrawTextAlign(std::string, FC_Font*, vec2f, SDL_Color, FC_AlignEnum);
 
 	// system
 	static void RenderToTarget(GPU_Target* target);

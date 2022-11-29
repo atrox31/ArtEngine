@@ -148,6 +148,9 @@ private:
 	Script(get_pos_y);
 	Script(sound_play);
 	Script(music_play);
+	Script(sprite_next_frame);
+	Script(sprite_prev_frame);
+	Script(sprite_set_frame);
 #undef Script
 };
 //end of file

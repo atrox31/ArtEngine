@@ -403,8 +403,8 @@ void CodeExecutor::set_self_sprite(Instance* instance) {
 
 			instance->SpriteScaleX = 1.0f;
 			instance->SpriteScaleY = 1.0f;
-			instance->SpriteCenterX = sprite->GetCenterX();
-			instance->SpriteCenterY = sprite->GetCenterY();
+			instance->SpriteCenterX = (int)sprite->GetCenterX();
+			instance->SpriteCenterY = (int)sprite->GetCenterY();
 			instance->SpriteAngle = 0.0f;
 			instance->SpriteAnimationFrame = 0.0f;
 			instance->SpriteAnimationSpeed = 60.0f;
@@ -449,4 +449,42 @@ void CodeExecutor::music_play(Instance*) {
 	Mix_Music* music = Core::GetInstance()->assetManager->GetMusic(SoundId);
 	if (music == nullptr) return;
 	Mix_PlayMusic(music, 0);
+}
+
+//null sprite_next_frame(); Set SelfSprite next frame; If sprite loop is enable, frame = 0 if frame > frame_max;
+void CodeExecutor::sprite_next_frame(Instance* sender) {
+	if (sender->SelfSprite == nullptr) return;
+	if ( (int)(++sender->SpriteAnimationFrame) >= sender->SelfSprite->GetMaxFrame()) {
+		if (sender->SpriteAnimationLoop) {
+			sender->SpriteAnimationFrame = 0;
+		}
+		else {
+			sender->SpriteAnimationFrame = (float)sender->SelfSprite->GetMaxFrame();
+		}
+	}
+}
+
+//null sprite_prev_frame(); Set SelfSprite previus frame; If sprite loop is enable, frame = frame_max if frame < frame_max 0;
+void CodeExecutor::sprite_prev_frame(Instance* sender) {
+	if (sender->SelfSprite == nullptr) return;
+	if ( (int)(--sender->SpriteAnimationFrame) < 0) {
+		if (sender->SpriteAnimationLoop) {
+			sender->SpriteAnimationFrame = (float)sender->SelfSprite->GetMaxFrame() - 1;
+		}
+		else {
+			sender->SpriteAnimationFrame = 0.0f;
+		}
+	}
+}
+
+//null sprite_set_frame(int frame); Set SelfSprite frame no <int>.; If frame is not exists nothing happen;
+void CodeExecutor::sprite_set_frame(Instance* sender) {
+	int frame = StackIn_i;
+	if (frame < 0 || frame >= sender->SelfSprite->GetMaxFrame()) return;
+	sender->SpriteAnimationFrame = (float)frame;
+}
+
+//null empty_do_nothing();Do nothing, empty action;Use when there is no else in if
+void empty_do_nothing(Instance*) {
+	return;
 }

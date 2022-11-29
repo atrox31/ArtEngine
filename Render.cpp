@@ -149,6 +149,7 @@ void Render::DrawRectFilled(GPU_Rect rect, SDL_Color color)
 	GPU_RectangleFilled(_instance->_screenTexture_target, rect.x, rect.y, rect.w, rect.h, color);
 }
 
+
 void Render::DrawCircle(vec2f postion, float radius, SDL_Color color)
 {
 	GPU_Circle(_instance->_screenTexture_target, postion.x, postion.y, radius, color);
@@ -187,6 +188,16 @@ void Render::ApplyBloom()
 
 	GPU_ActivateShaderProgram(0, NULL);
 	//GPU_BlitRect(_bloomTexture, NULL, _screenTexture_target, NULL);
+}
+
+void Render::DrawText(std::string text,FC_Font* font, vec2f pos, SDL_Color color)
+{
+	DrawTextAlign(text, font, pos, color, FC_ALIGN_CENTER);
+}
+
+void Render::DrawTextAlign(std::string text, FC_Font* font, vec2f pos, SDL_Color color, FC_AlignEnum align)
+{
+	FC_DrawAlignColor(font, _instance->_screenTexture_target, pos.x, pos.y, align, color, text.c_str());
 }
 
 void Render::RenderToTarget(GPU_Target* target)

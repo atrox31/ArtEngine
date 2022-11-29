@@ -28,10 +28,16 @@ public:
 	};
 
 	constexpr inline float GetCenterX() {
-		return (float)m_center_x;
+		return (float)(m_center_x);
 	};
 	constexpr inline float GetCenterY() {
-		return (float)m_center_y;
+		return (float)(m_center_y);
+	};
+	constexpr inline float GetCenterXRel() {
+		return (float)(-m_center_x + m_width / 2);
+	};
+	constexpr inline float GetCenterYRel() {
+		return (float)(-m_center_y + m_height / 2);
 	};
 	
 	constexpr inline int GetWidth() {

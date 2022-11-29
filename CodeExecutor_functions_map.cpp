@@ -51,5 +51,8 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["get_pos_y"] = &CodeExecutor::get_pos_y;
 	FunctionsMap["sound_play"] = &CodeExecutor::sound_play;
 	FunctionsMap["music_play"] = &CodeExecutor::music_play;
+	FunctionsMap["sprite_next_frame"] = &CodeExecutor::sprite_next_frame;
+	FunctionsMap["sprite_prev_frame"] = &CodeExecutor::sprite_prev_frame;
+	FunctionsMap["sprite_set_frame"] = &CodeExecutor::sprite_set_frame;
 }
 //end of file

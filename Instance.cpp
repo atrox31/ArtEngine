@@ -66,12 +66,58 @@ bool Instance::CheckMaskClick(SDL_FPoint& point)
 
 	if (MaskType == Sprite::MaskType::circle) {
 		SDL_FPoint spoint{ 
-			PosX - (SelfSprite->GetWidth() / 2 - SelfSprite->GetCenterX()),
-			PosY - (SelfSprite->GetHeight() / 2 - SelfSprite->GetCenterY())
+			PosX + SelfSprite->GetCenterXRel(),
+			PosY + SelfSprite->GetCenterYRel()
 		};
 		const float distance = Func::Distance(point, spoint);
 		return (distance <= MaskValue);
 	}
+	if (MaskType == Sprite::MaskType::rectangle) {
+		Rect spoint{
+			PosX - SelfSprite->GetMaskValue(),
+			PosY - SelfSprite->GetMaskValue(),
+			PosX + SelfSprite->GetMaskValue(),
+			PosY + SelfSprite->GetMaskValue()
+		};
+		SDL_FPoint mov{ SelfSprite->GetCenterXRel(), SelfSprite->GetCenterYRel() };
+		spoint += mov;
+		return spoint.PointInRect(point);
+	}
 
 	return false;
 }
+
+#ifdef _DEBUG
+void Instance::DebugDrawMask() {
+	if (SelfSprite == nullptr) return;
+
+	const Sprite::MaskType MaskType = SelfSprite->GetMaskType();
+	if (MaskType == Sprite::MaskType::none) return;
+
+	const int MaskValue = SelfSprite->GetMaskValue();
+	if (MaskValue < 1) return;
+
+	if (MaskType == Sprite::MaskType::circle) {
+		SDL_FPoint spoint{
+			PosX + SelfSprite->GetCenterXRel(),
+			PosY + SelfSprite->GetCenterYRel()
+		};
+		Render::DrawCircle(spoint, SelfSprite->GetMaskValue(), C_RED);
+		return;
+	}
+	if (MaskType == Sprite::MaskType::rectangle) {
+		Rect spoint{
+			PosX -  SelfSprite->GetMaskValue(),
+			PosY -  SelfSprite->GetMaskValue(),
+			PosX +  SelfSprite->GetMaskValue(),
+			PosY + SelfSprite->GetMaskValue()
+		};
+		SDL_FPoint mov{ SelfSprite->GetCenterXRel(), SelfSprite->GetCenterYRel() };
+		spoint += mov;
+		Render::DrawRect(spoint.ToGPU_Rect(), C_RED);
+		//Render::DrawCircle(spoint, SelfSprite->GetMaskValue(), C_RED);
+	}
+
+}
+#endif // _DEBUG
+

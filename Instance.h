@@ -51,6 +51,12 @@ public:
 
 	std::vector<std::vector<std::string>> Varibles;
 	EventBit EventFlag;
+
+
+#ifdef _DEBUG
+	void DebugDrawMask();
+#endif // _DEBUG
+
 private:
 	Uint64 _id = 0;
 	static Uint64 _cid;

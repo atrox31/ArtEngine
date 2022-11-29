@@ -322,6 +322,7 @@ int Core::Run()
     bool Ev_OnKeyboardInputDown = false;
     bool Ev_OnKeyboardInputUp = false;
     bool Ev_OnControllerInput = false;
+    bool Ev_ClickedDone = false;
     Uint32 bstate;
     while (true) {
         if (_instance._current_scene == nullptr) return EXIT_FAILURE;
@@ -348,6 +349,7 @@ int Core::Run()
         Ev_OnKeyboardInputDown = false;
         Ev_OnKeyboardInputUp = false;
         Ev_OnControllerInput = false;
+        Ev_ClickedDone = false;
 
         SDL_Event e;
         while (SDL_PollEvent(&e) != 0) {
@@ -468,9 +470,10 @@ int Core::Run()
                             if (EventBitTest(EventBit::HAVE_MOUSE_EVENT_DOWN, c_flag) && Ev_OnMouseInputDown) {
                                 _instance.Executor.ExecuteScript((*it), Event::EV_ONMOUSE_DOWN);
                             }
-                            if (EventBitTest(EventBit::HAVE_MOUSE_EVENT_CLICK, c_flag) && Ev_OnMouseInputDown) {
+                            if (!Ev_ClickedDone && EventBitTest(EventBit::HAVE_MOUSE_EVENT_CLICK, c_flag) && Ev_OnMouseInputDown) {
                                 if ((*it)->CheckMaskClick(_instance.gMouse.XYf)) {
                                     _instance.Executor.ExecuteScript((*it), Event::EV_CLICKED);
+                                    Ev_ClickedDone = true;
                                 }
                             }
                         }
@@ -490,12 +493,34 @@ int Core::Run()
             for (Instance* instance : *_instance._current_scene->GetAllInstances()) {
                 if (instance->InView || true) {
                     _instance.Executor.ExecuteScript(instance, Event::EV_DRAW);
-                    Render::DrawCircle({ instance->PosX, instance->PosY }, 8, C_BLACK);
+
                 }
                 //std::string name = (*it)->Name;
                 //FC_DrawAlign(_instance._global_font, _instance._screenTarget, (*it)->PosX, (*it)->PosY, FC_AlignEnum::FC_ALIGN_CENTER, name.c_str());
             }
         }
+
+        // DEBUG DRAW
+#ifdef _DEBUG
+        if (_instance._current_scene->IsAnyInstances()) {
+            for (Instance* instance : *_instance._current_scene->GetAllInstances()) {
+
+                Render::DrawCircle({ instance->PosX, instance->PosY }, 4, C_BLACK);
+                Render::DrawCircle({ instance->PosX + instance->SelfSprite->GetCenterXRel(), instance->PosY + instance->SelfSprite->GetCenterYRel() }, 6, C_GOLD);
+
+                instance->DebugDrawMask();
+                
+                Render::DrawText(
+                    instance->Name + "#" + std::to_string(instance->GetId()) + "[" + std::to_string((int)instance->PosX) + "," + std::to_string((int)instance->PosY) + "]",
+                    _instance._global_font,
+                    { instance->PosX, instance->PosY },
+                    C_RED
+                );
+            }
+            
+        }
+#endif // _DEBUG
+
 
         //Art::Render::RenderToTarget(Art::Core::GetScreenTarget());
         Render::RenderToTarget(Core::GetScreenTarget());
