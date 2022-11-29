@@ -4,7 +4,7 @@
 
 const float Func::Distance(SDL_FPoint& p1, SDL_FPoint& p2)
 {
-	return (float)(std::sqrt(std::pow(p2.x - p1.x, 2) + std::pow(p2.y - p1.y, 2)));
+	return std::hypotf(p2.x - p1.x, p2.y - p1.y);
 }
 
 bool Func::IsHex(std::string& value)
