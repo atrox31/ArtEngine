@@ -57,6 +57,7 @@
 ENUM_WITH_STRING_CONVERSION(
     Event,
     (EV_ONCREATE)
+    (EV_ONDESTROY)
     (DEF_VALUES)
 
     (EV_ONKEY_DOWN)
@@ -97,7 +98,7 @@ enum class EventBit : _e_type {
 
     HAVE_COLLISION =            1 << 9,
     HAVE_TRIGGER =              1 << 10,
-    HAVE_VIEVCHANGE =           1 << 11,
+    HAVE_VIEWCHANGE =           1 << 11,
 
 };
 EventBit EventBitFromEvent(Event);

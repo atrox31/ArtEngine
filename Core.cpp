@@ -33,6 +33,8 @@ void Core::audio::Apply()
 
 Core::Core()
 {
+    m_window = nullptr;
+    Consola = nullptr;
     _screenTarget = nullptr;
     DeltaTime = 0.0;
     LAST = 0;
@@ -464,14 +466,34 @@ int Core::Run()
             plf::colony<Instance*>* AllInstances = _instance._current_scene->GetAllInstances();
             for (plf::colony<Instance*>::iterator it = AllInstances->begin(); it != AllInstances->end();) {
                 if ((*it)->Alive) {
+                    // step
                     _instance.Executor.ExecuteScript((*it), Event::EV_STEP);
+                    EventBit c_flag = (*it)->EventFlag;
 
-                    //todo
-                    (*it)->InView = true;
+                    // inview
+                    if ((*it)->Alive) {
+                        //TODO: implement camera system
+                        Rect screen{ 0,0,_instance.GetScreenWidth(), _instance.GetScreenHeight() };
+                        SDL_FPoint pos{ (*it)->PosX, (*it)->PosY };
+                        bool oldInView = (*it)->InView;
+                        (*it)->InView = screen.PointInRect(pos);
+                        if ((*it)->InView != oldInView) {
+                            if (EventBitTest(EventBit::HAVE_VIEWCHANGE, c_flag)) {
+                                if (oldInView == true) { // be inside, now exit view
+                                    _instance.Executor.ExecuteScript((*it), Event::EV_ONVIEW_LEAVE);
+                                }
+                                else {
+                                    _instance.Executor.ExecuteScript((*it), Event::EV_ONVIEW_ENTER);
+                                }
+                            }
+                        }
+                    }
 
+                    // collision
+
+
+                    // input
                     if (Ev_Input && (*it)->Alive) {
-                        EventBit c_flag = (*it)->EventFlag;
-
                         if (EventBitTest(EventBit::HAVE_MOUSE_EVENT, c_flag)) {
                             if (EventBitTest(EventBit::HAVE_MOUSE_EVENT_UP, c_flag) && Ev_OnMouseInputUp) {
                                 _instance.Executor.ExecuteScript((*it), Event::EV_ONMOUSE_UP);
@@ -492,6 +514,7 @@ int Core::Run()
                 }
                 else {
                     //TODO: Event::EV_ONDESTROY
+                    _instance.Executor.ExecuteScript((*it), Event::EV_ONDESTROY);
                     it = AllInstances->erase(it);
                 }
             }
@@ -500,7 +523,7 @@ int Core::Run()
         //Art::Core::GetInstance()->Run_sceneDraw();
         if (_instance._current_scene->IsAnyInstances()){
             for (Instance* instance : *_instance._current_scene->GetAllInstances()) {
-                if (instance->InView || true) {
+                if (instance->InView) {
                     _instance.Executor.ExecuteScript(instance, Event::EV_DRAW);
 
                 }

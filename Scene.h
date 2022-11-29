@@ -16,7 +16,7 @@ public:
 	void Start();
 	void Exit();
 
-	void CreateInstance(std::string name, float x, float y);
+	Instance* CreateInstance(std::string name, float x, float y);
 private:
 	bool _is_any_new_instances;
 public:
@@ -35,6 +35,9 @@ public:
 	std::vector < Instance* > GetInstancesByTag(std::string);
 	std::vector < Instance* > GetInstancesByName(std::string);
 
+	// collision
+	int CurrentCollisionInstanceId;
+	Instance* CurrentCollisionInstance;
 private:
 	//TODO GUI GuiFile
 	int Width;

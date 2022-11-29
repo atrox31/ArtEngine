@@ -102,7 +102,7 @@ void Instance::DebugDrawMask() {
 			PosX + SelfSprite->GetCenterXRel(),
 			PosY + SelfSprite->GetCenterYRel()
 		};
-		Render::DrawCircle(spoint, SelfSprite->GetMaskValue(), C_RED);
+		Render::DrawCircle(spoint, (float)SelfSprite->GetMaskValue(), C_RED);
 		return;
 	}
 	if (MaskType == Sprite::MaskType::rectangle) {

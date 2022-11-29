@@ -36,10 +36,10 @@ EventBit EventBitFromEvent(Event event) {
 		flag = flag | EventBit::HAVE_COLLISION;
 		break;
 	case EV_ONVIEW_ENTER:
-		flag = flag | EventBit::HAVE_VIEVCHANGE;
+		flag = flag | EventBit::HAVE_VIEWCHANGE;
 		break;
 	case EV_ONVIEW_LEAVE:
-		flag = flag | EventBit::HAVE_VIEVCHANGE;
+		flag = flag | EventBit::HAVE_VIEWCHANGE;
 		break;
 	case EV_CLICKED:
 		flag = flag | EventBit::HAVE_MOUSE_EVENT;

@@ -17,6 +17,7 @@
 class Instance {
 public:
 	Instance(int InstanceDefinitionId);
+	// do not use, this give unique id for instance
 	Instance* GiveId();
 	virtual ~Instance();
 
@@ -52,7 +53,17 @@ public:
 	std::vector<std::vector<std::string>> Varibles;
 	EventBit EventFlag;
 
-
+	struct BodyType {
+	public:
+		ENUM_WITH_STRING_CONVERSION(Body,(NONE)(SPRITE)(RECT)(CIRCLE));
+		Body Type;
+		int Value;
+		BodyType() {
+			Type = Body::NONE;
+			Value = 0;
+		}
+	};
+	BodyType Body;
 #ifdef _DEBUG
 	void DebugDrawMask();
 #endif // _DEBUG
