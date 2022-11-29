@@ -183,6 +183,11 @@ bool CodeExecutor::LoadObjectDefinitions()
 		if (instance._events.size() > 0) {
 			std::sort(instance._events.begin(), instance._events.end());
 			InstanceDefinitions.push_back(instance);
+
+			for (auto& event : instance._events) {
+				instance._template->EventFlag = (instance._template->EventFlag | EventBitFromEvent(event.event));
+			}
+
 			ExecuteScript(instance._template, Event::DEF_VALUES);
 		}
 	}

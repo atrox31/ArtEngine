@@ -131,6 +131,9 @@
     <ClCompile Include="CodeExecutor_functions_map.cpp">
       <Filter>Core\ArtCode</Filter>
     </ClCompile>
+    <ClCompile Include="Event.cpp">
+      <Filter>Structs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core.h">

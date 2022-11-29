@@ -16,7 +16,6 @@ void BackGroundRenderer::SetProgress(int progress)
         return;
     }
     SDL_SemWait(bg_data_lock);
-    std::cout << progress << "%" << std::endl;
     bg_target_percent = progress;
     SDL_SemPost(bg_data_lock);
 }
@@ -27,6 +26,11 @@ void BackGroundRenderer::Stop()
         Debug::WARNING("BackGroundRenderer: can not stop process, thread is not running!");
         return;
     }
+
+    SDL_SemWait(bg_data_lock);
+        std::cout << "bg:" << bg_target_percent << "%" << std::endl;
+    SDL_SemPost(bg_data_lock);
+
     SetProgress(-1);
     SDL_WaitThread(bg_renderer, NULL);
     SDL_DestroySemaphore(bg_data_lock);

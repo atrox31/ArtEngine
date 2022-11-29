@@ -10,9 +10,7 @@ Instance::Instance(int InstanceDefinitionId)
 
 	this->InView = false;
 	this->Alive = true;
-
-	this->E_MaskClicked = false;
-	this->Mask = Rect();
+	this->IsCollider = false;
 
 	this->PosX = 0.0f;
 	this->PosY = 0.0f;
@@ -21,13 +19,14 @@ Instance::Instance(int InstanceDefinitionId)
 	this->SelfSprite = nullptr;
 	this->SpriteScaleX = 0.0f;
 	this->SpriteScaleY = 0.0f;
-	this->SpriteCenterX = 0.0f;
-	this->SpriteCenterY = 0.0f;
+	this->SpriteCenterX = 0;
+	this->SpriteCenterY = 0;
 	this->SpriteAngle = 0.0f;
 
 	this->SpriteAnimationFrame = 0.0f;
 	this->SpriteAnimationSpeed = 60.0f;
 	this->SpriteAnimationLoop = true;
+	this->EventFlag = EventBit::NONE;
 }
 
 Instance* Instance::GiveId()
@@ -51,5 +50,24 @@ void Instance::DrawSelf()
 	if (!SpriteAnimationLoop && SpriteAnimationFrame > SelfSprite->GetMaxFrame()) {
 		SpriteAnimationSpeed = 0.0f;
 	}
-	Render::DrawSprite_ex(SelfSprite, PosX, PosY , (int)SpriteAnimationFrame,  SpriteScaleX, SpriteScaleY, SpriteCenterX, SpriteCenterY, SpriteAngle, 1.0f);
+	Render::DrawSprite_ex(SelfSprite, PosX, PosY , (int)SpriteAnimationFrame,  SpriteScaleX, SpriteScaleY, (float)SpriteCenterX, (float)SpriteCenterY, SpriteAngle, 1.0f);
+}
+
+bool Instance::CheckMaskClick(SDL_Point& point)
+{
+	if (SelfSprite == nullptr) return false;
+	if (InView == false) return false;
+
+	const Sprite::MaskType MaskType = SelfSprite->GetMaskType();
+	if (MaskType == Sprite::MaskType::none) return false;
+
+	const int MaskValue = SelfSprite->GetMaskValue();
+	if (MaskValue < 1) return false;
+
+	if (MaskType == Sprite::MaskType::circle) {
+		int width_center = SelfSprite->GetCenterX();
+		int height_center = SelfSprite->GetCenterY();
+	}
+
+	return false;
 }

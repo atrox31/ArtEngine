@@ -334,8 +334,10 @@ int Core::Run()
         _instance.gMouse.RightEvent = Core::MouseState::ButtonState::NONE;
 
         //if (Art::Core::GetInstance()->Run_events()) break;
-        bool Ev_OnMouseInput = false;
-        bool Ev_OnKeyboardInput = false;
+        bool Ev_OnMouseInputDown = false;
+        bool Ev_OnMouseInputUp = false;
+        bool Ev_OnKeyboardInputDown = false;
+        bool Ev_OnKeyboardInputUp = false;
         bool Ev_OnControllerInput = false;
 
         SDL_Event e;
@@ -400,7 +402,7 @@ int Core::Run()
                 if (e.button.button == SDL_BUTTON_RIGHT) {
                     _instance.gMouse.RightEvent = Core::MouseState::ButtonState::PRESSED;
                 }
-                Ev_OnMouseInput = true;
+                Ev_OnMouseInputDown = true;
             }
             break;
             case SDL_MOUSEBUTTONUP: {
@@ -411,7 +413,7 @@ int Core::Run()
                 if (e.button.button == SDL_BUTTON_RIGHT) {
                     _instance.gMouse.RightEvent = Core::MouseState::ButtonState::RELASED;
                 }
-                Ev_OnMouseInput = true;
+                Ev_OnMouseInputUp = true;
             }
             break;
 
@@ -423,12 +425,12 @@ int Core::Run()
 
             case SDL_KEYDOWN:
                 if (!_instance.Consola->ProcessKey((SDL_KeyCode)e.key.keysym.sym)) {
-                    Ev_OnKeyboardInput = true;
+                    Ev_OnKeyboardInputDown = true;
                 }
                 break;
             case SDL_KEYUP:
                 if (_instance.Consola->IsShown()) break;
-                    Ev_OnKeyboardInput = true;
+                    Ev_OnKeyboardInputUp = true;
                 break;
             }
         }
@@ -439,8 +441,22 @@ int Core::Run()
             for (plf::colony<Instance*>::iterator it = AllInstances->begin(); it != AllInstances->end();) {
                 if ((*it)->Alive) {
                     _instance.Executor.ExecuteScript((*it), Event::EV_STEP);
-                    if (Ev_OnMouseInput) _instance.Executor.ExecuteScript((*it), Event::EV_ONMOUSE_DOWN);
-                    //if(Ev_OnKeyboardInput) _instance.Executor.ExecuteScript((*it), Event::EV_STEP);
+
+                    EventBit c_flag = (*it)->EventFlag;
+
+                    if (EventBitTest(EventBit::HAVE_MOUSE_EVENT, c_flag)) {
+                        if (EventBitTest(EventBit::HAVE_MOUSE_EVENT_UP, c_flag) && Ev_OnMouseInputDown) {
+                            _instance.Executor.ExecuteScript((*it), Event::EV_ONMOUSE_DOWN);
+                        }
+                        if (EventBitTest(EventBit::HAVE_MOUSE_EVENT_DOWN, c_flag) && Ev_OnMouseInputDown) {
+                            _instance.Executor.ExecuteScript((*it), Event::EV_ONMOUSE_DOWN);
+                        }
+                        // na jutro clicked
+                        if (EventBitTest(EventBit::HAVE_MOUSE_EVENT_DOWN, c_flag) && Ev_OnMouseInputDown) {
+                            _instance.Executor.ExecuteScript((*it), Event::EV_ONMOUSE_DOWN);
+                        }
+                    }
+
                     ++it;
                 }
                 else {
@@ -452,9 +468,11 @@ int Core::Run()
 
         //Art::Core::GetInstance()->Run_sceneDraw();
         if (_instance._current_scene->IsAnyInstances()){
-            plf::colony<Instance*>* AllInstances = _instance._current_scene->GetAllInstances();
-            for (plf::colony<Instance*>::iterator it = AllInstances->begin(); it != AllInstances->end(); ++it) {
-                _instance.Executor.ExecuteScript((*it), Event::EV_DRAW);
+            for (Instance* instance : *_instance._current_scene->GetAllInstances()) {
+                if (instance->InView || true) {
+                    _instance.Executor.ExecuteScript(instance, Event::EV_DRAW);
+                    Render::DrawCircle({ instance->PosX, instance->PosY }, 8, C_BLACK);
+                }
                 //std::string name = (*it)->Name;
                 //FC_DrawAlign(_instance._global_font, _instance._screenTarget, (*it)->PosX, (*it)->PosY, FC_AlignEnum::FC_ALIGN_CENTER, name.c_str());
             }

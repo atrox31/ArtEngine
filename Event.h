@@ -55,7 +55,7 @@
 
 
 ENUM_WITH_STRING_CONVERSION(
-    Event, 
+    Event,
     (EV_ONCREATE)
     (DEF_VALUES)
 
@@ -78,27 +78,35 @@ ENUM_WITH_STRING_CONVERSION(
     (EV_STEP)
     (EV_DRAW)
 )
-/*
-enum class Event {
-	EV_ONCREATE,
 
-	EV_ONKEY_DOWN,
-	EV_ONKEY_UP,
+#define _e_type uint16_t
 
-	EV_ONMOUSE_MOTION,
-	EV_ONMOUSE_WHEEL,
-	EV_ONMOUSE_DOWN,
-	EV_ONMOUSE_UP,
+enum class EventBit : _e_type {
 
-	EV_ONCOLLISION,
+    NONE =                      0,
+    HAVE_MOUSE_EVENT =          1 << 0,
+    HAVE_MOUSE_EVENT_DOWN =     1 << 1,
+    HAVE_MOUSE_EVENT_UP =       1 << 2,
+    HAVE_MOUSE_EVENT_SCROLL =   1 << 3,
+    HAVE_MOUSE_EVENT_MONTION =  1 << 4,
 
-	EV_ONVIEW_ENTER,
-	EV_ONVIEW_LEAVE,
+    HAVE_KEYBOARD_EVENT =       1 << 5,
+    HAVE_KEYBOARD_EVENT_UP =    1 << 6,
+    HAVE_KEYBOARD_EVENT_DOWN =  1 << 7,
 
-	EV_CLICKED,
-	EV_TRIGGER,
+    HAVE_COLLISION =            1 << 8,
+    HAVE_TRIGGER =              1 << 9,
+    HAVE_VIEVCHANGE =           1 << 9,
 
-	EV_STEP,
-	EV_DRAW,
 };
-*/
+EventBit EventBitFromEvent(Event);
+inline constexpr EventBit operator|(EventBit a, EventBit b) {
+    return static_cast<EventBit>(static_cast<char>(a) | static_cast<char>(b));
+}
+
+inline constexpr EventBit operator&(EventBit a, EventBit b) {
+    return static_cast<EventBit>(static_cast<char>(a) & static_cast<char>(b));
+
+}
+// if condition is in flag
+#define EventBitTest(condition, flag)  (condition & flag) == flag

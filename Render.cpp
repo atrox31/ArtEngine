@@ -66,6 +66,11 @@ void Render::LoadShaders() {
 }
 Render::Render()
 {
+	_shader_bloom = 0;
+	_shader_bloom_horizontal = 0;
+	//_shader_bloom_block;
+	_shader_bright = 0;
+	//_shader_bright_block;
 	width = 0;
 	height = 0;
 	_screenTexture = nullptr;

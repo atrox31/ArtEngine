@@ -12,6 +12,7 @@
 #include <string>
 #include "ArtCode.h"
 #include "Render.h"
+#include "Event.h"
 
 class Instance {
 public:
@@ -24,15 +25,14 @@ public:
 	int GetInstanceDefinitionId() {	return _instanceDefinitionId; }
 
 	void DrawSelf();
+	bool CheckMaskClick(SDL_Point&);
 
 	std::string Tag;
 	std::string Name;
 
 	bool InView;
 	bool Alive;
-
-	bool E_MaskClicked;
-	Rect Mask;
+	bool IsCollider;
 
 	float PosX;
 	float PosY;
@@ -41,8 +41,8 @@ public:
 	Sprite* SelfSprite;
 	float SpriteScaleX;
 	float SpriteScaleY;
-	float SpriteCenterX;
-	float SpriteCenterY;
+	int SpriteCenterX;
+	int SpriteCenterY;
 	float SpriteAngle;
 
 	float SpriteAnimationFrame;
@@ -50,6 +50,7 @@ public:
 	bool SpriteAnimationLoop;
 
 	std::vector<std::vector<std::string>> Varibles;
+	EventBit EventFlag;
 private:
 	Uint64 _id = 0;
 	static Uint64 _cid;

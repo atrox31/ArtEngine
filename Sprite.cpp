@@ -9,7 +9,7 @@ Sprite::Sprite()
 	m_texture = std::vector<GPU_Image*>();
 	m_texture_size = 0;
 
-	m_mask_value = 0.0f;
+	m_mask_value = 0;
 	m_mask_type = Sprite::MaskType::none;
 
 	m_center_x = 0;
@@ -62,7 +62,7 @@ Sprite* Sprite::Load(const char* data, Sint64 size)
 		Debug::WARNING("Sprite::Load - " + dv.GetData("sprite", "name") + " 0 textures found");
 	}
 
-	nSprite->m_mask_value = std::stof(dv.GetData("sprite", "collision_mask_value"));
+	nSprite->m_mask_value = std::stoi(dv.GetData("sprite", "collision_mask_value"));
 	nSprite->m_mask_type = nSprite->MaskType_fromString(dv.GetData("sprite", "collision_mask"));
 
 	nSprite->m_center_x = std::stoi(dv.GetData("sprite", "sprite_center_x"));

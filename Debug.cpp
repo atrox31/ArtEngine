@@ -75,7 +75,7 @@ void Debug::WARNING(std::initializer_list<std::string> messages, bool new_line)
 void Debug::WARNING(std::string message)
 {
 #ifndef DEBUG_EDITOR
-	SDL_TriggerBreakpoint();
+//	SDL_TriggerBreakpoint();
 #endif // !DEBUG_EDITOR
 
 	message = "[!]" + message;

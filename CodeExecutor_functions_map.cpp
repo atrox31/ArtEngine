@@ -8,7 +8,6 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["new_direction"] = &CodeExecutor::new_direction;
 	FunctionsMap["new_rectangle"] = &CodeExecutor::new_rectangle;
 	FunctionsMap["new_rectangle_f"] = &CodeExecutor::new_rectangle_f;
-	FunctionsMap["new_mask_from_sprite"] = &CodeExecutor::new_mask_from_sprite;
 	FunctionsMap["get_sprite"] = &CodeExecutor::get_sprite;
 	FunctionsMap["get_texture"] = &CodeExecutor::get_texture;
 	FunctionsMap["get_music"] = &CodeExecutor::get_music;

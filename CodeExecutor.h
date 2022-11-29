@@ -105,7 +105,6 @@ private:
 	Script(new_direction);
 	Script(new_rectangle);
 	Script(new_rectangle_f);
-	Script(new_mask_from_sprite);
 	Script(get_sprite);
 	Script(get_texture);
 	Script(get_music);

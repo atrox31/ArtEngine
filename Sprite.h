@@ -16,8 +16,7 @@
 class Sprite
 {
 public:
-	ENUM_WITH_STRING_CONVERSION(MaskType,(none) (circle) (rectangle) (perpixel))
-
+	ENUM_WITH_STRING_CONVERSION(MaskType, (none)(circle)(rectangle)(perpixel))
 	Sprite();
 	virtual ~Sprite();
 	static void Delete(Sprite*);
@@ -42,6 +41,13 @@ public:
 		return m_height;
 	};
 
+	constexpr inline MaskType GetMaskType() {
+		return m_mask_type;
+	}
+	constexpr inline int GetMaskValue() {
+		return m_mask_value;
+	}
+
 private:
 	int m_width;
 	int m_height;
@@ -49,7 +55,7 @@ private:
 	std::vector<GPU_Image*> m_texture;
 	int m_texture_size;
 
-	float m_mask_value;
+	int m_mask_value;
 	MaskType m_mask_type;
 
 	int m_center_x;

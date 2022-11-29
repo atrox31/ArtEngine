@@ -88,17 +88,22 @@ void CodeExecutor::new_direction(Instance*) {
 
 //rectangle new_rectangle(int x1, int y1, int x2, int y2);Make rectangle from <int>, <int> to <int>, <int>.;This is const rectangle, not width and height.
 void CodeExecutor::new_rectangle(Instance*) {
-
+	int y2 = StackIn_i;
+	int x2 = StackIn_i;
+	int y1 = StackIn_i;
+	int x1 = StackIn_i;
+	Rect output{ x1,y1,x2,y2 };
+	StackOut(Convert::Rect2Str(output));
 }
 
 //rectangle new_rectangle_f(float x1, float y1, float x2, float y2);Make rectangle from <float>, <float> to <float>, <float>.;This is const rectangle, not width and height.
 void CodeExecutor::new_rectangle_f(Instance*) {
-
-}
-
-//rectangle new_mask_from_sprite(sprite spr);Make rectangle mask from <sprite>;Cirkle mask is not supported yet.
-void CodeExecutor::new_mask_from_sprite(Instance*) {
-
+	float y2 = StackIn_f;
+	float x2 = StackIn_f;
+	float y1 = StackIn_f;
+	float x1 = StackIn_f;
+	Rect output{ x1,y1,x2,y2 };
+	StackOut(Convert::Rect2Str(output));
 }
 
 //sprite get_sprite(string name);Get asset handle by name <string>;Expensive function, try to not call it every frame. Call it to function and store.
@@ -162,12 +167,12 @@ void CodeExecutor::sprite_get_frames(Instance*) {
 
 }
 
-//null sprite_set_animation_speed(float speed);Set animation speed for <sprite> value <float> frames per seccond;Every sprite can have own animation speed
+//null sprite_set_animation_speed(float speed);Set animation value <float> frames per seccond;Every sprite can have own animation speed
 void CodeExecutor::sprite_set_animation_speed(Instance* instance) {
 	instance->SpriteAnimationSpeed = StackIn_f;
 }
 
-//null sprite_set_animation_loop(bool loop);Set animation loop for <sprite> value <bool>;Every animation end generate event ON_ANIMATION_END
+//null sprite_set_animation_loop(bool loop);Set animation loop value <bool>;Every animation end generate event ON_ANIMATION_END
 void CodeExecutor::sprite_set_animation_loop(Instance* instance) {
 	instance->SpriteAnimationLoop = StackIn_b;
 }
@@ -394,13 +399,12 @@ void CodeExecutor::set_self_sprite(Instance* instance) {
 		Sprite* sprite = Core::GetInstance()->assetManager->GetSprite(spriteId);
 		if (sprite != nullptr) {
 			instance->SelfSprite = sprite;
-			instance->E_MaskClicked = false;
 			//instance->Mask = sprite->
 
 			instance->SpriteScaleX = 1.0f;
 			instance->SpriteScaleY = 1.0f;
-			instance->SpriteCenterX = sprite->GetWidth() * 0.5f;
-			instance->SpriteCenterY = sprite->GetHeight() * 0.5f;
+			instance->SpriteCenterX = sprite->GetCenterX();
+			instance->SpriteCenterY = sprite->GetCenterY();
 			instance->SpriteAngle = 0.0f;
 			instance->SpriteAnimationFrame = 0.0f;
 			instance->SpriteAnimationSpeed = 60.0f;
@@ -408,14 +412,13 @@ void CodeExecutor::set_self_sprite(Instance* instance) {
 			return;
 		}
 	}
-	instance->E_MaskClicked = false;
 	//instance->Mask = Rect();
 
 	instance->SelfSprite = nullptr;
 	instance->SpriteScaleX = 0.0f;
 	instance->SpriteScaleY = 0.0f;
-	instance->SpriteCenterX = 0.0f;
-	instance->SpriteCenterY = 0.0f;
+	instance->SpriteCenterX = 0;
+	instance->SpriteCenterY = 0;
 	instance->SpriteAngle = 0.0f;
 	instance->SpriteAnimationFrame = 0.0f;
 	instance->SpriteAnimationSpeed = 0.0f;
@@ -432,7 +435,7 @@ void CodeExecutor::get_pos_y(Instance* instance) {
 	StackOut_s(instance->PosY);
 }
 
-//void sound_play(sound asset);Play <asset> sound global;For postion call sound_play_at(sound asset)
+//null sound_play(sound asset);Play <asset> sound global;For postion call sound_play_at(sound asset)
 void CodeExecutor::sound_play(Instance*) {
 	int SoundId = StackIn_i;
 	Mix_Chunk* sound = Core::GetInstance()->assetManager->GetSound(SoundId);
@@ -440,7 +443,7 @@ void CodeExecutor::sound_play(Instance*) {
 	Mix_PlayChannel(-1, sound, 0);
 }
 
-//void music_play(music asset);Play <asset> music.;There is only one music at once;
+//null music_play(music asset);Play <asset> music.;There is only one music at once;
 void CodeExecutor::music_play(Instance*) {
 	int SoundId = StackIn_i;
 	Mix_Music* music = Core::GetInstance()->assetManager->GetMusic(SoundId);

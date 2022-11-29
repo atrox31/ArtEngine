@@ -162,7 +162,6 @@ void Scene::Exit()
 }
 plf::colony<Instance*>* Scene::GetAllInstances()
 {
-	//TODO: add new instances to current
 	return &_instances;
 }
 Instance* Scene::GetInstanceById(int id)
