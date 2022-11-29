@@ -3,6 +3,7 @@
 #include "Debug.h"
 #include "Convert.h"
 #include <algorithm>
+#include "Core.h"
 
 AStack<std::string> CodeExecutor::GlobalStack = AStack<std::string>();
 
@@ -249,6 +250,11 @@ void CodeExecutor::Break()
 
 void CodeExecutor::h_execute_script(Inspector* code, Instance* instance)
 {
+	/*
+	*						WriteCommand(Command::OTHER);
+							WriteBit(ref->CodeId);
+							WriteValue(var->Type, var->index);
+	* */
 	if (_break) return;
 	while (!code->IsEnd()) {
 		if (_break) return;
@@ -262,6 +268,15 @@ void CodeExecutor::h_execute_script(Inspector* code, Instance* instance)
 			h_get_value(code, instance);
 			instance->Varibles[type][index] = GlobalStack.Get();
 		}break;
+
+		case command::OTHER: {
+			char instance_type = code->GetBit(); //ignore for now
+			if (Core::GetInstance()->_current_scene->CurrentCollisionInstance == nullptr) {
+				Break();
+				// error - other is null
+			}
+			h_get_local_value(code, Core::GetInstance()->_current_scene->CurrentCollisionInstance);
+		} break;
 
 		case command::FUNCTION: {
 			h_execute_function(code, instance);
@@ -287,6 +302,15 @@ int CodeExecutor::h_if_test(Inspector* code, Instance* instance) {
 			h_get_local_value(code, instance);
 		}break;
 
+		case command::OTHER: {
+			char instance_type = code->GetBit(); //ignore for now
+			if (Core::GetInstance()->_current_scene->CurrentCollisionInstance == nullptr) {
+				Break();
+				// error - other is null
+			}
+			h_get_local_value(code, Core::GetInstance()->_current_scene->CurrentCollisionInstance);
+		} break;
+
 		case command::FUNCTION:
 		{
 			h_execute_function(code, instance);
@@ -296,7 +320,7 @@ int CodeExecutor::h_if_test(Inspector* code, Instance* instance) {
 		case command::VALUE:
 		{
 			if (have_operator) {
-				// in thic sace return to previous command
+				// in this cace return to previous command
 				code->Skip(-1);
 				h_get_value(code, instance);
 			}

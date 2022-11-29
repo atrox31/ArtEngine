@@ -54,5 +54,20 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["sprite_next_frame"] = &CodeExecutor::sprite_next_frame;
 	FunctionsMap["sprite_prev_frame"] = &CodeExecutor::sprite_prev_frame;
 	FunctionsMap["sprite_set_frame"] = &CodeExecutor::sprite_set_frame;
+	FunctionsMap["empty_do_nothing"] = &CodeExecutor::empty_do_nothing;
+	FunctionsMap["set_body_type"] = &CodeExecutor::set_body_type;
+	FunctionsMap["collision_get_collider"] = &CodeExecutor::collision_get_collider;
+	FunctionsMap["collision_get_collider_tag"] = &CodeExecutor::collision_get_collider_tag;
+	FunctionsMap["collision_get_collider_name"] = &CodeExecutor::collision_get_collider_name;
+	FunctionsMap["collision_get_collider_id"] = &CodeExecutor::collision_get_collider_id;
+	FunctionsMap["get_random"] = &CodeExecutor::get_random;
+	FunctionsMap["get_random_range"] = &CodeExecutor::get_random_range;
+	FunctionsMap["scene_change_transmision"] = &CodeExecutor::scene_change_transmision;
+	FunctionsMap["scene_change"] = &CodeExecutor::scene_change;
+	FunctionsMap["scene_reset"] = &CodeExecutor::scene_reset;
+	FunctionsMap["get_direction_of"] = &CodeExecutor::get_direction_of;
+	FunctionsMap["instance_spawn"] = &CodeExecutor::instance_spawn;
+	FunctionsMap["instance_create"] = &CodeExecutor::instance_create;
+	FunctionsMap["set_direction_for_target"] = &CodeExecutor::set_direction_for_target;
 }
 //end of file

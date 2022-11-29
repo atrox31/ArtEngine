@@ -15,7 +15,7 @@ public:
 		OBJECT_VARIBLE,
 		LOCAL_VARIBLE,
 		VALUE, NULL_VALUE,
-		FUNCTION,
+		FUNCTION, OTHER,
 		// operatory
 		SET,
 		OPERATOR,

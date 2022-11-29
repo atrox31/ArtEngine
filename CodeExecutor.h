@@ -151,6 +151,21 @@ private:
 	Script(sprite_next_frame);
 	Script(sprite_prev_frame);
 	Script(sprite_set_frame);
+	Script(empty_do_nothing);
+	Script(set_body_type);
+	Script(collision_get_collider);
+	Script(collision_get_collider_tag);
+	Script(collision_get_collider_name);
+	Script(collision_get_collider_id);
+	Script(get_random);
+	Script(get_random_range);
+	Script(scene_change_transmision);
+	Script(scene_change);
+	Script(scene_reset);
+	Script(get_direction_of);
+	Script(instance_spawn);
+	Script(instance_create);
+	Script(set_direction_for_target);
 #undef Script
 };
 //end of file

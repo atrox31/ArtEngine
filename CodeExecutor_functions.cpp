@@ -485,6 +485,114 @@ void CodeExecutor::sprite_set_frame(Instance* sender) {
 }
 
 //null empty_do_nothing();Do nothing, empty action;Use when there is no else in if
-void empty_do_nothing(Instance*) {
+void CodeExecutor::empty_do_nothing(Instance*) {
 	return;
+}
+//null set_body_type(string type, int value);Set body type for instance, of <string> and optional <int> value; type is enum: NONE,SPRITE,RECT,CIRCLE
+void CodeExecutor::set_body_type(Instance* sender) {
+	std::string type = StackIn;
+	int value = StackIn_i;
+	if (sender->Body.Body_fromString(type) == Instance::BodyType::Invalid) return;
+	sender->Body.Value = value;
+	sender->Body.Type = sender->Body.Body_fromString(type);
+}
+
+//instance collision_get_collider();Return reference to instance with this object is collide;Other colliders must be solid too to collide;
+void CodeExecutor::collision_get_collider(Instance*) {
+	if(Core::GetInstance()->_current_scene->CurrentCollisionInstance != nullptr)
+		StackOut( std::to_string(Core::GetInstance()->_current_scene->CurrentCollisionInstanceId) );
+	else
+		StackOut("nul");
+}
+//string collision_get_collider_tag();Get tag of instance that is coliding with this object;Other colliders must be solid too to collide;
+void CodeExecutor::collision_get_collider_tag(Instance*) {
+	if (Core::GetInstance()->_current_scene->CurrentCollisionInstance != nullptr)
+		StackOut(Core::GetInstance()->_current_scene->CurrentCollisionInstance->Tag);
+	else
+		StackOut("nul");
+}
+//string collision_get_collider_name();Get name of instance that is coliding with this object;Other colliders must be solid too to collide;
+void CodeExecutor::collision_get_collider_name(Instance*) {
+	if (Core::GetInstance()->_current_scene->CurrentCollisionInstance != nullptr)
+		StackOut(Core::GetInstance()->_current_scene->CurrentCollisionInstance->Name);
+	else
+		StackOut("nul");
+}
+//int collision_get_collider_id();Get id of instance that is coliding with this object;Other colliders must be solid too to collide;
+void CodeExecutor::collision_get_collider_id(Instance*) {
+	if (Core::GetInstance()->_current_scene->CurrentCollisionInstance != nullptr)
+	StackOut(std::to_string(Core::GetInstance()->_current_scene->CurrentCollisionInstanceId));
+	else
+		StackOut(std::to_string(-1));
+}
+//int get_random(int max);Get random value [0,<int>).;0 is include max is exclude;
+void CodeExecutor::get_random(Instance*) {
+	int max = StackIn_i;
+	StackOut(std::to_string(rand() % max));
+}
+//int get_random_range(int min, int max);Get random value [<int>,<int>).;0 is include max is exclude;
+void CodeExecutor::get_random_range(Instance*) {
+	int max = StackIn_i;
+	int min = StackIn_i;
+	StackOut(std::to_string(min + (std::rand() % (max - min + 1))));
+}
+//null scene_change_transmision(scene scene, string transmision);[NOT_IMPLEMENTED_YET];0;
+void CodeExecutor::scene_change_transmision(Instance*) {
+	std::string transmision = StackIn;
+	std::string scene = StackIn;
+}
+//null scene_change(scene scene);Change scene to <scene>;This is quick change, for transmisions use scene_change_transmision[NOT_IMPLEMENTED_YET];
+void CodeExecutor::scene_change(Instance*) {
+	std::string scene = StackIn;
+	Core::GetInstance()->ChangeScene(scene);
+}
+//null scene_reset();Reset current scene to begin state;
+void CodeExecutor::scene_reset(Instance*) {
+	Core::GetInstance()->_current_scene->Start();
+}
+//float get_direction_of(instance target);Return direction of <instance> instance;Use with collision_get_collider
+void CodeExecutor::get_direction_of(Instance*) {
+	int instance_id = StackIn_i;
+	Instance* target = nullptr;
+	if (instance_id == Core::GetInstance()->_current_scene->CurrentCollisionInstanceId) {
+		target = Core::GetInstance()->_current_scene->CurrentCollisionInstance;
+	}
+	else {
+		Core::GetInstance()->_current_scene->GetInstanceById(instance_id);
+	}
+	if (target == nullptr) {
+		StackOut_s(0);
+	}
+	else {
+		StackOut_s(target->Direction);
+	}
+}
+//instance instance_spawn(object name, float x, float y);Spawn object <object> at (<float>,<float>) and return reference to it;Ypu can use reference to pass arguments;
+void CodeExecutor::instance_spawn(Instance*) {
+	float y = StackIn_f;
+	float x = StackIn_f;
+	std::string obj_id = StackIn;
+	Instance* ref = Core::GetInstance()->_current_scene->CreateInstance(obj_id, x, y);
+	if (ref != nullptr) {
+		StackOut_s(ref->GetId());
+	}
+	else {
+		StackOut("nul");
+	}
+}
+//null instance_spawn(object name, float x, float y);Spawn object <object> at (<float>,<float>) in current scene;This not return reference;
+void CodeExecutor::instance_create(Instance*) {
+	float y = StackIn_f;
+	float x = StackIn_f;
+	std::string obj_id = StackIn;
+	Core::GetInstance()->_current_scene->CreateInstance(obj_id, x, y);
+}
+//null set_direction_for_target(instance target, flaot direction);//Set <instance> direction to <float> value;You can get reference from id of instance
+void CodeExecutor::set_direction_for_target(Instance*) {
+	float direction = StackIn_f;
+	int instanceId = StackIn_i;
+	Instance* instance = Core::GetInstance()->_current_scene->GetInstanceById(instanceId);
+	if (instance != nullptr) {
+		instance->Direction = direction;
+	}
 }
