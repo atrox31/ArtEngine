@@ -85,18 +85,19 @@ enum class EventBit : _e_type {
 
     NONE =                      0,
     HAVE_MOUSE_EVENT =          1 << 0,
-    HAVE_MOUSE_EVENT_DOWN =     1 << 1,
-    HAVE_MOUSE_EVENT_UP =       1 << 2,
-    HAVE_MOUSE_EVENT_SCROLL =   1 << 3,
-    HAVE_MOUSE_EVENT_MONTION =  1 << 4,
+    HAVE_MOUSE_EVENT_CLICK =    1 << 1,
+    HAVE_MOUSE_EVENT_DOWN =     1 << 2,
+    HAVE_MOUSE_EVENT_UP =       1 << 3,
+    HAVE_MOUSE_EVENT_SCROLL =   1 << 4,
+    HAVE_MOUSE_EVENT_MONTION =  1 << 5,
 
-    HAVE_KEYBOARD_EVENT =       1 << 5,
-    HAVE_KEYBOARD_EVENT_UP =    1 << 6,
-    HAVE_KEYBOARD_EVENT_DOWN =  1 << 7,
+    HAVE_KEYBOARD_EVENT =       1 << 6,
+    HAVE_KEYBOARD_EVENT_UP =    1 << 7,
+    HAVE_KEYBOARD_EVENT_DOWN =  1 << 8,
 
-    HAVE_COLLISION =            1 << 8,
-    HAVE_TRIGGER =              1 << 9,
-    HAVE_VIEVCHANGE =           1 << 9,
+    HAVE_COLLISION =            1 << 9,
+    HAVE_TRIGGER =              1 << 10,
+    HAVE_VIEVCHANGE =           1 << 11,
 
 };
 EventBit EventBitFromEvent(Event);
@@ -109,4 +110,4 @@ inline constexpr EventBit operator&(EventBit a, EventBit b) {
 
 }
 // if condition is in flag
-#define EventBitTest(condition, flag)  (condition & flag) == flag
+#define EventBitTest(condition, flag)  (flag & condition) == condition

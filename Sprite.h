@@ -27,11 +27,11 @@ public:
 		return m_texture_size;
 	};
 
-	constexpr inline int GetCenterX() {
-		return m_center_x;
+	constexpr inline float GetCenterX() {
+		return (float)m_center_x;
 	};
-	constexpr inline int GetCenterY() {
-		return m_center_y;
+	constexpr inline float GetCenterY() {
+		return (float)m_center_y;
 	};
 	
 	constexpr inline int GetWidth() {

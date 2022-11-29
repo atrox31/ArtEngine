@@ -7,7 +7,20 @@
 
 class  Inspector {
 public:
+#ifndef _DEBUG
 	Inspector(const unsigned char* code, Sint64 len) {
+#else
+	std::string DebugGetFName() {
+		return _f_name;
+	}
+
+	int DebugGetCurrentPos() {
+		return (int)_pos;
+	}
+
+	Inspector(const unsigned char* code, Sint64 len, std::string fname) {
+		_f_name = fname;
+#endif
 		_code = code;
 		_size = len - 1;
 		_pos = -1;
@@ -101,4 +114,5 @@ private:
 	Sint64 _size;
 	Sint64 _pos;
 	unsigned char _current_bit;
+	std::string _f_name;
 };

@@ -44,6 +44,7 @@ EventBit EventBitFromEvent(Event event) {
 	case EV_CLICKED:
 		flag = flag | EventBit::HAVE_MOUSE_EVENT;
 		flag = flag | EventBit::HAVE_MOUSE_EVENT_DOWN;
+		flag = flag | EventBit::HAVE_MOUSE_EVENT_CLICK;
 		break;
 	case EV_TRIGGER:
 		flag = flag | EventBit::HAVE_TRIGGER;

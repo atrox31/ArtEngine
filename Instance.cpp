@@ -53,7 +53,7 @@ void Instance::DrawSelf()
 	Render::DrawSprite_ex(SelfSprite, PosX, PosY , (int)SpriteAnimationFrame,  SpriteScaleX, SpriteScaleY, (float)SpriteCenterX, (float)SpriteCenterY, SpriteAngle, 1.0f);
 }
 
-bool Instance::CheckMaskClick(SDL_Point& point)
+bool Instance::CheckMaskClick(SDL_FPoint& point)
 {
 	if (SelfSprite == nullptr) return false;
 	if (InView == false) return false;
@@ -65,8 +65,12 @@ bool Instance::CheckMaskClick(SDL_Point& point)
 	if (MaskValue < 1) return false;
 
 	if (MaskType == Sprite::MaskType::circle) {
-		int width_center = SelfSprite->GetCenterX();
-		int height_center = SelfSprite->GetCenterY();
+		SDL_FPoint spoint{ 
+			PosX - (SelfSprite->GetWidth() / 2 - SelfSprite->GetCenterX()),
+			PosY - (SelfSprite->GetHeight() / 2 - SelfSprite->GetCenterY())
+		};
+		const float distance = Func::Distance(point, spoint);
+		return (distance <= MaskValue);
 	}
 
 	return false;

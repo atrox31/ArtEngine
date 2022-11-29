@@ -25,7 +25,7 @@ public:
 	int GetInstanceDefinitionId() {	return _instanceDefinitionId; }
 
 	void DrawSelf();
-	bool CheckMaskClick(SDL_Point&);
+	bool CheckMaskClick(SDL_FPoint&);
 
 	std::string Tag;
 	std::string Name;

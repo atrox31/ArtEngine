@@ -316,6 +316,13 @@ int Core::Run()
 {
     Render::SetBloom(false);
     SDL_TimerID my_timer_id = SDL_AddTimer((Uint32)1000, FpsCounterCallback, NULL);
+    bool Ev_Input = false;
+    bool Ev_OnMouseInputDown = false;
+    bool Ev_OnMouseInputUp = false;
+    bool Ev_OnKeyboardInputDown = false;
+    bool Ev_OnKeyboardInputUp = false;
+    bool Ev_OnControllerInput = false;
+    Uint32 bstate;
     while (true) {
         if (_instance._current_scene == nullptr) return EXIT_FAILURE;
         //Art::Core::GetInstance()->Run_prepare();
@@ -324,21 +331,23 @@ int Core::Run()
         _instance.DeltaTime = ((double)(_instance.NOW - _instance.LAST) / 1000.0);
         _instance.frames++;
 
-        SDL_GetMouseState(&_instance.gMouse.X, &_instance.gMouse.Y);
+        bstate = SDL_GetMouseState(&_instance.gMouse.X, &_instance.gMouse.Y);
         _instance.gMouse.XY = { _instance.gMouse.X, _instance.gMouse.Y };
+        _instance.gMouse.XYf = { (float)_instance.gMouse.X,(float)_instance.gMouse.Y };
 
-        _instance.gMouse.LeftPressed = SDL_GetMouseState(NULL, NULL) == SDL_BUTTON(SDL_BUTTON_LEFT);
-        _instance.gMouse.RightPressed = SDL_GetMouseState(NULL, NULL) == SDL_BUTTON(SDL_BUTTON_RIGHT);
+        _instance.gMouse.LeftPressed = (bstate == SDL_BUTTON(SDL_BUTTON_LEFT));
+        _instance.gMouse.RightPressed = (bstate == SDL_BUTTON(SDL_BUTTON_RIGHT));
         _instance.gMouse.WHELL = 0;
         _instance.gMouse.LeftEvent = Core::MouseState::ButtonState::NONE;
         _instance.gMouse.RightEvent = Core::MouseState::ButtonState::NONE;
 
         //if (Art::Core::GetInstance()->Run_events()) break;
-        bool Ev_OnMouseInputDown = false;
-        bool Ev_OnMouseInputUp = false;
-        bool Ev_OnKeyboardInputDown = false;
-        bool Ev_OnKeyboardInputUp = false;
-        bool Ev_OnControllerInput = false;
+        Ev_Input = false;
+        Ev_OnMouseInputDown = false;
+        Ev_OnMouseInputUp = false;
+        Ev_OnKeyboardInputDown = false;
+        Ev_OnKeyboardInputUp = false;
+        Ev_OnControllerInput = false;
 
         SDL_Event e;
         while (SDL_PollEvent(&e) != 0) {
@@ -395,6 +404,7 @@ int Core::Run()
 
             case SDL_MOUSEBUTTONDOWN:
             {
+                Ev_Input = true;
                 if (_instance.Consola->IsShown()) break;
                 if (e.button.button == SDL_BUTTON_LEFT) {
                     _instance.gMouse.LeftEvent = Core::MouseState::ButtonState::PRESSED;
@@ -406,6 +416,7 @@ int Core::Run()
             }
             break;
             case SDL_MOUSEBUTTONUP: {
+                Ev_Input = true;
                 if (_instance.Consola->IsShown()) break;
                 if (e.button.button == SDL_BUTTON_LEFT) {
                     _instance.gMouse.LeftEvent = Core::MouseState::ButtonState::RELASED;
@@ -425,11 +436,13 @@ int Core::Run()
 
             case SDL_KEYDOWN:
                 if (!_instance.Consola->ProcessKey((SDL_KeyCode)e.key.keysym.sym)) {
+                    Ev_Input = true;
                     Ev_OnKeyboardInputDown = true;
                 }
                 break;
             case SDL_KEYUP:
                 if (_instance.Consola->IsShown()) break;
+                    Ev_Input = true;
                     Ev_OnKeyboardInputUp = true;
                 break;
             }
@@ -442,22 +455,28 @@ int Core::Run()
                 if ((*it)->Alive) {
                     _instance.Executor.ExecuteScript((*it), Event::EV_STEP);
 
-                    EventBit c_flag = (*it)->EventFlag;
+                    //todo
+                    (*it)->InView = true;
 
-                    if (EventBitTest(EventBit::HAVE_MOUSE_EVENT, c_flag)) {
-                        if (EventBitTest(EventBit::HAVE_MOUSE_EVENT_UP, c_flag) && Ev_OnMouseInputDown) {
-                            _instance.Executor.ExecuteScript((*it), Event::EV_ONMOUSE_DOWN);
+                    if (Ev_Input && (*it)->Alive) {
+                        EventBit c_flag = (*it)->EventFlag;
+
+                        if (EventBitTest(EventBit::HAVE_MOUSE_EVENT, c_flag)) {
+                            if (EventBitTest(EventBit::HAVE_MOUSE_EVENT_UP, c_flag) && Ev_OnMouseInputUp) {
+                                _instance.Executor.ExecuteScript((*it), Event::EV_ONMOUSE_UP);
+                            }
+                            if (EventBitTest(EventBit::HAVE_MOUSE_EVENT_DOWN, c_flag) && Ev_OnMouseInputDown) {
+                                _instance.Executor.ExecuteScript((*it), Event::EV_ONMOUSE_DOWN);
+                            }
+                            if (EventBitTest(EventBit::HAVE_MOUSE_EVENT_CLICK, c_flag) && Ev_OnMouseInputDown) {
+                                if ((*it)->CheckMaskClick(_instance.gMouse.XYf)) {
+                                    _instance.Executor.ExecuteScript((*it), Event::EV_CLICKED);
+                                }
+                            }
                         }
-                        if (EventBitTest(EventBit::HAVE_MOUSE_EVENT_DOWN, c_flag) && Ev_OnMouseInputDown) {
-                            _instance.Executor.ExecuteScript((*it), Event::EV_ONMOUSE_DOWN);
-                        }
-                        // na jutro clicked
-                        if (EventBitTest(EventBit::HAVE_MOUSE_EVENT_DOWN, c_flag) && Ev_OnMouseInputDown) {
-                            _instance.Executor.ExecuteScript((*it), Event::EV_ONMOUSE_DOWN);
-                        }
+
                     }
-
-                    ++it;
+                ++it;
                 }
                 else {
                     //TODO: Event::EV_ONDESTROY

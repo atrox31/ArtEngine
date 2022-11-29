@@ -96,8 +96,12 @@ bool CodeExecutor::LoadObjectDefinitions()
 	Sint64 c = 0;
 	const unsigned char* _code = Func::GetFileBytes("object_compile.acp", &c);
 	if (_code == nullptr) return false;
+	
+#ifndef _DEBUG
 	Inspector code(_code, c);
-
+#else
+	Inspector code(_code, c, "OBJECT_DEFINITION");
+#endif
 	// definicje objektów
 	while (!code.IsEnd()) {
 		// first is OBJECT_DEFINITION command
@@ -229,7 +233,11 @@ void CodeExecutor::ExecuteScript(Instance* instance, Event script)
 	// no error becouse GetEventData print error
 	if (code_data == nullptr) return;
 	GlobalStack.Erase();
+#ifndef _DEBUG
 	Inspector code(code_data->data, code_data->size);
+#else
+	Inspector code(code_data->data, code_data->size, Event_toString(script));
+#endif
 	h_execute_script(&code, instance);
 }
 
@@ -452,7 +460,9 @@ void CodeExecutor::h_execute_function(Inspector* code, Instance* instance)
 			FunctionsList[function_index](instance);
 		}
 		else {
-			//TODO: error?
+#ifdef _DEBUG
+			Debug::WARNING(instance->Name + " script error, function not found, event name:'" + code->DebugGetFName() + "' token pos:" + std::to_string(code->DebugGetCurrentPos()) + " function index: " + std::to_string(function_index));
+#endif
 		}
 		break;
 	}

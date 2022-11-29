@@ -138,6 +138,7 @@ public:
 		int X = 0;
 		int Y = 0;
 		SDL_Point XY = { 0,0 };
+		SDL_FPoint XYf = { 0.f,0.f };
 		int WHELL = 0;
 	} gMouse;
 
