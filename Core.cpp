@@ -314,6 +314,9 @@ Uint32 Core::FpsCounterCallback(Uint32 interval, void* parms)
 
 int Core::Run()
 {
+#ifdef _DEBUG
+    bool Debug_ShowInfo = false;
+#endif // _DEBUG
     Render::SetBloom(false);
     SDL_TimerID my_timer_id = SDL_AddTimer((Uint32)1000, FpsCounterCallback, NULL);
     bool Ev_Input = false;
@@ -437,6 +440,12 @@ int Core::Run()
                 break;
 
             case SDL_KEYDOWN:
+#ifdef _DEBUG
+                if (e.key.keysym.sym == SDLK_F1) {
+                    Debug_ShowInfo = !Debug_ShowInfo;
+                }
+#endif // _DEBUG
+
                 if (!_instance.Consola->ProcessKey((SDL_KeyCode)e.key.keysym.sym)) {
                     Ev_Input = true;
                     Ev_OnKeyboardInputDown = true;
@@ -502,22 +511,23 @@ int Core::Run()
 
         // DEBUG DRAW
 #ifdef _DEBUG
-        if (_instance._current_scene->IsAnyInstances()) {
-            for (Instance* instance : *_instance._current_scene->GetAllInstances()) {
+        if(Debug_ShowInfo){
+            if (_instance._current_scene->IsAnyInstances()) {
+                for (Instance* instance : *_instance._current_scene->GetAllInstances()) {
 
-                Render::DrawCircle({ instance->PosX, instance->PosY }, 4, C_BLACK);
-                Render::DrawCircle({ instance->PosX + instance->SelfSprite->GetCenterXRel(), instance->PosY + instance->SelfSprite->GetCenterYRel() }, 6, C_GOLD);
+                    Render::DrawCircle({ instance->PosX, instance->PosY }, 4, C_BLACK);
+                    Render::DrawCircle({ instance->PosX + instance->SelfSprite->GetCenterXRel(), instance->PosY + instance->SelfSprite->GetCenterYRel() }, 6, C_GOLD);
 
-                instance->DebugDrawMask();
-                
-                Render::DrawText(
-                    instance->Name + "#" + std::to_string(instance->GetId()) + "[" + std::to_string((int)instance->PosX) + "," + std::to_string((int)instance->PosY) + "]",
-                    _instance._global_font,
-                    { instance->PosX, instance->PosY },
-                    C_RED
-                );
+                    instance->DebugDrawMask();
+
+                    Render::DrawText(
+                        instance->Name + "#" + std::to_string(instance->GetId()) + "[" + std::to_string((int)instance->PosX) + "," + std::to_string((int)instance->PosY) + "]",
+                        _instance._global_font,
+                        { instance->PosX, instance->PosY },
+                        C_RED
+                    );
+                }
             }
-            
         }
 #endif // _DEBUG
 
