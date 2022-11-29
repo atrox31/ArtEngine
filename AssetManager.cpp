@@ -82,7 +82,6 @@ bool AssetManager::LoadData(BackGroundRenderer* bgr, int p_min, int p_max)
 			std::string name = Func::Explode(path[1], '.')[0];
 			GPU_Image* tmp = GPU_LoadImage_RW(Func::GetFileRWops(file, nullptr), 1);
 			if (tmp == nullptr) return false;
-			List_texture_id.push_back(tmp);
 			List_texture_name.insert({ name, tmp });
 			Debug::LOG("AssetManager::LoadData - file loaded: " + file);
 			bgr->SetProgress((int) Func::LinearScale(c_pos++, 0.0f, m_pos, fp_min, fp_max) );
@@ -95,7 +94,6 @@ bool AssetManager::LoadData(BackGroundRenderer* bgr, int p_min, int p_max)
 			const char* buffer = Func::GetFileBuf(file, &size);
 			Sprite* tmp = Sprite::Load(buffer, size);
 			if (tmp == nullptr) return false;
-			List_sprite_id.push_back(tmp);
 			List_sprite_name.insert({ name, tmp });
 			Debug::LOG("AssetManager::LoadData - file loaded: " + file);
 			bgr->SetProgress((int)Func::LinearScale(c_pos++, 0.0f, m_pos, fp_min, fp_max));
@@ -105,7 +103,6 @@ bool AssetManager::LoadData(BackGroundRenderer* bgr, int p_min, int p_max)
 			std::string name = Func::Explode(path[1], '.')[0];
 			Mix_Music* tmp = Mix_LoadMUS_RW(Func::GetFileRWops(file, nullptr), 1);
 			if (tmp == nullptr) return false;
-			List_music_id.push_back(tmp);
 			List_music_name.insert({ name, tmp });
 			Debug::LOG("AssetManager::LoadData - file loaded: " + file);
 			bgr->SetProgress((int)Func::LinearScale(c_pos++, 0.0f, m_pos, fp_min, fp_max));
@@ -115,7 +112,6 @@ bool AssetManager::LoadData(BackGroundRenderer* bgr, int p_min, int p_max)
 			std::string name = Func::Explode(path[1], '.')[0];
 			Mix_Chunk* tmp = Mix_LoadWAV_RW(Func::GetFileRWops(file, nullptr), 1);
 			if (tmp == nullptr) return false;
-			List_sound_id.push_back(tmp);
 			List_sound_name.insert({ name, tmp });
 			Debug::LOG("AssetManager::LoadData - file loaded: " + file);
 			bgr->SetProgress((int)Func::LinearScale(c_pos++, 0.0f, m_pos, fp_min, fp_max));
@@ -126,13 +122,33 @@ bool AssetManager::LoadData(BackGroundRenderer* bgr, int p_min, int p_max)
 			FC_Font* tmp = FC_CreateFont();
 			FC_LoadFont_RW(tmp, Func::GetFileRWops(file, nullptr), 1, 12, { 255,255,255 }, TTF_STYLE_NORMAL);
 			if (tmp == nullptr) return false;
-			List_font_id.push_back(tmp);
 			List_font_name.insert({ name, tmp });
 			Debug::LOG("AssetManager::LoadData - file loaded: " + file);
 			bgr->SetProgress((int)Func::LinearScale(c_pos++, 0.0f, m_pos, fp_min, fp_max));
 
 		}
 	}
+
+	for (auto element : List_sprite_name) {
+		List_sprite_id.push_back(element.second);
+	}
+	
+	for (auto element : List_texture_name) {
+		List_texture_id.push_back(element.second);
+	}
+	
+	for (auto element : List_music_name) {
+		List_music_id.push_back(element.second);
+	}
+	
+	for (auto element : List_sound_name) {
+		List_sound_id.push_back(element.second);
+	}
+	
+	for (auto element : List_font_name) {
+		List_font_id.push_back(element.second);
+	}
+
 	bgr->SetProgress((int)Func::LinearScale(fp_max, 0.0f, fp_max, fp_min, fp_max));
 	return true;
 }
