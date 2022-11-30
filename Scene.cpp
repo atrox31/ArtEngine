@@ -21,7 +21,8 @@ Scene::Scene()
 Scene::~Scene()
 {
 	if (_instances.size() > 0) {
-		for (plf::colony<Instance*>::iterator it = _instances.begin(); it != _instances.end(); ++it) {
+		for (plf::colony<Instance*>::iterator it = _instances.begin(); it != _instances.end(); ) {
+			
 			delete (*it);
 			it = _instances.erase(it);
 		}
@@ -29,7 +30,7 @@ Scene::~Scene()
 	_instances.clear();
 
 	if (_instances_new.size() > 0) {
-		for (std::vector<Instance*>::iterator it = _instances_new.begin(); it != _instances_new.end(); ++it) {
+		for (std::vector<Instance*>::iterator it = _instances_new.begin(); it != _instances_new.end(); ) {
 			delete (*it);
 			it = _instances_new.erase(it);
 		}

@@ -149,41 +149,55 @@ void CodeExecutor::get_sound(Instance*) {
 
 //font get_font(string name);Get asset handle by name <string>;Expensive function, try to not call it every frame. Call it to function and store.
 void CodeExecutor::get_font(Instance*) {
-
+	std::string name = StackIn;
+	int font = Core::GetInstance()->assetManager->GetFontId(name);
+	if (font == -1) {
+		Debug::WARNING("CodeExecutor::get_font() - '" + name + "' not found");
+	}
+	StackOut_s(font);
 }
 
 //int sprite_get_width(sprite spr);Get width of <sprite>;Get int value.
 void CodeExecutor::sprite_get_width(Instance*) {
-
+	int id = StackIn_i;
+	Sprite* sprite = Core::GetInstance()->assetManager->GetSprite(id);
+	if (sprite == nullptr) StackOut_s(0);
+	else StackOut_s(sprite->GetWidth());
 }
 
 //int sprite_get_height(sprite spr);Get height of <sprite>;Get int value.
 void CodeExecutor::sprite_get_height(Instance*) {
-
+	int id = StackIn_i;
+	Sprite* sprite = Core::GetInstance()->assetManager->GetSprite(id);
+	if (sprite == nullptr) StackOut_s(0);
+	else StackOut_s(sprite->GetHeight());
 }
 
 //int sprite_get_frames(sprite spr);Get frames number of <sprite>;Get int value.
 void CodeExecutor::sprite_get_frames(Instance*) {
-
+	int id = StackIn_i;
+	Sprite* sprite = Core::GetInstance()->assetManager->GetSprite(id);
+	if (sprite == nullptr) StackOut_s(0);
+	else StackOut_s(sprite->GetMaxFrame());
 }
 
 //null sprite_set_animation_speed(float speed);Set animation value <float> frames per seccond;Every sprite can have own animation speed
-void CodeExecutor::sprite_set_animation_speed(Instance* instance) {
-	instance->SpriteAnimationSpeed = StackIn_f;
+void CodeExecutor::sprite_set_animation_speed(Instance* sender) {
+	sender->SpriteAnimationSpeed = StackIn_f;
 }
 
 //null sprite_set_animation_loop(bool loop);Set animation loop value <bool>;Every animation end generate event ON_ANIMATION_END
-void CodeExecutor::sprite_set_animation_loop(Instance* instance) {
-	instance->SpriteAnimationLoop = StackIn_b;
+void CodeExecutor::sprite_set_animation_loop(Instance* sender) {
+	sender->SpriteAnimationLoop = StackIn_b;
 }
 
 //null move_to_point(point p, float speed);Move current instance to <point> with <speed> px per seccond.;Call it every frame.
-void CodeExecutor::move_to_point(Instance* instance) {
+void CodeExecutor::move_to_point(Instance* sender) {
 	float speed = StackIn_f;
 	SDL_FPoint dest = StackIn_p;
-	float direction = std::atan2f(dest.y - instance->PosY, dest.x - instance->PosX);
-	instance->PosX += std::cosf(direction) * speed * (float)Core::GetInstance()->DeltaTime;
-	instance->PosY += std::sinf(direction) * speed * (float)Core::GetInstance()->DeltaTime;
+	float direction = std::atan2f(dest.y - sender->PosY, dest.x - sender->PosX);
+	sender->PosX += std::cosf(direction) * speed * (float)Core::GetInstance()->DeltaTime;
+	sender->PosY += std::sinf(direction) * speed * (float)Core::GetInstance()->DeltaTime;
 }
 
 //null move_forward(float speed);Move current instance forward with <speed> px per seccond.;Call it every frame. Function give build-in direction varible.
@@ -194,19 +208,24 @@ void CodeExecutor::move_forward(Instance* sender) {
 }
 
 //null move_instant(point p);Move instantly to target <point>;This changes x and y. Not cheking for collision;
-void CodeExecutor::move_instant(Instance*) {
-
+void CodeExecutor::move_instant(Instance* sender) {
+	SDL_FPoint dest = StackIn_p;
+	sender->PosX = dest.x;
+	sender->PosY = dest.y;
 }
 
 //null move_to_direction(float direction, float speed);Move instance toward direction of <float> (0-359) with <float> speed px per seccond;If direction is not in range its clipped to 360.
-void CodeExecutor::move_to_direction(Instance*) {
-
+void CodeExecutor::move_to_direction(Instance* sender) {
+	float speed = StackIn_f;
+	float direction = StackIn_f;
+	sender->PosX += std::cosf(direction) * speed * (float)Core::GetInstance()->DeltaTime;
+	sender->PosY += std::sinf(direction) * speed * (float)Core::GetInstance()->DeltaTime;
 }
 
 //float distance_to_point(point p);Give distance to <point>;Measure from current instance to target point.
-void CodeExecutor::distance_to_point(Instance* instance) {
+void CodeExecutor::distance_to_point(Instance* sender) {
 	SDL_FPoint dest = StackIn_p;
-	SDL_FPoint src = { instance->PosX, instance->PosY };
+	SDL_FPoint src = { sender->PosX, sender->PosY };
 	float distance = Func::Distance(src, dest);
 	StackOut_s(distance);
 }
@@ -672,5 +691,26 @@ void CodeExecutor::get_point_x(Instance* sender) {
 //float get_point_y(point point);Get y of <point> point;
 void CodeExecutor::get_point_y(Instance* sender) {
 	SDL_FPoint point = StackIn_p;
-	StackOut_s(point.x);
+	StackOut_s(point.y);
+}
+//null collision_push_other(bool myself);Push other instance by collision_mask_value - 1 in other direction, if <bool> then push this instance too;Like opposite magnets;
+void CodeExecutor::collision_push_other(Instance* self) {
+	bool myself = StackIn_b;
+
+	Instance* other = Core::GetInstance()->_current_scene->CurrentCollisionInstance;
+	if (other == nullptr) return;
+
+	float direction = std::atan2f(other->PosY - self->PosY, other->PosX - self->PosX);
+	float move;
+	if (myself) {
+		other->PosX += std::cosf(direction) * 16.f * (float)Core::GetInstance()->DeltaTime;
+		other->PosY += std::sinf(direction) * 16.f * (float)Core::GetInstance()->DeltaTime;
+		move = 16.f;
+	}
+	else {
+		move = 32.f;
+	}
+	other->PosX += std::cosf(direction - 180.f) * move * (float)Core::GetInstance()->DeltaTime;
+	other->PosY += std::sinf(direction - 180.f) * move * (float)Core::GetInstance()->DeltaTime;
+
 }

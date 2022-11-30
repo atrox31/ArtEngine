@@ -174,6 +174,7 @@ private:
 	Script(math_add);
 	Script(get_point_x);
 	Script(get_point_y);
+	Script(collision_push_other);
 #undef Script
 };
 //end of file

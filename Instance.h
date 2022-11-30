@@ -75,6 +75,7 @@ public:
 	BodyType Body;
 #ifdef _DEBUG
 	void DebugDrawMask();
+	void DebugDrawCollision();
 #endif // _DEBUG
 
 private:

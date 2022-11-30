@@ -494,6 +494,9 @@ int Core::Run()
                         for (Instance* instance : *_instance._current_scene->GetAllInstances()) {
                             if (instance == (*it)) continue; // self
                             if (instance->Body.Type == Instance::BodyType::NONE) continue; // no collision mask
+                            if (instance->Name == (*it)->Name) {
+                                //__debugbreak();
+                            }
                             if (instance->CollideTest((*it))) {
                                 _instance._current_scene->CurrentCollisionInstance = instance;
                                 _instance._current_scene->CurrentCollisionInstanceId = instance->GetId();
@@ -552,6 +555,7 @@ int Core::Run()
                     Render::DrawCircle({ instance->PosX + instance->SelfSprite->GetCenterXRel(), instance->PosY + instance->SelfSprite->GetCenterYRel() }, 6, C_GOLD);
 
                     instance->DebugDrawMask();
+                    instance->DebugDrawCollision();
 
                     Render::DrawText(
                         instance->Name + "#" + std::to_string(instance->GetId()) + "[" + std::to_string((int)instance->PosX) + "," + std::to_string((int)instance->PosY) + "]",

@@ -77,5 +77,6 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["math_add"] = &CodeExecutor::math_add;
 	FunctionsMap["get_point_x"] = &CodeExecutor::get_point_x;
 	FunctionsMap["get_point_y"] = &CodeExecutor::get_point_y;
+	FunctionsMap["collision_push_other"] = &CodeExecutor::collision_push_other;
 }
 //end of file
