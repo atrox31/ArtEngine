@@ -9,9 +9,10 @@ const SDL_Point Convert::Str2Point(std::string text)
 {
 	auto Point = Func::Split(text, ':');
 	if (Point.size() == 2) {
-		return SDL_Point(
-			std::stof(Point[0]),
-			std::stof(Point[1])
+		return SDL_Point({
+			std::stoi(Point[0]),
+			std::stoi(Point[1])
+			}
 		);
 	}
 	return SDL_Point();
@@ -22,8 +23,10 @@ const SDL_FPoint Convert::Str2FPoint(std::string text)
 	auto Point = Func::Split(text, ':');
 	if (Point.size() == 2) {
 		return SDL_FPoint(
+			{
 			std::stof(Point[0]),
 			std::stof(Point[1])
+			}
 		);
 	}
 	return SDL_FPoint();
