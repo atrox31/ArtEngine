@@ -120,4 +120,107 @@ void Instance::DebugDrawMask() {
 
 }
 #endif // _DEBUG
+/*
+SDL_FPoint i1{ instance->PosX, instance->PosY };
+		   SDL_FPoint i2{ target->PosX, target->PosY };
+		   if (Func::Distance(i1, i2) < instance->Body.Value + target->Body.Value) {
+			   MakeCollision(target, instance);
+		   }
+CIRCLE
+*/
+/*
+GPU_Rect p1{
+		   target->PosX - target->Body.Value,
+		   target->PosY - target->Body.Value,
+		   target->PosX + target->Body.Value,
+		   target->PosY + target->Body.Value
+};
+GPU_Rect p2{
+	instance->PosX - instance->Body.Value,
+	instance->PosY - instance->Body.Value,
+	instance->PosX + instance->Body.Value,
+	instance->PosY + instance->Body.Value
+};
+if (GPU_IntersectRect(p1, p2, nullptr)) {
+	MakeCollision(target, instance);
+}
+RECT
+*/
+bool Instance::CollideTest(Instance* instance)
+{
+	switch (instance->Body.Type)
+	{
+	case Instance::BodyType::CIRCLE:
+	{
+		switch (Body.Type)
+		{
+		case Instance::BodyType::CIRCLE:
+		{
+			return Collision_circle_circle(PosX, PosY, (float)Body.Value, instance->PosX, instance->PosY, (float)instance->Body.Value);
+		}
+		break;
+		case Instance::BodyType::RECT:
+		{
+			Rect collision_rect{
+				PosX - Body.Value,
+				PosY - Body.Value,
+				PosX + Body.Value,
+				PosY + Body.Value
+			};
+			return Collision_circle_rect(instance->PosX, instance->PosY, (float)instance->Body.Value, collision_rect.ToGPU_Rect_wh());
+		}
+		break;
+		}
+	}
+	break;
+	case Instance::BodyType::RECT:
+	{
+		switch (Body.Type)
+		{
+		case Instance::BodyType::CIRCLE:
+		{
+			Rect collision_rect{
+				instance->PosX - instance->Body.Value,
+				instance->PosY - instance->Body.Value,
+				instance->PosX + instance->Body.Value,
+				instance->PosY + instance->Body.Value
+			};
+			return Collision_circle_rect(PosX, PosY, (float)Body.Value, collision_rect.ToGPU_Rect_wh());
+		}
+		break;
+		case Instance::BodyType::RECT:
+		{
+			SDL_FRect collision_rect_mine{
+				PosX - Body.Value,
+				PosY - Body.Value,
+				(float)Body.Value * 2,
+				(float)Body.Value * 2
+			};
+			SDL_FRect collision_rect_other{
+				instance->PosX - (float)instance->Body.Value,
+				instance->PosY - (float)instance->Body.Value,
+				(float)instance->Body.Value * 2,
+				(float)instance->Body.Value * 2
+			};
+			return SDL_IntersectFRect(&collision_rect_mine, &collision_rect_other, NULL);
+		}
+		break;
+		}
+		break;
+	default:
+		return false;
+		break;
+	}
+	}
+	return false;
+}
 
+	bool Instance::Collision_circle_circle(float c1x, float c1y, float c1r, float c2x, float c2y, float c2r)
+	{
+		return Func::Distance(c1x, c1y, c2x, c2y) < c1r + c2r;
+	}
+
+	bool Instance::Collision_circle_rect(float c1x, float c1y, float c1r, GPU_Rect rect)
+	{
+		return Func::RectCircleColliding(c1x, c1y, c1r, rect);
+	}

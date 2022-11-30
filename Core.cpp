@@ -490,7 +490,19 @@ int Core::Run()
                     }
 
                     // collision
-
+                    if (EventBitTest(EventBit::HAVE_COLLISION, c_flag)) {
+                        for (Instance* instance : *_instance._current_scene->GetAllInstances()) {
+                            if (instance == (*it)) continue; // self
+                            if (instance->Body.Type == Instance::BodyType::NONE) continue; // no collision mask
+                            if (instance->CollideTest((*it))) {
+                                _instance._current_scene->CurrentCollisionInstance = instance;
+                                _instance._current_scene->CurrentCollisionInstanceId = instance->GetId();
+                                _instance.Executor.ExecuteScript((*it), Event::EV_ONCOLLISION);
+                                _instance._current_scene->CurrentCollisionInstance = nullptr;
+                                _instance._current_scene->CurrentCollisionInstanceId = -1;
+                            }
+                        }
+                    }
 
                     // input
                     if (Ev_Input && (*it)->Alive) {

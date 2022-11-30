@@ -9,7 +9,7 @@
 
 #define StackIn CodeExecutor::GlobalStack.Get()
 #define StackIn_b Convert::Str2Bool(StackIn)
-#define StackIn_p Convert::Str2Point(StackIn)
+#define StackIn_p Convert::Str2FPoint(StackIn)
 #define StackIn_c Convert::Str2Color(StackIn)
 #define StackIn_r Convert::Str2Rect(StackIn)
 
@@ -187,8 +187,10 @@ void CodeExecutor::move_to_point(Instance* instance) {
 }
 
 //null move_forward(float speed);Move current instance forward with <speed> px per seccond.;Call it every frame. Function give build-in direction varible.
-void CodeExecutor::move_forward(Instance*) {
-
+void CodeExecutor::move_forward(Instance* sender) {
+	float speed = StackIn_f;
+	sender->PosX += std::cosf(sender->Direction) * speed * (float)Core::GetInstance()->DeltaTime;
+	sender->PosY += std::sinf(sender->Direction) * speed * (float)Core::GetInstance()->DeltaTime;
 }
 
 //null move_instant(point p);Move instantly to target <point>;This changes x and y. Not cheking for collision;
@@ -390,7 +392,7 @@ void CodeExecutor::math_max(Instance*) {
 
 //point global_get_mouse();Get point of current mouse postion;If map is bigger than screen this give map coords not screen;
 void CodeExecutor::global_get_mouse(Instance*) {
-	StackOut(std::to_string(Core::GetInstance()->gMouse.X) + "," + std::to_string(Core::GetInstance()->gMouse.Y));
+	StackOut(Convert::Point2String(Core::GetInstance()->gMouse.XY));
 }
 //null set_self_sprite(sprite spr); Set self sprite to <sprite> with default scale, angle, speed, loop; You can mod sprite via set_sprite_ etc.;
 void CodeExecutor::set_self_sprite(Instance* instance) {
@@ -490,11 +492,44 @@ void CodeExecutor::empty_do_nothing(Instance*) {
 }
 //null set_body_type(string type, int value);Set body type for instance, of <string> and optional <int> value; type is enum: NONE,SPRITE,RECT,CIRCLE
 void CodeExecutor::set_body_type(Instance* sender) {
-	std::string type = StackIn;
 	int value = StackIn_i;
+	std::string type = StackIn;
 	if (sender->Body.Body_fromString(type) == Instance::BodyType::Invalid) return;
-	sender->Body.Value = value;
-	sender->Body.Type = sender->Body.Body_fromString(type);
+	if (sender->Body.Body_fromString(type) == Instance::BodyType::SPRITE) {
+		if (sender->SelfSprite != nullptr) {
+			switch (sender->SelfSprite->GetMaskType()) {
+			case Sprite::none:
+			{
+				sender->Body.Value = 0;
+				sender->Body.Type = Instance::BodyType::NONE;
+			}break;
+			case Sprite::perpixel:
+			{
+				sender->Body.Value = sender->SelfSprite->GetMaskValue();
+				sender->Body.Type = Instance::BodyType::RECT;
+			}break;
+			case Sprite::rectangle:
+			{
+				sender->Body.Value = sender->SelfSprite->GetMaskValue();
+				sender->Body.Type = Instance::BodyType::RECT;
+			}break;
+			case Sprite::circle:
+			{
+				sender->Body.Value = sender->SelfSprite->GetMaskValue();
+				sender->Body.Type = Instance::BodyType::CIRCLE;
+			}break;
+
+			}
+		}
+		else {
+			sender->Body.Value = 0;
+			sender->Body.Type = Instance::BodyType::NONE;
+		}
+	}
+	else {
+		sender->Body.Value = value;
+		sender->Body.Type = sender->Body.Body_fromString(type);
+	}
 }
 
 //instance collision_get_collider();Return reference to instance with this object is collide;Other colliders must be solid too to collide;
@@ -567,7 +602,7 @@ void CodeExecutor::get_direction_of(Instance*) {
 		StackOut_s(target->Direction);
 	}
 }
-//instance instance_spawn(object name, float x, float y);Spawn object <object> at (<float>,<float>) and return reference to it;Ypu can use reference to pass arguments;
+//instance instance_spawn(string name, float x, float y);Spawn object <string> at (<float>,<float>) and return reference to it;Ypu can use reference to pass arguments;
 void CodeExecutor::instance_spawn(Instance*) {
 	float y = StackIn_f;
 	float x = StackIn_f;
@@ -580,14 +615,14 @@ void CodeExecutor::instance_spawn(Instance*) {
 		StackOut("nul");
 	}
 }
-//null instance_spawn(object name, float x, float y);Spawn object <object> at (<float>,<float>) in current scene;This not return reference;
+//null instance_create(string name, float x, float y);Spawn object <string> at (<float>,<float>) in current scene;This not return reference;
 void CodeExecutor::instance_create(Instance*) {
 	float y = StackIn_f;
 	float x = StackIn_f;
 	std::string obj_id = StackIn;
 	Core::GetInstance()->_current_scene->CreateInstance(obj_id, x, y);
 }
-//null set_direction_for_target(instance target, flaot direction);//Set <instance> direction to <float> value;You can get reference from id of instance
+//null set_direction_for_target(instance target, flaot direction);Set <instance> direction to <float> value;You can get reference from id of instance
 void CodeExecutor::set_direction_for_target(Instance*) {
 	float direction = StackIn_f;
 	int instanceId = StackIn_i;
@@ -595,4 +630,47 @@ void CodeExecutor::set_direction_for_target(Instance*) {
 	if (instance != nullptr) {
 		instance->Direction = direction;
 	}
+}
+//null set_direction(float direction);Set current direction to <float>;
+void CodeExecutor::set_direction(Instance* sender) {
+	float direction = StackIn_f;
+	sender->Direction = direction;
+}
+
+//float convert_int_to_float(int value);Convert <int> to float type;
+void CodeExecutor::convert_int_to_float(Instance* sender) {
+	int value = StackIn_i;
+	// ?convert
+	StackOut_s(value);
+}
+
+//int convert_float_to_int(float value);Convert <float> to int type;
+void CodeExecutor::convert_float_to_int(Instance* sender) {
+	float value = StackIn_f;
+	int new_value = (int)SDL_roundf(value);
+	StackOut_s(value);
+}
+//null instance_delete_self();Delete self;
+void CodeExecutor::instance_delete_self(Instance* sender) {
+	sender->Delete();
+}
+//float get_direction();Get current direction;
+void CodeExecutor::get_direction(Instance* sender) {
+	StackOut_s(sender->Direction);
+}
+//float math_add(float a, float b);Get sum of <float> + <float>;
+void CodeExecutor::math_add(Instance* sender) {
+	float b = StackIn_f;
+	float a = StackIn_f;
+	StackOut_s(a + b);
+}
+//float get_point_x(point point);Get x of <point> point;
+void CodeExecutor::get_point_x(Instance* sender) {
+	SDL_FPoint point = StackIn_p;
+	StackOut_s(point.x);
+}
+//float get_point_y(point point);Get y of <point> point;
+void CodeExecutor::get_point_y(Instance* sender) {
+	SDL_FPoint point = StackIn_p;
+	StackOut_s(point.x);
 }

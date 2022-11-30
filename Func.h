@@ -22,8 +22,11 @@ class Func
 public:
 	// return distance from point to point
 	static const float Distance(SDL_FPoint&, SDL_FPoint&);
+	// return distance from point to point
+	static const float Distance(float P1_X, float P1_y, float P2_X, float P2_Y);
 
-	
+	// if circle and rectangle have intersection
+	static const bool RectCircleColliding(float circle_x, float circle_y, float circle_r, GPU_Rect rectangle);
 
 	static bool IsHex(std::string&);
 

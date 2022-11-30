@@ -6,6 +6,27 @@ const float Func::Distance(SDL_FPoint& p1, SDL_FPoint& p2)
 {
 	return std::hypotf(p2.x - p1.x, p2.y - p1.y);
 }
+const float Func::Distance(float P1_X, float P1_y, float P2_X, float P2_Y)
+{
+	return std::hypotf(P2_X - P1_X, P2_Y - P1_y);
+}
+
+const bool Func::RectCircleColliding(float circle_x, float circle_y, float circle_r, GPU_Rect rectangle_wh)
+{
+
+	float distX = std::fabsf(circle_x - rectangle_wh.x - rectangle_wh.w / 2);
+	float distY = std::fabsf(circle_y - rectangle_wh.y - rectangle_wh.h / 2);
+
+	if (distX > (rectangle_wh.w / 2 + circle_r)) { return false; }
+	if (distY > (rectangle_wh.h / 2 + circle_r)) { return false; }
+
+	if (distX <= (rectangle_wh.w / 2)) { return true; }
+	if (distY <= (rectangle_wh.h / 2)) { return true; }
+
+	float dx = distX - rectangle_wh.w / 2;
+	float dy = distY - rectangle_wh.h / 2;
+	return (dx * dx + dy * dy <= (circle_r * circle_r));
+}
 
 bool Func::IsHex(std::string& value)
 {

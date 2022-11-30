@@ -80,7 +80,7 @@ ENUM_WITH_STRING_CONVERSION(
     (EV_DRAW)
 )
 
-#define _e_type uint16_t
+#define _e_type std::uint16_t
 
 enum class EventBit : _e_type {
 
@@ -103,11 +103,11 @@ enum class EventBit : _e_type {
 };
 EventBit EventBitFromEvent(Event);
 inline constexpr EventBit operator|(EventBit a, EventBit b) {
-    return static_cast<EventBit>(static_cast<char>(a) | static_cast<char>(b));
+    return static_cast<EventBit>(static_cast<_e_type>(a) | static_cast<_e_type>(b));
 }
 
 inline constexpr EventBit operator&(EventBit a, EventBit b) {
-    return static_cast<EventBit>(static_cast<char>(a) & static_cast<char>(b));
+    return static_cast<EventBit>(static_cast<_e_type>(a) & static_cast<_e_type>(b));
 
 }
 // if condition is in flag

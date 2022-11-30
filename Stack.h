@@ -37,6 +37,7 @@ public:
 	}
 	void Erase() {
 		_size = 0;
+		// TODO: this is slow
 		_data = std::stack<T>();
 	}
 	AStack(size_t DefaultStackSize = 4) {

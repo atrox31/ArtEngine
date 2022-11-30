@@ -69,5 +69,13 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["instance_spawn"] = &CodeExecutor::instance_spawn;
 	FunctionsMap["instance_create"] = &CodeExecutor::instance_create;
 	FunctionsMap["set_direction_for_target"] = &CodeExecutor::set_direction_for_target;
+	FunctionsMap["set_direction"] = &CodeExecutor::set_direction;
+	FunctionsMap["convert_int_to_float"] = &CodeExecutor::convert_int_to_float;
+	FunctionsMap["convert_float_to_int"] = &CodeExecutor::convert_float_to_int;
+	FunctionsMap["instance_delete_self"] = &CodeExecutor::instance_delete_self;
+	FunctionsMap["get_direction"] = &CodeExecutor::get_direction;
+	FunctionsMap["math_add"] = &CodeExecutor::math_add;
+	FunctionsMap["get_point_x"] = &CodeExecutor::get_point_x;
+	FunctionsMap["get_point_y"] = &CodeExecutor::get_point_y;
 }
 //end of file

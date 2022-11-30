@@ -53,6 +53,13 @@ public:
 	std::vector<std::vector<std::string>> Varibles;
 	EventBit EventFlag;
 
+	
+	bool CollideTest(Instance*);
+private:
+		bool Collision_circle_circle(float c1x, float c1y, float c1r,float c2x, float c2y, float c2r);
+		bool Collision_circle_rect(float c1x, float c1y, float c1r, GPU_Rect rect);
+		bool Collision_rect_rect(GPU_Rect rect1, GPU_Rect rect2);
+public:
 	struct BodyType {
 	public:
 		ENUM_WITH_STRING_CONVERSION(Body,(NONE)(SPRITE)(RECT)(CIRCLE));
@@ -62,6 +69,8 @@ public:
 			Type = Body::NONE;
 			Value = 0;
 		}
+
+	private:
 	};
 	BodyType Body;
 #ifdef _DEBUG

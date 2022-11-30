@@ -108,8 +108,14 @@ void Render::DrawSprite(Sprite* sprite, vec2f postion, int frame) {
 void Render::DrawSprite_ex(Sprite* sprite, float posX, float posY, int frame, float scaleX, float scaleY, float centerX, float centerY, float angle, float alpha) {
 	if (sprite == nullptr) return;
 
-	if (frame > sprite->GetMaxFrame()) {
-		frame = frame % sprite->GetMaxFrame();
+	const int spr_max_frames = sprite->GetMaxFrame();
+	if (spr_max_frames == 1) {
+		frame = 0;
+	}
+	else {
+		if (frame > spr_max_frames) {
+			frame = frame % spr_max_frames;
+		}
 	}
 
 	GPU_Image* target = sprite->GetFrame(frame);

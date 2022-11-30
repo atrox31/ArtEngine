@@ -11,10 +11,16 @@ public:
 	static const std::string Rect2Str(Rect&);
 
 	// translate string to point
-	static const SDL_FPoint Str2Point(std::string);
+	static const SDL_Point Str2Point(std::string);
 
 	// translate point to string
-	static const std::string Point2String(SDL_FPoint&);
+	static const std::string Point2String(SDL_Point&);
+
+	// translate string to Fpoint
+	static const SDL_FPoint Str2FPoint(std::string);
+
+	// translate Fpoint to string
+	static const std::string FPoint2String(SDL_FPoint&);
 
 	// fast text to bool converter, ony check first char
 	static const bool Str2Bool(std::string);

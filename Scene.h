@@ -36,7 +36,7 @@ public:
 	std::vector < Instance* > GetInstancesByName(std::string);
 
 	// collision
-	int CurrentCollisionInstanceId;
+	Uint64 CurrentCollisionInstanceId;
 	Instance* CurrentCollisionInstance;
 private:
 	//TODO GUI GuiFile

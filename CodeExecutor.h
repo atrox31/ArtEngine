@@ -166,6 +166,14 @@ private:
 	Script(instance_spawn);
 	Script(instance_create);
 	Script(set_direction_for_target);
+	Script(set_direction);
+	Script(convert_int_to_float);
+	Script(convert_float_to_int);
+	Script(instance_delete_self);
+	Script(get_direction);
+	Script(math_add);
+	Script(get_point_x);
+	Script(get_point_y);
 #undef Script
 };
 //end of file

@@ -5,7 +5,19 @@ const std::string Convert::Rect2Str(Rect& rect)
 {
 	return std::to_string(rect.x) + ':' + std::to_string(rect.y) + ':' + std::to_string(rect.w) + ':' + std::to_string(rect.h);
 }
-const SDL_FPoint Convert::Str2Point(std::string text)
+const SDL_Point Convert::Str2Point(std::string text)
+{
+	auto Point = Func::Split(text, ':');
+	if (Point.size() == 2) {
+		return SDL_Point(
+			std::stof(Point[0]),
+			std::stof(Point[1])
+		);
+	}
+	return SDL_Point();
+}
+
+const SDL_FPoint Convert::Str2FPoint(std::string text)
 {
 	auto Point = Func::Split(text, ':');
 	if (Point.size() == 2) {
@@ -17,7 +29,7 @@ const SDL_FPoint Convert::Str2Point(std::string text)
 	return SDL_FPoint();
 }
 
-const std::string Convert::Point2String(SDL_FPoint& point)
+const std::string Convert::Point2String(SDL_Point& point)
 {
 	return std::to_string(point.x) + ':' + std::to_string(point.y);
 }
@@ -34,6 +46,11 @@ const Rect Convert::Str2Rect(std::string str)
 		);
 	}
 	return Rect();
+}
+
+const std::string Convert::FPoint2String(SDL_FPoint& point)
+{
+	return std::to_string(point.x) + ':' + std::to_string(point.y);
 }
 
 const bool Convert::Str2Bool(std::string text)
