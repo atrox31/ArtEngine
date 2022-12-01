@@ -145,17 +145,17 @@ void Render::DrawSprite_ex(Sprite* sprite, float posX, float posY, int frame, fl
 	}
 }
 
-void Render::DrawRect(GPU_Rect rect, SDL_Color color)
+void Render::DrawRect(Rect rect, SDL_Color color)
 {
 	GPU_Rectangle(_instance->_screenTexture_target, rect.x, rect.y, rect.w, rect.h, color);
 }
 
-void Render::DrawRect_wh(GPU_Rect rect, SDL_Color color)
+void Render::DrawRect_wh(Rect rect, SDL_Color color)
 {
 	GPU_Rectangle(_instance->_screenTexture_target, rect.x, rect.y, rect.x + rect.w, rect.y + rect.h, color);
 }
 
-void Render::DrawRectFilled(GPU_Rect rect, SDL_Color color)
+void Render::DrawRectFilled(Rect rect, SDL_Color color)
 {
 	GPU_RectangleFilled(_instance->_screenTexture_target, rect.x, rect.y, rect.w, rect.h, color);
 }

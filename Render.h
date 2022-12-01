@@ -3,6 +3,7 @@
 #include "SDL_version.h"
 #include "vec2f.h"
 #include "Sprite.h"
+#include "Rect.h"
 #include "SDL2/SDL_FontCache-master/SDL_FontCache.h"
 #pragma warning(push)
 #include SDL2_INCLUDE_DIR
@@ -24,9 +25,9 @@ public:
 	static void DrawSprite(Sprite* sprite, vec2f postion, int frame);
 	static void DrawSprite_ex(Sprite* sprite, float posX, float posY, int frame, float scaleX, float scaleY, float centerX, float centerY, float angle, float alpha);
 
-	static void DrawRect(GPU_Rect rect, SDL_Color color);
-	static void DrawRect_wh(GPU_Rect rect, SDL_Color color);
-	static void DrawRectFilled(GPU_Rect rect, SDL_Color color);
+	static void DrawRect(Rect rect, SDL_Color color);
+	static void DrawRect_wh(Rect rect, SDL_Color color);
+	static void DrawRectFilled(Rect rect, SDL_Color color);
 
 	static void DrawCircle(vec2f postion, float radius, SDL_Color color);
 	static void DrawCircleFilled(vec2f postion, float radius, SDL_Color color);
