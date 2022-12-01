@@ -318,6 +318,7 @@ int Core::Run()
 {
 #ifdef _DEBUG
     bool Debug_ShowInfo = false;
+    bool Debug_ShowStats = false;
 #endif // _DEBUG
     Render::SetBloom(false);
     SDL_TimerID my_timer_id = SDL_AddTimer((Uint32)1000, FpsCounterCallback, NULL);
@@ -446,10 +447,17 @@ int Core::Run()
                 if (e.key.keysym.sym == SDLK_F1) {
                     Debug_ShowInfo = !Debug_ShowInfo;
                 }
-                if (e.key.keysym.sym == SDLK_F4) {
+                if (e.key.keysym.sym == SDLK_F2) {
+                    Debug_ShowStats = !Debug_ShowStats;
+                }
+                if (e.key.keysym.sym == SDLK_F12) {
                     _instance._current_scene->Start();
                 }
 #endif // _DEBUG
+                if (e.key.keysym.sym == SDLK_F4) {
+                    _instance._show_fps = !_instance._show_fps;
+                    break;
+                }
 
                 if (!_instance.Consola->ProcessKey((SDL_KeyCode)e.key.keysym.sym)) {
                     Ev_Input = true;
@@ -466,8 +474,7 @@ int Core::Run()
         //Art::Core::GetInstance()->Run_sceneStep();
         _instance._current_scene->SpawnAll();
         if (_instance._current_scene->IsAnyInstances()) {
-            plf::colony<Instance*>* AllInstances = _instance._current_scene->GetAllInstances();
-            for (plf::colony<Instance*>::iterator it = AllInstances->begin(); it != AllInstances->end();) {
+            for (plf::colony<Instance*>::iterator it = _instance._current_scene->InstanceColony.begin(); it != _instance._current_scene->InstanceColony.end();) {
                 Instance* cInstance = (*it);
                 if (cInstance->Alive) {
                     // step
@@ -495,12 +502,9 @@ int Core::Run()
 
                     // collision
                     if (EventBitTest(EventBit::HAVE_COLLISION, c_flag)) {
-                        for (Instance* instance : *_instance._current_scene->GetAllInstances()) {
+                        for (Instance* instance : _instance._current_scene->InstanceColony) {
                             if (instance == cInstance) continue; // self
                             if (instance->Body.Type == Instance::BodyType::NONE) continue; // no collision mask
-                            if (instance->Name == cInstance->Name) {
-                                //__debugbreak();
-                            }
                             if (instance->CollideTest(cInstance)) {
                                 _instance._current_scene->CurrentCollisionInstance = instance;
                                 _instance._current_scene->CurrentCollisionInstanceId = instance->GetId();
@@ -534,15 +538,15 @@ int Core::Run()
                 else {
                     //TODO: Event::EV_ONDESTROY
                     _instance.Executor.ExecuteScript(cInstance, Event::EV_ONDESTROY);
-                    it = AllInstances->erase(it);
+                    it = _instance._current_scene->DeleteInstance(it);
                 }
             }
         }
 
         //Art::Core::GetInstance()->Run_sceneDraw();
         if (_instance._current_scene->IsAnyInstances()){
-            for (Instance* instance : *_instance._current_scene->GetAllInstances()) {
-                if (instance->InView || true) {
+            for (Instance* instance : _instance._current_scene->InstanceColony) {
+                if (instance->InView) {
                     _instance.Executor.ExecuteScript(instance, Event::EV_DRAW);
 
                 }
@@ -553,7 +557,7 @@ int Core::Run()
 #ifdef _DEBUG
         if(Debug_ShowInfo){
             if (_instance._current_scene->IsAnyInstances()) {
-                for (Instance* instance : *_instance._current_scene->GetAllInstances()) {
+                for (Instance* instance : _instance._current_scene->InstanceColony) {
 
                     Render::DrawCircle({ instance->PosX, instance->PosY }, 4, C_BLACK);
                     
@@ -576,6 +580,19 @@ int Core::Run()
                 }
             }
         }
+        if (Debug_ShowStats) {
+            Render::DrawTextAlign(
+                "instance count: " + std::to_string(_instance._current_scene->GetInstancesCount()) + '\n' + 
+                "delta time: " + std::to_string(_instance.DeltaTime) + '\n' + 
+                "global stack size[capacity]: " + std::to_string(_instance.Executor.GetGlobalStackSize()) + '[' + std::to_string(_instance.Executor.GetGlobalStackSize()) + ']' + '\n'
+
+                ,
+                _instance._global_font,
+                { 12.f, 40.f },
+                C_RED,
+                FC_ALIGN_LEFT
+            );
+        }
 #endif // _DEBUG
 
 
@@ -590,11 +607,9 @@ int Core::Run()
             _instance.Consola->RenderConsole();
         }
         //Art::Core::GetInstance()->Draw_FPS();
-        if (_instance._show_fps || true) {
+        if (_instance._show_fps) {
             GPU_ActivateShaderProgram(0, NULL);
-
             GPU_Rect rect = FC_GetBounds(_instance._global_font, 2, 2, FC_ALIGN_LEFT, FC_Scale({ 1, 1 }), "%d", _instance.fps);
-
             GPU_RectangleFilled2(_instance._screenTarget, rect, C_BLACK);
             FC_DrawColor(_instance._global_font, _instance._screenTarget, 2, 2, C_RED, "%d", _instance.fps);
         }

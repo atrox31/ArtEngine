@@ -31,6 +31,9 @@ public:
 	bool LoadObjectDefinitions();
 	void Delete();
 
+	int GetGlobalStackSize();
+	int GetGlobalStackCapacity();
+
 private:
 	struct InstanceDefinition {
 	public:
@@ -56,13 +59,67 @@ private:
 			_varibles = std::map<int, int>();
 			_events = std::vector<EventData>(); 
 		}
+		/*
+		(NUL)
+			(INT)
+			(FLOAT)
+			(BOOL)
+			(INSTANCE)
+			(OBJECT)
+			(SPRITE)
+			(TEXTURE)
+			(SOUND)
+			(MUSIC)
+			(FONT)
+			(POINT)
+			(RECT)
+			(COLOR)
+			(STRING)
+			*/
 		void AddVarible(int type) {
-			auto f = _varibles.find(type);
-			if (f == _varibles.end()) {
-				_varibles.insert(std::pair(type, 1));
-			}
-			else {
-				f->second++;
+			switch (type) {
+				case ArtCode::INT:
+					_template->Varibles_int.push_back(0);
+					break;
+				case ArtCode::FLOAT:
+					_template->Varibles_float.push_back(0.0f);
+					break;
+				case ArtCode::BOOL:
+					_template->Varibles_bool.push_back(false);
+					break;
+				case ArtCode::INSTANCE:
+					_template->Varibles_instance.push_back(nullptr);
+					break;
+				case ArtCode::OBJECT:
+					_template->Varibles_object.push_back(-1);
+					break;
+				case ArtCode::SPRITE:
+					_template->Varibles_sprite.push_back(-1);
+					break;
+				case ArtCode::TEXTURE:
+					_template->Varibles_texture.push_back(-1);
+					break;
+				case ArtCode::SOUND:
+					_template->Varibles_sound.push_back(-1);
+					break;
+				case ArtCode::MUSIC:
+					_template->Varibles_music.push_back(-1);
+					break;
+				case ArtCode::FONT:
+					_template->Varibles_font.push_back(-1);
+					break;
+				case ArtCode::POINT:
+					_template->Varibles_point.push_back(SDL_FPoint());
+					break;
+				case ArtCode::RECT:
+					_template->Varibles_rect.push_back(Rect());
+					break;
+				case ArtCode::COLOR:
+					_template->Varibles_color.push_back(SDL_Color());
+					break;
+				case ArtCode::STRING:
+					_template->Varibles_string.push_back(std::string());
+					break;
 			}
 		}
 		
@@ -83,7 +140,32 @@ public:
 private:
 	std::map<std::string, void(*)(Instance*)> FunctionsMap;
 	std::vector<void(*)(Instance*)> FunctionsList;
-	static AStack<std::string> GlobalStack;
+
+	void EraseGlobalStack();
+	/*
+	void* _nul; // only for varible type
+		int _int;
+		float _float;
+		bool _bool;
+		Instance* _instance;
+		int _object;
+		int _sprite;
+		int _texture;
+		int _sound;
+		int _music;
+		int _font;
+		SDL_FPoint _rect;
+		SDL_Color _color;
+		std::string _string;
+	*/
+	static AStack<int> GlobalStack_int;
+	static AStack<float> GlobalStack_float;
+	static AStack<bool> GlobalStack_bool;
+	static AStack<Instance*> GlobalStack_instance;
+	static AStack<SDL_FPoint> GlobalStack_point;
+	static AStack<Rect> GlobalStack_rect;
+	static AStack<SDL_Color> GlobalStack_color;
+	static AStack<std::string> GlobalStack_string;
 private:
 	// helpers
 	bool _break;
@@ -94,8 +176,23 @@ private:
 	void h_get_value(Inspector*, Instance*);
 	int	 h_if_test(Inspector* code, Instance* instance);
 	void h_get_local_value(Inspector* code, Instance* instance);
-	bool h_compare(Inspector*, Instance*);
-	std::string h_operation(int operation, std::string value1, std::string value2);
+	bool h_compare(int type, int oper);
+
+	//std::string h_operation(int operation, std::string value1, std::string value2);
+	int h_operation_int(int _operator, int val1, int val2);
+	float h_operation_float(int _operator, float val1, float val2);
+	bool h_operation_bool(int _operator, bool val1, bool val2);
+	Instance* h_operation_instance(int _operator, Instance* val1, Instance* val2);
+	int h_operation_object(int _operator, int val1, int val2);
+	int h_operation_sprite(int _operator, int val1, int val2);
+	int h_operation_texture(int _operator, int val1, int val2);
+	int h_operation_sound(int _operator, int val1, int val2);
+	int h_operation_music(int _operator, int val1, int val2);
+	int h_operation_font(int _operator, int val1, int val2);
+	SDL_FPoint h_operation_point(int _operator, SDL_FPoint val1, SDL_FPoint val2);
+	Rect h_operation_rect(int _operator, Rect val1, Rect val2);
+	SDL_Color h_operation_color(int _operator, SDL_Color val1, SDL_Color val2);
+	std::string h_operation_string(int _operator, std::string val1, std::string val2);
 
 
 private:

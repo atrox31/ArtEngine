@@ -12,7 +12,9 @@ public:
 	Scene();
 	virtual ~Scene();
 	bool Load(std::string name);
+	void Clear();
 
+	// also reset
 	void Start();
 	void Exit();
 
@@ -25,8 +27,6 @@ public:
 	std::string GetName() {
 		return Name;
 	}
-
-	plf::colony<Instance*>* GetAllInstances();
 
 	Instance* GetInstanceById(int);
 	Instance* GetInstanceByTag(std::string);
@@ -72,9 +72,11 @@ private:
 	// instances
 public:
 	bool IsAnyInstances() { return _instances_size > 0; }
+	int GetInstancesCount() {return _instances_size; }
+	plf::colony<Instance*> InstanceColony;
+	plf::colony<Instance*>::iterator DeleteInstance(plf::colony<Instance*>::iterator ptr);
 private:
 	int _instances_size;
-	plf::colony<Instance*> _instances;
 	std::vector<Instance*> _instances_new;
 
 };

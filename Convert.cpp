@@ -86,8 +86,9 @@ SDL_Color Convert::Str2Color(std::string color)
 				A = (Uint8)std::stoi(color.substr(7, 2), nullptr, 16);
 			return SDL_Color({ R,G,B,A });
 		}
-		catch (const std::invalid_argument& ia) {
+		catch (const std::invalid_argument& ) {
 			//err
+			
 			return SDL_Color({ 0,0,0,0 });
 		}
 	}

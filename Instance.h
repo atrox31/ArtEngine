@@ -49,8 +49,37 @@ public:
 	float SpriteAnimationFrame;
 	float SpriteAnimationSpeed;
 	bool SpriteAnimationLoop;
-
-	std::vector<std::vector<std::string>> Varibles;
+/*
+	(NUL)
+	(INT)
+	(FLOAT)
+	(BOOL)
+	(INSTANCE)
+	(OBJECT)
+	(SPRITE)
+	(TEXTURE)
+	(SOUND)
+	(MUSIC)
+	(FONT)
+	(POINT)
+	(RECT)
+	(COLOR)
+	(STRING)
+*/
+	std::vector<int> Varibles_int;
+	std::vector<float> Varibles_float;
+	std::vector<bool> Varibles_bool;
+	std::vector<Instance*> Varibles_instance;
+	std::vector<int> Varibles_object;
+	std::vector<int> Varibles_sprite;
+	std::vector<int> Varibles_texture;
+	std::vector<int> Varibles_sound;
+	std::vector<int> Varibles_music;
+	std::vector<int> Varibles_font;
+	std::vector<Rect> Varibles_rect;
+	std::vector<SDL_FPoint> Varibles_point;
+	std::vector<SDL_Color> Varibles_color;
+	std::vector<std::string> Varibles_string;
 	EventBit EventFlag;
 
 	

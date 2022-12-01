@@ -114,17 +114,17 @@ void Instance::DebugDrawMask() {
 		};
 		SDL_FPoint mov{ SelfSprite->GetCenterXRel(), SelfSprite->GetCenterYRel() };
 		spoint += mov;
-		Render::DrawRect(spoint.ToGPU_Rect(), C_RED);
+		Render::DrawRect(spoint, C_RED);
 		//Render::DrawCircle(spoint, SelfSprite->GetMaskValue(), C_RED);
 	}
 
 }
 void Instance::DebugDrawCollision() {
 	if (Body.Type == Instance::BodyType::CIRCLE) {
-		Render::DrawCircle({ PosX,PosY }, Body.Value / 2, C_BLUE);
+		Render::DrawCircle({ PosX,PosY }, (float)Body.Value / 2, C_BLUE);
 	}
 	if (Body.Type == Instance::BodyType::RECT) {
-		GPU_Rect collision_rect_mine{
+		Rect collision_rect_mine{
 				PosX - (float)Body.Value / 2.f - 1,
 				PosY - (float)Body.Value / 2.f - 1,
 				(float)Body.Value + 2,

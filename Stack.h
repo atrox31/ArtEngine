@@ -1,6 +1,5 @@
 #pragma once
 #include <vector>
-#include <stack>
 
 //AStack<const char*> : 147.586ms   !!!!
 //AStack<float>:151.597ms
@@ -13,38 +12,56 @@ template <typename T>
 struct AStack {
 private:
 	size_t _size;
-	std::stack<T> _data;
+	size_t _c_element;
+	std::vector<T> _data;
+	size_t _current_capacity;
 public:
 	// Add varible to stack, does not call for contructor so object must be created first
 	void Add(T value) {
-		_data.push(value);
-		_size++;
+		if (_size == _current_capacity) {
+			_data.resize(_size + 8);
+			_current_capacity += 8;
+		}
+		if (_c_element >= _size) {
+			_data.push_back(value);
+			_c_element++;
+			_size++;
+		}
+		else {
+			_data[_c_element++] = value;
+		}
 	}
 	// Get fresh value on stack or return NULL
 	T Get() {
-		if (_size > 0) {
-			T temp = _data.top();
-			_data.pop();
-			return temp;
+		if (_c_element > 0) {
+			return _data[--_c_element];
 		}
 		return T();
 	}
 	constexpr inline bool IsEmpty() {
-		return (_size == 0);
+		return (_c_element == 0);
 	}
 	constexpr inline int Size() {
+		return (int)_c_element;
+	}
+	constexpr inline int Capacity() {
 		return (int)_size;
 	}
 	void Erase() {
 		_size = 0;
-		// TODO: this is slow
-		_data = std::stack<T>();
+		_c_element = 0;
+		_data.clear();
 	}
-	AStack(size_t DefaultStackSize = 4) {
+	AStack(size_t DefaultStackSize = 8) {
 		_size = 0;
+		_c_element = 0;
+		_data.reserve(DefaultStackSize);
+		_current_capacity = DefaultStackSize;
 	}
 	virtual ~AStack() {
 		_size = 0;
+		_c_element = 0;
+		_data.clear();
 	}
 };
 

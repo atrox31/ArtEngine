@@ -67,6 +67,24 @@ inline bool operator<(SDL_FPoint const& a, SDL_FPoint const& b)
 {
 	return a.x < b.x && a.y < b.y;
 }
+// float operations
+inline SDL_FPoint operator+=(SDL_FPoint const& a, SDL_FPoint const& b)
+{
+	return SDL_FPoint({ a.x + b.x, a.y + b.y });
+}
+inline SDL_FPoint operator-=(SDL_FPoint const& a, SDL_FPoint const& b)
+{
+	return SDL_FPoint({ a.x - b.x, a.y - b.y });
+}
+inline SDL_FPoint operator*=(SDL_FPoint const& a, SDL_FPoint const& b)
+{
+	return SDL_FPoint({ a.x * b.x, a.y * b.y });
+}
+inline SDL_FPoint operator/=(SDL_FPoint const& a, SDL_FPoint const& b)
+{
+	return SDL_FPoint({ a.x / b.x, a.y / b.y });
+}
+
 // color compare
 inline bool operator==(SDL_Color const& a, SDL_Color const& b)
 {

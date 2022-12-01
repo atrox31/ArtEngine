@@ -9,7 +9,7 @@ int Func::TryGetInt(std::string str)
 		a = std::stoi(str);
 	}
 	catch (const std::invalid_argument& ia) {
-		ASSERT(false, "TryToGetFloat - Invalid argument : " << str);
+		ASSERT(false, "TryToGetFloat - Invalid argument : " + str);
 		std::cerr << "Invalid argument: " << ia.what() << std::endl;
 		return 0;
 	}

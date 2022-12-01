@@ -18,16 +18,16 @@ Scene::Scene()
 	CurrentCollisionInstance = nullptr;
 }
 
-Scene::~Scene()
+void Scene::Clear()
 {
-	if (_instances.size() > 0) {
-		for (plf::colony<Instance*>::iterator it = _instances.begin(); it != _instances.end(); ) {
+	if (InstanceColony.size() > 0) {
+		for (plf::colony<Instance*>::iterator it = InstanceColony.begin(); it != InstanceColony.end(); ) {
 			
 			delete (*it);
-			it = _instances.erase(it);
+			it = InstanceColony.erase(it);
 		}
 	}
-	_instances.clear();
+	InstanceColony.clear();
 
 	if (_instances_new.size() > 0) {
 		for (std::vector<Instance*>::iterator it = _instances_new.begin(); it != _instances_new.end(); ) {
@@ -36,6 +36,10 @@ Scene::~Scene()
 		}
 	}
 	_instances_new.clear();
+}
+Scene::~Scene()
+{
+	Clear();
 }
 bool Scene::Load(std::string name)
 {
@@ -112,21 +116,7 @@ bool Scene::Load(std::string name)
 }
 void Scene::Start()
 {
-	if (_instances.size() > 0) {
-		for (plf::colony<Instance*>::iterator it = _instances.begin(); it != _instances.end();) {
-			delete (*it);
-			it = _instances.erase(it);
-		}
-	}
-	_instances.clear();
-
-	if (_instances_new.size() > 0) {
-		for (std::vector<Instance*>::iterator it = _instances_new.begin(); it != _instances_new.end();) {
-			delete (*it);
-			it = _instances_new.erase(it);
-		}
-	}
-	_instances_new.clear();
+	Clear();
 	for (Spawner& instance : BeginInstances) {
 		CreateInstance(instance._instance, (float)instance.x, (float)instance.y);
 	}
@@ -147,7 +137,7 @@ void Scene::SpawnAll()
 		size_t ins_siz = _instances_new.size();
 		while (ins_siz) {
 			Core::GetInstance()->Executor.ExecuteScript(_instances_new.back(), Event::EV_ONCREATE);
-			_instances.insert(_instances_new.back());
+			InstanceColony.insert(_instances_new.back());
 			_instances_new.pop_back();
 			--ins_siz;
 			_instances_size++;
@@ -157,46 +147,28 @@ void Scene::SpawnAll()
 }
 void Scene::Exit()
 {
-	if (_instances.size() > 0) {
-		Instance* pd;
-		for (plf::colony<Instance*>::iterator it = _instances.begin(); it != _instances.end(); ++it) {
-			pd = *it;
-			delete pd;
-		}
-	}
-	_instances.clear();
-	if (_instances_new.size() > 0) {
-		Instance* pd;
-		for (std::vector<Instance*>::iterator it = _instances_new.begin(); it != _instances_new.end(); ++it) {
-			pd = *it;
-			delete pd;
-		}
-	}
-	_instances_new.clear();
+	Clear();
 	// TODO: triggers
 	// TODO: regions
 }
-plf::colony<Instance*>* Scene::GetAllInstances()
-{
-	return &_instances;
-}
+
 Instance* Scene::GetInstanceById(int id)
 {
-	for (Instance* instance : _instances) {
+	for (Instance* instance : InstanceColony) {
 		if (instance->GetId() == id) return instance;
 	}
 	return nullptr;
 }
 Instance* Scene::GetInstanceByTag(std::string tag)
 {
-	for (Instance* instance : _instances) {
+	for (Instance* instance : InstanceColony) {
 		if (instance->Tag == tag) return instance;
 	}
 	return nullptr;
 }
 Instance* Scene::GetInstanceByName(std::string name)
 {
-	for (Instance* instance : _instances) {
+	for (Instance* instance : InstanceColony) {
 		if (instance->Name == name) return instance;
 	}
 	return nullptr;
@@ -204,7 +176,7 @@ Instance* Scene::GetInstanceByName(std::string name)
 std::vector<Instance*> Scene::GetInstancesByTag(std::string tag)
 {
 	std::vector<Instance*> _return;
-	for (Instance* instance : _instances) {
+	for (Instance* instance : InstanceColony) {
 		if (instance->Tag == tag) _return.push_back(instance);
 	}
 	return _return;
@@ -212,8 +184,14 @@ std::vector<Instance*> Scene::GetInstancesByTag(std::string tag)
 std::vector<Instance*> Scene::GetInstancesByName(std::string name)
 {
 	std::vector<Instance*> _return;
-	for (Instance* instance : _instances) {
+	for (Instance* instance : InstanceColony) {
 		if (instance->Name == name) _return.push_back(instance);
 	}
 	return _return;
+}
+
+plf::colony<Instance*>::iterator Scene::DeleteInstance(plf::colony<Instance*>::iterator ptr)
+{
+	_instances_size--;
+	return InstanceColony.erase(ptr);
 }

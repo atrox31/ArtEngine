@@ -43,7 +43,7 @@ void Debug::LOG(SDL_Rect& rect)
 	std::stringstream string("");
 	string << "SDL_Rect( x:" << rect.x << ", y:" << rect.y << ", w:" << rect.w << ", h:" << rect.h << " )";
 
-	//if (WRITE_TO_GAME_CONSOLE) :Core::GetConsoleHandle()->WriteLine(string.str());
+	if (WRITE_TO_GAME_CONSOLE) Core::GetInstance()->Consola->WriteLine(string.str());
 	if (WRITE_TO_SYSTEM_CONSOLE) SDL_LogInfo(0, string.str().c_str());
 }
 
@@ -52,7 +52,7 @@ void Debug::LOG(SDL_FRect& rect)
 	std::stringstream string("");
 	string << "SDL_Rect( x:" << rect.x << ", y:" << rect.y << ", w:" << rect.w << ", h:" << rect.h << " )";
 
-	//if (WRITE_TO_GAME_CONSOLE) Core::GetConsoleHandle()->WriteLine(string.str());
+	if (WRITE_TO_GAME_CONSOLE) Core::GetInstance()->Consola->WriteLine(string.str());
 	if (WRITE_TO_SYSTEM_CONSOLE) SDL_LogInfo(0, string.str().c_str());
 }
 
@@ -61,7 +61,7 @@ void Debug::LOG(GPU_Rect& rect)
 	std::stringstream string("");
 	string << "SDL_Rect( x:" << rect.x << ", y:" << rect.y << ", w:" << rect.w << ", h:" << rect.h << " )";
 
-	//if (WRITE_TO_GAME_CONSOLE) Core::GetConsoleHandle()->WriteLine(string.str());
+	if (WRITE_TO_GAME_CONSOLE) Core::GetInstance()->Consola->WriteLine(string.str());
 	if (WRITE_TO_SYSTEM_CONSOLE) SDL_LogInfo(0, string.str().c_str());
 }
 
