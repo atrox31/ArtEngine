@@ -36,6 +36,9 @@ public:
 	Rect operator/=(int& i);
 	Rect operator/=(float& i);
 
+	bool operator==(Rect const& a);
+	bool operator!=(Rect const& a);
+
 
 	void Rotate(float deg);
 	SDL_FPoint GetCenter();

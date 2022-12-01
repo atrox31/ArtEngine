@@ -4,9 +4,9 @@
 
 int Func::TryGetInt(std::string str)
 {
-	int a = 0.0f;
+	int a = 0;
 	try {
-		a = std::stof(str);
+		a = std::stoi(str);
 	}
 	catch (const std::invalid_argument& ia) {
 		ASSERT(false, "TryToGetFloat - Invalid argument : " << str);

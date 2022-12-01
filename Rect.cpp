@@ -136,6 +136,15 @@ Rect Rect::operator/=(float& i)
 	return *this;
 }
 
+bool Rect::operator==(Rect const& a)
+{
+	return (x == a.x && y == a.y && w == a.w && h == a.h);
+}
+bool Rect::operator!=(Rect const& a)
+{
+	return (x != a.x && y != a.y && w != a.w && h != a.h);
+}
+
 void Rect::Rotate(float deg)
 {
 	float theta = (float)((double)deg / 180.0 * M_PI);

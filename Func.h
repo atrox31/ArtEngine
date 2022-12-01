@@ -17,9 +17,72 @@
 #include <map>
 #include "Rect.h"
 
+// point compare
+inline bool operator==(SDL_Point const& a, SDL_Point const& b)
+{
+	return a.x == b.x && a.y == b.y;
+}
+inline bool operator!=(SDL_Point const& a, SDL_Point const& b)
+{
+	return !(a == b);
+}
+inline bool operator>=(SDL_Point const& a, SDL_Point const& b)
+{
+	return a.x >= b.x && a.y >= b.y;
+}
+inline bool operator <= (SDL_Point const& a, SDL_Point const& b)
+{
+	return a.x <= b.x && a.y <= b.y;
+}
+inline bool operator>(SDL_Point const& a, SDL_Point const& b)
+{
+	return a.x > b.x && a.y > b.y;
+}
+inline bool operator<(SDL_Point const& a, SDL_Point const& b)
+{
+	return a.x < b.x && a.y < b.y;
+}
+// float point compare
+inline bool operator==(SDL_FPoint const& a, SDL_FPoint const& b)
+{
+	return a.x == b.x && a.y == b.y;
+}
+inline bool operator!=(SDL_FPoint const& a, SDL_FPoint const& b)
+{
+	return !(a == b);
+}
+inline bool operator>=(SDL_FPoint const& a, SDL_FPoint const& b)
+{
+	return a.x >= b.x && a.y >= b.y;
+}
+inline bool operator <= (SDL_FPoint const& a, SDL_FPoint const& b)
+{
+	return a.x <= b.x && a.y <= b.y;
+}
+inline bool operator>(SDL_FPoint const& a, SDL_FPoint const& b)
+{
+	return a.x > b.x && a.y > b.y;
+}
+inline bool operator<(SDL_FPoint const& a, SDL_FPoint const& b)
+{
+	return a.x < b.x && a.y < b.y;
+}
+// color compare
+inline bool operator==(SDL_Color const& a, SDL_Color const& b)
+{
+	return a.r == b.r && a.g == b.g && a.b == b.b && a.a == b.a;
+}
+inline bool operator!=(SDL_Color const& a, SDL_Color const& b)
+{
+	return a.r != b.r && a.g != b.g && a.b != b.b && a.a != b.a;
+}
+
+
+
 class Func
 {
 public:
+
 	static int TryGetInt(std::string);
 	static float TryGetFloat(std::string);
 
