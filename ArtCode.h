@@ -29,13 +29,12 @@ public:
 	};
 
 	// not used now
-	const std::string operators[6] = {
-	"+",
-	"-",
-	"*",
-	"/",
-	"!",
-	"."
+	const std::string operators[5] = {
+	"+=",
+	"-=",
+	"*=",
+	"/=",
+	"="
 	};
 
 	static const std::string operators2[];

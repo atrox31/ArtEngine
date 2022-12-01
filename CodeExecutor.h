@@ -95,8 +95,8 @@ private:
 	int	 h_if_test(Inspector* code, Instance* instance);
 	void h_get_local_value(Inspector* code, Instance* instance);
 	bool h_compare(Inspector*, Instance*);
+	std::string h_operation(int operation, std::string value1, std::string value2);
 
-	
 
 private:
 #define Script(x) static void x(Instance*);
@@ -151,8 +151,9 @@ private:
 	Script(sprite_next_frame);
 	Script(sprite_prev_frame);
 	Script(sprite_set_frame);
-	Script(empty_do_nothing);
+	Script(code_do_nothing);
 	Script(set_body_type);
+	Script(instance_set_tag);
 	Script(collision_get_collider);
 	Script(collision_get_collider_tag);
 	Script(collision_get_collider_name);
@@ -172,9 +173,15 @@ private:
 	Script(instance_delete_self);
 	Script(get_direction);
 	Script(math_add);
+	Script(math_sub);
+	Script(math_mul);
+	Script(math_div);
 	Script(get_point_x);
 	Script(get_point_y);
 	Script(collision_push_other);
+	Script(mouse_is_pressed);
+	Script(get_delta_time);
+	Script(code_break);
 #undef Script
 };
 //end of file

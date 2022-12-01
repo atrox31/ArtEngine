@@ -37,7 +37,7 @@ Instance* Instance::GiveId()
 
 Instance::~Instance()
 {
-	std::cout << "delete instance '" << Name << "'";
+	std::cout << "delete instance '" << Name << "'[" << _id << "]";
 	if (this->_id == 0) {
 		std::cout << " template";
 	}

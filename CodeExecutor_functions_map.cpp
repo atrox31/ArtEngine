@@ -54,8 +54,9 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["sprite_next_frame"] = &CodeExecutor::sprite_next_frame;
 	FunctionsMap["sprite_prev_frame"] = &CodeExecutor::sprite_prev_frame;
 	FunctionsMap["sprite_set_frame"] = &CodeExecutor::sprite_set_frame;
-	FunctionsMap["empty_do_nothing"] = &CodeExecutor::empty_do_nothing;
+	FunctionsMap["code_do_nothing"] = &CodeExecutor::code_do_nothing;
 	FunctionsMap["set_body_type"] = &CodeExecutor::set_body_type;
+	FunctionsMap["instance_set_tag"] = &CodeExecutor::instance_set_tag;
 	FunctionsMap["collision_get_collider"] = &CodeExecutor::collision_get_collider;
 	FunctionsMap["collision_get_collider_tag"] = &CodeExecutor::collision_get_collider_tag;
 	FunctionsMap["collision_get_collider_name"] = &CodeExecutor::collision_get_collider_name;
@@ -75,8 +76,14 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["instance_delete_self"] = &CodeExecutor::instance_delete_self;
 	FunctionsMap["get_direction"] = &CodeExecutor::get_direction;
 	FunctionsMap["math_add"] = &CodeExecutor::math_add;
+	FunctionsMap["math_sub"] = &CodeExecutor::math_sub;
+	FunctionsMap["math_mul"] = &CodeExecutor::math_mul;
+	FunctionsMap["math_div"] = &CodeExecutor::math_div;
 	FunctionsMap["get_point_x"] = &CodeExecutor::get_point_x;
 	FunctionsMap["get_point_y"] = &CodeExecutor::get_point_y;
 	FunctionsMap["collision_push_other"] = &CodeExecutor::collision_push_other;
+	FunctionsMap["mouse_is_pressed"] = &CodeExecutor::mouse_is_pressed;
+	FunctionsMap["get_delta_time"] = &CodeExecutor::get_delta_time;
+	FunctionsMap["code_break"] = &CodeExecutor::code_break;
 }
 //end of file

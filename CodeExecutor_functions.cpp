@@ -12,60 +12,12 @@
 #define StackIn_p Convert::Str2FPoint(StackIn)
 #define StackIn_c Convert::Str2Color(StackIn)
 #define StackIn_r Convert::Str2Rect(StackIn)
+#define StackIn_f Func::TryGetFloat(StackIn)
+#define StackIn_i Func::TryGetInt(StackIn)
 
 #define StackOut CodeExecutor::GlobalStack.Add
 #define StackOut_s(X) CodeExecutor::GlobalStack.Add(std::to_string(X))
 
-#ifdef _DEBUG
-int TryToGetInt(const std::string& str) {
-	int a = -1;
-	try {
-		a = std::stoi(str);
-	}
-	catch (const std::invalid_argument& ia) {
-		ASSERT(false, "TryToGetInt - Invalid argument : " << str);
-		std::cerr << "Invalid argument: " << ia.what() << std::endl;
-		return -1;
-	}
-	catch (const std::out_of_range& oor) {
-		std::cerr << "Out of Range error: " << oor.what() << std::endl;
-		return -2;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "Undefined error: " << e.what() << std::endl;
-		return -3;
-	}
-	return a;
-}
-float TryToGetFloat(const std::string& str) {
-	float a = -1.0f;
-	try {
-		a = std::stof(str);
-	}
-	catch (const std::invalid_argument& ia) {
-		ASSERT(false, "TryToGetFloat - Invalid argument : " << str);
-		std::cerr << "Invalid argument: " << ia.what() << std::endl;
-		return -1;
-	}
-	catch (const std::out_of_range& oor) {
-		std::cerr << "Out of Range error: " << oor.what() << std::endl;
-		return -2;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "Undefined error: " << e.what() << std::endl;
-		return -3;
-	}
-	return a;
-}
-
-#define StackIn_f TryToGetFloat(StackIn)
-#define StackIn_i TryToGetInt(StackIn)
-#else
-#define StackIn_f std::stof(StackIn)
-#define StackIn_i std::stoi(StackIn)
-#endif
 
 
 
@@ -75,9 +27,9 @@ float TryToGetFloat(const std::string& str) {
 // 
 //point new_point(float x, float y);Make point (<float>, <float>).;New point from value or other.
 void CodeExecutor::new_point(Instance*) {
-	float p1 = StackIn_f;
 	float p2 = StackIn_f;
-	StackOut(std::to_string(p2) + "," + std::to_string(p1));
+	float p1 = StackIn_f;
+	StackOut(std::to_string(p1) + ":" + std::to_string(p2));
 }
 
 //float new_direction(point from, point to);Make direction from <point> to <point>.;Value are from 0 to 359.
@@ -251,8 +203,8 @@ void CodeExecutor::direction_to_point(Instance* instance) {
 
 //float direction_beetwen_point(point p1, point p2);Give direction from <point> to <point>;Measure distance.
 void CodeExecutor::direction_beetwen_point(Instance*) {
-	SDL_FPoint dest = StackIn_p;
 	SDL_FPoint src = StackIn_p;
+	SDL_FPoint dest = StackIn_p;
 	float direction = std::atan2f(src.y - dest.y, src.x - dest.x);
 	StackOut_s(direction);
 }
@@ -505,8 +457,8 @@ void CodeExecutor::sprite_set_frame(Instance* sender) {
 	sender->SpriteAnimationFrame = (float)frame;
 }
 
-//null empty_do_nothing();Do nothing, empty action;Use when there is no else in if
-void CodeExecutor::empty_do_nothing(Instance*) {
+//null code_do_nothing();Do nothing, empty action;Use when there is no else in if
+void CodeExecutor::code_do_nothing(Instance*) {
 	return;
 }
 //null set_body_type(string type, int value);Set body type for instance, of <string> and optional <int> value; type is enum: NONE,SPRITE,RECT,CIRCLE
@@ -549,6 +501,12 @@ void CodeExecutor::set_body_type(Instance* sender) {
 		sender->Body.Value = value;
 		sender->Body.Type = sender->Body.Body_fromString(type);
 	}
+}
+
+//null instance_set_tag(string tag);Set tag for current instnance <string>.
+void CodeExecutor::instance_set_tag(Instance* sender) {
+	std::string tag = StackIn;
+	sender->Tag = tag;
 }
 
 //instance collision_get_collider();Return reference to instance with this object is collide;Other colliders must be solid too to collide;
@@ -683,6 +641,24 @@ void CodeExecutor::math_add(Instance* sender) {
 	float a = StackIn_f;
 	StackOut_s(a + b);
 }
+//float math_sub(float a, float b);Get sub of <float> - <float>;
+void CodeExecutor::math_sub(Instance* sender) {
+	float b = StackIn_f;
+	float a = StackIn_f;
+	StackOut_s(a - b);
+}
+//float math_mul(float a, float b);Get mul of <float> * <float>;
+void CodeExecutor::math_mul(Instance* sender) {
+	float b = StackIn_f;
+	float a = StackIn_f;
+	StackOut_s(a * b);
+}
+//float math_div(float a, float b);Get div of <float> / <float>;
+void CodeExecutor::math_div(Instance* sender) {
+	float b = StackIn_f;
+	float a = StackIn_f;
+	StackOut_s(a / b);
+}
 //float get_point_x(point point);Get x of <point> point;
 void CodeExecutor::get_point_x(Instance* sender) {
 	SDL_FPoint point = StackIn_p;
@@ -713,4 +689,33 @@ void CodeExecutor::collision_push_other(Instance* self) {
 	other->PosX += std::cosf(direction - 180.f) * move * (float)Core::GetInstance()->DeltaTime;
 	other->PosY += std::sinf(direction - 180.f) * move * (float)Core::GetInstance()->DeltaTime;
 
+}
+//bool mouse_is_pressed(int button);Return state of button <int>;Left button is 1, right is 3
+void CodeExecutor::mouse_is_pressed(Instance* sender) {
+	int button = StackIn_i;
+	if (Core::GetInstance()->gMouse.LeftPressed && (button == 1)) {
+		StackOut("true");
+		return;
+	}
+	else {
+		StackOut("false");
+		return;
+	}
+
+	if (Core::GetInstance()->gMouse.RightPressed && (button == 3)) {
+		StackOut("true");
+		return;
+	}
+	else {
+		StackOut("false");
+		return;
+	}
+}
+//float get_delta_time();Return delta time of frame.;Every build-in action of moving or collision uses delta time, do not use twice!
+void CodeExecutor::get_delta_time(Instance* sender) {
+	StackOut_s( Core::GetInstance()->DeltaTime );
+}
+//null code_break(); Break from current function; Everything will be lost...
+void CodeExecutor::code_break(Instance*) {
+	Core::GetInstance()->Executor.Break();
 }

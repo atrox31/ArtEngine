@@ -103,6 +103,23 @@ bool CodeExecutor::LoadObjectDefinitions()
 #else
 	Inspector code(_code, c, "OBJECT_DEFINITION");
 #endif
+	// first byte
+	unsigned char header[8]{ '\0','\0','\0','\0','\0','\0','\0','\0' };
+	for (int i = 0; i < 8; i++) {
+		header[i] = code.GetBit();
+	}
+
+	if (header[0] != 'A' || header[1] != 'C') {
+		Debug::ERROR("can not read object data, wrong header");
+		return false;
+	}
+
+	int version = (int)header[2] + (int)header[3];
+	if (version < 15) {
+		Debug::ERROR("can not read object data, version must be at least 1.5");
+		return false;
+	}
+
 	// definicje objektów
 	while (!code.IsEnd()) {
 		// first is OBJECT_DEFINITION command
@@ -245,7 +262,12 @@ void CodeExecutor::ExecuteScript(Instance* instance, Event script)
 void CodeExecutor::Break()
 {
 	_break = true;
-	ASSERT(false, "CodeExecutor::Break");
+#ifdef _DEBUG
+	#ifndef DEBUG_EDITOR
+	//ASSERT(false, "CodeExecutor::Break");
+	#endif // !DEBUG_EDYTOR
+#endif // _DEBUG
+
 }
 
 void CodeExecutor::h_execute_script(Inspector* code, Instance* instance)
@@ -260,22 +282,38 @@ void CodeExecutor::h_execute_script(Inspector* code, Instance* instance)
 		if (_break) return;
 		switch (code->GetNextCommand()) {
 		case command::SET: {
+			int operation = (int)code->GetBit();
 			// varible - type,index
 			// varible to set
 			ArtCode::varible_type type = (ArtCode::varible_type)code->GetBit();
 			ASSERT(type != ArtCode::varible_type::Invalid, "command::SET")
 				int index = (int)code->GetBit();
+
 			h_get_value(code, instance);
-			instance->Varibles[type][index] = GlobalStack.Get();
+			instance->Varibles[type][index] = h_operation(operation, instance->Varibles[type][index], GlobalStack.Get());
+			//instance->Varibles[type][index] = GlobalStack.Get();
 		}break;
 
 		case command::OTHER: {
-			char instance_type = code->GetBit(); //ignore for now
-			if (Core::GetInstance()->_current_scene->CurrentCollisionInstance == nullptr) {
+			int instance_type = (int)code->GetBit();
+			Instance* other = Core::GetInstance()->_current_scene->CurrentCollisionInstance;
+			if (other == nullptr) {
 				Break();
+				return;
 				// error - other is null
 			}
-			h_get_local_value(code, Core::GetInstance()->_current_scene->CurrentCollisionInstance);
+			if (instance_type != other->GetInstanceDefinitionId()) {
+				Break();
+				// error - wrong type
+			}
+			int varible_type = (int)code->GetBit();
+			int varible_index = (int)code->GetBit();
+			// operator 
+			int operation = (int)code->GetBit();
+			
+			h_get_value(code, instance);
+			other->Varibles[varible_type][varible_index] = h_operation(operation, other->Varibles[varible_type][varible_index], GlobalStack.Get());
+
 		} break;
 
 		case command::FUNCTION: {
@@ -303,10 +341,15 @@ int CodeExecutor::h_if_test(Inspector* code, Instance* instance) {
 		}break;
 
 		case command::OTHER: {
-			char instance_type = code->GetBit(); //ignore for now
-			if (Core::GetInstance()->_current_scene->CurrentCollisionInstance == nullptr) {
+			int instance_type = (int)code->GetBit();
+			Instance* other = Core::GetInstance()->_current_scene->CurrentCollisionInstance;
+			if (other == nullptr) {
 				Break();
 				// error - other is null
+			}
+			if (instance_type != other->GetInstanceDefinitionId()) {
+				Break();
+				// error - wrong type
 			}
 			h_get_local_value(code, Core::GetInstance()->_current_scene->CurrentCollisionInstance);
 		} break;
@@ -372,7 +415,7 @@ bool CodeExecutor::h_compare(Inspector*, Instance*)
 {
 	//	0		1		2		3		4		5		6		7
 	//	"||",	"&&",	"<<",	">>",	">=",	"<=",	"!=",	"=="
-	int oper = std::stoi(GlobalStack.Get());
+	int oper = Func::TryGetInt(GlobalStack.Get());
 	switch (oper) {
 	case 0://	"||",
 	{
@@ -390,29 +433,29 @@ bool CodeExecutor::h_compare(Inspector*, Instance*)
 		break;
 	case 2://	"<<",
 	{
-		float com2 = std::stof(GlobalStack.Get());
-		float com1 = std::stof(GlobalStack.Get());
+		float com2 = Func::TryGetFloat(GlobalStack.Get());
+		float com1 = Func::TryGetFloat(GlobalStack.Get());
 		return (com1 < com2);
 	}
 		break;
 	case 3://	">>"
 	{
-		float com2 = std::stof(GlobalStack.Get());
-		float com1 = std::stof(GlobalStack.Get());
+		float com2 = Func::TryGetFloat(GlobalStack.Get());
+		float com1 = Func::TryGetFloat(GlobalStack.Get());
 		return (com1 > com2);
 	}
 		break;
 	case 4://	">=",
 	{
-		float com2 = std::stof(GlobalStack.Get());
-		float com1 = std::stof(GlobalStack.Get());
+		float com2 = Func::TryGetFloat(GlobalStack.Get());
+		float com1 = Func::TryGetFloat(GlobalStack.Get());
 		return (com1 >= com2);
 	}
 		break;
 	case 5://	"<=",
 	{
-		float com2 = std::stof(GlobalStack.Get());
-		float com1 = std::stof(GlobalStack.Get());
+		float com2 = Func::TryGetFloat(GlobalStack.Get());
+		float com1 = Func::TryGetFloat(GlobalStack.Get());
 		return (com1 <= com2);
 	}
 		break;
@@ -434,6 +477,74 @@ bool CodeExecutor::h_compare(Inspector*, Instance*)
 		Break();
 		return false;
 		break;
+	}
+}
+
+std::string CodeExecutor::h_operation(int operation, std::string value1, std::string value2)
+{
+	// if point
+	if (value1.find(':') == std::string::npos && value2.find(':') == std::string::npos) {
+		//TODO: maby care about types
+		float val1 = Func::TryGetFloat(value1);
+		float val2 = Func::TryGetFloat(value2);
+		switch (operation) {
+		case 0: // "+=",
+		{
+			val1 += val2;
+		}break;
+		case 1: //" -=",
+		{
+			val1 -= val2;
+		}break;
+		case 2: // "*=",
+		{val1 *= val2;
+
+		}break;
+		case 3: // "/=",
+		{
+			val1 /= val2;
+		}break;
+		case 4: // "="
+		{
+			val1 = val2;
+		}break;
+		default:
+			Break(); break;
+		}
+		return std::to_string(val1);
+	}
+	else {
+		SDL_FPoint val1 = Convert::Str2FPoint(value1);
+		SDL_FPoint val2 = Convert::Str2FPoint(value2);
+		switch (operation) {
+		case 0: // "+=",
+		{
+			val1.x += val2.x;
+			val1.y += val2.y;
+		}break;
+		case 1: //" -=",
+		{
+			val1.x -= val2.x;
+			val1.y -= val2.y;
+		}break;
+		case 2: // "*=",
+		{
+			val1.x *= val2.x;
+			val1.y *= val2.y;
+		}break;
+		case 3: // "/=",
+		{
+			val1.x /= val2.x;
+			val1.y /= val2.y;
+		}break;
+		case 4: // "="
+		{
+			val1 = val2;
+		}break;
+		default:
+			Break(); break;
+		}
+		return Convert::FPoint2String(val1);
 	}
 }
 

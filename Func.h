@@ -20,6 +20,9 @@
 class Func
 {
 public:
+	static int TryGetInt(std::string);
+	static float TryGetFloat(std::string);
+
 	// return distance from point to point
 	static const float Distance(SDL_FPoint&, SDL_FPoint&);
 	// return distance from point to point

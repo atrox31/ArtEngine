@@ -102,11 +102,11 @@ public:
 	}
 
 	int GetInt() {
-		return std::stoi(GetString());
+		return Func::TryGetInt(GetString());
 	}
 
 	float GetFloat() {
-		return std::stof(GetString());
+		return Func::TryGetFloat(GetString());
 	}
 
 private:

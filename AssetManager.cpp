@@ -56,7 +56,7 @@ bool AssetManager::LoadData(BackGroundRenderer* bgr, int p_min, int p_max)
 	
 	Sint64 buffer_size(0);
 	std::string buffer = std::string(Func::GetFileBuf("filelist.txt", &buffer_size));
-	if (buffer_size == 0) return false;
+	if (buffer_size == 0) return true;
 
 	std::vector<std::string> data = Func::Explode(buffer, '\n');
 	if (data.size() == 0) return false;

@@ -38,12 +38,12 @@ Sprite* Sprite::Load(const char* data, Sint64 size)
     if (!dv.IsOk()) return nullptr;
 
     Sprite* nSprite = new Sprite();
-	nSprite->m_width = std::stoi(dv.GetData("sprite", "sprite_width"));
-	nSprite->m_height = std::stoi(dv.GetData("sprite", "sprite_width"));
+	nSprite->m_width = Func::TryGetInt(dv.GetData("sprite", "sprite_width"));
+	nSprite->m_height = Func::TryGetInt(dv.GetData("sprite", "sprite_width"));
 
 	nSprite->m_texture = std::vector<GPU_Image*>();
 	// load
-	int textures_count = std::stoi(dv.GetData("image_list", "count"));
+	int textures_count = Func::TryGetInt(dv.GetData("image_list", "count"));
 	if (textures_count > 0) {
 		for (int i = 0; i < textures_count; i++) {
 			std::string tname = "Sprites/" + dv.GetData("sprite", "name") + "/" + std::to_string(i) + ".png";
@@ -62,11 +62,11 @@ Sprite* Sprite::Load(const char* data, Sint64 size)
 		Debug::WARNING("Sprite::Load - " + dv.GetData("sprite", "name") + " 0 textures found");
 	}
 
-	nSprite->m_mask_value = std::stoi(dv.GetData("sprite", "collision_mask_value"));
+	nSprite->m_mask_value = Func::TryGetInt(dv.GetData("sprite", "collision_mask_value"));
 	nSprite->m_mask_type = nSprite->MaskType_fromString(dv.GetData("sprite", "collision_mask"));
 
-	nSprite->m_center_x = std::stoi(dv.GetData("sprite", "sprite_center_x"));
-	nSprite->m_center_y = std::stoi(dv.GetData("sprite", "sprite_center_y"));
+	nSprite->m_center_x = Func::TryGetInt(dv.GetData("sprite", "sprite_center_x"));
+	nSprite->m_center_y = Func::TryGetInt(dv.GetData("sprite", "sprite_center_y"));
 	return nSprite;
 }
 

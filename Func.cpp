@@ -2,6 +2,52 @@
 #include "physfs-3.0.2/src/physfs.h"
 #include "Debug.h"
 
+int Func::TryGetInt(std::string str)
+{
+	int a = 0.0f;
+	try {
+		a = std::stof(str);
+	}
+	catch (const std::invalid_argument& ia) {
+		ASSERT(false, "TryToGetFloat - Invalid argument : " << str);
+		std::cerr << "Invalid argument: " << ia.what() << std::endl;
+		return 0;
+	}
+	catch (const std::out_of_range& oor) {
+		std::cerr << "Out of Range error: " << oor.what() << std::endl;
+		return 0;
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "Undefined error: " << e.what() << std::endl;
+		return 0;
+	}
+	return a;
+}
+
+float Func::TryGetFloat(std::string str)
+{
+	float a = 0.f;
+	try {
+		a = std::stof(str);
+	}
+	catch (const std::invalid_argument& ia) {
+		//ASSERT(false, "TryToGetInt - Invalid argument : " << str);
+		std::cerr << "Invalid argument: " << ia.what() << std::endl;
+		return 0.f;
+	}
+	catch (const std::out_of_range& oor) {
+		std::cerr << "Out of Range error: " << oor.what() << std::endl;
+		return 0.f;
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "Undefined error: " << e.what() << std::endl;
+		return 0.f;
+	}
+	return a;
+}
+
 const float Func::Distance(SDL_FPoint& p1, SDL_FPoint& p2)
 {
 	return std::hypotf(p2.x - p1.x, p2.y - p1.y);

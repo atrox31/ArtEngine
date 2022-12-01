@@ -151,7 +151,7 @@ bool Core::Init(int argc, char* args[])
                         bool error = false;
                         SDL_GLattr attr = Func::get_sdl_attr_from_string(line[0], &error);
                         if (!error) {
-                            if (SDL_GL_SetAttribute(attr, std::stoi(line[1])) != 0) {
+                            if (SDL_GL_SetAttribute(attr, Func::TryGetInt(line[1])) != 0) {
                                 Debug::WARNING({ "sdl_error: -SDL_GL_SetAttribute-", SDL_GetError() });
                             }
                         }
@@ -285,7 +285,7 @@ SDL_Window* Core::GetWindowHandle()
 int Core::SD_GetInt(std::string field, int _default)
 {
     if (_instance.SettingsData.find(field) != _instance.SettingsData.end()) {
-        return std::stoi(_instance.SettingsData[field]);
+        return Func::TryGetInt(_instance.SettingsData[field]);
     }
     return _default;
 }
@@ -293,7 +293,7 @@ int Core::SD_GetInt(std::string field, int _default)
 float Core::SD_GetFloat(std::string field, float _default)
 {
     if (_instance.SettingsData.find(field) != _instance.SettingsData.end()) {
-        return std::stof(_instance.SettingsData[field]);
+        return Func::TryGetFloat(_instance.SettingsData[field]);
     }
     return _default;
 }
@@ -446,6 +446,9 @@ int Core::Run()
                 if (e.key.keysym.sym == SDLK_F1) {
                     Debug_ShowInfo = !Debug_ShowInfo;
                 }
+                if (e.key.keysym.sym == SDLK_F4) {
+                    _instance._current_scene->Start();
+                }
 #endif // _DEBUG
 
                 if (!_instance.Consola->ProcessKey((SDL_KeyCode)e.key.keysym.sym)) {
@@ -465,25 +468,26 @@ int Core::Run()
         if (_instance._current_scene->IsAnyInstances()) {
             plf::colony<Instance*>* AllInstances = _instance._current_scene->GetAllInstances();
             for (plf::colony<Instance*>::iterator it = AllInstances->begin(); it != AllInstances->end();) {
-                if ((*it)->Alive) {
+                Instance* cInstance = (*it);
+                if (cInstance->Alive) {
                     // step
-                    _instance.Executor.ExecuteScript((*it), Event::EV_STEP);
-                    EventBit c_flag = (*it)->EventFlag;
+                    _instance.Executor.ExecuteScript(cInstance, Event::EV_STEP);
+                    EventBit c_flag = cInstance->EventFlag;
 
                     // inview
-                    if ((*it)->Alive) {
+                    if (cInstance->Alive) {
                         //TODO: implement camera system
                         Rect screen{ 0,0,_instance.GetScreenWidth(), _instance.GetScreenHeight() };
-                        SDL_FPoint pos{ (*it)->PosX, (*it)->PosY };
-                        bool oldInView = (*it)->InView;
-                        (*it)->InView = screen.PointInRect(pos);
-                        if ((*it)->InView != oldInView) {
+                        SDL_FPoint pos{ cInstance->PosX, cInstance->PosY };
+                        bool oldInView = cInstance->InView;
+                        cInstance->InView = screen.PointInRect(pos);
+                        if (cInstance->InView != oldInView) {
                             if (EventBitTest(EventBit::HAVE_VIEWCHANGE, c_flag)) {
                                 if (oldInView == true) { // be inside, now exit view
-                                    _instance.Executor.ExecuteScript((*it), Event::EV_ONVIEW_LEAVE);
+                                    _instance.Executor.ExecuteScript(cInstance, Event::EV_ONVIEW_LEAVE);
                                 }
                                 else {
-                                    _instance.Executor.ExecuteScript((*it), Event::EV_ONVIEW_ENTER);
+                                    _instance.Executor.ExecuteScript(cInstance, Event::EV_ONVIEW_ENTER);
                                 }
                             }
                         }
@@ -492,15 +496,15 @@ int Core::Run()
                     // collision
                     if (EventBitTest(EventBit::HAVE_COLLISION, c_flag)) {
                         for (Instance* instance : *_instance._current_scene->GetAllInstances()) {
-                            if (instance == (*it)) continue; // self
+                            if (instance == cInstance) continue; // self
                             if (instance->Body.Type == Instance::BodyType::NONE) continue; // no collision mask
-                            if (instance->Name == (*it)->Name) {
+                            if (instance->Name == cInstance->Name) {
                                 //__debugbreak();
                             }
-                            if (instance->CollideTest((*it))) {
+                            if (instance->CollideTest(cInstance)) {
                                 _instance._current_scene->CurrentCollisionInstance = instance;
                                 _instance._current_scene->CurrentCollisionInstanceId = instance->GetId();
-                                _instance.Executor.ExecuteScript((*it), Event::EV_ONCOLLISION);
+                                _instance.Executor.ExecuteScript(cInstance, Event::EV_ONCOLLISION);
                                 _instance._current_scene->CurrentCollisionInstance = nullptr;
                                 _instance._current_scene->CurrentCollisionInstanceId = -1;
                             }
@@ -508,17 +512,17 @@ int Core::Run()
                     }
 
                     // input
-                    if (Ev_Input && (*it)->Alive) {
+                    if (Ev_Input && cInstance->Alive) {
                         if (EventBitTest(EventBit::HAVE_MOUSE_EVENT, c_flag)) {
                             if (EventBitTest(EventBit::HAVE_MOUSE_EVENT_UP, c_flag) && Ev_OnMouseInputUp) {
-                                _instance.Executor.ExecuteScript((*it), Event::EV_ONMOUSE_UP);
+                                _instance.Executor.ExecuteScript(cInstance, Event::EV_ONMOUSE_UP);
                             }
                             if (EventBitTest(EventBit::HAVE_MOUSE_EVENT_DOWN, c_flag) && Ev_OnMouseInputDown) {
-                                _instance.Executor.ExecuteScript((*it), Event::EV_ONMOUSE_DOWN);
+                                _instance.Executor.ExecuteScript(cInstance, Event::EV_ONMOUSE_DOWN);
                             }
                             if (!Ev_ClickedDone && EventBitTest(EventBit::HAVE_MOUSE_EVENT_CLICK, c_flag) && Ev_OnMouseInputDown) {
-                                if ((*it)->CheckMaskClick(_instance.gMouse.XYf)) {
-                                    _instance.Executor.ExecuteScript((*it), Event::EV_CLICKED);
+                                if (cInstance->CheckMaskClick(_instance.gMouse.XYf)) {
+                                    _instance.Executor.ExecuteScript(cInstance, Event::EV_CLICKED);
                                     Ev_ClickedDone = true;
                                 }
                             }
@@ -529,7 +533,7 @@ int Core::Run()
                 }
                 else {
                     //TODO: Event::EV_ONDESTROY
-                    _instance.Executor.ExecuteScript((*it), Event::EV_ONDESTROY);
+                    _instance.Executor.ExecuteScript(cInstance, Event::EV_ONDESTROY);
                     it = AllInstances->erase(it);
                 }
             }
@@ -538,7 +542,7 @@ int Core::Run()
         //Art::Core::GetInstance()->Run_sceneDraw();
         if (_instance._current_scene->IsAnyInstances()){
             for (Instance* instance : *_instance._current_scene->GetAllInstances()) {
-                if (instance->InView) {
+                if (instance->InView || true) {
                     _instance.Executor.ExecuteScript(instance, Event::EV_DRAW);
 
                 }
@@ -552,7 +556,13 @@ int Core::Run()
                 for (Instance* instance : *_instance._current_scene->GetAllInstances()) {
 
                     Render::DrawCircle({ instance->PosX, instance->PosY }, 4, C_BLACK);
-                    Render::DrawCircle({ instance->PosX + instance->SelfSprite->GetCenterXRel(), instance->PosY + instance->SelfSprite->GetCenterYRel() }, 6, C_GOLD);
+                    
+                    if (instance->SelfSprite) {
+                        Render::DrawCircle({ instance->PosX + instance->SelfSprite->GetCenterXRel(), instance->PosY + instance->SelfSprite->GetCenterYRel() }, 6, C_GOLD);
+                    }
+                    else {
+                        Render::DrawCircle({ instance->PosX, instance->PosY }, 6, C_GOLD);
+                    }
 
                     instance->DebugDrawMask();
                     instance->DebugDrawCollision();
@@ -590,7 +600,7 @@ int Core::Run()
         }
         //Art::Core::GetInstance()->ShowScreen();
         GPU_Flip(_instance._screenTarget);
-        GPU_ClearColor(_instance._screenTarget, C_LGRAY);
+        GPU_ClearColor(_instance._screenTarget, _instance._current_scene->BackGround.color);
     }
 
 
@@ -675,7 +685,7 @@ bool Core::LoadData()
     }
 
     bgr.SetProgress(100);
-    SDL_Delay(1000);
+    //SDL_Delay(1000);
     bgr.Stop();
     return true;
 }

@@ -45,8 +45,8 @@ bool Scene::Load(std::string name)
 	if (!dv.IsOk()) {
 		return false;
 	}
-	Width = std::stoi(dv.GetData("setup", "Width"));
-	Height = std::stoi(dv.GetData("setup", "Height"));
+	Width = Func::TryGetInt(dv.GetData("setup", "Width"));
+	Height = Func::TryGetInt(dv.GetData("setup", "Height"));
 	auto tmp = Func::Split(name, '/');
 	Name = tmp[tmp.size() - 1].substr(0, tmp[tmp.size() - 1].length() - 4);
 
@@ -105,7 +105,7 @@ bool Scene::Load(std::string name)
 			Debug::WARNING("Instance error: '" + instance + "'");
 			continue;
 		}
-		BeginInstances.push_back({ data[0], std::stoi(data[1]), std::stoi(data[2]) });
+		BeginInstances.push_back({ data[0], Func::TryGetInt(data[1]), Func::TryGetInt(data[2]) });
 	}
 
 	return true;
@@ -113,7 +113,7 @@ bool Scene::Load(std::string name)
 void Scene::Start()
 {
 	if (_instances.size() > 0) {
-		for (plf::colony<Instance*>::iterator it = _instances.begin(); it != _instances.end(); ++it) {
+		for (plf::colony<Instance*>::iterator it = _instances.begin(); it != _instances.end();) {
 			delete (*it);
 			it = _instances.erase(it);
 		}
@@ -121,7 +121,7 @@ void Scene::Start()
 	_instances.clear();
 
 	if (_instances_new.size() > 0) {
-		for (std::vector<Instance*>::iterator it = _instances_new.begin(); it != _instances_new.end(); ++it) {
+		for (std::vector<Instance*>::iterator it = _instances_new.begin(); it != _instances_new.end();) {
 			delete (*it);
 			it = _instances_new.erase(it);
 		}

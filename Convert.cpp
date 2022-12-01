@@ -10,8 +10,8 @@ const SDL_Point Convert::Str2Point(std::string text)
 	auto Point = Func::Split(text, ':');
 	if (Point.size() == 2) {
 		return SDL_Point({
-			std::stoi(Point[0]),
-			std::stoi(Point[1])
+			Func::TryGetInt(Point[0]),
+			Func::TryGetInt(Point[1])
 			}
 		);
 	}
@@ -24,8 +24,8 @@ const SDL_FPoint Convert::Str2FPoint(std::string text)
 	if (Point.size() == 2) {
 		return SDL_FPoint(
 			{
-			std::stof(Point[0]),
-			std::stof(Point[1])
+			Func::TryGetFloat(Point[0]),
+			Func::TryGetFloat(Point[1])
 			}
 		);
 	}
@@ -42,10 +42,10 @@ const Rect Convert::Str2Rect(std::string str)
 	auto rect = Func::Split(str, ':');
 	if (rect.size() == 4) {
 		return Rect(
-			std::stof(rect[0]),
-			std::stof(rect[1]),
-			std::stof(rect[2]),
-			std::stof(rect[3])
+			Func::TryGetFloat(rect[0]),
+			Func::TryGetFloat(rect[1]),
+			Func::TryGetFloat(rect[2]),
+			Func::TryGetFloat(rect[3])
 		);
 	}
 	return Rect();
@@ -76,16 +76,22 @@ const bool Convert::Str2Bool(const char& text)
 SDL_Color Convert::Str2Color(std::string color)
 {
 	if (Func::IsHex(color)) {
-		const int len = (int)color.length();
-		Uint8 R = (Uint8)std::stoi(color.substr(1, 2), nullptr, 16);
-		Uint8 G = (Uint8)std::stoi(color.substr(3, 2), nullptr, 16);
-		Uint8 B = (Uint8)std::stoi(color.substr(5, 2), nullptr, 16);
-		Uint8 A = 0;
-		if (len == 9)
-			A = (Uint8)std::stoi(color.substr(7, 2), nullptr, 16);
-		return SDL_Color({ R,G,B,A });
+		try {
+			const int len = (int)color.length();
+			Uint8 R = (Uint8)std::stoi(color.substr(1, 2), nullptr, 16);
+			Uint8 G = (Uint8)std::stoi(color.substr(3, 2), nullptr, 16);
+			Uint8 B = (Uint8)std::stoi(color.substr(5, 2), nullptr, 16);
+			Uint8 A = 255;
+			if (len == 9)
+				A = (Uint8)std::stoi(color.substr(7, 2), nullptr, 16);
+			return SDL_Color({ R,G,B,A });
+		}
+		catch (const std::invalid_argument& ia) {
+			//err
+			return SDL_Color({ 0,0,0,0 });
+		}
 	}
-	return SDL_Color();
+	return SDL_Color({ 0,0,0,0 });
 }
 
 std::string Convert::Color2Str(SDL_Color& color)

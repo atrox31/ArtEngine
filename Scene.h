@@ -43,7 +43,7 @@ private:
 	int Width;
 	int Height;
 	std::string Name;
-private:
+public:
 	struct BackGround {
 	public:
 		GPU_Image* texture;
