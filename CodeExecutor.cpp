@@ -4,6 +4,7 @@
 #include "Convert.h"
 #include <algorithm>
 #include "Core.h"
+#include "main.h"
 
 /*
 	static AStack<int> GlobalStack_int;
@@ -131,11 +132,17 @@ bool CodeExecutor::LoadObjectDefinitions()
 		return false;
 	}
 
-	int version = (int)header[2] + (int)header[3];
-	if (version < 15) {
-		Debug::ERROR("can not read object data, version must be at least 1.5");
-		return false;
+	{
+		int ac_main_version = (int)header[2];
+		int ac_minor_vesrion = (int)header[3];
+		if (ac_main_version >= MINIMUM_ACOMPILLER_MAIN && ac_minor_vesrion >= MINIMUM_ACOMPILLER_MINOR) {
+			Debug::ERROR("Scripts are created in ACompiller " + std::to_string(ac_main_version) + '.' + std::to_string(ac_minor_vesrion) +
+				"! Application requires minimum: " + std::to_string(MINIMUM_ACOMPILLER_MAIN) + '.' + std::to_string(MINIMUM_ACOMPILLER_MINOR) + "\nUpdate game files");
+			return false;
+		}
+		//MINIMUM_ACOMPILLER_MAIN
 	}
+
 
 	// definicje objektów
 	while (!code.IsEnd()) {
