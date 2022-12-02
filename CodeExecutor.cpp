@@ -178,7 +178,11 @@ bool CodeExecutor::LoadObjectDefinitions()
 				std::string varible_name = code.GetString();
 				bool varible_read_only = (bool)code.GetBit();
 				//
+#ifdef _DEBUG
+				instance.AddVarible(varible_type, varible_name);
+#else
 				instance.AddVarible(varible_type);
+#endif
 			}
 			else {
 				

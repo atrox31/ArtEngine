@@ -51,32 +51,25 @@ private:
 		std::vector<EventData> _events;
 		
 		//		type, fields
-		std::map<int, int> _varibles;
 		std::string _name;
 		Instance* _template;
 		InstanceDefinition() {
 			_name = "";
-			_varibles = std::map<int, int>();
-			_events = std::vector<EventData>(); 
+			_events = std::vector<EventData>();
+			// if debug mode add varible names to array for debuging
+#ifdef _DEBUG
+			_debug_varibles_names = std::map<int, std::vector<std::string>>();
+			for (int v = ArtCode::varible_type::NUL; v < ArtCode::varible_type::END; v++) {
+				_debug_varibles_names[v] = std::vector<std::string>();
+			}
 		}
-		/*
-		(NUL)
-			(INT)
-			(FLOAT)
-			(BOOL)
-			(INSTANCE)
-			(OBJECT)
-			(SPRITE)
-			(TEXTURE)
-			(SOUND)
-			(MUSIC)
-			(FONT)
-			(POINT)
-			(RECT)
-			(COLOR)
-			(STRING)
-			*/
+		std::map<int, std::vector<std::string>> _debug_varibles_names;
+		void AddVarible(int type, std::string name) {
+			_debug_varibles_names[type].push_back(name);
+#else
+		}
 		void AddVarible(int type) {
+#endif
 			switch (type) {
 				case ArtCode::INT:
 					_template->Varibles_int.push_back(0);
