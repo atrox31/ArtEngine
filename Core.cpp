@@ -321,6 +321,7 @@ int Core::Run()
     bool Debug_ShowStats = false;
 #endif // _DEBUG
     Render::SetBloom(false);
+    _instance.game_loop = true;
     SDL_TimerID my_timer_id = SDL_AddTimer((Uint32)1000, FpsCounterCallback, NULL);
     bool Ev_Input = false;
     bool Ev_OnMouseInputDown = false;
@@ -472,86 +473,88 @@ int Core::Run()
             }
         }
         //Art::Core::GetInstance()->Run_sceneStep();
-        _instance._current_scene->SpawnAll();
-        if (_instance._current_scene->IsAnyInstances()) {
-            for (plf::colony<Instance*>::iterator it = _instance._current_scene->InstanceColony.begin(); it != _instance._current_scene->InstanceColony.end();) {
-                Instance* cInstance = (*it);
-                if (cInstance->Alive) {
-                    // step
-                    _instance.Executor.ExecuteScript(cInstance, Event::EV_STEP);
-                    EventBit c_flag = cInstance->EventFlag;
-
-                    // inview
+        if (_instance.game_loop) {
+            _instance._current_scene->SpawnAll();
+            if (_instance._current_scene->IsAnyInstances()) {
+                for (plf::colony<Instance*>::iterator it = _instance._current_scene->InstanceColony.begin(); it != _instance._current_scene->InstanceColony.end();) {
+                    Instance* cInstance = (*it);
                     if (cInstance->Alive) {
-                        //TODO: implement camera system
-                        Rect screen{ 0,0,_instance.GetScreenWidth(), _instance.GetScreenHeight() };
-                        SDL_FPoint pos{ cInstance->PosX, cInstance->PosY };
-                        bool oldInView = cInstance->InView;
-                        cInstance->InView = screen.PointInRect(pos);
-                        if (cInstance->InView != oldInView) {
-                            if (EventBitTest(EventBit::HAVE_VIEWCHANGE, c_flag)) {
-                                if (oldInView == true) { // be inside, now exit view
-                                    _instance.Executor.ExecuteScript(cInstance, Event::EV_ONVIEW_LEAVE);
-                                }
-                                else {
-                                    _instance.Executor.ExecuteScript(cInstance, Event::EV_ONVIEW_ENTER);
-                                }
-                            }
-                        }
-                    }
+                        // step
+                        _instance.Executor.ExecuteScript(cInstance, Event::EV_STEP);
+                        EventBit c_flag = cInstance->EventFlag;
 
-                    // collision
-                    if (EventBitTest(EventBit::HAVE_COLLISION, c_flag)) {
-                        for (Instance* instance : _instance._current_scene->InstanceColony) {
-                            if (instance == cInstance) continue; // self
-                            if (instance->Body.Type == Instance::BodyType::NONE) continue; // no collision mask
-                            if (instance->CollideTest(cInstance)) {
-                                _instance._current_scene->CurrentCollisionInstance = instance;
-                                _instance._current_scene->CurrentCollisionInstanceId = instance->GetId();
-                                _instance.Executor.ExecuteScript(cInstance, Event::EV_ONCOLLISION);
-                                _instance._current_scene->CurrentCollisionInstance = nullptr;
-                                _instance._current_scene->CurrentCollisionInstanceId = -1;
-                            }
-                        }
-                    }
-
-                    // input
-                    if (Ev_Input && cInstance->Alive) {
-                        if (EventBitTest(EventBit::HAVE_MOUSE_EVENT, c_flag)) {
-                            if (EventBitTest(EventBit::HAVE_MOUSE_EVENT_UP, c_flag) && Ev_OnMouseInputUp) {
-                                _instance.Executor.ExecuteScript(cInstance, Event::EV_ONMOUSE_UP);
-                            }
-                            if (EventBitTest(EventBit::HAVE_MOUSE_EVENT_DOWN, c_flag) && Ev_OnMouseInputDown) {
-                                _instance.Executor.ExecuteScript(cInstance, Event::EV_ONMOUSE_DOWN);
-                            }
-                            if (!Ev_ClickedDone && EventBitTest(EventBit::HAVE_MOUSE_EVENT_CLICK, c_flag) && Ev_OnMouseInputDown) {
-                                if (cInstance->CheckMaskClick(_instance.gMouse.XYf)) {
-                                    _instance.Executor.ExecuteScript(cInstance, Event::EV_CLICKED);
-                                    Ev_ClickedDone = true;
+                        // inview
+                        if (cInstance->Alive) {
+                            //TODO: implement camera system
+                            Rect screen{ 0,0,_instance.GetScreenWidth(), _instance.GetScreenHeight() };
+                            SDL_FPoint pos{ cInstance->PosX, cInstance->PosY };
+                            bool oldInView = cInstance->InView;
+                            cInstance->InView = screen.PointInRect(pos);
+                            if (cInstance->InView != oldInView) {
+                                if (EventBitTest(EventBit::HAVE_VIEWCHANGE, c_flag)) {
+                                    if (oldInView == true) { // be inside, now exit view
+                                        _instance.Executor.ExecuteScript(cInstance, Event::EV_ONVIEW_LEAVE);
+                                    }
+                                    else {
+                                        _instance.Executor.ExecuteScript(cInstance, Event::EV_ONVIEW_ENTER);
+                                    }
                                 }
                             }
                         }
 
+                        // collision
+                        if (EventBitTest(EventBit::HAVE_COLLISION, c_flag)) {
+                            for (Instance* instance : _instance._current_scene->InstanceColony) {
+                                if (instance == cInstance) continue; // self
+                                if (instance->Body.Type == Instance::BodyType::NONE) continue; // no collision mask
+                                if (instance->CollideTest(cInstance)) {
+                                    _instance._current_scene->CurrentCollisionInstance = instance;
+                                    _instance._current_scene->CurrentCollisionInstanceId = instance->GetId();
+                                    _instance.Executor.ExecuteScript(cInstance, Event::EV_ONCOLLISION);
+                                    _instance._current_scene->CurrentCollisionInstance = nullptr;
+                                    _instance._current_scene->CurrentCollisionInstanceId = -1;
+                                }
+                            }
+                        }
+
+                        // input
+                        if (Ev_Input && cInstance->Alive) {
+                            if (EventBitTest(EventBit::HAVE_MOUSE_EVENT, c_flag)) {
+                                if (EventBitTest(EventBit::HAVE_MOUSE_EVENT_UP, c_flag) && Ev_OnMouseInputUp) {
+                                    _instance.Executor.ExecuteScript(cInstance, Event::EV_ONMOUSE_UP);
+                                }
+                                if (EventBitTest(EventBit::HAVE_MOUSE_EVENT_DOWN, c_flag) && Ev_OnMouseInputDown) {
+                                    _instance.Executor.ExecuteScript(cInstance, Event::EV_ONMOUSE_DOWN);
+                                }
+                                if (!Ev_ClickedDone && EventBitTest(EventBit::HAVE_MOUSE_EVENT_CLICK, c_flag) && Ev_OnMouseInputDown) {
+                                    if (cInstance->CheckMaskClick(_instance.gMouse.XYf)) {
+                                        _instance.Executor.ExecuteScript(cInstance, Event::EV_CLICKED);
+                                        Ev_ClickedDone = true;
+                                    }
+                                }
+                            }
+
+                        }
+                        ++it;
                     }
-                ++it;
-                }
-                else {
-                    //TODO: Event::EV_ONDESTROY
-                    _instance.Executor.ExecuteScript(cInstance, Event::EV_ONDESTROY);
-                    it = _instance._current_scene->DeleteInstance(it);
+                    else {
+                        //TODO: Event::EV_ONDESTROY
+                        _instance.Executor.ExecuteScript(cInstance, Event::EV_ONDESTROY);
+                        it = _instance._current_scene->DeleteInstance(it);
+                    }
+                } // step loop
+            } // is any instance
+        } // if game_loop
+            //Art::Core::GetInstance()->Run_sceneDraw();
+            if (_instance._current_scene->IsAnyInstances()) {
+                for (Instance* instance : _instance._current_scene->InstanceColony) {
+                    if (instance->InView) {
+                        _instance.Executor.ExecuteScript(instance, Event::EV_DRAW);
+
+                    }
                 }
             }
-        }
-
-        //Art::Core::GetInstance()->Run_sceneDraw();
-        if (_instance._current_scene->IsAnyInstances()){
-            for (Instance* instance : _instance._current_scene->InstanceColony) {
-                if (instance->InView) {
-                    _instance.Executor.ExecuteScript(instance, Event::EV_DRAW);
-
-                }
-            }
-        }
+        
 
         // DEBUG DRAW
 #ifdef _DEBUG
@@ -597,7 +600,7 @@ int Core::Run()
 
 
         //Art::Render::RenderToTarget(Art::Core::GetScreenTarget());
-        Render::RenderToTarget(Core::GetScreenTarget());
+        Render::RenderToTarget(_instance._screenTarget);
         
         //Art::Render::RenderClear();
         Render::RenderClear();

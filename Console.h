@@ -26,8 +26,6 @@ public:
 	bool ProcessKey(SDL_KeyCode key);
 
 	void WriteLine(std::string text);
-
-	void BindFunction(std::string command, void(*function)(std::vector<std::string>args));
 	void Execute(std::string command);
 
 	void RenderConsole();
@@ -39,6 +37,7 @@ public:
 	};
 
 private:
+	void static WrLn(std::string);
 	// console functions
 	bool m_show_cursor = false;
 	double m_cursor_interval = 0.0;
@@ -50,7 +49,7 @@ private:
 	int m_console_shadow_pos = 0;
 	int m_console_page = 0;
 	int m_console_block = 12;
-	std::map<std::string, void(*)(std::vector<std::string> args)> m_console_fun;
+	std::map<std::string, void(*)(std::vector<std::string> args, int argc)> m_console_fun;
 	FC_Font* m_font;
 };
 

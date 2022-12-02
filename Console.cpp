@@ -11,9 +11,28 @@ Console::Console()
 	m_console_str_history = std::vector<std::string>();
 }
 
+#define AddFunction(name,argc,body,info)										\
+m_console_fun[name]=[](std::vector<std::string> args, int arg){					\
+	if(argc+1 == arg){															\
+		body;																	\
+		WrLn(info);																\
+	}else{																		\
+		WrLn(std::string("Error, '")+name+"' require "+std::to_string(argc)+" arguments");		\
+	}																			\
+};																				\
+
 void Console::Init() {
 	m_font = FC_CreateFont();
 	FC_LoadFont_RW(m_font, SDL_RWFromConstMem(consola_ttf, 459181), 1, 16, C_BLACK, TTF_STYLE_NORMAL);
+
+	AddFunction("pause", 0, Core::Pause() , "Game paused");
+	AddFunction("resume", 0, Core::Play() , "Game resume");
+	AddFunction("reset", 0, Core::GetInstance()->_current_scene->Start();, "Game reset");
+	AddFunction("exit", 0, Core::GetInstance()->Exit();, "Game exit");
+	AddFunction("spawn_instance", 3, {
+		Core::GetInstance()->_current_scene->CreateInstance(args[1], Func::TryGetFloat(args[2]), Func::TryGetFloat(args[3]));
+		}, "Game exit");
+
 }
 
 Console::~Console()
@@ -127,13 +146,7 @@ bool Console::ProcessKey(SDL_KeyCode key)
 
 void Console::WriteLine(std::string text)
 {
-	m_console_str.insert(m_console_str.begin(), text);
-}
-
-void Console::BindFunction(std::string command, void(*function)(std::vector<std::string>args))
-{
-	std::vector<std::string> arg = Func::Explode(command, ' ');
-	m_console_fun[arg[0]] = function;
+	m_console_str.insert(m_console_str.begin(), text + '\n');
 }
 
 void Console::Execute(std::string command)
@@ -141,7 +154,7 @@ void Console::Execute(std::string command)
 	std::vector<std::string> arg = Func::Explode(command, ' ');
 	if (m_console_fun.find(arg[0]) != m_console_fun.end()) {
 		WriteLine(command);
-		m_console_fun[arg[0]](arg);
+		m_console_fun[arg[0]](arg, arg.size());
 	}
 	else {
 		WriteLine("err: " + arg[0] + " - not found");
@@ -190,4 +203,9 @@ void Console::Hide()
 {
 	SDL_StopTextInput();
 	m_visibled = false;
+}
+
+void Console::WrLn(std::string msg)
+{
+	Core::GetInstance()->Consola->WriteLine(msg);
 }

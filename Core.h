@@ -28,8 +28,19 @@ public:
 	static Core* GetInstance() { return &Core::_instance; }
 	static bool Init(int argc, char* args[]);
 	static int Run();
-	static bool LoadData();
 	void Exit();
+	static bool LoadData();
+
+private:
+	bool game_loop;
+public:
+	static void Pause() {
+		_instance.game_loop = false;
+	}
+	static void Play() {
+		_instance.game_loop = true;
+	}
+
 
 	bool ChangeScene(std::string name);
 
