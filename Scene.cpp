@@ -78,8 +78,8 @@ bool Scene::Load(std::string name)
 			Debug::WARNING("new_scene.BackGround.type_wrap unknown");
 			BackGround.type_wrap = Scene::BackGround::BTypeWrap::Tile;
 		}
-		GPU_Image* txt = Core::GetInstance()->assetManager->GetTexture(dv.GetData("setup", "BackGroundTexture_name"));
-		if (txt == nullptr) {
+		BackGround.texture = Core::GetInstance()->assetManager->GetTexture(dv.GetData("setup", "BackGroundTexture_name"));
+		if (BackGround.texture == nullptr) {
 			Debug::WARNING("Background texture not exists '"+ dv.GetData("setup", "BackGroundTexture_name") + "'");
 			BackGround.type = Scene::BackGround::BType::DrawColor;
 			BackGround.color = SDL_Color({ 0, 0, 0, 255 });

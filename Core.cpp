@@ -545,15 +545,16 @@ int Core::Run()
                 } // step loop
             } // is any instance
         } // if game_loop
-            //Art::Core::GetInstance()->Run_sceneDraw();
-            if (_instance._current_scene->IsAnyInstances()) {
-                for (Instance* instance : _instance._current_scene->InstanceColony) {
-                    if (instance->InView) {
-                        _instance.Executor.ExecuteScript(instance, Event::EV_DRAW);
+           
+        //Art::Core::GetInstance()->Run_sceneDraw();
+        if (_instance._current_scene->IsAnyInstances()) {
+            for (Instance* instance : _instance._current_scene->InstanceColony) {
+                if (instance->InView) {
+                    _instance.Executor.ExecuteScript(instance, Event::EV_DRAW);
 
-                    }
                 }
             }
+        }
         
 
         // DEBUG DRAW
@@ -600,6 +601,9 @@ int Core::Run()
 
 
         //Art::Render::RenderToTarget(Art::Core::GetScreenTarget());
+        if (_instance._current_scene->BackGround.texture != nullptr) {
+            GPU_BlitRect(_instance._current_scene->BackGround.texture, NULL, _instance._screenTarget, NULL);
+        }
         Render::RenderToTarget(_instance._screenTarget);
         
         //Art::Render::RenderClear();
