@@ -36,6 +36,15 @@ const std::string Convert::Point2String(SDL_Point& point)
 {
 	return std::to_string(point.x) + ':' + std::to_string(point.y);
 }
+const float Convert::pi_180 = 57.2957795131f;
+const float Convert::one_radian = 0.0174532925f;
+const float Convert::DegreeToRadians(float degree) {
+	return one_radian * degree;
+}
+const float Convert::RadiansToDegree(float angle)
+{
+	return angle * pi_180;
+}
 
 const Rect Convert::Str2Rect(std::string str)
 {

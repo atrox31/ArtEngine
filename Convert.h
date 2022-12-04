@@ -3,7 +3,16 @@
 #include <string>
 class Convert
 {
+private:
+	static const float pi_180;
+	static const float one_radian;
 public:
+	// Get radians(direction) from degree
+	static const float RadiansToDegree(float);
+
+	// Get degree from radians(direction)
+	static const float DegreeToRadians(float);
+
 	// translate string to Rect
 	static const Rect Str2Rect(std::string);
 
