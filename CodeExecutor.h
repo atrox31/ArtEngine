@@ -277,6 +277,8 @@ private:
 	Script(convert_float_to_string);
 	Script(string_add);
 	Script(sprite_set_scale);
+	Script(direction_from_deegree);
+	Script(direction_from_radians);
 #undef Script
 };
 //end of file

@@ -749,3 +749,11 @@ void CodeExecutor::sprite_set_scale(Instance* sender) {
 		sender->SpriteScaleY = scale.y;
 	}
 }
+//float direction_from_deegree(float direction);Get radian direction from <float> degree;Simply (pi/180)*radians but faster;
+void CodeExecutor::direction_from_deegree(Instance* sender) {
+	StackOut_f(Convert::DegreeToRadians(StackIn_f));
+}
+//float direction_from_radians(float angle);Get degree direction from <float> radians;Simply angle*const radians but faster;
+void CodeExecutor::direction_from_radians(Instance* sender) {
+	StackOut_f(Convert::RadiansToDegree(StackIn_f));
+}

@@ -90,5 +90,7 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["convert_float_to_string"] = &CodeExecutor::convert_float_to_string;
 	FunctionsMap["string_add"] = &CodeExecutor::string_add;
 	FunctionsMap["sprite_set_scale"] = &CodeExecutor::sprite_set_scale;
+	FunctionsMap["direction_from_deegree"] = &CodeExecutor::direction_from_deegree;
+	FunctionsMap["direction_from_radians"] = &CodeExecutor::direction_from_radians;
 }
 //end of file
