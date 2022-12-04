@@ -1,6 +1,7 @@
 #include "Render.h"
 #include "Func.h"
 #include "ColorDefinitions.h"
+#include "Convert.h"
 Render* Render::_instance = nullptr;
 
 void Render::CreateRender(int width, int height)
@@ -92,9 +93,9 @@ void Render::DrawTexture(GPU_Image* texture, vec2f postion, vec2f scale, float a
 		if (alpha > 1.0f) alpha = 1.0f;
 		GPU_SetBlending(texture, true);
 		//GPU_GetBlendModeFromPreset(GPU_BlendPresetEnum::GPU_BLEND_MOD_ALPHA);
-		GPU_SetColor(texture, { (Uint8)255,(Uint8)255,(Uint8)255,(Uint8)(alpha * 255) });
+		GPU_SetColor(texture, { (Uint8)255,(Uint8)255,(Uint8)255,(Uint8)(alpha * 255.f) });
 	}
-	GPU_BlitTransform(texture, NULL, _instance->_screenTexture_target, postion.x, postion.y, angle, scale.x, scale.y);
+	GPU_BlitTransform(texture, NULL, _instance->_screenTexture_target, postion.x, postion.y, Convert::RadiansToDegree(angle), scale.x, scale.y);
 	if (alpha_flag) {
 		GPU_SetBlending(texture, false);
 
@@ -135,7 +136,7 @@ void Render::DrawSprite_ex(Sprite* sprite, float posX, float posY, int frame, fl
 		_instance->_screenTexture_target,
 		posX, posY,
 		centerX, centerY,
-		angle,
+		Convert::RadiansToDegree(angle),
 		scaleX, scaleY
 	);
 
