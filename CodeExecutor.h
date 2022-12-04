@@ -272,6 +272,11 @@ private:
 	Script(mouse_is_pressed);
 	Script(get_delta_time);
 	Script(code_break);
+	Script(draw_text);
+	Script(convert_int_to_string);
+	Script(convert_float_to_string);
+	Script(string_add);
+	Script(sprite_set_scale);
 #undef Script
 };
 //end of file

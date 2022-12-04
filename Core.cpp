@@ -207,7 +207,7 @@ bool Core::Init(int argc, char* args[])
 
     if (!PHYSFS_mount(FL_assets_file, NULL, 0))
     {
-        Debug::ERROR({ "Error when reading 'assets.pak'. Reason: " , PHYSFS_getLastError() });
+        Debug::ERROR( "Error when reading 'assets.pak'. Reason: " + std::string(PHYSFS_getLastError()) );
         return false;
     }Debug::LOG("PHYSFS_mount assets.pak");
 

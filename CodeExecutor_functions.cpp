@@ -712,3 +712,40 @@ void CodeExecutor::get_delta_time(Instance* sender) {
 void CodeExecutor::code_break(Instance*) {
 	Core::GetInstance()->Executor.Break();
 }
+//null draw_text(font font, int x, int y, string text, color color);Draw <string> on screen on (<int>,<int>) with <color> color;If font is null, default font is used;
+void CodeExecutor::draw_text(Instance*) {
+	SDL_Color color = StackIn_c;
+	std::string text = StackIn_s;
+	float y = (float)StackIn_i;
+	float x = (float)StackIn_i;
+	int fontId = StackIn_i;
+	FC_Font* font = Core::GetInstance()->assetManager->GetFont(fontId);
+	if (font == nullptr) {
+		font = Core::GetInstance()->_global_font;
+	}
+
+	Render::DrawText(text, font, { x,y }, color);
+
+}
+//string convert_int_to_string(int input);Convert <int> to string;
+void CodeExecutor::convert_int_to_string(Instance*) {
+	StackOut_s(std::to_string(StackIn_i));
+}
+//string convert_float_to_string(int input);Convert <int> to string;
+void CodeExecutor::convert_float_to_string(Instance*) {
+	StackOut_s(std::to_string(StackIn_f));
+}
+//string string_add(string str1, string str2);Create new string from <string> and <string>
+void CodeExecutor::string_add(Instance*) {
+	std::string string2 = StackIn_s;
+	std::string string1 = StackIn_s;
+	StackOut_s(string1 + string2);
+}
+//null sprite_set_scale(point scale);Set scale for self sprite <point>;Scale is from point (width, height)
+void CodeExecutor::sprite_set_scale(Instance* sender) {
+	SDL_FPoint scale = StackIn_p;
+	if (sender->SelfSprite != nullptr) {
+		sender->SpriteScaleX = scale.x;
+		sender->SpriteScaleY = scale.y;
+	}
+}

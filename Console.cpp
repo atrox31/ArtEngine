@@ -33,6 +33,7 @@ void Console::Init() {
 		Core::GetInstance()->_current_scene->CreateInstance(args[1], Func::TryGetFloat(args[2]), Func::TryGetFloat(args[3]));
 		}, "Game exit");
 
+	AddFunction("bloom", 0, Render::SetBloom(true);, "bloom");
 }
 
 Console::~Console()

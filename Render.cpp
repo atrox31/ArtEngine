@@ -203,7 +203,7 @@ void Render::ApplyBloom()
 
 void Render::DrawText(std::string text,FC_Font* font, vec2f pos, SDL_Color color)
 {
-	DrawTextAlign(text, font, pos, color, FC_ALIGN_CENTER);
+	DrawTextAlign(text, font, pos, color, FC_ALIGN_LEFT);
 }
 
 void Render::DrawTextAlign(std::string text, FC_Font* font, vec2f pos, SDL_Color color, FC_AlignEnum align)

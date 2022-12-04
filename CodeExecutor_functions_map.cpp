@@ -85,5 +85,10 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["mouse_is_pressed"] = &CodeExecutor::mouse_is_pressed;
 	FunctionsMap["get_delta_time"] = &CodeExecutor::get_delta_time;
 	FunctionsMap["code_break"] = &CodeExecutor::code_break;
+	FunctionsMap["draw_text"] = &CodeExecutor::draw_text;
+	FunctionsMap["convert_int_to_string"] = &CodeExecutor::convert_int_to_string;
+	FunctionsMap["convert_float_to_string"] = &CodeExecutor::convert_float_to_string;
+	FunctionsMap["string_add"] = &CodeExecutor::string_add;
+	FunctionsMap["sprite_set_scale"] = &CodeExecutor::sprite_set_scale;
 }
 //end of file
