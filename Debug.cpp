@@ -133,7 +133,7 @@ void Debug::write(std::string& string)
 void Debug::write_to_file(std::string& string)
 {
 	std::ofstream ofs(OUTPUT_FILE, std::ofstream::app);
-	ofs << Debug::get_header() << string;
+	ofs << Debug::get_header() << string << '\n';
 	ofs.close();
 }
 
