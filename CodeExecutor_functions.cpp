@@ -383,8 +383,6 @@ void CodeExecutor::set_self_sprite(Instance* instance) {
 		Sprite* sprite = Core::GetInstance()->assetManager->GetSprite(spriteId);
 		if (sprite != nullptr) {
 			instance->SelfSprite = sprite;
-			//instance->Mask = sprite->
-
 			instance->SpriteScaleX = 1.0f;
 			instance->SpriteScaleY = 1.0f;
 			instance->SpriteCenterX = (int)sprite->GetCenterX();
@@ -393,11 +391,17 @@ void CodeExecutor::set_self_sprite(Instance* instance) {
 			instance->SpriteAnimationFrame = 0.0f;
 			instance->SpriteAnimationSpeed = 60.0f;
 			instance->SpriteAnimationLoop = true;
+
+			// set body type from sprite values
+			if (instance->Body.Type == Instance::BodyType::SPRITE) {
+				//null set_body_type(string type, int value);Set body type for instance, of <string> and optional <int> value; type is enum: NONE,SPRITE,RECT,CIRCLE
+				StackOut_s("SPRITE");
+				StackOut_i(instance->SelfSprite->GetMaskValue());
+				set_body_type(instance);
+			}
 			return;
 		}
 	}
-	//instance->Mask = Rect();
-
 	instance->SelfSprite = nullptr;
 	instance->SpriteScaleX = 0.0f;
 	instance->SpriteScaleY = 0.0f;
