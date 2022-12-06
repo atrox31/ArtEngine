@@ -56,28 +56,28 @@
 
 ENUM_WITH_STRING_CONVERSION(
     Event,
-    (EV_ONCREATE)
-    (EV_ONDESTROY)
+    (EvOncreate)
+    (EvOnDestroy)
     (DEF_VALUES)
 
-    (EV_ONKEY_DOWN)
-    (EV_ONKEY_UP)
+    (EvOnkeyDown)
+    (EvOnkeyUp)
 
-    (EV_ONMOUSE_MOTION)
-    (EV_ONMOUSE_WHEEL)
-    (EV_ONMOUSE_DOWN)
-    (EV_ONMOUSE_UP)
+    (EvOnmouseMotion)
+    (EvOnMouseWheel)
+    (EvOnMouseDown)
+    (EvOnMouseUp)
 
-    (EV_ONCOLLISION)
+    (EvOnCollision)
 
-    (EV_ONVIEW_ENTER)
-    (EV_ONVIEW_LEAVE)
+    (EvOnViewEnter)
+    (EvOnViewLeave)
 
-    (EV_CLICKED)
-    (EV_TRIGGER)
+    (EvClicked)
+    (EvTrigger)
 
-    (EV_STEP)
-    (EV_DRAW)
+    (EvStep)
+    (EvDraw)
 )
 
 #define _e_type std::uint16_t

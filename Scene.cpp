@@ -136,7 +136,7 @@ void Scene::SpawnAll()
 	if (_is_any_new_instances) {
 		size_t ins_siz = _instances_new.size();
 		while (ins_siz) {
-			Core::GetInstance()->Executor.ExecuteScript(_instances_new.back(), Event::EV_ONCREATE);
+			Core::GetInstance()->Executor.ExecuteScript(_instances_new.back(), Event::EvOncreate);
 			InstanceColony.insert(_instances_new.back());
 			_instances_new.pop_back();
 			--ins_siz;

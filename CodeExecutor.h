@@ -161,31 +161,31 @@ private:
 	static AStack<std::string> GlobalStack_string;
 private:
 	// helpers
-	bool _break;
+	static bool _break;
 	// Break from current script, rise ASSERTif in debug mode
-	void Break();
-	void h_execute_script(Inspector*, Instance*);
+	 void Break();
+	 void h_execute_script(Inspector*, Instance*);
 	void h_execute_function(Inspector* , Instance*);
-	void h_get_value(Inspector*, Instance*);
-	int	 h_if_test(Inspector* code, Instance* instance);
-	void h_get_local_value(Inspector* code, Instance* instance);
-	bool h_compare(int type, int oper);
+	 void h_get_value(Inspector*, Instance*);
+	 int	 h_if_test(Inspector* code, Instance* instance);
+	 void h_get_local_value(Inspector* code, Instance* instance);
+	 bool h_compare(int type, int oper);
 
 	//std::string h_operation(int operation, std::string value1, std::string value2);
-	int h_operation_int(int _operator, int val1, int val2);
-	float h_operation_float(int _operator, float val1, float val2);
-	bool h_operation_bool(int _operator, bool val1, bool val2);
-	Instance* h_operation_instance(int _operator, Instance* val1, Instance* val2);
-	int h_operation_object(int _operator, int val1, int val2);
-	int h_operation_sprite(int _operator, int val1, int val2);
-	int h_operation_texture(int _operator, int val1, int val2);
-	int h_operation_sound(int _operator, int val1, int val2);
-	int h_operation_music(int _operator, int val1, int val2);
-	int h_operation_font(int _operator, int val1, int val2);
-	SDL_FPoint h_operation_point(int _operator, SDL_FPoint val1, SDL_FPoint val2);
-	Rect h_operation_rect(int _operator, Rect val1, Rect val2);
-	SDL_Color h_operation_color(int _operator, SDL_Color val1, SDL_Color val2);
-	std::string h_operation_string(int _operator, std::string val1, std::string val2);
+	static int h_operation_int(int _operator, int val1, int val2);
+	static float h_operation_float(int _operator, float val1, float val2);
+	static bool h_operation_bool(int _operator, bool val1, bool val2);
+	static Instance* h_operation_instance(int _operator, Instance* val1, Instance* val2);
+	static int h_operation_object(int _operator, int val1, int val2);
+	static int h_operation_sprite(int _operator, int val1, int val2);
+	static int h_operation_texture(int _operator, int val1, int val2);
+	static int h_operation_sound(int _operator, int val1, int val2);
+	static int h_operation_music(int _operator, int val1, int val2);
+	static int h_operation_font(int _operator, int val1, int val2);
+	static SDL_FPoint h_operation_point(int _operator, SDL_FPoint val1, SDL_FPoint val2);
+	static Rect h_operation_rect(int _operator, Rect val1, Rect val2);
+	static SDL_Color h_operation_color(int _operator, SDL_Color val1, SDL_Color val2);
+	static std::string h_operation_string(int _operator, std::string val1, std::string val2);
 
 
 private:

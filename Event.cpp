@@ -6,52 +6,52 @@ EventBit EventBitFromEvent(Event event) {
 	{
 	case Invalid:
 		break;
-	case EV_ONCREATE:
+	case EvOncreate:
 		break;
 	case DEF_VALUES:
 		break;
-	case EV_ONKEY_DOWN:
+	case EvOnkeyDown:
 		flag = flag | EventBit::HAVE_KEYBOARD_EVENT;
 		flag = flag | EventBit::HAVE_KEYBOARD_EVENT_DOWN;
 		break;
-	case EV_ONKEY_UP:
+	case EvOnkeyUp:
 		flag = flag | EventBit::HAVE_KEYBOARD_EVENT;
 		flag = flag | EventBit::HAVE_KEYBOARD_EVENT_UP;
 		break;
-	case EV_ONMOUSE_MOTION:
+	case EvOnmouseMotion:
 		flag = flag | EventBit::HAVE_MOUSE_EVENT;
 		break;
-	case EV_ONMOUSE_WHEEL:
+	case EvOnMouseWheel:
 		flag = flag | EventBit::HAVE_MOUSE_EVENT;
 		break;
-	case EV_ONMOUSE_DOWN:
-		flag = flag | EventBit::HAVE_MOUSE_EVENT;
-		flag = flag | EventBit::HAVE_MOUSE_EVENT_DOWN;
-		break;
-	case EV_ONMOUSE_UP:
+	case EvOnMouseUp:
 		flag = flag | EventBit::HAVE_MOUSE_EVENT;
 		flag = flag | EventBit::HAVE_MOUSE_EVENT_UP;
 		break;
-	case EV_ONCOLLISION:
+	case EvOnMouseDown:
+		flag = flag | EventBit::HAVE_MOUSE_EVENT;
+		flag = flag | EventBit::HAVE_MOUSE_EVENT_UP;
+		break;
+	case EvOnCollision:
 		flag = flag | EventBit::HAVE_COLLISION;
 		break;
-	case EV_ONVIEW_ENTER:
+	case EvOnViewEnter:
 		flag = flag | EventBit::HAVE_VIEWCHANGE;
 		break;
-	case EV_ONVIEW_LEAVE:
+	case EvOnViewLeave:
 		flag = flag | EventBit::HAVE_VIEWCHANGE;
 		break;
-	case EV_CLICKED:
+	case EvClicked:
 		flag = flag | EventBit::HAVE_MOUSE_EVENT;
 		flag = flag | EventBit::HAVE_MOUSE_EVENT_DOWN;
 		flag = flag | EventBit::HAVE_MOUSE_EVENT_CLICK;
 		break;
-	case EV_TRIGGER:
+	case EvTrigger:
 		flag = flag | EventBit::HAVE_TRIGGER;
 		break;
-	case EV_STEP:
+	case EvStep:
 		break;
-	case EV_DRAW:
+	case EvDraw:
 		break;
 	case END:
 		break;

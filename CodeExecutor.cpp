@@ -24,7 +24,7 @@ AStack<SDL_FPoint> CodeExecutor::GlobalStack_point = AStack<SDL_FPoint>();
 AStack<Rect> CodeExecutor::GlobalStack_rect = AStack<Rect>();
 AStack<SDL_Color> CodeExecutor::GlobalStack_color = AStack<SDL_Color>();
 AStack<std::string> CodeExecutor::GlobalStack_string = AStack<std::string>();
-
+bool CodeExecutor::_break;
 CodeExecutor::CodeExecutor()
 {
 	FunctionsMap = std::map<std::string, void(*)(Instance*)>();
@@ -1096,11 +1096,11 @@ void CodeExecutor::h_execute_function(Inspector* code, Instance* instance)
 
 
 #undef command
-CodeExecutor::InstanceDefinition::EventData* CodeExecutor::GetEventData(int _id, Event _Event)
+CodeExecutor::InstanceDefinition::EventData* CodeExecutor::GetEventData(const int id, const Event event)
 {
-	for (auto& e : InstanceDefinitions[_id]._events) {
+	for (auto& e : InstanceDefinitions[id]._events) {
 
-		if (_Event == e.event) {
+		if (event == e.event) {
 			return &e;
 		}
 		else {

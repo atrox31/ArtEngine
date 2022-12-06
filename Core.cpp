@@ -480,7 +480,7 @@ int Core::Run()
                     Instance* cInstance = (*it);
                     if (cInstance->Alive) {
                         // step
-                        _instance.Executor.ExecuteScript(cInstance, Event::EV_STEP);
+                        _instance.Executor.ExecuteScript(cInstance, Event::EvStep);
                         EventBit c_flag = cInstance->EventFlag;
 
                         // inview
@@ -493,10 +493,10 @@ int Core::Run()
                             if (cInstance->InView != oldInView) {
                                 if (EventBitTest(EventBit::HAVE_VIEWCHANGE, c_flag)) {
                                     if (oldInView == true) { // be inside, now exit view
-                                        _instance.Executor.ExecuteScript(cInstance, Event::EV_ONVIEW_LEAVE);
+                                        _instance.Executor.ExecuteScript(cInstance, Event::EvOnViewLeave);
                                     }
                                     else {
-                                        _instance.Executor.ExecuteScript(cInstance, Event::EV_ONVIEW_ENTER);
+                                        _instance.Executor.ExecuteScript(cInstance, Event::EvOnViewEnter);
                                     }
                                 }
                             }
@@ -510,7 +510,7 @@ int Core::Run()
                                 if (instance->CollideTest(cInstance)) {
                                     _instance._current_scene->CurrentCollisionInstance = instance;
                                     _instance._current_scene->CurrentCollisionInstanceId = instance->GetId();
-                                    _instance.Executor.ExecuteScript(cInstance, Event::EV_ONCOLLISION);
+                                    _instance.Executor.ExecuteScript(cInstance, Event::EvOnCollision);
                                     _instance._current_scene->CurrentCollisionInstance = nullptr;
                                     _instance._current_scene->CurrentCollisionInstanceId = -1;
                                 }
@@ -521,14 +521,14 @@ int Core::Run()
                         if (Ev_Input && cInstance->Alive) {
                             if (EventBitTest(EventBit::HAVE_MOUSE_EVENT, c_flag)) {
                                 if (EventBitTest(EventBit::HAVE_MOUSE_EVENT_UP, c_flag) && Ev_OnMouseInputUp) {
-                                    _instance.Executor.ExecuteScript(cInstance, Event::EV_ONMOUSE_UP);
+                                    _instance.Executor.ExecuteScript(cInstance, Event::EvOnMouseUp);
                                 }
                                 if (EventBitTest(EventBit::HAVE_MOUSE_EVENT_DOWN, c_flag) && Ev_OnMouseInputDown) {
-                                    _instance.Executor.ExecuteScript(cInstance, Event::EV_ONMOUSE_DOWN);
+                                    _instance.Executor.ExecuteScript(cInstance, Event::EvOnMouseDown);
                                 }
                                 if (!Ev_ClickedDone && EventBitTest(EventBit::HAVE_MOUSE_EVENT_CLICK, c_flag) && Ev_OnMouseInputDown) {
                                     if (cInstance->CheckMaskClick(_instance.gMouse.XYf)) {
-                                        _instance.Executor.ExecuteScript(cInstance, Event::EV_CLICKED);
+                                        _instance.Executor.ExecuteScript(cInstance, Event::EvClicked);
                                         Ev_ClickedDone = true;
                                     }
                                 }
@@ -539,7 +539,7 @@ int Core::Run()
                     }
                     else {
                         //TODO: Event::EV_ONDESTROY
-                        _instance.Executor.ExecuteScript(cInstance, Event::EV_ONDESTROY);
+                        _instance.Executor.ExecuteScript(cInstance, Event::EvOnDestroy);
                         it = _instance._current_scene->DeleteInstance(it);
                     }
                 } // step loop
@@ -550,7 +550,7 @@ int Core::Run()
         if (_instance._current_scene->IsAnyInstances()) {
             for (Instance* instance : _instance._current_scene->InstanceColony) {
                 if (instance->InView) {
-                    _instance.Executor.ExecuteScript(instance, Event::EV_DRAW);
+                    _instance.Executor.ExecuteScript(instance, Event::EvDraw);
 
                 }
             }

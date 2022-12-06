@@ -18,7 +18,7 @@ Sprite::Sprite()
 
 Sprite::~Sprite()
 {
-	for (auto t : m_texture) {
+	for (const auto t : m_texture) {
 		GPU_FreeImage(t);
 	}
 	m_texture.clear();
@@ -26,7 +26,7 @@ Sprite::~Sprite()
 
 void Sprite::Delete(Sprite* target)
 {
-	for (auto t : target->m_texture) {
+	for (const auto t : target->m_texture) {
 		GPU_FreeImage(t);
 	}
 	target->m_texture.clear();
@@ -38,7 +38,7 @@ Sprite* Sprite::Load(const char* data, Sint64 size)
     if (!dv.IsOk()) return nullptr;
 
     Sprite* nSprite = new Sprite();
-	nSprite->m_width = Func::TryGetInt(dv.GetData("sprite", "sprite_width"));
+    nSprite->m_width = Func::TryGetInt(dv.GetData("sprite", "sprite_width"));
 	nSprite->m_height = Func::TryGetInt(dv.GetData("sprite", "sprite_width"));
 
 	nSprite->m_texture = std::vector<GPU_Image*>();
@@ -70,10 +70,10 @@ Sprite* Sprite::Load(const char* data, Sint64 size)
 	return nSprite;
 }
 
-GPU_Image* Sprite::GetFrame(int frame)
+GPU_Image* Sprite::GetFrame(const int frame) const
 {
-	//if (frame < m_texture_size) {
+	if (frame < m_texture_size) {
 		return m_texture[frame];
-	//}
-	//return nullptr;
+	}
+	return nullptr;
 }

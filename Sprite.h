@@ -13,7 +13,7 @@
 // for string enum
 #include "Event.h"
 
-class Sprite
+class Sprite final
 {
 public:
 	ENUM_WITH_STRING_CONVERSION(MaskType, (none)(circle)(rectangle)(perpixel))
@@ -22,35 +22,45 @@ public:
 	static void Delete(Sprite*);
 	static Sprite* Load(const char* data, Sint64 size);
 
-	GPU_Image* GetFrame(int frame);
-	int GetMaxFrame() {
+	GPU_Image* GetFrame(int frame) const;
+	int GetMaxFrame() const
+	{
 		return m_texture_size;
 	};
 
-	constexpr inline float GetCenterX() {
-		return (float)(m_center_x);
-	};
-	constexpr inline float GetCenterY() {
-		return (float)(m_center_y);
-	};
-	constexpr inline float GetCenterXRel() {
-		return (float)(-m_center_x + m_width / 2);
-	};
-	constexpr inline float GetCenterYRel() {
-		return (float)(-m_center_y + m_height / 2);
-	};
-	
-	constexpr inline int GetWidth() {
-		return m_width;
-	};
-	constexpr inline int GetHeight() {
-		return m_height;
-	};
+	[[nodiscard]] constexpr float GetCenterX() const
+	{
+		return static_cast<float>(m_center_x);
+	}
+	[[nodiscard]] constexpr float GetCenterY() const
+	{
+		return static_cast<float>(m_center_y);
+	}
+	[[nodiscard]] constexpr float GetCenterXRel() const
+	{
+		return static_cast<float>(-m_center_x + m_width / 2);
+	}
+	[[nodiscard]] constexpr float GetCenterYRel() const
+	{
+		return static_cast<float>(-m_center_y + m_height / 2);
+	}
 
-	constexpr inline MaskType GetMaskType() {
+	
+	[[nodiscard]] constexpr int GetWidth() const
+	{
+		return m_width;
+	}
+	[[nodiscard]] constexpr int GetHeight() const
+	{
+		return m_height;
+	}
+
+	[[nodiscard]] constexpr MaskType GetMaskType() const
+	{
 		return m_mask_type;
 	}
-	constexpr inline int GetMaskValue() {
+	[[nodiscard]] constexpr int GetMaskValue() const
+	{
 		return m_mask_value;
 	}
 

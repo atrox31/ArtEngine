@@ -152,10 +152,10 @@ void Console::WriteLine(std::string text)
 
 void Console::Execute(std::string command)
 {
-	std::vector<std::string> arg = Func::Explode(command, ' ');
-	if (m_console_fun.find(arg[0]) != m_console_fun.end()) {
+	const std::vector<std::string> arg = Func::Explode(command, ' ');
+	if (m_console_fun.contains(arg[0])) {
 		WriteLine(command);
-		m_console_fun[arg[0]](arg, arg.size());
+		m_console_fun[arg[0]](arg, static_cast<int>(arg.size()));
 	}
 	else {
 		WriteLine("err: " + arg[0] + " - not found");
@@ -165,28 +165,37 @@ void Console::Execute(std::string command)
 void Console::RenderConsole()
 {
 	if (!m_visibled) return;
-	GPU_ActivateShaderProgram(0, NULL);
+	GPU_ActivateShaderProgram(0, nullptr);
 	const int block_size = FC_GetLineHeight(m_font) - 2;
 	// draw back
-	
-	int _screen_height = Core::GetInstance()->GetScreenHeight();
-	int _screen_width = Core::GetInstance()->GetScreenWidth();
-	GPU_RectangleFilled(Core::GetInstance()->GetScreenTarget(), 0, (float)_screen_height, (float)_screen_width, (float)(_screen_height - block_size * m_console_block), C_DGRAY);
+
+	const int _screen_height = Core::GetInstance()->GetScreenHeight();
+	const int _screen_width = Core::GetInstance()->GetScreenWidth();
+	GPU_RectangleFilled(Core::GetInstance()->GetScreenTarget(), 0, static_cast<float>(_screen_height),
+	                    static_cast<float>(_screen_width),
+	                    static_cast<float>(_screen_height - block_size * m_console_block), C_DGRAY);
 	FC_SetDefaultColor(m_font, C_GREEN);
-	for (int i = 0; i < std::min(m_console_str.size(), ((size_t)m_console_block - 1)); i++) {
-		FC_DrawAlign(m_font, Core::GetInstance()->GetScreenTarget(), 2.0f, float(_screen_height - (block_size) * (i + 2) - 4), FC_AlignEnum::FC_ALIGN_LEFT, m_console_str[(size_t)(i + m_console_page)].c_str());
+	for (int i = 0; i < std::min(m_console_str.size(), (static_cast<size_t>(m_console_block) - 1)); i++)
+	{
+		FC_DrawAlign(m_font, Core::GetInstance()->GetScreenTarget(), 2.0f,
+		             static_cast<float>(_screen_height - (block_size) * (i + 2) - 4),
+		             FC_ALIGN_LEFT, m_console_str[static_cast<size_t>(i + m_console_page)].c_str());
 	}
 	FC_SetDefaultColor(m_font, C_DGREEN);
-	FC_DrawAlign(m_font, Core::GetInstance()->GetScreenTarget(), 2.0f, float(_screen_height - (block_size)-4), FC_AlignEnum::FC_ALIGN_LEFT, m_console_shadow.c_str());
+	FC_DrawAlign(m_font, Core::GetInstance()->GetScreenTarget(), 2.0f,
+	             static_cast<float>(_screen_height - (block_size) - 4),
+	             FC_ALIGN_LEFT, m_console_shadow.c_str());
 	FC_SetDefaultColor(m_font, C_GREEN);
 	m_cursor_interval += Core::GetInstance()->DeltaTime;
-	if (m_cursor_interval > 0.5) {
+	if (m_cursor_interval > 0.5)
+	{
 		m_cursor_interval = 0.0;
 		m_show_cursor = !m_show_cursor;
 	}
 	std::string content = ">" + m_console_buf + (m_show_cursor ? "|" : "");
-	FC_DrawAlign(m_font, Core::GetInstance()->GetScreenTarget(), 2.0f, float(_screen_height - (block_size)-4), FC_AlignEnum::FC_ALIGN_LEFT, content.c_str());
-
+	FC_DrawAlign(m_font, Core::GetInstance()->GetScreenTarget(), 2.0f,
+	             static_cast<float>(_screen_height - (block_size) - 4),
+	             FC_ALIGN_LEFT, content.c_str());
 }
 
 void Console::Show()
