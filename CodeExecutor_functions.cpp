@@ -26,14 +26,16 @@
 
 
 
-
-
+// all functions is executed as ArtCode 
+// down from this line code is read by small program that generate ArtLib from comments of functions.
+// syntax is:
+// returnValue functionName(args);main text with <arguments> to replace as links;And another helper text
 //#AUTO_GENERATOR_START
 // 
 //point new_point(float x, float y);Make point (<float>, <float>).;New point from value or other.
 void CodeExecutor::new_point(Instance*) {
-	float p2 = StackIn_f;
-	float p1 = StackIn_f;
+	const float p2 = StackIn_f;
+	const float p1 = StackIn_f;
 	StackOut_p(SDL_FPoint({ p1, p2 }));
 }
 
@@ -45,28 +47,28 @@ void CodeExecutor::new_direction(Instance*) {
 
 //rectangle new_rectangle(int x1, int y1, int x2, int y2);Make rectangle from <int>, <int> to <int>, <int>.;This is const rectangle, not width and height.
 void CodeExecutor::new_rectangle(Instance*) {
-	int y2 = StackIn_i;
-	int x2 = StackIn_i;
-	int y1 = StackIn_i;
-	int x1 = StackIn_i;
-	Rect output{ x1,y1,x2,y2 };
+	const int y2 = StackIn_i;
+	const int x2 = StackIn_i;
+	const int y1 = StackIn_i;
+	const int x1 = StackIn_i;
+	const Rect output{ x1,y1,x2,y2 };
 	StackOut_r(output);
 }
 
 //rectangle new_rectangle_f(float x1, float y1, float x2, float y2);Make rectangle from <float>, <float> to <float>, <float>.;This is const rectangle, not width and height.
 void CodeExecutor::new_rectangle_f(Instance*) {
-	float y2 = StackIn_f;
-	float x2 = StackIn_f;
-	float y1 = StackIn_f;
-	float x1 = StackIn_f;
-	Rect output{ x1,y1,x2,y2 };
+	const float y2 = StackIn_f;
+	const float x2 = StackIn_f;
+	const float y1 = StackIn_f;
+	const float x1 = StackIn_f;
+	const Rect output{ x1,y1,x2,y2 };
 	StackOut_r(output);
 }
 
 //sprite get_sprite(string name);Get asset handle by name <string>;Expensive function, try to not call it every frame. Call it to function and store.
 void CodeExecutor::get_sprite(Instance*) {
-	std::string name = StackIn_s;
-	int sprite = Core::GetInstance()->assetManager->GetSpriteId(name);
+	const std::string name = StackIn_s;
+	const int sprite = Core::GetInstance()->assetManager->GetSpriteId(name);
 	if (sprite == -1) {
 		Debug::WARNING("CodeExecutor::get_sprite() - '" + name + "' not found");
 	}
@@ -75,8 +77,8 @@ void CodeExecutor::get_sprite(Instance*) {
 
 //texture get_texture(string name);Get asset handle by name <string>;Expensive function, try to not call it every frame. Call it to function and store.
 void CodeExecutor::get_texture(Instance*) {
-	std::string name = StackIn_s;
-	int texture = Core::GetInstance()->assetManager->GetTextureId(name);
+	const std::string name = StackIn_s;
+	const int texture = Core::GetInstance()->assetManager->GetTextureId(name);
 	if (texture == -1) {
 		Debug::WARNING("CodeExecutor::get_texture() - '" + name + "' not found");
 	}
@@ -85,9 +87,8 @@ void CodeExecutor::get_texture(Instance*) {
 
 //music get_music(string name);Get asset handle by name <string>;Expensive function, try to not call it every frame. Call it to function and store.
 void CodeExecutor::get_music(Instance*) {
-
-	std::string name = StackIn_s;
-	int texture = Core::GetInstance()->assetManager->GetMusicId(name);
+	const std::string name = StackIn_s;
+	const int texture = Core::GetInstance()->assetManager->GetMusicId(name);
 	if (texture == -1) {
 		Debug::WARNING("CodeExecutor::get_music() - '" + name + "' not found");
 	}
@@ -96,8 +97,8 @@ void CodeExecutor::get_music(Instance*) {
 
 //sound get_sound(string name);Get asset handle by name <string>;Expensive function, try to not call it every frame. Call it to function and store.
 void CodeExecutor::get_sound(Instance*) {
-	std::string name = StackIn_s;
-	int texture = Core::GetInstance()->assetManager->GetSoundId(name);
+	const std::string name = StackIn_s;
+	const int texture = Core::GetInstance()->assetManager->GetSoundId(name);
 	if (texture == -1) {
 		Debug::WARNING("CodeExecutor::get_sound() - '" + name + "' not found");
 	}
@@ -106,8 +107,8 @@ void CodeExecutor::get_sound(Instance*) {
 
 //font get_font(string name);Get asset handle by name <string>;Expensive function, try to not call it every frame. Call it to function and store.
 void CodeExecutor::get_font(Instance*) {
-	std::string name = StackIn_s;
-	int font = Core::GetInstance()->assetManager->GetFontId(name);
+	const std::string name = StackIn_s;
+	const int font = Core::GetInstance()->assetManager->GetFontId(name);
 	if (font == -1) {
 		Debug::WARNING("CodeExecutor::get_font() - '" + name + "' not found");
 	}
@@ -116,24 +117,24 @@ void CodeExecutor::get_font(Instance*) {
 
 //int sprite_get_width(sprite spr);Get width of <sprite>;Get int value.
 void CodeExecutor::sprite_get_width(Instance*) {
-	int id = StackIn_i;
-	Sprite* sprite = Core::GetInstance()->assetManager->GetSprite(id);
+	const int id = StackIn_i;
+	const Sprite* sprite = Core::GetInstance()->assetManager->GetSprite(id);
 	if (sprite == nullptr) StackOut_i(0);
 	else StackOut_i(sprite->GetWidth());
 }
 
 //int sprite_get_height(sprite spr);Get height of <sprite>;Get int value.
 void CodeExecutor::sprite_get_height(Instance*) {
-	int id = StackIn_i;
-	Sprite* sprite = Core::GetInstance()->assetManager->GetSprite(id);
+	const int id = StackIn_i;
+	const Sprite* sprite = Core::GetInstance()->assetManager->GetSprite(id);
 	if (sprite == nullptr) StackOut_i(0);
 	else StackOut_i(sprite->GetHeight());
 }
 
 //int sprite_get_frames(sprite spr);Get frames number of <sprite>;Get int value.
 void CodeExecutor::sprite_get_frames(Instance*) {
-	int id = StackIn_i;
-	Sprite* sprite = Core::GetInstance()->assetManager->GetSprite(id);
+	const int id = StackIn_i;
+	const Sprite* sprite = Core::GetInstance()->assetManager->GetSprite(id);
 	if (sprite == nullptr) StackOut_i(0);
 	else StackOut_i(sprite->GetMaxFrame());
 }
@@ -150,31 +151,31 @@ void CodeExecutor::sprite_set_animation_loop(Instance* sender) {
 
 //null move_to_point(point p, float speed);Move current instance to <point> with <speed> px per seccond.;Call it every frame.
 void CodeExecutor::move_to_point(Instance* sender) {
-	float speed = StackIn_f;
-	SDL_FPoint dest = StackIn_p;
-	float direction = std::atan2f(dest.y - sender->PosY, dest.x - sender->PosX);
+	const float speed = StackIn_f;
+	const SDL_FPoint dest = StackIn_p;
+	const float direction = std::atan2f(dest.y - sender->PosY, dest.x - sender->PosX);
 	sender->PosX += std::cosf(direction) * speed * (float)Core::GetInstance()->DeltaTime;
 	sender->PosY += std::sinf(direction) * speed * (float)Core::GetInstance()->DeltaTime;
 }
 
 //null move_forward(float speed);Move current instance forward with <speed> px per seccond.;Call it every frame. Function give build-in direction varible.
 void CodeExecutor::move_forward(Instance* sender) {
-	float speed = StackIn_f;
+	const float speed = StackIn_f;
 	sender->PosX += std::cosf(sender->Direction) * speed * (float)Core::GetInstance()->DeltaTime;
 	sender->PosY += std::sinf(sender->Direction) * speed * (float)Core::GetInstance()->DeltaTime;
 }
 
 //null move_instant(point p);Move instantly to target <point>;This changes x and y. Not cheking for collision;
 void CodeExecutor::move_instant(Instance* sender) {
-	SDL_FPoint dest = StackIn_p;
+	const SDL_FPoint dest = StackIn_p;
 	sender->PosX = dest.x;
 	sender->PosY = dest.y;
 }
 
 //null move_to_direction(float direction, float speed);Move instance toward direction of <float> (0-359) with <float> speed px per seccond;If direction is not in range its clipped to 360.
 void CodeExecutor::move_to_direction(Instance* sender) {
-	float speed = StackIn_f;
-	float direction = StackIn_f;
+	const float speed = StackIn_f;
+	const float direction = StackIn_f;
 	sender->PosX += std::cosf(direction) * speed * (float)Core::GetInstance()->DeltaTime;
 	sender->PosY += std::sinf(direction) * speed * (float)Core::GetInstance()->DeltaTime;
 }
@@ -183,7 +184,7 @@ void CodeExecutor::move_to_direction(Instance* sender) {
 void CodeExecutor::distance_to_point(Instance* sender) {
 	SDL_FPoint dest = StackIn_p;
 	SDL_FPoint src = { sender->PosX, sender->PosY };
-	float distance = Func::Distance(src, dest);
+	const float distance = Func::Distance(src, dest);
 	StackOut_f(distance);
 }
 
@@ -191,13 +192,13 @@ void CodeExecutor::distance_to_point(Instance* sender) {
 void CodeExecutor::distance_beetwen_point(Instance*) {
 	SDL_FPoint dest = StackIn_p;
 	SDL_FPoint src = StackIn_p;
-	float distance = Func::Distance(src, dest);
+	const float distance = Func::Distance(src, dest);
 	StackOut_f(distance);
 }
 
 //float distance_to_instance(instance i);Give distance to <instance> instance;Measure from current instance to target point. If target not exists return 0
 void CodeExecutor::distance_to_instance(Instance* sender) {
-	Instance* target = StackIn_ins;
+	const Instance* target = StackIn_ins;
 	if (target == nullptr) {
 		StackOut_f(0.0f);
 	}
@@ -207,46 +208,46 @@ void CodeExecutor::distance_to_instance(Instance* sender) {
 }
 //float direction_to_point(point p);Give direction to <point>;Measure from current instance to target point.
 void CodeExecutor::direction_to_point(Instance* instance) {
-	SDL_FPoint dest = StackIn_p;
-	float direction = std::atan2f(instance->PosY - dest.y, instance->PosX - dest.x);
+	const SDL_FPoint dest = StackIn_p;
+	const float direction = std::atan2f(instance->PosY - dest.y, instance->PosX - dest.x);
 	StackOut_f(direction);
 }
 
 //float direction_beetwen_point(point p1, point p2);Give direction from <point> to <point>;Measure distance.
 void CodeExecutor::direction_beetwen_point(Instance*) {
-	SDL_FPoint src = StackIn_p;
-	SDL_FPoint dest = StackIn_p;
-	float direction = std::atan2f(src.y - dest.y, src.x - dest.x);
+	const SDL_FPoint src = StackIn_p;
+	const SDL_FPoint dest = StackIn_p;
+	const float direction = std::atan2f(src.y - dest.y, src.x - dest.x);
 	StackOut_f(direction);
 }
 //float direction_to_instance(instance i);Give direction to <instance>;Measure from current instance to target point.
 void CodeExecutor::direction_to_instance(Instance* self) {
-	int id = StackIn_i;
-	Instance* instance = Core::GetInstance()->_current_scene->GetInstanceById(id);
+	const int id = StackIn_i;
+	const Instance* instance = Core::GetInstance()->_current_scene->GetInstanceById(id);
 	float direction = std::atan2f(self->PosY - instance->PosY, self->PosX - instance->PosX);
 }
 
 //null draw_sprite(sprite spr, float x, float y, float frame);Draw <sprite> on location (<float>,<float>) with target frame <frame>;Draw default sprite. To more options use draw_sprite_ex
 void CodeExecutor::draw_sprite(Instance*) {
-	float frame = StackIn_f;
+	const float frame = StackIn_f;
 	float y = StackIn_f;
 	float x = StackIn_f;
-	int spriteId = StackIn_i;
+	const int spriteId = StackIn_i;
 	Render::DrawSprite(Core::GetInstance()->assetManager->GetSprite(spriteId), { x, y }, (int)frame);
 }
 
 //null draw_sprite_ex(sprite spr, float x, float y, float frame, float x_scale, float y_scale, float x_center, float y_center, float angle, float alpha);
 void CodeExecutor::draw_sprite_ex(Instance*) {
-	float alpha = StackIn_f;
-	float angle = StackIn_f;
-	float y_center = StackIn_f;
-	float x_center = StackIn_f;
-	float y_scale = StackIn_f;
-	float x_scale = StackIn_f;
-	float frame = StackIn_f;
-	float y = StackIn_f;
-	float x = StackIn_f;
-	int spriteId = StackIn_i;
+	const float alpha = StackIn_f;
+	const float angle = StackIn_f;
+	const float y_center = StackIn_f;
+	const float x_center = StackIn_f;
+	const float y_scale = StackIn_f;
+	const float x_scale = StackIn_f;
+	const float frame = StackIn_f;
+	const float y = StackIn_f;
+	const float x = StackIn_f;
+	const int spriteId = StackIn_i;
 	Render::DrawSprite_ex(Core::GetInstance()->assetManager->GetSprite(spriteId), x, y, (int)frame, x_scale, y_scale, x_center, y_center, angle, alpha);
 }
 
@@ -254,19 +255,19 @@ void CodeExecutor::draw_sprite_ex(Instance*) {
 void CodeExecutor::draw_texture(Instance*) {
 	float y = StackIn_f;
 	float x = StackIn_f;
-	int textureId = StackIn_i;
+	const int textureId = StackIn_i;
 	Render::DrawTexture(Core::GetInstance()->assetManager->GetTexture(textureId), { x,y }, { 1.0f, 1.0f }, 0.0f, 1.0f);
 }
 
 //null draw_texture_ex(texture tex, float x, float y, float x_scale, float y_scale, float angle, float alpha);Draw <texture> on (<float>,<float>), with scale (<float>,<float>), angle <float> and aplha <float>;Angle range is (0 - 359) alpha (0.0f - 1.0f).
 void CodeExecutor::draw_texture_ex(Instance*) {
-	float alpha = StackIn_f;
-	float angle = StackIn_f;
+	const float alpha = StackIn_f;
+	const float angle = StackIn_f;
 	float y_scale = StackIn_f;
 	float x_scale = StackIn_f;
 	float y = StackIn_f;
 	float x = StackIn_f;
-	int textureId = StackIn_i;
+	const int textureId = StackIn_i;
 	Render::DrawTexture(Core::GetInstance()->assetManager->GetTexture(textureId), { x,y }, { x_scale, y_scale }, angle, alpha);
 }
 
@@ -278,7 +279,7 @@ void CodeExecutor::draw_sprite_self(Instance* instance) {
 
 //null draw_shape_rectangle(float x1, float y2, float x2, float y2, color color);Draw frame of rectangle from (<float>,<float>) to (<float>,<float>) with color <color>.;Draw rectangle on final coords;
 void CodeExecutor::draw_shape_rectangle(Instance*) {
-	SDL_Color color = StackIn_c;
+	const SDL_Color color = StackIn_c;
 	float y2 = StackIn_f;
 	float x2 = StackIn_f;
 	float y1 = StackIn_f;
@@ -288,14 +289,14 @@ void CodeExecutor::draw_shape_rectangle(Instance*) {
 
 //null draw_shape_rectangle_r(rectangle rect, color color);Draw frame of <rectangle> with color <color>.;Draw rectangle;
 void CodeExecutor::draw_shape_rectangle_r(Instance*) {
-	Rect rect = StackIn_r;
-	SDL_Color color = StackIn_c;
+	const Rect rect = StackIn_r;
+	const SDL_Color color = StackIn_c;
 	Render::DrawRect(rect, color);
 }
 
 //null draw_shape_rectangle_filled(float x1, float y2, float x2, float y2, color color);Draw filled of rectangle from (<float>,<float>) to (<float>,<float>) with color <color>.;Draw rectangle on final coords;
 void CodeExecutor::draw_shape_rectangle_filled(Instance*) {
-	SDL_Color color = StackIn_c;
+	const SDL_Color color = StackIn_c;
 	float y2 = StackIn_f;
 	float x2 = StackIn_f;
 	float y1 = StackIn_f;
@@ -305,15 +306,15 @@ void CodeExecutor::draw_shape_rectangle_filled(Instance*) {
 
 //null draw_shape_rectangle_filled_r(rectangle rect, color color);Draw filled <rectangle> with color <color>.;Draw rectangle;
 void CodeExecutor::draw_shape_rectangle_filled_r(Instance*) {
-	Rect rect = StackIn_r;
-	SDL_Color color = StackIn_c;
+	const Rect rect = StackIn_r;
+	const SDL_Color color = StackIn_c;
 	Render::DrawRectFilled(rect, color);
 }
 
 //null draw_shape_circle(float x, float y, float radius, color color);Draw circle in point (<float>,<float>) with radius <float> and color <color>;
 void CodeExecutor::draw_shape_circle(Instance*) {
-	SDL_Color color = StackIn_c;
-	float radius = StackIn_f;
+	const SDL_Color color = StackIn_c;
+	const float radius = StackIn_f;
 	float y = StackIn_f;
 	float x = StackIn_f;
 	Render::DrawCircle({ x, y }, radius, color);
@@ -321,16 +322,16 @@ void CodeExecutor::draw_shape_circle(Instance*) {
 
 //null draw_shape_circle_p(point p, float radius, color color);Draw circle in point <point> with radius <float> and color <color>;
 void CodeExecutor::draw_shape_circle_p(Instance*) {
-	SDL_Color color = StackIn_c;
-	float radius = StackIn_f;
-	SDL_FPoint p = StackIn_p;
+	const SDL_Color color = StackIn_c;
+	const float radius = StackIn_f;
+	const SDL_FPoint p = StackIn_p;
 	Render::DrawCircle(p, radius, color);
 }
 
 //null draw_shape_circle_filled(float x, float y, float radius, color color);Draw filled circle in point (<float>,<float>) with radius <float> and color <color>;
 void CodeExecutor::draw_shape_circle_filled(Instance*) {
-	SDL_Color color = StackIn_c;
-	float radius = StackIn_f;
+	const SDL_Color color = StackIn_c;
+	const float radius = StackIn_f;
 	float y = StackIn_f;
 	float x = StackIn_f;
 	Render::DrawCircleFilled({ x, y }, radius, color);
@@ -338,37 +339,37 @@ void CodeExecutor::draw_shape_circle_filled(Instance*) {
 
 //null draw_shape_circle_filled_p(point p, float radius, color color);Draw filled circle in point <point> with radius <float> and color <color>;
 void CodeExecutor::draw_shape_circle_filled_p(Instance*) {
-	SDL_Color color = StackIn_c;
-	float radius = StackIn_f;
-	SDL_FPoint p = StackIn_p;
+	const SDL_Color color = StackIn_c;
+	const float radius = StackIn_f;
+	const SDL_FPoint p = StackIn_p;
 	Render::DrawCircleFilled(p, radius, color);
 }
 
 //int math_min_i(int a, int b);Get minimum value from <int> or <int>;
 void CodeExecutor::math_min_i(Instance*) {
-	int b = StackIn_i;
-	int a = StackIn_i;
+	const int b = StackIn_i;
+	const int a = StackIn_i;
 	StackOut_i(std::max(a, b));
 }
 
 //int math_max_i(int a, int b);Get maximum value from <int> or <int>;
 void CodeExecutor::math_max_i(Instance*) {
-	int b = StackIn_i;
-	int a = StackIn_i;
+	const int b = StackIn_i;
+	const int a = StackIn_i;
 	StackOut_i(std::max(a, b));
 }
 
 //float math_min(float a, float b);Get minimum value from <float> or <float>;
 void CodeExecutor::math_min(Instance*) {
-	float b = StackIn_f;
-	float a = StackIn_f;
+	const float b = StackIn_f;
+	const float a = StackIn_f;
 	StackOut_f(std::min(a, b));
 }
 
 //float math_max(float a, float b);Get maximum value from <float> or <float>;
 void CodeExecutor::math_max(Instance*) {
-	float b = StackIn_f;
-	float a = StackIn_f;
+	const float b = StackIn_f;
+	const float a = StackIn_f;
 	StackOut_f( std::max(a, b) );
 }
 
@@ -378,7 +379,7 @@ void CodeExecutor::global_get_mouse(Instance*) {
 }
 //null set_self_sprite(sprite spr); Set self sprite to <sprite> with default scale, angle, speed, loop; You can mod sprite via set_sprite_ etc.;
 void CodeExecutor::set_self_sprite(Instance* instance) {
-	int spriteId = StackIn_i;
+	const int spriteId = StackIn_i;
 	if (spriteId != -1) {
 		Sprite* sprite = Core::GetInstance()->assetManager->GetSprite(spriteId);
 		if (sprite != nullptr) {
@@ -425,7 +426,7 @@ void CodeExecutor::get_pos_y(Instance* instance) {
 
 //null sound_play(sound asset);Play <asset> sound global;For postion call sound_play_at(sound asset)
 void CodeExecutor::sound_play(Instance*) {
-	int SoundId = StackIn_i;
+	const int SoundId = StackIn_i;
 	Mix_Chunk* sound = Core::GetInstance()->assetManager->GetSound(SoundId);
 	if (sound == nullptr) return;
 	Mix_PlayChannel(-1, sound, 0);
@@ -433,7 +434,7 @@ void CodeExecutor::sound_play(Instance*) {
 
 //null music_play(music asset);Play <asset> music.;There is only one music at once;
 void CodeExecutor::music_play(Instance*) {
-	int SoundId = StackIn_i;
+	const int SoundId = StackIn_i;
 	Mix_Music* music = Core::GetInstance()->assetManager->GetMusic(SoundId);
 	if (music == nullptr) return;
 	Mix_PlayMusic(music, 0);
@@ -467,7 +468,7 @@ void CodeExecutor::sprite_prev_frame(Instance* sender) {
 
 //null sprite_set_frame(int frame); Set SelfSprite frame no <int>.; If frame is not exists nothing happen;
 void CodeExecutor::sprite_set_frame(Instance* sender) {
-	int frame = StackIn_i;
+	const int frame = StackIn_i;
 	if (frame < 0 || frame >= sender->SelfSprite->GetMaxFrame()) return;
 	sender->SpriteAnimationFrame = (float)frame;
 }
@@ -478,8 +479,8 @@ void CodeExecutor::code_do_nothing(Instance*) {
 }
 //null set_body_type(string type, int value);Set body type for instance, of <string> and optional <int> value; type is enum: None,Sprite,Rect,Circle
 void CodeExecutor::set_body_type(Instance* sender) {
-	int value = StackIn_i;
-	std::string type = StackIn_s;
+	const int value = StackIn_i;
+	const std::string type = StackIn_s;
 	if (sender->Body.Body_fromString(type) == Instance::BodyType::Invalid) return;
 	if (sender->Body.Body_fromString(type) == Instance::BodyType::Sprite) {
 		if (sender->SelfSprite != nullptr) {
@@ -520,7 +521,7 @@ void CodeExecutor::set_body_type(Instance* sender) {
 
 //null instance_set_tag(string tag);Set tag for current instnance <string>.
 void CodeExecutor::instance_set_tag(Instance* sender) {
-	std::string tag = StackIn_s;
+	const std::string tag = StackIn_s;
 	sender->Tag = tag;
 }
 
@@ -551,13 +552,13 @@ void CodeExecutor::collision_get_collider_id(Instance*) {
 }
 //int get_random(int max);Get random value [0,<int>).;0 is include max is exclude;
 void CodeExecutor::get_random(Instance*) {
-	int max = StackIn_i;
+	const int max = StackIn_i;
 	StackOut_i(rand() % max);
 }
 //int get_random_range(int min, int max);Get random value [<int>,<int>).;0 is include max is exclude;
 void CodeExecutor::get_random_range(Instance*) {
-	int max = StackIn_i;
-	int min = StackIn_i;
+	const int max = StackIn_i;
+	const int min = StackIn_i;
 	StackOut_i(min + (std::rand() % (max - min + 1)));
 }
 //null scene_change_transmision(scene scene, string transmision);[NOT_IMPLEMENTED_YET];0;
@@ -575,7 +576,7 @@ void CodeExecutor::scene_reset(Instance*) {
 }
 //float get_direction_of(instance target);Return direction of <instance> instance;Use with collision_get_collider, if target not exists return own direction
 void CodeExecutor::get_direction_of(Instance* sender) {
-	Instance* target = StackIn_ins;
+	const Instance* target = StackIn_ins;
 	if (target == nullptr) {
 		StackOut_f(sender->Direction);
 	}
@@ -585,9 +586,9 @@ void CodeExecutor::get_direction_of(Instance* sender) {
 }
 //instance instance_spawn(string name, float x, float y);Spawn object <string> at (<float>,<float>) and return reference to it;Ypu can use reference to pass arguments;
 void CodeExecutor::instance_spawn(Instance*) {
-	float y = StackIn_f;
-	float x = StackIn_f;
-	std::string obj_name = StackIn_s;
+	const float y = StackIn_f;
+	const float x = StackIn_f;
+	const std::string obj_name = StackIn_s;
 	Instance* ref = Core::GetInstance()->_current_scene->CreateInstance(obj_name, x, y);
 	if (ref != nullptr) {
 		StackOut_ins(ref);
@@ -598,14 +599,14 @@ void CodeExecutor::instance_spawn(Instance*) {
 }
 //null instance_create(string name, float x, float y);Spawn object <string> at (<float>,<float>) in current scene;This not return reference;
 void CodeExecutor::instance_create(Instance*) {
-	float y = StackIn_f;
-	float x = StackIn_f;
-	std::string obj_name = StackIn_s;
+	const float y = StackIn_f;
+	const float x = StackIn_f;
+	const std::string obj_name = StackIn_s;
 	Core::GetInstance()->_current_scene->CreateInstance(obj_name, x, y);
 }
-//null set_direction_for_target(instance target, flaot direction);Set <instance> direction to <float> value;You can get reference from id of instance
+//null set_direction_for_target(instance target, float direction);Set <instance> direction to <float> value;You can get reference from id of instance
 void CodeExecutor::set_direction_for_target(Instance*) {
-	float direction = StackIn_f;
+	const float direction = StackIn_f;
 	Instance* instance = StackIn_ins;
 	if (instance != nullptr) {
 		instance->Direction = direction;
@@ -613,7 +614,7 @@ void CodeExecutor::set_direction_for_target(Instance*) {
 }
 //null set_direction(float direction);Set current direction to <float>;
 void CodeExecutor::set_direction(Instance* sender) {
-	float direction = StackIn_f;
+	const float direction = StackIn_f;
 	sender->Direction = direction;
 }
 
@@ -636,26 +637,26 @@ void CodeExecutor::get_direction(Instance* sender) {
 }
 //float math_add(float a, float b);Get sum of <float> + <float>;
 void CodeExecutor::math_add(Instance* sender) {
-	float b = StackIn_f;
-	float a = StackIn_f;
+	const float b = StackIn_f;
+	const float a = StackIn_f;
 	StackOut_f(a + b);
 }
 //float math_sub(float a, float b);Get sub of <float> - <float>;
 void CodeExecutor::math_sub(Instance* sender) {
-	float b = StackIn_f;
-	float a = StackIn_f;
+	const float b = StackIn_f;
+	const float a = StackIn_f;
 	StackOut_f(a - b);
 }
 //float math_mul(float a, float b);Get mul of <float> * <float>;
 void CodeExecutor::math_mul(Instance* sender) {
-	float b = StackIn_f;
-	float a = StackIn_f;
+	const float b = StackIn_f;
+	const float a = StackIn_f;
 	StackOut_f(a * b);
 }
 //float math_div(float a, float b);Get div of <float> / <float>;
 void CodeExecutor::math_div(Instance* sender) {
-	float b = StackIn_f;
-	float a = StackIn_f;
+	const float b = StackIn_f;
+	const float a = StackIn_f;
 	StackOut_f(a / b);
 }
 //float get_point_x(point point);Get x of <point> point;
@@ -668,12 +669,12 @@ void CodeExecutor::get_point_y(Instance* sender) {
 }
 //null collision_push_other(bool myself);Push other instance in other direction, if <bool> then push this instance too;Like opposite magnets;
 void CodeExecutor::collision_push_other(Instance* self) {
-	bool myself = StackIn_b;
+	const bool myself = StackIn_b;
 
 	Instance* other = Core::GetInstance()->_current_scene->CurrentCollisionInstance;
 	if (other == nullptr) return;
 
-	float direction = std::atan2f(other->PosY - self->PosY, other->PosX - self->PosX);
+	const float direction = std::atan2f(other->PosY - self->PosY, other->PosX - self->PosX);
 	float move;
 	if (myself) {
 		other->PosX += std::cosf(direction) * 16.f * (float)Core::GetInstance()->DeltaTime;
@@ -689,7 +690,7 @@ void CodeExecutor::collision_push_other(Instance* self) {
 }
 //bool mouse_is_pressed(int button);Return state of button <int>;Left button is 1, right is 3
 void CodeExecutor::mouse_is_pressed(Instance* sender) {
-	int button = StackIn_i;
+	const int button = StackIn_i;
 	if (Core::GetInstance()->gMouse.LeftPressed && (button == 1)) {
 		StackOut_b(true);
 		return;
@@ -718,11 +719,11 @@ void CodeExecutor::code_break(Instance*) {
 }
 //null draw_text(font font, int x, int y, string text, color color);Draw <string> on screen on (<int>,<int>) with <color> color;If font is null, default font is used;
 void CodeExecutor::draw_text(Instance*) {
-	SDL_Color color = StackIn_c;
-	std::string text = StackIn_s;
+	const SDL_Color color = StackIn_c;
+	const std::string text = StackIn_s;
 	float y = (float)StackIn_i;
 	float x = (float)StackIn_i;
-	int fontId = StackIn_i;
+	const int fontId = StackIn_i;
 	FC_Font* font = Core::GetInstance()->assetManager->GetFont(fontId);
 	if (font == nullptr) {
 		font = Core::GetInstance()->_global_font;
@@ -741,13 +742,13 @@ void CodeExecutor::convert_float_to_string(Instance*) {
 }
 //string string_add(string str1, string str2);Create new string from <string> and <string>
 void CodeExecutor::string_add(Instance*) {
-	std::string string2 = StackIn_s;
-	std::string string1 = StackIn_s;
+	const std::string string2 = StackIn_s;
+	const std::string string1 = StackIn_s;
 	StackOut_s(string1 + string2);
 }
 //null sprite_set_scale(point scale);Set scale for self sprite <point>;Scale is from point (width, height)
 void CodeExecutor::sprite_set_scale(Instance* sender) {
-	SDL_FPoint scale = StackIn_p;
+	const SDL_FPoint scale = StackIn_p;
 	if (sender->SelfSprite != nullptr) {
 		sender->SpriteScaleX = scale.x;
 		sender->SpriteScaleY = scale.y;
