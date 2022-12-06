@@ -144,7 +144,7 @@ bool CodeExecutor::LoadObjectDefinitions()
 	}
 
 
-	// definicje objektów
+	// object definitions
 	while (!code.IsEnd()) {
 		// first is OBJECT_DEFINITION command
 		if (code.GetNextCommand() != command::OBJECT_DEFINITION) {
@@ -161,7 +161,7 @@ bool CodeExecutor::LoadObjectDefinitions()
 		instance._name = o_name;
 		instance._template = new Instance((int)InstanceDefinitions.size());
 
-		// varibles
+		// variables
 		while (code.GetNextCommand() != command::END || code.IsEnd()) {
 			/*
 			 WriteCommand(Command::LOCAL_VARIBLE_DEFINITION);
@@ -749,13 +749,13 @@ bool CodeExecutor::h_compare(int type, int oper)
 		case ArtCode::varible_type::BOOL:		return (GlobalStack_bool.Get() || GlobalStack_bool.Get());  break;
 		//case ArtCode::varible_type::INSTANCE:	return (GlobalStack_instance.Get() || GlobalStack_instance.Get());  break;
 		//case ArtCode::varible_type::OBJECT:		return (GlobalStack_int.Get() || GlobalStack_int.Get());  break;
-		//case ArtCode::varible_type::SPRITE:		return (GlobalStack_int.Get() || GlobalStack_int.Get());  break;
+		//case ArtCode::varible_type::Sprite:		return (GlobalStack_int.Get() || GlobalStack_int.Get());  break;
 		//case ArtCode::varible_type::TEXTURE:	return (GlobalStack_int.Get() || GlobalStack_int.Get());  break;
 		//case ArtCode::varible_type::SOUND:		return (GlobalStack_int.Get() || GlobalStack_int.Get());  break;
 		//case ArtCode::varible_type::MUSIC:		return (GlobalStack_int.Get() || GlobalStack_int.Get());  break;
 		//case ArtCode::varible_type::FONT:		return (GlobalStack_int.Get() || GlobalStack_int.Get());  break;
 		//case ArtCode::varible_type::POINT:		return (GlobalStack_point.Get() || GlobalStack_point.Get());  break;
-		//case ArtCode::varible_type::RECT:		return (GlobalStack_rect.Get() || GlobalStack_rect.Get());  break;
+		//case ArtCode::varible_type::Rect:		return (GlobalStack_rect.Get() || GlobalStack_rect.Get());  break;
 		//case ArtCode::varible_type::COLOR:		return (GlobalStack_color.Get() || GlobalStack_color.Get());  break;
 		//case ArtCode::varible_type::STRING:		return (GlobalStack_string.Get() || GlobalStack_string.Get());  break;
 		default: return false; break; // wrong operator
@@ -773,13 +773,13 @@ bool CodeExecutor::h_compare(int type, int oper)
 		case ArtCode::varible_type::BOOL:		return (GlobalStack_bool.Get() && GlobalStack_bool.Get());  break;
 		//case ArtCode::varible_type::INSTANCE:	return (GlobalStack_instance.Get() && GlobalStack_instance.Get());  break;
 		//case ArtCode::varible_type::OBJECT:		return (GlobalStack_int.Get() && GlobalStack_int.Get());  break;
-		//case ArtCode::varible_type::SPRITE:		return (GlobalStack_int.Get() && GlobalStack_int.Get());  break;
+		//case ArtCode::varible_type::Sprite:		return (GlobalStack_int.Get() && GlobalStack_int.Get());  break;
 		//case ArtCode::varible_type::TEXTURE:	return (GlobalStack_int.Get() && GlobalStack_int.Get());  break;
 		//case ArtCode::varible_type::SOUND:		return (GlobalStack_int.Get() && GlobalStack_int.Get());  break;
 		//case ArtCode::varible_type::MUSIC:		return (GlobalStack_int.Get() && GlobalStack_int.Get());  break;
 		//case ArtCode::varible_type::FONT:		return (GlobalStack_int.Get() && GlobalStack_int.Get());  break;
 		//case ArtCode::varible_type::POINT:		return (GlobalStack_point.Get() && GlobalStack_point.Get());  break;
-		//case ArtCode::varible_type::RECT:		return (GlobalStack_rect.Get() && GlobalStack_rect.Get());  break;
+		//case ArtCode::varible_type::Rect:		return (GlobalStack_rect.Get() && GlobalStack_rect.Get());  break;
 		//case ArtCode::varible_type::COLOR:		return (GlobalStack_color.Get() && GlobalStack_color.Get());  break;
 		//case ArtCode::varible_type::STRING:		return (GlobalStack_string.Get() && GlobalStack_string.Get());  break;
 		default: return false; break; // wrong operator
@@ -797,13 +797,13 @@ bool CodeExecutor::h_compare(int type, int oper)
 		//case ArtCode::varible_type::BOOL:		return (GlobalStack_bool.Get() > GlobalStack_bool.Get());  break;
 		//case ArtCode::varible_type::INSTANCE:	return (GlobalStack_instance.Get() > GlobalStack_instance.Get());  break;
 		//case ArtCode::varible_type::OBJECT:		return (GlobalStack_int.Get() > GlobalStack_int.Get());  break;
-		//case ArtCode::varible_type::SPRITE:		return (GlobalStack_int.Get() > GlobalStack_int.Get());  break;
+		//case ArtCode::varible_type::Sprite:		return (GlobalStack_int.Get() > GlobalStack_int.Get());  break;
 		//case ArtCode::varible_type::TEXTURE:	return (GlobalStack_int.Get() > GlobalStack_int.Get());  break;
 		//case ArtCode::varible_type::SOUND:		return (GlobalStack_int.Get() > GlobalStack_int.Get());  break;
 		//case ArtCode::varible_type::MUSIC:		return (GlobalStack_int.Get() > GlobalStack_int.Get());  break;
 		//case ArtCode::varible_type::FONT:		return (GlobalStack_int.Get() > GlobalStack_int.Get());  break;
 		case ArtCode::varible_type::POINT:		return (GlobalStack_point.Get() < GlobalStack_point.Get());  break;
-		//case ArtCode::varible_type::RECT:		return (GlobalStack_rect.Get() > GlobalStack_rect.Get());  break;
+		//case ArtCode::varible_type::Rect:		return (GlobalStack_rect.Get() > GlobalStack_rect.Get());  break;
 		//case ArtCode::varible_type::COLOR:		return (GlobalStack_color.Get() > GlobalStack_color.Get());  break;
 		//case ArtCode::varible_type::STRING:		return (GlobalStack_string.Get() > GlobalStack_string.Get());  break;
 		default: return false; break; // wrong operator
@@ -821,13 +821,13 @@ bool CodeExecutor::h_compare(int type, int oper)
 		//case ArtCode::varible_type::BOOL:		return (GlobalStack_bool.Get() < GlobalStack_bool.Get());  break;
 		//case ArtCode::varible_type::INSTANCE:	return (GlobalStack_instance.Get() < GlobalStack_instance.Get());  break;
 		//case ArtCode::varible_type::OBJECT:		return (GlobalStack_int.Get() < GlobalStack_int.Get());  break;
-		//case ArtCode::varible_type::SPRITE:		return (GlobalStack_int.Get() < GlobalStack_int.Get());  break;
+		//case ArtCode::varible_type::Sprite:		return (GlobalStack_int.Get() < GlobalStack_int.Get());  break;
 		//case ArtCode::varible_type::TEXTURE:	return (GlobalStack_int.Get() < GlobalStack_int.Get());  break;
 		//case ArtCode::varible_type::SOUND:		return (GlobalStack_int.Get() < GlobalStack_int.Get());  break;
 		//case ArtCode::varible_type::MUSIC:		return (GlobalStack_int.Get() < GlobalStack_int.Get());  break;
 		//case ArtCode::varible_type::FONT:		return (GlobalStack_int.Get() < GlobalStack_int.Get());  break;
 		case ArtCode::varible_type::POINT:		return (GlobalStack_point.Get() > GlobalStack_point.Get());  break;
-		//case ArtCode::varible_type::RECT:		return (GlobalStack_rect.Get() < GlobalStack_rect.Get());  break;
+		//case ArtCode::varible_type::Rect:		return (GlobalStack_rect.Get() < GlobalStack_rect.Get());  break;
 		//case ArtCode::varible_type::COLOR:		return (GlobalStack_color.Get() < GlobalStack_color.Get());  break;
 		//case ArtCode::varible_type::STRING:		return (GlobalStack_string.Get() < GlobalStack_string.Get());  break;
 		default: return false; break; // wrong operator
@@ -845,13 +845,13 @@ bool CodeExecutor::h_compare(int type, int oper)
 		//case ArtCode::varible_type::BOOL:		return (GlobalStack_bool.Get() <= GlobalStack_bool.Get());  break;
 		//case ArtCode::varible_type::INSTANCE:	return (GlobalStack_instance.Get() <= GlobalStack_instance.Get());  break;
 		//case ArtCode::varible_type::OBJECT:		return (GlobalStack_int.Get() <= GlobalStack_int.Get());  break;
-		//case ArtCode::varible_type::SPRITE:		return (GlobalStack_int.Get() <= GlobalStack_int.Get());  break;
+		//case ArtCode::varible_type::Sprite:		return (GlobalStack_int.Get() <= GlobalStack_int.Get());  break;
 		//case ArtCode::varible_type::TEXTURE:	return (GlobalStack_int.Get() <= GlobalStack_int.Get());  break;
 		//case ArtCode::varible_type::SOUND:		return (GlobalStack_int.Get() <= GlobalStack_int.Get());  break;
 		//case ArtCode::varible_type::MUSIC:		return (GlobalStack_int.Get() <= GlobalStack_int.Get());  break;
 		//case ArtCode::varible_type::FONT:		return (GlobalStack_int.Get() <= GlobalStack_int.Get());  break;
 		case ArtCode::varible_type::POINT:		return (GlobalStack_point.Get() <= GlobalStack_point.Get());  break;
-		//case ArtCode::varible_type::RECT:		return (GlobalStack_rect.Get() <= GlobalStack_rect.Get());  break;
+		//case ArtCode::varible_type::Rect:		return (GlobalStack_rect.Get() <= GlobalStack_rect.Get());  break;
 		//case ArtCode::varible_type::COLOR:		return (GlobalStack_color.Get() <= GlobalStack_color.Get());  break;
 		//case ArtCode::varible_type::STRING:		return (GlobalStack_string.Get() <= GlobalStack_string.Get());  break;
 		default: return false; break; // wrong operator
@@ -869,13 +869,13 @@ bool CodeExecutor::h_compare(int type, int oper)
 		//case ArtCode::varible_type::BOOL:		return (GlobalStack_bool.Get() >= GlobalStack_bool.Get());  break;
 		//case ArtCode::varible_type::INSTANCE:	return (GlobalStack_instance.Get() >= GlobalStack_instance.Get());  break;
 		//case ArtCode::varible_type::OBJECT:		return (GlobalStack_int.Get() >= GlobalStack_int.Get());  break;
-		//case ArtCode::varible_type::SPRITE:		return (GlobalStack_int.Get() >= GlobalStack_int.Get());  break;
+		//case ArtCode::varible_type::Sprite:		return (GlobalStack_int.Get() >= GlobalStack_int.Get());  break;
 		//case ArtCode::varible_type::TEXTURE:	return (GlobalStack_int.Get() >= GlobalStack_int.Get());  break;
 		//case ArtCode::varible_type::SOUND:		return (GlobalStack_int.Get() >= GlobalStack_int.Get());  break;
 		//case ArtCode::varible_type::MUSIC:		return (GlobalStack_int.Get() >= GlobalStack_int.Get());  break;
 		//case ArtCode::varible_type::FONT:		return (GlobalStack_int.Get() >= GlobalStack_int.Get());  break;
 		case ArtCode::varible_type::POINT:		return (GlobalStack_point.Get() >= GlobalStack_point.Get());  break;
-		//case ArtCode::varible_type::RECT:		return (GlobalStack_rect.Get() >= GlobalStack_rect.Get());  break;
+		//case ArtCode::varible_type::Rect:		return (GlobalStack_rect.Get() >= GlobalStack_rect.Get());  break;
 		//case ArtCode::varible_type::COLOR:		return (GlobalStack_color.Get() >= GlobalStack_color.Get());  break;
 		//case ArtCode::varible_type::STRING:		return (GlobalStack_string.Get() >= GlobalStack_string.Get());  break;
 		default: return false; break; // wrong operator
@@ -899,7 +899,7 @@ bool CodeExecutor::h_compare(int type, int oper)
 		case ArtCode::varible_type::MUSIC:		return (GlobalStack_int.Get() != GlobalStack_int.Get());  break;
 		case ArtCode::varible_type::FONT:		return (GlobalStack_int.Get() != GlobalStack_int.Get());  break;
 		case ArtCode::varible_type::POINT:		return (GlobalStack_point.Get() != GlobalStack_point.Get());  break;
-		//case ArtCode::varible_type::RECT:		return (GlobalStack_rect.Get() != GlobalStack_rect.Get());  break;
+		//case ArtCode::varible_type::Rect:		return (GlobalStack_rect.Get() != GlobalStack_rect.Get());  break;
 		//case ArtCode::varible_type::COLOR:		return (GlobalStack_color.Get() != GlobalStack_color.Get());  break;
 		case ArtCode::varible_type::STRING:		return (GlobalStack_string.Get() != GlobalStack_string.Get());  break;
 		default: return false; break; // wrong operator

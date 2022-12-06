@@ -56,14 +56,14 @@
 
 ENUM_WITH_STRING_CONVERSION(
     Event,
-    (EvOncreate)
+    (EvOnCreate)
     (EvOnDestroy)
     (DEF_VALUES)
 
     (EvOnkeyDown)
     (EvOnkeyUp)
 
-    (EvOnmouseMotion)
+    (EvOnMouseMotion)
     (EvOnMouseWheel)
     (EvOnMouseDown)
     (EvOnMouseUp)
@@ -81,7 +81,6 @@ ENUM_WITH_STRING_CONVERSION(
 )
 
 #define _e_type std::uint16_t
-
 enum class EventBit : _e_type {
 
     NONE =                      0,

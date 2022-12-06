@@ -6,7 +6,7 @@ EventBit EventBitFromEvent(Event event) {
 	{
 	case Invalid:
 		break;
-	case EvOncreate:
+	case EvOnCreate:
 		break;
 	case DEF_VALUES:
 		break;
@@ -18,7 +18,7 @@ EventBit EventBitFromEvent(Event event) {
 		flag = flag | EventBit::HAVE_KEYBOARD_EVENT;
 		flag = flag | EventBit::HAVE_KEYBOARD_EVENT_UP;
 		break;
-	case EvOnmouseMotion:
+	case EvOnMouseMotion:
 		flag = flag | EventBit::HAVE_MOUSE_EVENT;
 		break;
 	case EvOnMouseWheel:

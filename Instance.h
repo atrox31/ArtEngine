@@ -56,13 +56,13 @@ public:
 	(BOOL)
 	(INSTANCE)
 	(OBJECT)
-	(SPRITE)
+	(Sprite)
 	(TEXTURE)
 	(SOUND)
 	(MUSIC)
 	(FONT)
 	(POINT)
-	(RECT)
+	(Rect)
 	(COLOR)
 	(STRING)
 */
@@ -91,11 +91,11 @@ private:
 public:
 	struct BodyType {
 	public:
-		ENUM_WITH_STRING_CONVERSION(Body,(NONE)(SPRITE)(RECT)(CIRCLE));
+		ENUM_WITH_STRING_CONVERSION(Body,(None)(Sprite)(Rect)(Circle));
 		Body Type;
 		int Value;
 		BodyType() {
-			Type = Body::NONE;
+			Type = Body::None;
 			Value = 0;
 		}
 

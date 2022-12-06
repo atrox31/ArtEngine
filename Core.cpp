@@ -33,6 +33,7 @@ void Core::audio::Apply()
 
 Core::Core()
 {
+    game_loop = false;
     m_window = nullptr;
     Consola = nullptr;
     _screenTarget = nullptr;
@@ -46,8 +47,6 @@ Core::Core()
     _current_scene = nullptr;
     _show_fps = false; 
     assetManager = new AssetManager();
-    //SettingsData = std::map<std::string, std::string>();
-    //_scene_list = std::vector<Scene>();
 }
 
 Core::~Core()
@@ -506,7 +505,7 @@ int Core::Run()
                         if (EventBitTest(EventBit::HAVE_COLLISION, c_flag)) {
                             for (Instance* instance : _instance._current_scene->InstanceColony) {
                                 if (instance == cInstance) continue; // self
-                                if (instance->Body.Type == Instance::BodyType::NONE) continue; // no collision mask
+                                if (instance->Body.Type == Instance::BodyType::None) continue; // no collision mask
                                 if (instance->CollideTest(cInstance)) {
                                     _instance._current_scene->CurrentCollisionInstance = instance;
                                     _instance._current_scene->CurrentCollisionInstanceId = instance->GetId();

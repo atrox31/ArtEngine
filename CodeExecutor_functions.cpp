@@ -393,9 +393,9 @@ void CodeExecutor::set_self_sprite(Instance* instance) {
 			instance->SpriteAnimationLoop = true;
 
 			// set body type from sprite values
-			if (instance->Body.Type == Instance::BodyType::SPRITE) {
-				//null set_body_type(string type, int value);Set body type for instance, of <string> and optional <int> value; type is enum: NONE,SPRITE,RECT,CIRCLE
-				StackOut_s("SPRITE");
+			if (instance->Body.Type == Instance::BodyType::Sprite) {
+				//null set_body_type(string type, int value);Set body type for instance, of <string> and optional <int> value; type is enum: None,Sprite,Rect,Circle
+				StackOut_s("Sprite");
 				StackOut_i(instance->SelfSprite->GetMaskValue());
 				set_body_type(instance);
 			}
@@ -476,40 +476,40 @@ void CodeExecutor::sprite_set_frame(Instance* sender) {
 void CodeExecutor::code_do_nothing(Instance*) {
 	return;
 }
-//null set_body_type(string type, int value);Set body type for instance, of <string> and optional <int> value; type is enum: NONE,SPRITE,RECT,CIRCLE
+//null set_body_type(string type, int value);Set body type for instance, of <string> and optional <int> value; type is enum: None,Sprite,Rect,Circle
 void CodeExecutor::set_body_type(Instance* sender) {
 	int value = StackIn_i;
 	std::string type = StackIn_s;
 	if (sender->Body.Body_fromString(type) == Instance::BodyType::Invalid) return;
-	if (sender->Body.Body_fromString(type) == Instance::BodyType::SPRITE) {
+	if (sender->Body.Body_fromString(type) == Instance::BodyType::Sprite) {
 		if (sender->SelfSprite != nullptr) {
 			switch (sender->SelfSprite->GetMaskType()) {
 			case Sprite::none:
 			{
 				sender->Body.Value = 0;
-				sender->Body.Type = Instance::BodyType::NONE;
+				sender->Body.Type = Instance::BodyType::None;
 			}break;
 			case Sprite::perpixel:
 			{
 				sender->Body.Value = sender->SelfSprite->GetMaskValue();
-				sender->Body.Type = Instance::BodyType::RECT;
+				sender->Body.Type = Instance::BodyType::Rect;
 			}break;
 			case Sprite::rectangle:
 			{
 				sender->Body.Value = sender->SelfSprite->GetMaskValue();
-				sender->Body.Type = Instance::BodyType::RECT;
+				sender->Body.Type = Instance::BodyType::Rect;
 			}break;
 			case Sprite::circle:
 			{
 				sender->Body.Value = sender->SelfSprite->GetMaskValue();
-				sender->Body.Type = Instance::BodyType::CIRCLE;
+				sender->Body.Type = Instance::BodyType::Circle;
 			}break;
 
 			}
 		}
 		else {
 			sender->Body.Value = 0;
-			sender->Body.Type = Instance::BodyType::NONE;
+			sender->Body.Type = Instance::BodyType::None;
 		}
 	}
 	else {

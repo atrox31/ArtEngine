@@ -120,10 +120,10 @@ void Instance::DebugDrawMask() {
 
 }
 void Instance::DebugDrawCollision() {
-	if (Body.Type == Instance::BodyType::CIRCLE) {
+	if (Body.Type == Instance::BodyType::Circle) {
 		Render::DrawCircle({ PosX,PosY }, (float)Body.Value / 2, C_BLUE);
 	}
-	if (Body.Type == Instance::BodyType::RECT) {
+	if (Body.Type == Instance::BodyType::Rect) {
 		Rect collision_rect_mine{
 				PosX - (float)Body.Value / 2.f - 1,
 				PosY - (float)Body.Value / 2.f - 1,
@@ -139,16 +139,16 @@ bool Instance::CollideTest(Instance* instance)
 {
 	switch (instance->Body.Type)
 	{
-	case Instance::BodyType::CIRCLE:
+	case Instance::BodyType::Circle:
 	{
 		switch (Body.Type)
 		{
-		case Instance::BodyType::CIRCLE:
+		case Instance::BodyType::Circle:
 		{
 			return Collision_circle_circle(PosX, PosY, (float)Body.Value / 2.f, instance->PosX, instance->PosY, (float)instance->Body.Value / 2.f);
 		}
 		break;
-		case Instance::BodyType::RECT:
+		case Instance::BodyType::Rect:
 		{
 			Rect collision_rect{
 				PosX - Body.Value,
@@ -162,11 +162,11 @@ bool Instance::CollideTest(Instance* instance)
 		}
 	}
 	break;
-	case Instance::BodyType::RECT:
+	case Instance::BodyType::Rect:
 	{
 		switch (Body.Type)
 		{
-		case Instance::BodyType::CIRCLE:
+		case Instance::BodyType::Circle:
 		{
 			Rect collision_rect{
 				instance->PosX - (float)instance->Body.Value / 2.f,
@@ -177,7 +177,7 @@ bool Instance::CollideTest(Instance* instance)
 			return Collision_circle_rect(PosX, PosY, (float)Body.Value / 2.f, collision_rect.ToGPU_Rect_wh());
 		}
 		break;
-		case Instance::BodyType::RECT:
+		case Instance::BodyType::Rect:
 		{
 			SDL_FRect collision_rect_mine{
 				PosX - (float)Body.Value / 2.f,

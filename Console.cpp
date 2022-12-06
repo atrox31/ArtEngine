@@ -153,7 +153,7 @@ void Console::WriteLine(std::string text)
 void Console::Execute(std::string command)
 {
 	const std::vector<std::string> arg = Func::Explode(command, ' ');
-	if (m_console_fun.contains(arg[0])) {
+	if (m_console_fun.find(arg[0]) != m_console_fun.end()) {
 		WriteLine(command);
 		m_console_fun[arg[0]](arg, static_cast<int>(arg.size()));
 	}

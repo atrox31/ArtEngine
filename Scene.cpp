@@ -78,7 +78,7 @@ bool Scene::Load(std::string name)
 			Debug::WARNING("new_scene.BackGround.type_wrap unknown");
 			BackGround.type_wrap = Scene::BackGround::BTypeWrap::Tile;
 		}
-		BackGround.texture = Core::GetInstance()->assetManager->GetTexture(dv.GetData("setup", "BackGroundTexture_name"));
+		BackGround.texture = Core::GetInstance()->assetManager->GetTexture(dv.GetData("setup", "BackGroundTexture"));
 		if (BackGround.texture == nullptr) {
 			Debug::WARNING("Background texture not exists '"+ dv.GetData("setup", "BackGroundTexture_name") + "'");
 			BackGround.type = Scene::BackGround::BType::DrawColor;
@@ -136,7 +136,7 @@ void Scene::SpawnAll()
 	if (_is_any_new_instances) {
 		size_t ins_siz = _instances_new.size();
 		while (ins_siz) {
-			Core::GetInstance()->Executor.ExecuteScript(_instances_new.back(), Event::EvOncreate);
+			Core::GetInstance()->Executor.ExecuteScript(_instances_new.back(), Event::EvOnCreate);
 			InstanceColony.insert(_instances_new.back());
 			_instances_new.pop_back();
 			--ins_siz;
