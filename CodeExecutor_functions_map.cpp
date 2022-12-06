@@ -92,5 +92,6 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["sprite_set_scale"] = &CodeExecutor::sprite_set_scale;
 	FunctionsMap["direction_from_deegree"] = &CodeExecutor::direction_from_deegree;
 	FunctionsMap["direction_from_radians"] = &CodeExecutor::direction_from_radians;
+	FunctionsMap["draw_text_in_frame"] = &CodeExecutor::draw_text_in_frame;
 }
 //end of file

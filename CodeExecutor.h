@@ -279,6 +279,7 @@ private:
 	Script(sprite_set_scale);
 	Script(direction_from_deegree);
 	Script(direction_from_radians);
+	Script(draw_text_in_frame);
 #undef Script
 };
 //end of file

@@ -717,7 +717,7 @@ void CodeExecutor::get_delta_time(Instance* sender) {
 void CodeExecutor::code_break(Instance*) {
 	Core::GetInstance()->Executor.Break();
 }
-//null draw_text(font font, int x, int y, string text, color color);Draw <string> on screen on (<int>,<int>) with <color> color;If font is null, default font is used;
+//null draw_text(font font, int x, int y, string text, color color);Use <font> and draw <string> on screen on (<int>,<int>) with <color> color;If font is null, default font is used;
 void CodeExecutor::draw_text(Instance*) {
 	const SDL_Color color = StackIn_c;
 	const std::string text = StackIn_s;
@@ -761,4 +761,22 @@ void CodeExecutor::direction_from_deegree(Instance* sender) {
 //float direction_from_radians(float angle);Get degree direction from <float> radians;Simply angle*const radians but faster;
 void CodeExecutor::direction_from_radians(Instance* sender) {
 	StackOut_f(Convert::RadiansToDegree(StackIn_f));
+}
+//null draw_text_in_frame(font font, string text, float x, float y, color text_color, color frame_color, color background_color);Using <font> draw <text> in frame at (<float>,<float>) with <color>. Frame color is <color> and background <color>;
+void CodeExecutor::draw_text_in_frame(Instance*)
+{
+	const SDL_Color background_color = StackIn_c;
+	const SDL_Color frame_color = StackIn_c;
+	const SDL_Color text_color = StackIn_c;
+	const float y = StackIn_f;
+	const float x = StackIn_f;
+	const std::string text = StackIn_s;
+	FC_Font* font = Core::GetInstance()->assetManager->GetFont(StackIn_i);
+	if (font == nullptr) {
+		font = Core::GetInstance()->_global_font;
+	}
+	const GPU_Rect box = FC_GetBounds(font, x, y, FC_ALIGN_CENTER, FC_MakeScale(1.f, 1.f), text.c_str());
+	Render::DrawRectFilled(box, background_color);
+	Render::DrawRect(box, frame_color);
+	Render::DrawTextAlign(text, font, { x,y }, text_color, FC_ALIGN_CENTER);
 }
