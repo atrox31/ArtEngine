@@ -2,9 +2,9 @@
 #include "Core.h"
 
 Uint64 Instance::_cid = 0;
-Instance::Instance(int InstanceDefinitionId)
+Instance::Instance(int instance_definition_id)
 {
-	this->_instanceDefinitionId = InstanceDefinitionId;
+	this->_instanceDefinitionId = instance_definition_id;
 	this->Tag = "undefined";
 	this->Name = "no_name";
 

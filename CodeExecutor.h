@@ -64,7 +64,7 @@ private:
 			}
 		}
 		std::map<int, std::vector<std::string>> _debug_varibles_names;
-		void AddVarible(int type, std::string name) {
+		void AddVarible(int type, const std::string& name) {
 			_debug_varibles_names[type].push_back(name);
 #else
 		}

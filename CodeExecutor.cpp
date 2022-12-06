@@ -163,30 +163,30 @@ bool CodeExecutor::LoadObjectDefinitions()
 
 		// variables
 		while (code.GetNextCommand() != command::END || code.IsEnd()) {
-			/*
-			 WriteCommand(Command::LOCAL_VARIBLE_DEFINITION);
+			/* from ArtCompiller code
+			 WriteCommand(Command::LOCAL_VARIABLE_DEFINITION);
 			 WriteBit(getVaribleIndex(local.Type));
 			 WriteBit(local.index);
 			 WriteString(local.Name);
 			 WriteBit(local.ReadOnly);
 			* */
-			if (code.GetCurrentCommand() == command::LOCAL_VARIBLE_DEFINITION) {
+			if (code.GetCurrentCommand() == command::LOCAL_VARIABLE_DEFINITION) {
 				int varible_type = code.GetBit();
 
 				// not used now, maby later for debug
-				int varible_index = code.GetBit();
-				std::string varible_name = code.GetString();
-				bool varible_read_only = (bool)code.GetBit();
+				code.GetBit(); // variable index, position in variables list
+				const std::string variable_name = code.GetString();
+				code.GetBit(); // is value read only
 				//
 #ifdef _DEBUG
-				instance.AddVarible(varible_type, varible_name);
+				instance.AddVarible(varible_type, variable_name);
 #else
 				instance.AddVarible(varible_type);
 #endif
 			}
 			else {
 				
-				Debug::ERROR("instance: '"+ o_name+ "' - expected 'LOCAL_VARIBLE_DEFINITION' but " + std::to_string(code.Current()) + " is given");SDL_assert(false); return false;
+				Debug::ERROR("instance: '"+ o_name+ "' - expected 'LOCAL_VARIABLE_DEFINITION' but " + std::to_string(code.Current()) + " is given");SDL_assert(false); return false;
 			}
 		} // varibles
 

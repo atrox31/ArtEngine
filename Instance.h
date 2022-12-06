@@ -16,14 +16,14 @@
 
 class Instance {
 public:
-	Instance(int InstanceDefinitionId);
+	explicit Instance(int instance_definition_id);
 	// do not use, this give unique id for instance
 	Instance* GiveId();
 	virtual ~Instance();
 
-	Uint64 GetId() { return _id; }
+	Uint64 GetId() const { return _id; }
 	void Delete() { Alive = false; }
-	int GetInstanceDefinitionId() {	return _instanceDefinitionId; }
+	int GetInstanceDefinitionId() const {	return _instanceDefinitionId; }
 
 	void DrawSelf();
 	bool CheckMaskClick(SDL_FPoint&);
@@ -49,23 +49,7 @@ public:
 	float SpriteAnimationFrame;
 	float SpriteAnimationSpeed;
 	bool SpriteAnimationLoop;
-/*
-	(NUL)
-	(INT)
-	(FLOAT)
-	(BOOL)
-	(INSTANCE)
-	(OBJECT)
-	(Sprite)
-	(TEXTURE)
-	(SOUND)
-	(MUSIC)
-	(FONT)
-	(POINT)
-	(Rect)
-	(COLOR)
-	(STRING)
-*/
+
 	std::vector<int> Varibles_int;
 	std::vector<float> Varibles_float;
 	std::vector<bool> Varibles_bool;

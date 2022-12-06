@@ -5,38 +5,38 @@
 struct ArtCode {
 public:
 	enum class Command {
-		// definicje
+		// definitions
 		OBJECT_DEFINITION,
 		FUNCTION_DEFINITION,
-		LOCAL_VARIBLE_DEFINITION,
+		LOCAL_VARIABLE_DEFINITION,
 		TYPEDEF,
-		// odwo³ania
+		// references
 		OBJECT,
 		OBJECT_VARIBLE,
 		LOCAL_VARIBLE,
 		VALUE, NULL_VALUE,
 		FUNCTION, OTHER,
-		// operatory
+		// operators
 		SET,
 		OPERATOR,
-		// polecenia
+		// commands
 		TYPE, IF_BODY, IF_TEST, ELSE,
 		END,
 
 
-		// tylko w silniku, zawsze ostatnia
+		// last enum to literate in loops
 		INWALID
 	};
 
-	// not used now
+	// operators
 	const std::string operators[5] = {
 	"+=",
 	"-=",
 	"*=",
 	"/=",
-	"="
+	":="
 	};
-
+	// if statement operators
 	static const std::string operators2[];
 
 	ENUM_WITH_STRING_CONVERSION(varible_type,
@@ -56,24 +56,6 @@ public:
 		(COLOR)
 		(STRING)
 	)
-		/*
-		const std::string varible_type[15] = {
-		"null",
-		"int",
-		"float",
-		"bool",
-		"instance",
-		"object",
-		"sprite",
-		"texture",
-		"sound",
-		"music",
-		"font",
-		"point",
-		"rectangle",
-		"color",
-		"string"
-		};*/
 
 		const std::string keywords[4] = {
 		"set",
