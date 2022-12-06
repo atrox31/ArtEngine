@@ -13,6 +13,7 @@ class Rect
 public:
 	float x, y, w, h;
 	Rect();
+	Rect(GPU_Rect);
 	Rect(int x, int y, int w, int h);
 	Rect(float x, float y, float w, float h);
 

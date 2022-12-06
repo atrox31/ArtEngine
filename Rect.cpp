@@ -8,6 +8,14 @@ Rect::Rect()
 	this->h = 0.0f;
 }
 
+Rect::Rect(GPU_Rect rect)
+{
+	this->x = rect.x;
+	this->y = rect.y;
+	this->w = rect.w;
+	this->h = rect.h;
+}
+
 Rect::Rect(int x, int y, int w, int h)
 {
 	this->x = (float)x;
