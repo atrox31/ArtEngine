@@ -22,9 +22,17 @@ public:
 	// drawing
 	static void DrawTexture(GPU_Image* texture, const vec2f& postion, const vec2f& scale, float angle, float alpha);
 
+	/**
+	 * \brief Draw texture in box
+	 * \param texture texture object
+	 * \param input_box part of texture to copy, nullptr for entire texture
+	 * \param output_box part of screen space where texture is copied, nullptr for entire texture
+	 */
+	static void DrawTextureBox(GPU_Image* texture, GPU_Rect* input_box, GPU_Rect* output_box);
+
 	static void DrawSprite(Sprite* sprite, const vec2f& postion, int frame);
 	static void DrawSprite_ex(Sprite* sprite, float pos_x, float pos_y, int frame, float scale_x, float scale_y, float center_x, float center_y, float angle, float alpha);
-	static void DrawSpriteBox(const Sprite* sprite, GPU_Rect& box, int frame, const float& angle, float alpha);
+	static void DrawSpriteBox(const Sprite* sprite, GPU_Rect& box, int frame = 0, const float& angle = 0.0f, float alpha = 1.0f);
 
 	static void DrawRect(GPU_Rect rect, SDL_Color color);
 	static void DrawRect_wh(GPU_Rect rect, SDL_Color color);
@@ -48,41 +56,40 @@ public:
 	static void RenderToTarget(GPU_Target* target);
 	static void RenderClear();
 
-	// post procesing
-	static void SetBloom(bool state) { _instance->UseBloom = state; };
-
-private:
+public:
 	// post process
-	void ApplyBloom();
+	static void ProcessImageWithGaussian();
+	/**
+	 * \brief Set post process quality for Gaussian bloom, default values are low, medium, high
+	 * \param quality default is (4,8,12)
+	 * \param directions default is (6,8,12)
+	 * \param distance blur amount default is 0.02
+	 */
+	static void SetGaussianProperties(int quality, int directions, float distance);
 
 private:
 	virtual ~Render();
 	Render();
-	// using shaders
-	bool UseBloom;
 
 	static Render* _instance;
-	// shaders
-	Uint32 _shader_bloom;
-	Uint32 _shader_bloom_horizontal;
-	GPU_ShaderBlock _shader_bloom_block{};
-
-	Uint32 _shader_bright;
-	GPU_ShaderBlock _shader_bright_block{};
-
 	// global screen
 	int width, height;
 	GPU_Target* _screenTexture_target = nullptr;
 	GPU_Image* _screenTexture = nullptr;
 
 	// bloom
-	GPU_Image* _brightTexture = nullptr;
-	GPU_Target* _brightTexture_target = nullptr;
-
-	GPU_Image* _bloomTexture = nullptr;
-	GPU_Target* _bloomTexture_target = nullptr;
-	GPU_Image* _bloomTexture_final = nullptr;
-	GPU_Target* _bloomTexture_final_target = nullptr;
+		// shaders
+	Uint32 _shader_gaussian;
+	GPU_ShaderBlock _shader_gaussian_block{};
+	int _shader_gaussian_var_quality;
+	int _shader_gaussian_var_directions;
+	float _shader_gaussian_var_distance;
+	int _shader_gaussian_var_quality_location;
+	int _shader_gaussian_var_directions_location;
+	int _shader_gaussian_var_distance_location;
+		// textures
+	GPU_Image* _shader_gaussian_texture = nullptr;
+	GPU_Target* _shader_gaussian_texture_target = nullptr;
 
 };
 

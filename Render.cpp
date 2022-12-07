@@ -18,71 +18,59 @@ void Render::CreateRender(const int width, const int height)
 	_instance->_screenTexture = GPU_CreateImage(width, height, GPU_FormatEnum::GPU_FORMAT_RGBA);
 	_instance->_screenTexture_target = GPU_LoadTarget(_instance->_screenTexture);
 
-	_instance->_bloomTexture = GPU_CreateImage(width, height, GPU_FormatEnum::GPU_FORMAT_RGBA);
-	_instance->_bloomTexture_target = GPU_LoadTarget(_instance->_bloomTexture);
-	GPU_SetBlendMode(_instance->_bloomTexture, GPU_BlendPresetEnum::GPU_BLEND_ADD);
-
-	_instance->_brightTexture = GPU_CreateImage(width, height, GPU_FormatEnum::GPU_FORMAT_RGBA);
-	_instance->_brightTexture_target = GPU_LoadTarget(_instance->_brightTexture);
-
+	_instance->_shader_gaussian_texture = GPU_CreateImage(width, height, GPU_FormatEnum::GPU_FORMAT_RGBA);
+	_instance->_shader_gaussian_texture_target = GPU_LoadTarget(_instance->_shader_gaussian_texture);
+	
 	GPU_Clear(_instance->_screenTexture_target);
 	GPU_Flip(_instance->_screenTexture_target);
 
 	GPU_Clear(_instance->_screenTexture_target);
 	GPU_Flip(_instance->_screenTexture_target);
-
-	GPU_Clear(_instance->_brightTexture_target);
-	GPU_Flip(_instance->_brightTexture_target);
-
 }
 
 void Render::DestroyRender()
 {
 	if (_instance == nullptr) return;
-	GPU_FreeTarget(_instance->_brightTexture_target);
-	GPU_FreeImage(_instance->_brightTexture);
-	_instance->_brightTexture_target = nullptr;
-	_instance->_brightTexture = nullptr;
 
-	GPU_FreeTarget(_instance->_bloomTexture_target);
-	GPU_FreeImage(_instance->_bloomTexture);
-	_instance->_bloomTexture_target = nullptr;
-	_instance->_bloomTexture = nullptr;
+	GPU_FreeTarget(_instance->_shader_gaussian_texture_target);
+	GPU_FreeImage(_instance->_shader_gaussian_texture);
+	_instance->_shader_gaussian_texture_target = nullptr;
+	_instance->_shader_gaussian_texture = nullptr;
 
 	GPU_FreeTarget(_instance->_screenTexture_target);
 	GPU_FreeImage(_instance->_screenTexture);
 	_instance->_screenTexture = nullptr;
 	_instance->_screenTexture_target = nullptr;
 
-	GPU_FreeShaderProgram(_instance->_shader_bloom);
-	GPU_FreeShaderProgram(_instance->_shader_bright);
+	GPU_FreeShaderProgram(_instance->_shader_gaussian);
 }
 
 void Render::LoadShaders() {
-	_instance->_shader_bloom = 0;
-	_instance->_shader_bloom_block = Func::load_shader_program(&_instance->_shader_bloom, "files/common.vert", "files/bloom.frag");
-	_instance->_shader_bloom_horizontal = GPU_GetUniformLocation(_instance->_shader_bloom, "horizontal");
-
-	_instance->_shader_bright = 0;
-	_instance->_shader_bright_block = Func::load_shader_program(&_instance->_shader_bright, "files/common.vert", "files/color.frag");
+	_instance->_shader_gaussian = 0;
+	_instance->_shader_gaussian_block = Func::load_shader_program(&_instance->_shader_gaussian, "files/common.vert", "files/bloom.frag");
+	_instance->_shader_gaussian_var_quality_location = GPU_GetUniformLocation(_instance->_shader_gaussian, "Quality");
+	_instance->_shader_gaussian_var_directions_location = GPU_GetUniformLocation(_instance->_shader_gaussian, "Directions");
+	_instance->_shader_gaussian_var_distance_location = GPU_GetUniformLocation(_instance->_shader_gaussian, "Distance");
+	SetGaussianProperties(8, 8, 0.02f); // load medium as default
 }
 Render::Render()
 {
-	_shader_bloom = 0;
-	_shader_bloom_horizontal = 0;
-	//_shader_bloom_block;
-	_shader_bright = 0;
-	//_shader_bright_block;
+	_shader_gaussian = 0;
+	_shader_gaussian_var_quality = 8;
+	_shader_gaussian_var_directions = 8;
+	_shader_gaussian_var_distance = 0.02f;
+	_shader_gaussian_var_quality_location = 0;
+	_shader_gaussian_var_directions_location = 0;
+	_shader_gaussian_var_distance_location = 0;
+	//_shader_gaussian_block;
 	width = 0;
 	height = 0;
 	_screenTexture = nullptr;
 	_screenTexture_target = nullptr;
-	UseBloom = true;
 }
 
 Render::~Render()
 {
-	if(_instance->_brightTexture_target != nullptr)
 	DestroyRender();
 }
 
@@ -103,6 +91,12 @@ void Render::DrawTexture(GPU_Image* texture, const vec2f& postion, const vec2f& 
 		GPU_SetColor(texture, C_FULL);
 	}
 }
+
+void Render::DrawTextureBox(GPU_Image* texture, GPU_Rect* input_box, GPU_Rect* output_box)
+{
+	GPU_BlitRect(texture, input_box, _instance->_screenTexture_target, output_box);
+}
+
 void Render::DrawSprite(Sprite* sprite, const vec2f& postion, int frame) {
 	DrawSprite_ex(sprite, postion.x, postion.y, frame, 1.0f, 1.0f, (float)sprite->GetCenterX(), (float)sprite->GetCenterY(), 0.0f, 1.0f);
 }
@@ -224,25 +218,6 @@ void Render::DrawTriangleFilled(const vec2f& a, const vec2f& b, const vec2f& c, 
 	GPU_TriFilled(_instance->_screenTexture_target, a.x, a.y, b.x, b.y, c.x, c.y, color);
 }
 
-void Render::ApplyBloom()
-{
-	// select only bright pixels
-	GPU_ActivateShaderProgram(_shader_bright, &_shader_bright_block);
-	GPU_BlitRect(_screenTexture, nullptr, _brightTexture_target, nullptr);
-
-	// active bloom
-	GPU_ActivateShaderProgram(_shader_bloom, &_shader_bloom_block);
-
-	// vertical bloom
-	GPU_SetUniformi(_shader_bloom_horizontal, 0);
-	GPU_BlitRect(_brightTexture, nullptr, _bloomTexture_target, nullptr);
-	// horizontal bloom
-	GPU_SetUniformi(_shader_bloom_horizontal, 1);
-	GPU_BlitRect(_bloomTexture, nullptr, _bloomTexture_target, nullptr);
-
-	GPU_ActivateShaderProgram(0, nullptr);
-}
-
 // Draw text, default align is left
 void Render::DrawText(const std::string& text,FC_Font* font, const vec2f& pos, const SDL_Color color)
 {
@@ -264,16 +239,32 @@ void Render::DrawTextBox(const std::string& text, FC_Font* font, const GPU_Rect&
 // Render cached texture to target
 void Render::RenderToTarget(GPU_Target* target)
 {
-	if (_instance->UseBloom) _instance->ApplyBloom();
+	GPU_DeactivateShaderProgram();
 	GPU_BlitRect(_instance->_screenTexture, nullptr, target, nullptr);
+}
 
-	if (_instance->UseBloom)GPU_BlitRect(_instance->_bloomTexture, nullptr, target, nullptr);
+void Render::ProcessImageWithGaussian()
+{
+	// draw screen with gausan blur
+	GPU_ActivateShaderProgram(_instance->_shader_gaussian, &_instance->_shader_gaussian_block);
+	GPU_SetUniformi(_instance->_shader_gaussian_var_quality_location, _instance->_shader_gaussian_var_quality);
+	GPU_SetUniformi(_instance->_shader_gaussian_var_directions_location, _instance->_shader_gaussian_var_directions);
+	GPU_SetUniformf(_instance->_shader_gaussian_var_distance_location, _instance->_shader_gaussian_var_distance);
+	GPU_BlitRect(_instance->_screenTexture, nullptr, _instance->_shader_gaussian_texture_target, nullptr);
+
+	GPU_DeactivateShaderProgram();
+	GPU_BlitRect(_instance->_shader_gaussian_texture, nullptr, _instance->_screenTexture_target, nullptr);
+}
+
+void Render::SetGaussianProperties(int quality, int directions, float distance)
+{
+	_instance->_shader_gaussian_var_quality = quality;
+	_instance->_shader_gaussian_var_directions = directions;
+	_instance->_shader_gaussian_var_distance = distance;
 }
 
 // clear all textures cache
 void Render::RenderClear()
 {
-	GPU_Clear(_instance->_screenTexture_target);
-	GPU_Clear(_instance->_bloomTexture_target);
-	GPU_Clear(_instance->_brightTexture_target);
+	// for now not needed. If shaders used transparency clear it here
 }

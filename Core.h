@@ -75,7 +75,7 @@ private:
 		void SetVSync(bool vsync) {
 			_window_vsync = vsync;
 		};
-		void Apply();
+		void Apply() const;
 		int GetWindowWidth() {
 			return _window_width;
 		};
@@ -125,16 +125,18 @@ public:
 	int fps;
 private:
 	Uint64 NOW, LAST;
-	int frames;
+	int _frames;
 	bool _show_fps;
 
 public:
 	// getters
-	SDL_Window* GetWindowHandle();
-	int GetScreenWidth() {
+	static SDL_Window* GetWindowHandle();
+
+	static int GetScreenWidth() {
 		return Graphic.GetWindowWidth();
 	}
-	int GetScreenHeight() {
+
+	static int GetScreenHeight() {
 		return Graphic.GetWindowHeight();
 	}
 
@@ -151,7 +153,7 @@ public:
 		SDL_Point XY = { 0,0 };
 		SDL_FPoint XYf = { 0.f,0.f };
 		int WHELL = 0;
-	} gMouse;
+	} Mouse;
 
 
 	std::map<std::string, std::string> SettingsData;
@@ -165,7 +167,7 @@ public:
 	AssetManager* assetManager;
 	// scene
 	Scene* _current_scene;
-	std::vector<Scene> _scene_list;
+	std::vector<Scene*> _scene_list;
 
 	// members
 	Console* Consola;
