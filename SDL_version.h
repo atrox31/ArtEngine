@@ -1,10 +1,10 @@
 #pragma once
-#define SDL2_VERSION SDL2/SDL2-2.24.2
-#define SDL2_IMAGE_VERSION SDL2/SDL2_image-2.6.2
-#define SDL2_MIXER_VERSION SDL2/SDL2_mixer-2.6.2
-#define SDL2_NET_VERSION SDL2/SDL2_net-2.2.0
-#define SDL2_TTF_VERSION SDL2/SDL2_ttf-2.20.1
-#define SDL2_GPU_VERSION SDL2/SDL2_gpu-0.12.0-msvc
+#define SDL2_VERSION SDL2/SDL2
+#define SDL2_IMAGE_VERSION SDL2/SDL2_image
+#define SDL2_MIXER_VERSION SDL2/SDL2_mixer
+#define SDL2_NET_VERSION SDL2/SDL2_net
+#define SDL2_TTF_VERSION SDL2/SDL2_ttf
+#define SDL2_GPU_VERSION SDL2/SDL2_gpu
 /////////////////////////////////////////////
 #define STR_IMPL(A) #A
 #define STR(A) STR_IMPL(A)
@@ -39,6 +39,8 @@
 #define SDL2_TTF_INCLUDE_DIR STR(SDL2_TTF_VERSION/sdl2_ttf_file)
 #define SDL2_GPU_INCLUDE_DIR STR(SDL2_GPU_VERSION/sdl2_gpu_file)
 
+#define REFLINK ../../../
+#define REFLINKSDL2_INCLUDE_DIR STR(REFLINK / SDL2_INCLUDE_DIR)
 // lib
 #define sdl2_image_lib_x86 STR(SDL2_IMAGE_VERSION/lib/x86/SDL2_image.lib)
 #define sdl2_mixer_lib_x86 STR(SDL2_MIXER_VERSION/lib/x86/SDL2_mixer.lib)
