@@ -8,14 +8,15 @@ Scene::Scene()
 {
 	_instances_size = 0;
 	_is_any_new_instances = false;
-	Width = 1;
-	Height = 1;
+	_width = 1;
+	_height = 1;
 	BackGround.type = Scene::BackGround::BType::DrawColor;
 	BackGround.color = SDL_Color({ 0,0,0,255 });
 	BackGround.texture = nullptr;
-	BackGround.type_wrap = (BackGround::BTypeWrap)0;
+	BackGround.TypeWrap = (BackGround::BTypeWrap)0;
 	CurrentCollisionInstanceId = -1;
 	CurrentCollisionInstance = nullptr;
+	//GuiSystem = Gui();
 }
 
 void Scene::Clear()
@@ -36,6 +37,7 @@ void Scene::Clear()
 		}
 	}
 	_instances_new.clear();
+	GuiSystem.Clear();
 }
 Scene::~Scene()
 {
@@ -49,34 +51,34 @@ bool Scene::Load(std::string name)
 	if (!dv.IsOk()) {
 		return false;
 	}
-	Width = Func::TryGetInt(dv.GetData("setup", "Width"));
-	Height = Func::TryGetInt(dv.GetData("setup", "Height"));
+	_width = Func::TryGetInt(dv.GetData("setup", "Width"));
+	_height = Func::TryGetInt(dv.GetData("setup", "Height"));
 	auto tmp = Func::Split(name, '/');
-	Name = tmp[tmp.size() - 1].substr(0, tmp[tmp.size() - 1].length() - 4);
+	_name = tmp[tmp.size() - 1].substr(0, tmp[tmp.size() - 1].length() - 4);
 
 	if (dv.GetData("setup", "BackGroundType") == "DrawColor") {
 		BackGround.type = Scene::BackGround::BType::DrawColor;
-		BackGround.color = Convert::Str2Color(dv.GetData("setup", "BackGroundColor"));
+		BackGround.color = Convert::Hex2Color(dv.GetData("setup", "BackGroundColor"));
 	}else if (dv.GetData("setup", "BackGroundType") == "DrawTexture") {
 		BackGround.type = Scene::BackGround::BType::DrawTexture;
 		if (dv.GetData("setup", "BackGroundWrapMode") == "Tile") {
-			BackGround.type_wrap = Scene::BackGround::BTypeWrap::Tile;
+			BackGround.TypeWrap = Scene::BackGround::BTypeWrap::Tile;
 		}
 		else
 		if (dv.GetData("setup", "BackGroundWrapMode") == "TileFlipX") {
-			BackGround.type_wrap = Scene::BackGround::BTypeWrap::TileFlipX;
+			BackGround.TypeWrap = Scene::BackGround::BTypeWrap::TileFlipX;
 		}
 		else
 		if (dv.GetData("setup", "BackGroundWrapMode") == "TileFlipY") {
-			BackGround.type_wrap = Scene::BackGround::BTypeWrap::TileFlipY;
+			BackGround.TypeWrap = Scene::BackGround::BTypeWrap::TileFlipY;
 		}
 		else
 		if (dv.GetData("setup", "BackGroundWrapMode") == "TileFlipXY") {
-			BackGround.type_wrap = Scene::BackGround::BTypeWrap::TileFlipXY;
+			BackGround.TypeWrap = Scene::BackGround::BTypeWrap::TileFlipXY;
 		}
 		else {
 			Debug::WARNING("new_scene.BackGround.type_wrap unknown");
-			BackGround.type_wrap = Scene::BackGround::BTypeWrap::Tile;
+			BackGround.TypeWrap = Scene::BackGround::BTypeWrap::Tile;
 		}
 		BackGround.texture = Core::GetInstance()->assetManager->GetTexture(dv.GetData("setup", "BackGroundTexture"));
 		if (BackGround.texture == nullptr) {
@@ -109,7 +111,7 @@ bool Scene::Load(std::string name)
 			Debug::WARNING("Instance error: '" + instance + "'");
 			continue;
 		}
-		BeginInstances.push_back({ data[0], Func::TryGetInt(data[1]), Func::TryGetInt(data[2]) });
+		_begin_instances.push_back({ data[0], Func::TryGetInt(data[1]), Func::TryGetInt(data[2]) });
 	}
 
 	return true;
@@ -117,8 +119,8 @@ bool Scene::Load(std::string name)
 void Scene::Start()
 {
 	Clear();
-	for (Spawner& instance : BeginInstances) {
-		CreateInstance(instance._instance, (float)instance.x, (float)instance.y);
+	for (StartingInstanceSpawner& instance : _begin_instances) {
+		CreateInstance(instance.instance, (float)instance.x, (float)instance.y);
 	}
 }
 Instance* Scene::CreateInstance(std::string name, float x, float y)

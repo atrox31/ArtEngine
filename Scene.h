@@ -2,15 +2,16 @@
 #include "Core.h"
 #include "Rect.h"
 #include "Event.h"
+#include "Gui.h"
 #include "Instance.h"
 #include "plf_colony-master/plf_colony.h"
 class Instance;
-class Scene
+class Scene final
 {
 	
 public:
 	Scene();
-	virtual ~Scene();
+	~Scene();
 	bool Load(std::string name);
 	void Clear();
 
@@ -25,7 +26,7 @@ public:
 	void SpawnAll();
 
 	std::string GetName() {
-		return Name;
+		return _name;
 	}
 
 	Instance* GetInstanceById(int);
@@ -38,11 +39,12 @@ public:
 	// collision
 	Uint64 CurrentCollisionInstanceId;
 	Instance* CurrentCollisionInstance;
+
+	Gui GuiSystem;
 private:
-	//TODO GUI GuiFile
-	int Width;
-	int Height;
-	std::string Name;
+	int _width;
+	int _height;
+	std::string _name;
 public:
 	struct BackGround {
 	public:
@@ -56,23 +58,23 @@ public:
 			TileFlipX,
 			TileFlipY,
 			TileFlipXY
-		} type_wrap;
+		} TypeWrap;
 	} BackGround;
 
 	// staring
 private:
-	struct Spawner {
+	struct StartingInstanceSpawner {
 	public:
-		std::string _instance;
+		std::string instance;
 		int x;
 		int y;
 	};
-	std::vector<Spawner> BeginInstances;
+	std::vector<StartingInstanceSpawner> _begin_instances;
 
 	// instances
 public:
-	bool IsAnyInstances() { return _instances_size > 0; }
-	int GetInstancesCount() {return _instances_size; }
+	bool IsAnyInstances() const { return _instances_size > 0; }
+	int GetInstancesCount() const {return _instances_size; }
 	plf::colony<Instance*> InstanceColony;
 	plf::colony<Instance*>::iterator DeleteInstance(plf::colony<Instance*>::iterator ptr);
 private:

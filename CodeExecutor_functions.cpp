@@ -131,7 +131,7 @@ void CodeExecutor::sprite_get_height(Instance*) {
 	else StackOut_i(sprite->GetHeight());
 }
 
-//int sprite_get_frames(sprite spr);Get frames number of <sprite>;Get int value.
+//int sprite_get_frames(sprite spr);Get _frames number of <sprite>;Get int value.
 void CodeExecutor::sprite_get_frames(Instance*) {
 	const int id = StackIn_i;
 	const Sprite* sprite = Core::GetInstance()->assetManager->GetSprite(id);
@@ -139,7 +139,7 @@ void CodeExecutor::sprite_get_frames(Instance*) {
 	else StackOut_i(sprite->GetMaxFrame());
 }
 
-//null sprite_set_animation_speed(float speed);Set animation value <float> frames per seccond;Every sprite can have own animation speed
+//null sprite_set_animation_speed(float speed);Set animation value <float> _frames per seccond;Every sprite can have own animation speed
 void CodeExecutor::sprite_set_animation_speed(Instance* sender) {
 	sender->SpriteAnimationSpeed = StackIn_f;
 }
@@ -280,35 +280,35 @@ void CodeExecutor::draw_sprite_self(Instance* instance) {
 //null draw_shape_rectangle(float x1, float y2, float x2, float y2, color color);Draw frame of rectangle from (<float>,<float>) to (<float>,<float>) with color <color>.;Draw rectangle on final coords;
 void CodeExecutor::draw_shape_rectangle(Instance*) {
 	const SDL_Color color = StackIn_c;
-	float y2 = StackIn_f;
-	float x2 = StackIn_f;
-	float y1 = StackIn_f;
-	float x1 = StackIn_f;
+	const float y2 = StackIn_f;
+	const float x2 = StackIn_f;
+	const float y1 = StackIn_f;
+	const float x1 = StackIn_f;
 	Render::DrawRect({ x1,y1,x2,y2 }, color);
 }
 
 //null draw_shape_rectangle_r(rectangle rect, color color);Draw frame of <rectangle> with color <color>.;Draw rectangle;
 void CodeExecutor::draw_shape_rectangle_r(Instance*) {
-	const Rect rect = StackIn_r;
+	Rect rect = StackIn_r;
 	const SDL_Color color = StackIn_c;
-	Render::DrawRect(rect, color);
+	Render::DrawRect(rect.ToGPU_Rect(), color);
 }
 
 //null draw_shape_rectangle_filled(float x1, float y2, float x2, float y2, color color);Draw filled of rectangle from (<float>,<float>) to (<float>,<float>) with color <color>.;Draw rectangle on final coords;
 void CodeExecutor::draw_shape_rectangle_filled(Instance*) {
 	const SDL_Color color = StackIn_c;
-	float y2 = StackIn_f;
-	float x2 = StackIn_f;
-	float y1 = StackIn_f;
-	float x1 = StackIn_f;
+	const float y2 = StackIn_f;
+	const float x2 = StackIn_f;
+	const float y1 = StackIn_f;
+	const float x1 = StackIn_f;
 	Render::DrawRectFilled({ x1,y1,x2,y2 }, color);
 }
 
 //null draw_shape_rectangle_filled_r(rectangle rect, color color);Draw filled <rectangle> with color <color>.;Draw rectangle;
 void CodeExecutor::draw_shape_rectangle_filled_r(Instance*) {
-	const Rect rect = StackIn_r;
+	Rect rect = StackIn_r;
 	const SDL_Color color = StackIn_c;
-	Render::DrawRectFilled(rect, color);
+	Render::DrawRectFilled(rect.ToGPU_Rect(), color);
 }
 
 //null draw_shape_circle(float x, float y, float radius, color color);Draw circle in point (<float>,<float>) with radius <float> and color <color>;
@@ -375,7 +375,7 @@ void CodeExecutor::math_max(Instance*) {
 
 //point global_get_mouse();Get point of current mouse postion;If map is bigger than screen this give map coords not screen;
 void CodeExecutor::global_get_mouse(Instance*) {
-	StackOut_p(Core::GetInstance()->gMouse.XYf);
+	StackOut_p(Core::GetInstance()->Mouse.XYf);
 }
 //null set_self_sprite(sprite spr); Set self sprite to <sprite> with default scale, angle, speed, loop; You can mod sprite via set_sprite_ etc.;
 void CodeExecutor::set_self_sprite(Instance* instance) {
@@ -691,7 +691,7 @@ void CodeExecutor::collision_push_other(Instance* self) {
 //bool mouse_is_pressed(int button);Return state of button <int>;Left button is 1, right is 3
 void CodeExecutor::mouse_is_pressed(Instance* sender) {
 	const int button = StackIn_i;
-	if (Core::GetInstance()->gMouse.LeftPressed && (button == 1)) {
+	if (Core::GetInstance()->Mouse.LeftPressed && (button == 1)) {
 		StackOut_b(true);
 		return;
 	}
@@ -700,7 +700,7 @@ void CodeExecutor::mouse_is_pressed(Instance* sender) {
 		return;
 	}
 
-	if (Core::GetInstance()->gMouse.RightPressed && (button == 3)) {
+	if (Core::GetInstance()->Mouse.RightPressed && (button == 3)) {
 		StackOut_b(true);
 		return;
 	}

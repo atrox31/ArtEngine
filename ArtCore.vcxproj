@@ -192,6 +192,7 @@
     <ClCompile Include="ArtCode.cpp" />
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="BackGroundRenderer.cpp" />
+    <ClCompile Include="Button.cpp" />
     <ClCompile Include="CodeExecutor.cpp" />
     <ClCompile Include="CodeExecutor_functions.cpp" />
     <ClCompile Include="CodeExecutor_functions_map.cpp" />
@@ -201,9 +202,14 @@
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="Func.cpp" />
+    <ClCompile Include="Grid.cpp" />
+    <ClCompile Include="Gui.cpp" />
+    <ClCompile Include="Image.cpp" />
     <ClCompile Include="Instance.cpp" />
+    <ClCompile Include="Label.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Memory.cpp" />
+    <ClCompile Include="Panel.cpp" />
     <ClCompile Include="physfs-3.0.2\src\physfs.c" />
     <ClCompile Include="physfs-3.0.2\src\physfs_archiver_7z.c" />
     <ClCompile Include="physfs-3.0.2\src\physfs_archiver_dir.c" />
@@ -226,12 +232,14 @@
     <ClCompile Include="physfs-3.0.2\src\physfs_platform_windows.c" />
     <ClCompile Include="physfs-3.0.2\src\physfs_platform_winrt.cpp" />
     <ClCompile Include="physfs-3.0.2\src\physfs_unicode.c" />
+    <ClCompile Include="ProgressBar.cpp" />
     <ClCompile Include="Rect.cpp" />
     <ClCompile Include="Render.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SDL2\SDL_FontCache-master\SDL_FontCache.c" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Stack.cpp" />
+    <ClCompile Include="TabPanel.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="vec2f.cpp" />
   </ItemGroup>
@@ -239,6 +247,7 @@
     <ClInclude Include="ArtCode.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="BackGroundRenderer.h" />
+    <ClInclude Include="Button.h" />
     <ClInclude Include="CodeExecutor.h" />
     <ClInclude Include="ColorDefinitions.h" />
     <ClInclude Include="consola.h" />
@@ -248,16 +257,22 @@
     <ClInclude Include="Debug.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="Func.h" />
+    <ClInclude Include="Grid.h" />
+    <ClInclude Include="Gui.h" />
+    <ClInclude Include="Image.h" />
     <ClInclude Include="Inspector.h" />
     <ClInclude Include="Instance.h" />
+    <ClInclude Include="Label.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="Memory.h" />
+    <ClInclude Include="Panel.h" />
     <ClInclude Include="physfs-3.0.2\src\physfs.h" />
     <ClInclude Include="physfs-3.0.2\src\physfs_casefolding.h" />
     <ClInclude Include="physfs-3.0.2\src\physfs_internal.h" />
     <ClInclude Include="physfs-3.0.2\src\physfs_lzmasdk.h" />
     <ClInclude Include="physfs-3.0.2\src\physfs_miniz.h" />
     <ClInclude Include="physfs-3.0.2\src\physfs_platforms.h" />
+    <ClInclude Include="ProgressBar.h" />
     <ClInclude Include="Rect.h" />
     <ClInclude Include="Render.h" />
     <ClInclude Include="Scene.h" />
@@ -266,6 +281,7 @@
     <ClInclude Include="SplashScreen.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Stack.h" />
+    <ClInclude Include="TabPanel.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="vec2f.h" />
   </ItemGroup>

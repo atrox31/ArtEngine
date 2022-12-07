@@ -168,30 +168,30 @@ void Rect::Rotate(float deg)
 	h = ty_h;
 }
 
-SDL_FPoint Rect::GetCenter()
+SDL_FPoint Rect::GetCenter() const
 {
 	return SDL_FPoint { (x + w) * 0.5f, (y + h) * 0.5f };
 }
 
-bool Rect::PointInRect(SDL_Point& p)
+bool Rect::PointInRect(SDL_Point& p) const
 {
 	return ((p.x >= x) && (p.x <= (w)) &&
 		(p.y >= y) && (p.y <= h)) ? true : false;
 }
 
-bool Rect::PointInRect(SDL_FPoint& p)
+bool Rect::PointInRect(SDL_FPoint& p) const
 {
 	return ((p.x >= x) && (p.x <= (w)) &&
 		(p.y >= y) && (p.y <= (h))) ? true : false;
 }
 
-bool Rect::PointInRect(vec2f& p)
+bool Rect::PointInRect(vec2f& p) const
 {
 	return ((p.x >= x) && (p.x <= (w)) &&
 		(p.y >= y) && (p.y <= (h))) ? true : false;
 }
 
-const GPU_Rect Rect::ToGPU_Rect()
+GPU_Rect Rect::ToGPU_Rect()
 {
 	return GPU_Rect{x, y, w, h};
 }

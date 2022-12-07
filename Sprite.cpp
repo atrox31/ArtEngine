@@ -37,17 +37,17 @@ Sprite* Sprite::Load(const char* data, Sint64 size)
     Func::DataValues dv(data, (int)size);
     if (!dv.IsOk()) return nullptr;
 
-    Sprite* nSprite = new Sprite();
+    auto nSprite = new Sprite();
     nSprite->m_width = Func::TryGetInt(dv.GetData("sprite", "sprite_width"));
 	nSprite->m_height = Func::TryGetInt(dv.GetData("sprite", "sprite_width"));
 
 	nSprite->m_texture = std::vector<GPU_Image*>();
 	// load
-	int textures_count = Func::TryGetInt(dv.GetData("image_list", "count"));
+    const int textures_count = Func::TryGetInt(dv.GetData("image_list", "count"));
 	if (textures_count > 0) {
 		for (int i = 0; i < textures_count; i++) {
 			std::string tname = "Sprites/" + dv.GetData("sprite", "name") + "/" + std::to_string(i) + ".png";
-			GPU_Image* tmp = GPU_LoadImage_RW(Func::GetFileRWops(tname, nullptr), 1);
+			GPU_Image* tmp = GPU_LoadImage_RW(Func::GetFileRWops(tname, nullptr), true);
 			if (tmp != nullptr) {
 				nSprite->m_texture.push_back(tmp);
 			}

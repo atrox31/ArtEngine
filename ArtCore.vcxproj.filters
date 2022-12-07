@@ -134,6 +134,30 @@
     <ClCompile Include="Event.cpp">
       <Filter>Structs</Filter>
     </ClCompile>
+    <ClCompile Include="Gui.cpp">
+      <Filter>Scene\Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="Button.cpp">
+      <Filter>Scene\Gui\GuiElement</Filter>
+    </ClCompile>
+    <ClCompile Include="Grid.cpp">
+      <Filter>Scene\Gui\GuiElement</Filter>
+    </ClCompile>
+    <ClCompile Include="Image.cpp">
+      <Filter>Scene\Gui\GuiElement</Filter>
+    </ClCompile>
+    <ClCompile Include="Label.cpp">
+      <Filter>Scene\Gui\GuiElement</Filter>
+    </ClCompile>
+    <ClCompile Include="Panel.cpp">
+      <Filter>Scene\Gui\GuiElement</Filter>
+    </ClCompile>
+    <ClCompile Include="ProgressBar.cpp">
+      <Filter>Scene\Gui\GuiElement</Filter>
+    </ClCompile>
+    <ClCompile Include="TabPanel.cpp">
+      <Filter>Scene\Gui\GuiElement</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core.h">
@@ -230,6 +254,30 @@
     <ClInclude Include="Convert.h">
       <Filter>Functions</Filter>
     </ClInclude>
+    <ClInclude Include="Gui.h">
+      <Filter>Scene\Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Button.h">
+      <Filter>Scene\Gui\GuiElement</Filter>
+    </ClInclude>
+    <ClInclude Include="Grid.h">
+      <Filter>Scene\Gui\GuiElement</Filter>
+    </ClInclude>
+    <ClInclude Include="Panel.h">
+      <Filter>Scene\Gui\GuiElement</Filter>
+    </ClInclude>
+    <ClInclude Include="ProgressBar.h">
+      <Filter>Scene\Gui\GuiElement</Filter>
+    </ClInclude>
+    <ClInclude Include="TabPanel.h">
+      <Filter>Scene\Gui\GuiElement</Filter>
+    </ClInclude>
+    <ClInclude Include="Image.h">
+      <Filter>Scene\Gui\GuiElement</Filter>
+    </ClInclude>
+    <ClInclude Include="Label.h">
+      <Filter>Scene\Gui\GuiElement</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">
@@ -267,6 +315,12 @@
     </Filter>
     <Filter Include="Core\ArtCode">
       <UniqueIdentifier>{19d6ba34-0d49-410c-ab16-ab8b04ac5439}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Gui">
+      <UniqueIdentifier>{ad38afcf-6087-426a-b580-65ce0167b9ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Gui\GuiElement">
+      <UniqueIdentifier>{e2865fa8-a91c-4a64-afc0-d144bbd1de9e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

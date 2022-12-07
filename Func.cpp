@@ -2,6 +2,11 @@
 #include "physfs-3.0.2/src/physfs.h"
 #include "Debug.h"
 
+bool Func::PointInGPU_Rect(SDL_FPoint point, GPU_Rect rect)
+{
+	return (point.x > rect.x && point.x < rect.w && point.y > rect.y && point.y < rect.h);
+}
+
 int Func::TryGetInt(std::string str)
 {
 	int a = 0;
@@ -48,20 +53,19 @@ float Func::TryGetFloat(std::string str)
 	return a;
 }
 
-const float Func::Distance(SDL_FPoint& p1, SDL_FPoint& p2)
+float Func::Distance(SDL_FPoint& p1, SDL_FPoint& p2)
 {
 	return std::hypotf(p2.x - p1.x, p2.y - p1.y);
 }
-const float Func::Distance(float P1_X, float P1_y, float P2_X, float P2_Y)
+float Func::Distance(float P1_X, float P1_y, float P2_X, float P2_Y)
 {
 	return std::hypotf(P2_X - P1_X, P2_Y - P1_y);
 }
 
-const bool Func::RectCircleColliding(float circle_x, float circle_y, float circle_r, GPU_Rect rectangle_wh)
+bool Func::RectCircleColliding(float circle_x, float circle_y, float circle_r, GPU_Rect rectangle_wh)
 {
-
-	float distX = std::fabsf(circle_x - rectangle_wh.x - rectangle_wh.w / 2);
-	float distY = std::fabsf(circle_y - rectangle_wh.y - rectangle_wh.h / 2);
+	const float distX = std::fabsf(circle_x - rectangle_wh.x - rectangle_wh.w / 2);
+	const float distY = std::fabsf(circle_y - rectangle_wh.y - rectangle_wh.h / 2);
 
 	if (distX > (rectangle_wh.w / 2 + circle_r)) { return false; }
 	if (distY > (rectangle_wh.h / 2 + circle_r)) { return false; }
@@ -69,12 +73,12 @@ const bool Func::RectCircleColliding(float circle_x, float circle_y, float circl
 	if (distX <= (rectangle_wh.w / 2)) { return true; }
 	if (distY <= (rectangle_wh.h / 2)) { return true; }
 
-	float dx = distX - rectangle_wh.w / 2;
-	float dy = distY - rectangle_wh.h / 2;
+	const float dx = distX - rectangle_wh.w / 2;
+	const float dy = distY - rectangle_wh.h / 2;
 	return (dx * dx + dy * dy <= (circle_r * circle_r));
 }
 
-bool Func::IsHex(std::string& value)
+bool Func::IsHex(const std::string& value)
 {
 	const int len = (int)value.length();
 	// rgb or rgba
@@ -92,21 +96,21 @@ bool Func::IsHex(std::string& value)
 
 float Func::LinearScale(float value, float valueMin, float valueMax, float scaleMin, float scaleMax)
 {
-	float percentOfValue = ((value - valueMin) / (valueMax - valueMin));
+	const float percentOfValue = ((value - valueMin) / (valueMax - valueMin));
 	return percentOfValue * (scaleMax - scaleMin) + scaleMin;
 }
 
 std::string const Func::GetHexTable(const unsigned char* data, int size, int group)
 {
-	std::stringstream sstr;
-	sstr << std::endl;
+	std::stringstream stringstream;
+	stringstream << std::endl;
 
 	for (int i = 0; i < size; i++) {
 		std::cout << "" << std::setw(2) << std::setfill('0') << std::hex << (int)data[i] << " ";
 		if (i % group == 0 && i != 0) std::cout << std::endl;
 	}
 
-	return sstr.str();
+	return stringstream.str();
 }
 
 std::size_t Func::replace_all(std::string& inout, std::string what, std::string with)
@@ -277,6 +281,51 @@ SDL_GLattr Func::get_sdl_attr_from_string(std::string arg, bool* error)
 		Debug::WARNING("wrong sdl attr parametr '" + arg + "'!");
 		return SDL_GL_RED_SIZE;
 
+	}
+}
+
+Uint32 Func::load_shader(GPU_ShaderEnum shader_type, const char* filename)
+{	
+	Uint32 shader;
+	Sint64 siz = 0;
+	char* source = Func::GetFileBuf(std::string(filename), &siz);
+
+	if (siz == 0) return -1;
+
+	// Compile the shader
+	shader = GPU_CompileShader(shader_type, source);
+	free(source);
+	return shader;
+
+}
+
+GPU_ShaderBlock Func::load_shader_program(Uint32* p, const char* vertex_shader_file, const char* fragment_shader_file)
+{
+	Uint32 v, f;
+	v = load_shader(GPU_VERTEX_SHADER, vertex_shader_file);
+
+	if (!v)
+		GPU_LogError("Failed to load vertex shader (%s): %s\n", vertex_shader_file, GPU_GetShaderMessage());
+
+	f = load_shader(GPU_FRAGMENT_SHADER, fragment_shader_file);
+
+	if (!f)
+		GPU_LogError("Failed to load fragment shader (%s): %s\n", fragment_shader_file, GPU_GetShaderMessage());
+
+	*p = GPU_LinkShaders(v, f);
+
+	if (!*p)
+	{
+		GPU_ShaderBlock b = { -1, -1, -1, -1 };
+		GPU_LogError("Failed to link shader program (%s + %s): %s\n", vertex_shader_file, fragment_shader_file, GPU_GetShaderMessage());
+		return b;
+	}
+
+	{
+		GPU_ShaderBlock block = GPU_LoadShaderBlock(*p, "gpu_Vertex", "gpu_TexCoord", "gpu_Color", "gpu_ModelViewProjectionMatrix");
+		GPU_ActivateShaderProgram(*p, &block);
+
+		return block;
 	}
 }
 

@@ -1055,7 +1055,7 @@ void CodeExecutor::h_get_value(Inspector* code, Instance* instance) {
 		case ArtCode::varible_type::FONT:		GlobalStack_int.Add(Func::TryGetInt(code->GetString())); break;
 		case ArtCode::varible_type::POINT:		GlobalStack_point.Add( Convert::Str2FPoint(code->GetString()) ); break;
 		case ArtCode::varible_type::RECT:		GlobalStack_rect.Add(Convert::Str2Rect(code->GetString())); break;
-		case ArtCode::varible_type::COLOR:		GlobalStack_color.Add(Convert::Str2Color(code->GetString())); break;
+		case ArtCode::varible_type::COLOR:		GlobalStack_color.Add(Convert::Hex2Color(code->GetString())); break;
 		case ArtCode::varible_type::STRING:		GlobalStack_string.Add(code->GetString()); break;
 		}
 	}

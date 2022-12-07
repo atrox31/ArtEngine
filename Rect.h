@@ -42,14 +42,14 @@ public:
 
 
 	void Rotate(float deg);
-	SDL_FPoint GetCenter();
+	SDL_FPoint GetCenter() const;
 
-	bool PointInRect(SDL_Point&);
-	bool PointInRect(SDL_FPoint&);
-	bool PointInRect(vec2f&);
+	bool PointInRect(SDL_Point&) const;
+	bool PointInRect(SDL_FPoint&) const;
+	bool PointInRect(vec2f&) const;
 
 	// converts
-	const GPU_Rect ToGPU_Rect();
+	GPU_Rect ToGPU_Rect();
 	const SDL_Rect ToSDL_Rect();
 	const SDL_FRect ToSDL_FRect();
 
