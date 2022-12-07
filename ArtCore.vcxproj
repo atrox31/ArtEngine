@@ -236,7 +236,7 @@
     <ClCompile Include="Rect.cpp" />
     <ClCompile Include="Render.cpp" />
     <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="SDL2\SDL_FontCache-master\SDL_FontCache.c" />
+    <ClCompile Include="SDL_FontCache.c" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Stack.cpp" />
     <ClCompile Include="TabPanel.cpp" />
@@ -276,7 +276,7 @@
     <ClInclude Include="Rect.h" />
     <ClInclude Include="Render.h" />
     <ClInclude Include="Scene.h" />
-    <ClInclude Include="SDL2\SDL_FontCache-master\SDL_FontCache.h" />
+    <ClInclude Include="SDL_FontCache.h" />
     <ClInclude Include="SDL_version.h" />
     <ClInclude Include="SplashScreen.h" />
     <ClInclude Include="Sprite.h" />

@@ -1,3 +1,4 @@
+#pragma once
 /*
 SDL_FontCache v0.10.0: A font cache for SDL and SDL_ttf
 by Jonathan Dearborn
@@ -30,17 +31,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#ifndef _SDL_FONTCACHE_H__
-#define _SDL_FONTCACHE_H__
-
 #define FC_USE_SDL_GPU
 
-#pragma warning(push)
-#include "include/SDL.h"
-#include "include/SDL_image.h"
-#include "include/SDL_ttf.h"
-#include "include/SDL_gpu.h"
-#pragma warning(pop)
+#include "SDL_version.h"
+#include SDL2_INCLUDE_DIR
+#include SDL2_TTF_INCLUDE_DIR
+#include SDL2_GPU_INCLUDE_DIR
+
 
 #include <stdarg.h>
 
@@ -322,8 +319,4 @@ void FC_SetDefaultColor(FC_Font* font, SDL_Color color);
 
 #ifdef __cplusplus
 }
-#endif
-
-
-
 #endif

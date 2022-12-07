@@ -98,9 +98,6 @@
     <ClCompile Include="Instance.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="SDL2\SDL_FontCache-master\SDL_FontCache.c">
-      <Filter>Include\SDL_FontCahe</Filter>
-    </ClCompile>
     <ClCompile Include="AssetManager.cpp">
       <Filter>Assets</Filter>
     </ClCompile>
@@ -157,6 +154,9 @@
     </ClCompile>
     <ClCompile Include="TabPanel.cpp">
       <Filter>Scene\Gui\GuiElement</Filter>
+    </ClCompile>
+    <ClCompile Include="SDL_FontCache.c">
+      <Filter>Include\SDL_FontCahe</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -224,9 +224,6 @@
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="main.h" />
-    <ClInclude Include="SDL2\SDL_FontCache-master\SDL_FontCache.h">
-      <Filter>Include\SDL_FontCahe</Filter>
-    </ClInclude>
     <ClInclude Include="AssetManager.h">
       <Filter>Assets</Filter>
     </ClInclude>
@@ -277,6 +274,9 @@
     </ClInclude>
     <ClInclude Include="Label.h">
       <Filter>Scene\Gui\GuiElement</Filter>
+    </ClInclude>
+    <ClInclude Include="SDL_FontCache.h">
+      <Filter>Include\SDL_FontCahe</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

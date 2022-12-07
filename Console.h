@@ -10,7 +10,7 @@
 #include SDL2_IMAGE_INCLUDE_DIR
 #include SDL2_TTF_INCLUDE_DIR
 #include SDL2_GPU_INCLUDE_DIR
-#include "SDL2/SDL_FontCache-master/SDL_FontCache.h"
+#include "SDL_FontCache.h"
 #pragma warning(pop)
 
 class Console

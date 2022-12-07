@@ -5,7 +5,7 @@
 
 #include "ColorDefinitions.h"
 #include "SDL_version.h"
-#include "SDL2/SDL_FontCache-master/SDL_FontCache.h"
+#include "SDL_FontCache.h"
 
 #include SDL2_INCLUDE_DIR
 #include SDL2_MIXER_INCLUDE_DIR

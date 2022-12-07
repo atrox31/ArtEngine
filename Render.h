@@ -4,7 +4,7 @@
 #include "vec2f.h"
 #include "Sprite.h"
 #include "Rect.h"
-#include "SDL2/SDL_FontCache-master/SDL_FontCache.h"
+#include "SDL_FontCache.h"
 #pragma warning(push)
 #include SDL2_INCLUDE_DIR
 #include SDL2_IMAGE_INCLUDE_DIR
