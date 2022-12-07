@@ -67,7 +67,7 @@ public:
 	EventBit EventFlag;
 
 	
-	bool CollideTest(Instance*);
+	bool CollideTest(const Instance*);
 private:
 		bool Collision_circle_circle(float c1x, float c1y, float c1r,float c2x, float c2y, float c2r);
 		bool Collision_circle_rect(float c1x, float c1y, float c1r, GPU_Rect rect);

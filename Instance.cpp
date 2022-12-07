@@ -114,8 +114,7 @@ void Instance::DebugDrawMask() {
 		};
 		SDL_FPoint mov{ SelfSprite->GetCenterXRel(), SelfSprite->GetCenterYRel() };
 		spoint += mov;
-		Render::DrawRect(spoint, C_RED);
-		//Render::DrawCircle(spoint, SelfSprite->GetMaskValue(), C_RED);
+		Render::DrawRect(spoint.ToGPU_Rect(), C_RED);
 	}
 
 }
@@ -130,12 +129,12 @@ void Instance::DebugDrawCollision() {
 				(float)Body.Value + 2,
 				(float)Body.Value + 2
 		};
-		Render::DrawRect_wh(collision_rect_mine, C_BLUE);
+		Render::DrawRect_wh(collision_rect_mine.ToGPU_Rect(), C_BLUE);
 	}
 }
 #endif // _DEBUG
 
-bool Instance::CollideTest(Instance* instance)
+bool Instance::CollideTest(const Instance* instance)
 {
 	switch (instance->Body.Type)
 	{
