@@ -36,14 +36,13 @@ const std::string Convert::Point2String(SDL_Point& point)
 {
 	return std::to_string(point.x) + ':' + std::to_string(point.y);
 }
-const float Convert::pi_180 = 57.2957795131f;
-const float Convert::one_radian = 0.0174532925f;
+
 const float Convert::DegreeToRadians(float degree) {
-	return one_radian * degree;
+	return 0.0174532925f * degree;
 }
 const float Convert::RadiansToDegree(float angle)
 {
-	return angle * pi_180;
+	return angle * 57.2957795131f;
 }
 
 const Rect Convert::Str2Rect(std::string str)
@@ -82,7 +81,7 @@ const bool Convert::Str2Bool(const char& text)
 	return false;
 }
 
-SDL_Color Convert::Str2Color(std::string color)
+SDL_Color Convert::Hex2Color(const std::string& color)
 {
 	if (Func::IsHex(color)) {
 		try {
@@ -104,7 +103,7 @@ SDL_Color Convert::Str2Color(std::string color)
 	return SDL_Color({ 0,0,0,0 });
 }
 
-std::string Convert::Color2Str(SDL_Color& color)
+std::string Convert::Color2Hex(const SDL_Color& color)
 {
 	std::stringstream ss;
 	ss << "#" << std::hex << (color.r << 24 | color.g << 16 | color.b << 8 | color.a);

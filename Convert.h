@@ -3,9 +3,6 @@
 #include <string>
 class Convert
 {
-private:
-	static const float pi_180;
-	static const float one_radian;
 public:
 	// Get radians(direction) from degree
 	static const float RadiansToDegree(float);
@@ -41,9 +38,9 @@ public:
 	static const bool Str2Bool(const char&);
 
 	// translate string to color
-	static SDL_Color Str2Color(std::string);
+	static SDL_Color Hex2Color(const std::string&);
 
 	// translate color to string
-	static std::string Color2Str(SDL_Color&);
+	static std::string Color2Hex(const SDL_Color&);
 };
 
