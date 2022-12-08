@@ -1,5 +1,5 @@
 # To generate Core.tar
-Clone repo and run create_core_tar.bat <- this create update file for ArtEditor if You do not want to fownload it from ArtEditor Release.
+Clone repo and run create_core_tar.bat <- this create update file for ArtEditor if You do not want to download it from ArtEditor Release.
 
 # ArtCore
 2D Game engine build on SDL input/graphic. Create games in ArtCore Editor and play in ArtCore Game Engine! 
