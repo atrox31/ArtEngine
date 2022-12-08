@@ -55,10 +55,10 @@ int protected_main(int argc, char* args[]) {
 	return Core::Run();
 }
 
-int main(int argc, char* args[]) {
+int SDL_main(int argc, char* argv[]) {
 	try
 	{
-		return protected_main(argc, args);
+		return protected_main(argc, argv);
 	}
 	catch (const std::exception& e)
 	{

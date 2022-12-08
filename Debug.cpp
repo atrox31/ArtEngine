@@ -112,6 +112,51 @@ void Debug::SDL_ERROR(std::string message)
 	Core::GetInstance()->Exit();
 }
 
+void Debug::PritSDLVersions()
+{
+	SDL_version compiled;
+	SDL_version linked;
+
+	SDL_VERSION(&compiled);
+	SDL_GetVersion(&linked);
+	SDL_Log("compiled SDL version %u.%u.%u ...\n",
+		compiled.major, compiled.minor, compiled.patch);
+	SDL_Log("linking SDL version %u.%u.%u.\n",
+		linked.major, linked.minor, linked.patch);
+
+
+	SDL_TTF_VERSION(&compiled);
+	const SDL_version* linked2 = TTF_Linked_Version();
+	SDL_Log("compiled SDL_TTF version %u.%u.%u ...\n",
+		compiled.major, compiled.minor, compiled.patch);
+	SDL_Log("linking SDL_TTF version %u.%u.%u.\n",
+		linked2->major, linked2->minor, linked2->patch);
+
+
+	SDL_MIXER_VERSION(&compiled);
+	const SDL_version* linked3 = Mix_Linked_Version();
+	SDL_Log("compiled SDL_MIXER version %u.%u.%u ...\n",
+		compiled.major, compiled.minor, compiled.patch);
+	SDL_Log("linking SDL_MIXER version %u.%u.%u.\n",
+		linked3->major, linked3->minor, linked3->patch);
+
+
+	SDL_IMAGE_VERSION(&compiled);
+	const SDL_version* linked4 = IMG_Linked_Version();
+	SDL_Log("compiled SDL_IMAGE version %u.%u.%u ...\n",
+		compiled.major, compiled.minor, compiled.patch);
+	SDL_Log("linking SDL_IMAGE version %u.%u.%u.\n",
+		linked4->major, linked4->minor, linked4->patch);
+
+
+	SDL_NET_VERSION(&compiled);
+	const SDL_version* linked5 = SDLNet_Linked_Version();
+	SDL_Log("compiled SDL_NET version %u.%u.%u ...\n",
+		compiled.major, compiled.minor, compiled.patch);
+	SDL_Log("linking SDL_NET version %u.%u.%u.\n",
+		linked5->major, linked5->minor, linked5->patch);
+}
+
 std::string Debug::get_header()
 {
 	std::ostringstream opt;

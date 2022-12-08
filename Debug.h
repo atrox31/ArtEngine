@@ -76,6 +76,10 @@ public:
 	static void SDL_ERROR(std::string);
 
 
+	/*! Print all sdl2 versions
+	 */
+	static void PritSDLVersions();
+
 private:
 	static std::string get_header();
 	static std::string OUTPUT_FILE;
