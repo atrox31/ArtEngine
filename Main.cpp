@@ -1,4 +1,5 @@
-#define WIN32_LEAN_AND_MEAN // Wyklucz rzadko u¿ywane rzeczy z nag³ówków systemu Windows
+#define WIN32_LEAN_AND_MEAN 
+#define HAVE_M_PI // for SDL warring M_PI
 #include "SDL_version.h"
 #include <exception>
 #include <iostream>
