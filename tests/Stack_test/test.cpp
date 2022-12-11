@@ -18,7 +18,7 @@ int IntRand(const int& min, const int& max) {
 	return distribution(generator);
 }
 
-TEST_F(StackTest, test_int)
+TEST_F(StackTest, test_int_zero)
 {
 	EXPECT_EQ(StackInt.Size(), 0);
 	EXPECT_EQ(StackFloat.Size(), 0);
