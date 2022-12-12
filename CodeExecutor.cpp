@@ -168,7 +168,6 @@ bool CodeExecutor::LoadObjectDefinitions()
 			 WriteBit(getVaribleIndex(local.Type));
 			 WriteBit(local.index);
 			 WriteString(local.Name);
-			 WriteBit(local.ReadOnly);
 			* */
 			if (code.GetCurrentCommand() == command::LOCAL_VARIABLE_DEFINITION) {
 				int varible_type = code.GetBit();
@@ -176,7 +175,6 @@ bool CodeExecutor::LoadObjectDefinitions()
 				// not used now, maby later for debug
 				code.GetBit(); // variable index, position in variables list
 				const std::string variable_name = code.GetString();
-				code.GetBit(); // is value read only
 				//
 #ifdef _DEBUG
 				instance.AddVarible(varible_type, variable_name);

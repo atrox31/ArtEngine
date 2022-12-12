@@ -55,6 +55,7 @@ public:
 		(RECT)
 		(COLOR)
 		(STRING)
+		(ENUM) // as string, editor is responsible for good assign
 	)
 
 		const std::string keywords[4] = {
