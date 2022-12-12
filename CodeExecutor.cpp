@@ -132,7 +132,7 @@ bool CodeExecutor::LoadObjectDefinitions()
 		return false;
 	}
 
-	{
+	
 		int ac_main_version = (int)header[2];
 		int ac_minor_vesrion = (int)header[3];
 		if (ac_main_version < MINIMUM_ACOMPILLER_MAIN && ac_minor_vesrion < MINIMUM_ACOMPILLER_MINOR) {
@@ -141,7 +141,7 @@ bool CodeExecutor::LoadObjectDefinitions()
 			return false;
 		}
 		//MINIMUM_ACOMPILLER_MAIN
-	}
+	
 
 
 	// object definitions
@@ -175,7 +175,11 @@ bool CodeExecutor::LoadObjectDefinitions()
 				// not used now, maby later for debug
 				code.GetBit(); // variable index, position in variables list
 				const std::string variable_name = code.GetString();
-				//
+				// for older version of compiler there is one additional bit of read only value
+				if(ac_minor_vesrion == 6)
+				{
+					code.Skip(1);
+				}
 #ifdef _DEBUG
 				instance.AddVarible(varible_type, variable_name);
 #else
