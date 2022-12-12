@@ -34,19 +34,19 @@ void GuiElement::Image::ApplyStyle()
 	switch (_iStyle)
 	{
 	case Gui::ImageStyle::LEFT:
-		_dimensions = { (float)(_parrent->GetX() + _x),(float)(_parrent->GetY() + _y), (float)_sprite->GetWidth(), (float)_sprite->GetHeight() };
+		_dimensions = { (float)(_parent->GetX() + _x),(float)(_parent->GetY() + _y), (float)_sprite->GetWidth(), (float)_sprite->GetHeight() };
 		break;
 	case Gui::ImageStyle::RIGHT:
-		_dimensions = { (float)(_parrent->GetDimensions().w + _x - _sprite->GetWidth()),(float)(_parrent->GetY() + _y), (float)_sprite->GetWidth(), (float)_sprite->GetHeight() };
+		_dimensions = { (float)(_parent->GetDimensions().w + _x - _sprite->GetWidth()),(float)(_parent->GetY() + _y), (float)_sprite->GetWidth(), (float)_sprite->GetHeight() };
 		break;
 	case Gui::ImageStyle::CENTER:
-		_dimensions = { (float)(_parrent->GetDimensions().w) * .5f, (float)(_parrent->GetDimensions().h * .5f), (float)_sprite->GetWidth(), (float)_sprite->GetHeight() };
+		_dimensions = { (float)(_parent->GetDimensions().w) * .5f, (float)(_parent->GetDimensions().h * .5f), (float)_sprite->GetWidth(), (float)_sprite->GetHeight() };
 		break;
 	case Gui::ImageStyle::CENTER_TOP:
-		_dimensions = { (float)(_parrent->GetDimensions().w) * .5f, (float)(_parrent->GetY() + _y), (float)_sprite->GetWidth(), (float)_sprite->GetHeight() };
+		_dimensions = { (float)(_parent->GetDimensions().w) * .5f, (float)(_parent->GetY() + _y), (float)_sprite->GetWidth(), (float)_sprite->GetHeight() };
 		break;
 	case Gui::ImageStyle::CENTER_BOTTOM:
-		_dimensions = { (float)(_parrent->GetDimensions().w) * .5f, (float)(_parrent->GetDimensions().h - _y - _sprite->GetHeight() * .5f), (float)_sprite->GetWidth(), (float)_sprite->GetHeight() };
+		_dimensions = { (float)(_parent->GetDimensions().w) * .5f, (float)(_parent->GetDimensions().h - _y - _sprite->GetHeight() * .5f), (float)_sprite->GetWidth(), (float)_sprite->GetHeight() };
 		break;
 	case Gui::ImageStyle::TOP:
 		//TODO ImageStyle::TOP for image in GuiElementTemplate
@@ -55,7 +55,7 @@ void GuiElement::Image::ApplyStyle()
 		//TODO ImageStyle::BOTTOM for image in GuiElementTemplate
 		break;
 	case Gui::ImageStyle::FILL:
-		_dimensions = { (float)(_parrent->GetDimensions().w) * .5f, (float)(_parrent->GetDimensions().h * .5f), (float)_parrent->GetDimensions().w, (float)_parrent->GetDimensions().h };
+		_dimensions = { (float)(_parent->GetDimensions().w) * .5f, (float)(_parent->GetDimensions().h * .5f), (float)_parent->GetDimensions().w, (float)_parent->GetDimensions().h };
 		break;
 	default:
 		break;

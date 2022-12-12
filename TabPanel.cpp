@@ -29,8 +29,8 @@ GuiElement::TabPanel* GuiElement::TabPanel::CreateTab(const std::string& tab)
 	auto element = new Panel((int)_dimensions.x, (int)_dimensions.y, (int)_dimensions.w, (int)_dimensions.h);
 	element->SetTag(tab);
 	element->SetPallet(this->_pallet);
-	element->SetParrent(this);
-	element->SetVisibled(false);
+	element->SetParent(this);
+	element->SetVisible(false);
 	_elements.push_back(element);
 	return this;
 }
@@ -40,10 +40,10 @@ GuiElement::TabPanel* GuiElement::TabPanel::SetActiveTab(const std::string& tab)
 	for (auto& element : _elements) {
 		if (element->GetTag() == tab) {
 			if (_current_tab != nullptr) {
-				_current_tab->SetVisibled(false);
+				_current_tab->SetVisible(false);
 			}
 			_current_tab = element;
-			_current_tab->SetVisibled(true);
+			_current_tab->SetVisible(true);
 			return this;
 		}
 	}

@@ -67,7 +67,7 @@ public:
 
 		FILL_CENTER,
 
-		RELATIVE_PARRENT,
+		RELATIVE_PARENT,
 
 		ABSOLUTE
 	};
@@ -105,12 +105,12 @@ public:
 		GuiElementTemplate() {
 			_tag = "undefined";
 			_default_font = Gui::GlobalFont;
-			_parrent = nullptr;
+			_parent = nullptr;
 			_call_back = nullptr;
 			_sound_onClick = nullptr;
 			_enabled = true;
 			_focus = false;
-			_visibled = true;
+			_visible = true;
 			_enable_transparent = true;
 			_hover_time = .0f;
 			_dimensions = { 0,0,0,0 };
@@ -128,7 +128,7 @@ public:
 		virtual bool OnClick() { if (_call_back != nullptr) { _call_back(); return true; } return false; };
 
 		virtual bool GetEnabled() final { return _enabled; }
-		virtual bool GetVisibled() final { return _visibled; };
+		virtual bool GetVisible() final { return _visible; };
 		virtual std::string GetTag() final { return _tag; }
 		virtual std::vector<GuiElementTemplate*> GetChildren() final { return _elements; };
 
@@ -141,12 +141,12 @@ public:
 		virtual void SetEnabledOnPause(bool e) final { this->_enable_on_pause = e; }
 		virtual void SetTransparent(bool e) final { this->_enable_transparent = e; }
 		virtual void SetEnabled(bool e) final;
-		virtual void SetVisibled(bool v) final;
+		virtual void SetVisible(bool v) final;
 		virtual void SetCallback(void (*_call_back_)()) final { this->_call_back = _call_back_; }
-		virtual void SetPostion(int x, int y) final { _x = x; _y = y;  };
+		virtual void SetPosition(int x, int y) final { _x = x; _y = y;  };
 		virtual void SetSound(std::string sound) final;
 		virtual void SetDefaultFont(FC_Font* font) { _default_font = font; };
-		virtual void SetPostion(int x1, int y1, int x2, int y2) final {
+		virtual void SetPosition(int x1, int y1, int x2, int y2) final {
 			_x = x1;
 			_y = y1;
 			_dimensions = { (float)(x1),(float)(y1),(float)(x2),(float)(y2) };
@@ -154,7 +154,7 @@ public:
 		};
 		virtual void SetTag(const std::string& tag) final { _tag = tag; }
 		virtual void SetPallet(Pallet* pallet) final { _pallet = pallet; }
-		virtual void SetParrent(GuiElementTemplate* parrent) final { _parrent = parrent; }
+		virtual void SetParent(GuiElementTemplate* parrent) final { _parent = parrent; }
 		virtual void SetStyle(Style s);
 		virtual void SetText(std::string, FC_AlignEnum = FC_AlignEnum::FC_ALIGN_LEFT, FC_Scale = { 1.0f, 1.0f });
 		
@@ -172,9 +172,9 @@ public:
 		FC_Scale _text_scale;
 		GPU_Rect _text_area;
 
-		GuiElementTemplate* _parrent;
+		GuiElementTemplate* _parent;
 		bool _enabled;
-		bool _visibled;
+		bool _visible;
 		bool _focus;
 		bool _enable_transparent;
 		int _create_x, _create_y;

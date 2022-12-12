@@ -11,7 +11,7 @@ bool Gui::PointOnInterface(const SDL_FPoint p) const
 	if (!_root_element->_elements.empty()) {
 		for (auto it = _root_element->_elements.begin(); it != _root_element->_elements.end();)
 		{
-			if ((*it)->_visibled)
+			if ((*it)->_visible)
 				if (Func::PointInGPU_Rect(p, (*it)->_dimensions)) {
 					return true;
 				}
@@ -58,7 +58,7 @@ void Gui::Render() const
 	if (!_root_element->_elements.empty()) {
 		for (const auto& elem : _root_element->_elements)
 		{
-			if (elem->_visibled) {
+			if (elem->_visible) {
 				_render(elem);
 			}
 		}
@@ -71,7 +71,7 @@ void Gui::_render(Gui::GuiElementTemplate* e)
 	if (!e->_elements.empty()) {
 		for (const auto& var : e->_elements)
 		{
-			if (var->_visibled) {
+			if (var->_visible) {
 				_render(var);
 			}
 		}
@@ -85,7 +85,7 @@ void Gui::Events(SDL_Event* e) const
 	if (!_root_element->_elements.empty()) {
 		for (const auto& var : _root_element->_elements)
 		{
-			if ((e == nullptr) || (var->_enabled && var->_visibled)) {
+			if ((e == nullptr) || (var->_enabled && var->_visible)) {
 				_events(var, e);
 			}
 		}
@@ -103,7 +103,7 @@ void Gui::_events(GuiElementTemplate* e, SDL_Event* se)
 		}
 	}
 	if (se == nullptr) return;
-	if (e->_enabled && e->_visibled) {
+	if (e->_enabled && e->_visible) {
 		if (e->_focus) {
 			if (se->button.button == SDL_BUTTON_LEFT) {
 				if (Core::GetInstance()->Mouse.LeftPressed) {
@@ -154,7 +154,7 @@ Gui::GuiElementTemplate* Gui::AddElement(std::string tag, GuiElementTemplate* el
 		_root_element->_elements.push_back(element);
 		element->_tag = tag;
 		element->_pallet = _root_element->_pallet;
-		element->_parrent = _root_element;
+		element->_parent = _root_element;
 		element->ApplyStyle();
 		return element;
 	}
@@ -172,7 +172,7 @@ Gui::GuiElementTemplate* Gui::AddElement(std::string tag, GuiElementTemplate* el
 		target->_elements.push_back(element);
 		element->_tag = path.back();
 		element->_pallet = target->_pallet;
-		element->_parrent = target;
+		element->_parent = target;
 		element->ApplyStyle();
 		return element;
 	}
@@ -213,46 +213,46 @@ Gui::GuiElementTemplate* Gui::Element(std::string tag) const
 
 void Gui::GuiElementTemplate::ApplyStyle()
 {
-	if (_parrent != nullptr) {
+	if (_parent != nullptr) {
 		switch (_style)
 		{
 		case Gui::Style::ALIGN_LEFT:
 		{
-			this->_x = this->_create_x + _parrent->GetX();
-			this->_y = this->_create_y + _parrent->GetY();
-			this->_dimensions.x = (float)this->_create_x + _parrent->GetX();
+			this->_x = this->_create_x + _parent->GetX();
+			this->_y = this->_create_y + _parent->GetY();
+			this->_dimensions.x = (float)this->_create_x + _parent->GetX();
 			this->_dimensions.y = (float)this->_y;
 		}
 		break;
 		case Gui::Style::ALIGN_RIGHT:
 		{
-			this->_x = this->_create_x + _parrent->GetX();
-			this->_y = this->_create_y + _parrent->GetY();
-			this->_dimensions.x = (float)_parrent->GetX() + _parrent->GetDimensions().w - this->_dimensions.w - this->_create_x;
+			this->_x = this->_create_x + _parent->GetX();
+			this->_y = this->_create_y + _parent->GetY();
+			this->_dimensions.x = (float)_parent->GetX() + _parent->GetDimensions().w - this->_dimensions.w - this->_create_x;
 			this->_dimensions.y = (float)(this->_y);
 		}
 		break;
 		case Gui::Style::ALIGN_CENTER:
 		{
-			this->_x = this->_create_x + _parrent->GetX();
-			this->_y = this->_create_y + _parrent->GetY();
-			this->_dimensions.x = (float)_parrent->GetX() + _parrent->GetDimensions().w * 0.5f - this->_dimensions.w * 0.5f;
+			this->_x = this->_create_x + _parent->GetX();
+			this->_y = this->_create_y + _parent->GetY();
+			this->_dimensions.x = (float)_parent->GetX() + _parent->GetDimensions().w * 0.5f - this->_dimensions.w * 0.5f;
 			this->_dimensions.y = (float)(this->_y);
 		}
 		break;
 		case Gui::Style::FILL_CENTER:
 		{
-			this->_x = this->_create_x + _parrent->GetX();
-			this->_y = this->_create_y + _parrent->GetY();
+			this->_x = this->_create_x + _parent->GetX();
+			this->_y = this->_create_y + _parent->GetY();
 			this->_dimensions.x = (float)(this->_x);
 			this->_dimensions.y = (float)(this->_y);
-			this->_dimensions.w = _parrent->GetDimensions().w - _create_x * 2;
+			this->_dimensions.w = _parent->GetDimensions().w - _create_x * 2;
 		}
 		break;
-		case Gui::Style::RELATIVE_PARRENT:
+		case Gui::Style::RELATIVE_PARENT:
 		{
-			this->_x += _parrent->GetX();
-			this->_y += _parrent->GetY();
+			this->_x += _parent->GetX();
+			this->_y += _parent->GetY();
 			this->_dimensions.x = (float)(this->_x);
 			this->_dimensions.y = (float)(this->_y);
 		}
@@ -285,9 +285,9 @@ void Gui::GuiElementTemplate::SetEnabled(bool e)
 	this->_enabled = e;
 }
 
-void Gui::GuiElementTemplate::SetVisibled(bool v)
+void Gui::GuiElementTemplate::SetVisible(bool v)
 {
-	this->_visibled = v;
+	this->_visible = v;
 }
 
 void Gui::GuiElementTemplate::SetSound(std::string sound)
@@ -306,7 +306,7 @@ void Gui::GuiElementTemplate::SetText(const std::string text, const FC_AlignEnum
 	_text = text;
 	_text_scale = scale;
 	_text_align = align;
-	_text_area = FC_GetBounds(_parrent->_default_font, 0, 0, align, scale, text.c_str());
+	_text_area = FC_GetBounds(_parent->_default_font, 0, 0, align, scale, text.c_str());
 }
 
 
