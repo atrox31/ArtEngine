@@ -1,0 +1,6 @@
+#include "SDL2/include/SDL.h"
+#include "SDL2_gpu/include/SDL_gpu.h"
+#include "SDL2_image/include/SDL_image.h"
+#include "SDL2_mixer/include/SDL_mixer.h"
+#include "SDL2_net/include/SDL_net.h"
+#include "SDL2_ttf/include/SDL_ttf.h"

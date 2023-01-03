@@ -1,8 +1,7 @@
 #include "pch.h"
 
 #include <random>
-
-#include "../../Stack.h"
+#include "../../src/ArtCore/CodeExecutor/Stack.h"
 
 class StackTest : public ::testing::Test
 {

@@ -1,27 +1,38 @@
 @echo off
+cls
 @echo prepare output dir
 set outputDir="Core"
-rmdir /Q /S %outputDir%
+
+if exist %outputDir% rmdir /Q /S %outputDir%
 mkdir %outputDir%"
 
 @echo searching for ACompiler.exe
 if exist "ACompiler.exe" goto :compiler_found
-@echo file ACompiler.exe not found, git clone ArtCompiler and compile a release binary and put in this folder
-pause
-exit
+if exist "..\ACompiler\x64\Release\ACompiler.exe" goto :compiler_found_folder
+	@echo file ACompiler.exe not found, git clone ArtCompiler and compile a release binary and put in this folder
+	pause
+	exit
+
 :compiler_found
+copy ACompiler.exe  %outputDir%\ACompiler.exe"
+goto :search_for_ascript
+:compiler_found_folder
+copy ..\ACompiler\x64\Release\ACompiler.exe  %outputDir%\ACompiler.exe"
 
+
+:search_for_ascript
 @echo searching for AScript.lib
-if exist "AScript.lib" goto :lib_found
-@echo file AScript.lib not found, git clone ArtCore to download it
-pause
-exit
+if exist "ArtLibGenerator.exe" goto :lib_found
+	@echo file AScript.lib not found, git clone ArtCore to download it
+	pause
+	exit
+	
 :lib_found
-
+@echo asd
+start ArtLibGenerator.exe
+copy AScript.lib  %outputDir%\AScript.lib"
 
 @echo prepare binares
-copy ACompiler.exe  %outputDir%\ACompiler.exe"
-copy AScript.lib  %outputDir%\AScript.lib"
 mkdir %outputDir%\bin_Release"
 mkdir %outputDir%\bin_Debug"
 	copy "x64\Release\ArtCore.exe"  %outputDir%\bin_Release\ArtCore.exe"
@@ -56,5 +67,4 @@ exit
 :okkk
 echo File Core.tar created succesfull
 
-rmdir /Q /S %outputDir%
 pause
