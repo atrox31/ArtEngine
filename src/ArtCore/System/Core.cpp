@@ -573,7 +573,7 @@ int Core::Run()
             Render::DrawTextureBox(_instance._current_scene->BackGround.Texture, nullptr, nullptr);
         }else
         {
-            GPU_ClearColor(_instance._screenTarget, _instance._current_scene->BackGround.Color);
+            Render::RenderClear(_instance._current_scene->BackGround.Color);
         }
         // draw all instances if in view (defined in step event)
         if (_instance._current_scene->IsAnyInstances()) {

@@ -364,4 +364,4 @@ FodyWeavers.xsd
 test/
 Core/
 output/
-!src/SDL2
+!src/SDL2/SDL2/lib/x64

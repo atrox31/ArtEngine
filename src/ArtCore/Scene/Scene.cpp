@@ -69,6 +69,7 @@ bool Scene::Load(const std::string& name)
 	if (dv.GetData(std::string("setup"), std::string("BackGroundType")) == "DrawColor") {
 		BackGround.Type = Scene::BackGround::BType::DrawColor;
 		BackGround.Color = Convert::Hex2Color(dv.GetData(std::string("setup"), std::string("BackGroundColor")));
+		BackGround.Texture = nullptr;
 	}
 	else if (dv.GetData(std::string("setup"), "BackGroundType") == "DrawTexture") {
 		BackGround.Type = Scene::BackGround::BType::DrawTexture;

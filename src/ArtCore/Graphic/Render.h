@@ -46,7 +46,7 @@ public:
 
 	// system
 	static void RenderToTarget(GPU_Target* target);
-	static void RenderClear();
+	static void RenderClear(const SDL_Color& color = {0x00,0x00,0x00,0xFF});
 
 public:
 	// post process

@@ -263,7 +263,7 @@ void Render::SetGaussianProperties(int quality, int directions, float distance)
 }
 
 // clear all textures cache
-void Render::RenderClear()
+void Render::RenderClear(const SDL_Color& color)
 {
-	// for now not needed. If shaders used transparency clear it here
+	GPU_ClearColor(_instance->_screenTexture_target, color);
 }
