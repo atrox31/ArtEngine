@@ -264,6 +264,7 @@ private:
 	Script(scene_change);
 	Script(get_direction_of);
 	Script(instance_spawn);
+	Script(instance_spawn_on_point);
 	Script(instance_create);
 	Script(set_direction_for_target);
 	Script(set_direction);
@@ -294,6 +295,12 @@ private:
 	Script(code_execute_trigger);
 	Script(code_wait);
 	Script(game_exit);
+	Script(get_instance_position);
+	Script(get_instance_position_x);
+	Script(get_instance_position_y);
+	Script(instance_create_point);
+	Script(instance_delete_other);
+	Script(instance_find_by_tag);
 #undef Script
 };
 //end of file

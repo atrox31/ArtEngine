@@ -28,7 +28,7 @@ public:
 		_size = len - 1;
 		_pos = -1;
 		_current_bit = '\0';
-		Debug::NOTE_DEATH("Create Inspector");
+		//Debug::NOTE_DEATH("Create Inspector");
 	}
 
 	Inspector(const Inspector& copy)
@@ -55,7 +55,7 @@ public:
 
 	~Inspector() {
 		//delete _code;
-		Debug::NOTE_DEATH(" ~Inspector");
+		//Debug::NOTE_DEATH(" ~Inspector");
 	}
 
 	Inspector(Inspector&&) = default;

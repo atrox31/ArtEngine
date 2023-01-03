@@ -61,6 +61,7 @@ null scene_change_transmission(string scene, string transmission);[NOT_IMPLEMENT
 null scene_change(string scene);Change scene to <scene>;This is quick change, for transmission use scene_change_transmission[NOT_IMPLEMENTED_YET];
 float get_direction_of(instance target);Return direction of <instance> instance;Use with collision_get_collider, if target not exists return own direction
 instance instance_spawn(string name, float x, float y);Spawn object <string> at (<float>,<float>) and return reference to it;Ypu can use reference to pass arguments;
+instance instance_spawn_on_point(string name, point xy);Spawn object <string> at (<point>) and return reference to it;Ypu can use reference to pass arguments;
 null instance_create(string name, float x, float y);Spawn object <string> at (<float>,<float>) in current scene;This not return reference;
 null set_direction_for_target(instance target, float direction);Set <instance> direction to <float> value;You can get reference from id of instance
 null set_direction(float direction);Set current direction to <float>;
@@ -91,3 +92,9 @@ null gui_change_enabled(string guiTag, bool enable);Change enabled variable for 
 null code_execute_trigger(string trigger);Execute trigger <string> on current scene;Create this triggers in scene editor.
 null code_wait(int milliseconds);Suspend this trigger for <int> milliseconds
 null game_exit();Exit the game;
+point get_instance_position(instance instance);Get position of <instance>;
+float get_instance_position_x(instance instance);Get position X of <instance>;
+float get_instance_position_y(instance instance);Get position Y of <instance>;
+null instance_create_point(string name, point xy);Spawn object <string> at (<point>) in current scene;This not return reference;
+null instance_delete_other(instance instance);Delete <instance>;
+instance instance_find_by_tag(string tag);Find instance by tag: <string>;All tags must be unique, else returned instance is first found;

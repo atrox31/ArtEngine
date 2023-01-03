@@ -67,6 +67,7 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["scene_change"] = &CodeExecutor::scene_change;
 	FunctionsMap["get_direction_of"] = &CodeExecutor::get_direction_of;
 	FunctionsMap["instance_spawn"] = &CodeExecutor::instance_spawn;
+	FunctionsMap["instance_spawn_on_point"] = &CodeExecutor::instance_spawn_on_point;
 	FunctionsMap["instance_create"] = &CodeExecutor::instance_create;
 	FunctionsMap["set_direction_for_target"] = &CodeExecutor::set_direction_for_target;
 	FunctionsMap["set_direction"] = &CodeExecutor::set_direction;
@@ -97,5 +98,11 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["code_execute_trigger"] = &CodeExecutor::code_execute_trigger;
 	FunctionsMap["code_wait"] = &CodeExecutor::code_wait;
 	FunctionsMap["game_exit"] = &CodeExecutor::game_exit;
+	FunctionsMap["get_instance_position"] = &CodeExecutor::get_instance_position;
+	FunctionsMap["get_instance_position_x"] = &CodeExecutor::get_instance_position_x;
+	FunctionsMap["get_instance_position_y"] = &CodeExecutor::get_instance_position_y;
+	FunctionsMap["instance_create_point"] = &CodeExecutor::instance_create_point;
+	FunctionsMap["instance_delete_other"] = &CodeExecutor::instance_delete_other;
+	FunctionsMap["instance_find_by_tag"] = &CodeExecutor::instance_find_by_tag;
 }
 //end of file

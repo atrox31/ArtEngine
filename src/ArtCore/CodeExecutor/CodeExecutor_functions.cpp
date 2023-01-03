@@ -588,12 +588,14 @@ void CodeExecutor::instance_spawn(Instance*) {
 	const float x = StackIn_f;
 	const std::string obj_name = StackIn_s;
 	Instance* ref = Core::GetInstance()->_current_scene->CreateInstance(obj_name, x, y);
-	if (ref != nullptr) {
-		StackOut_ins(ref);
-	}
-	else {
-		StackOut_ins(nullptr);
-	}
+	StackOut_ins(ref);
+}
+//instance instance_spawn_on_point(string name, point xy);Spawn object <string> at (<point>) and return reference to it;Ypu can use reference to pass arguments;
+void CodeExecutor::instance_spawn_on_point(Instance*) {
+	const SDL_FPoint xy = StackIn_p;
+	const std::string obj_name = StackIn_s;
+	Instance* ref = Core::GetInstance()->_current_scene->CreateInstance(obj_name, xy.x, xy.y);
+	StackOut_ins(ref);
 }
 //null instance_create(string name, float x, float y);Spawn object <string> at (<float>,<float>) in current scene;This not return reference;
 void CodeExecutor::instance_create(Instance*) {
@@ -811,4 +813,63 @@ void CodeExecutor::code_wait(Instance* sender)
 void CodeExecutor::game_exit(Instance*)
 {
 	Core::Exit();
+}
+//point get_instance_position(instance instance);Get position of <instance>;
+void CodeExecutor::get_instance_position(Instance*)
+{
+	const Instance* instance = StackIn_ins;
+	if (instance == nullptr)
+	{
+		Break();
+		return;
+	}
+	const SDL_FPoint new_point = { instance->PosX, instance->PosY };
+	StackOut_p(new_point);
+}
+//float get_instance_position_x(instance instance);Get position X of <instance>;
+void CodeExecutor::get_instance_position_x(Instance*)
+{
+	const Instance* instance = StackIn_ins;
+	if (instance == nullptr)
+	{
+		Break();
+		return;
+	}
+	StackOut_f(instance->PosX);
+}
+//float get_instance_position_y(instance instance);Get position Y of <instance>;
+void CodeExecutor::get_instance_position_y(Instance*)
+{
+	const Instance* instance = StackIn_ins;
+	if (instance == nullptr)
+	{
+		Break();
+		return;
+	}
+	StackOut_f(instance->PosY);
+}
+
+//null instance_create_point(string name, point xy);Spawn object <string> at (<point>) in current scene;This not return reference;
+void CodeExecutor::instance_create_point(Instance*) {
+	const SDL_FPoint xy = StackIn_p;
+	const std::string obj_name = StackIn_s;
+	Core::GetInstance()->_current_scene->CreateInstance(obj_name, xy.x, xy.y);
+}
+
+//null instance_delete_other(instance instance);Delete <instance>;
+void CodeExecutor::instance_delete_other(Instance*) {
+	Instance* instance = StackIn_ins;
+	if (instance == nullptr)
+	{
+		Break();
+		return;
+	}
+	instance->Delete();
+}
+
+//instance instance_find_by_tag(string tag);Find instance by tag: <string>;All tags must be unique, else returned instance is first found;
+void CodeExecutor::instance_find_by_tag(Instance*) {
+	const std::string tag = StackIn_s;
+	Instance* instance = Core::GetInstance()->_current_scene->GetInstanceByTag(tag);
+	StackOut_ins(instance);
 }
