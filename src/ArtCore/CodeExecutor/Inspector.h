@@ -18,22 +18,49 @@ public:
 
 	[[nodiscard]] int DebugGetCurrentPos() const
 	{
-		return (int)_pos;
+		return static_cast<int>(_pos);
 	}
 
-	Inspector(const unsigned char* code, const Sint64 len, const std::string& fname) {
-		_f_name = fname;
+	Inspector(const unsigned char* code, const Sint64 len, const std::string& code_name) {
+		_f_name = code_name;
 #endif
 		_code = code;
 		_size = len - 1;
 		_pos = -1;
 		_current_bit = '\0';
+		Debug::NOTE_DEATH("Create Inspector");
 	}
 
-	virtual ~Inspector() {
+	Inspector(const Inspector& copy)
+	{
+#ifdef _DEBUG
+		_f_name = copy._f_name;
+#endif
+		_code = copy._code;
+		_size = copy._size;
+		_pos = copy._pos;
+		_current_bit = copy._current_bit;
+	}
+
+	Inspector()
+	{
+		_code = nullptr;
+		_size = 0;
+		_pos = 0;
+		_current_bit = 0;
+#ifdef _DEBUG
+		_f_name = "";
+#endif
+	}
+
+	~Inspector() {
 		//delete _code;
 		Debug::NOTE_DEATH(" ~Inspector");
 	}
+
+	Inspector(Inspector&&) = default;
+	Inspector& operator=(const Inspector&) = default;
+	Inspector& operator=(Inspector&&) = default;
 
 	[[nodiscard]] Sint64 GetLength() const
 	{
@@ -66,7 +93,7 @@ public:
 				_current_bit = _code[_pos];
 				return string;
 			}
-			string += _code[_pos++];
+			string += static_cast<char>(_code[_pos++]);
 		}
 		return "";
 	}
@@ -127,7 +154,9 @@ public:
 	}
 
 	int GetInt() {
-		return Func::TryGetInt(GetString());
+		const int32_t result = (GetBit() << 24 | GetBit() << 16 | GetBit() << 8 | GetBit());
+		return result;
+		//return Func::TryGetInt(GetString());
 	}
 
 	float GetFloat() {
@@ -139,5 +168,7 @@ private:
 	Sint64 _size;
 	Sint64 _pos;
 	unsigned char _current_bit;
+#ifdef _DEBUG
 	std::string _f_name;
+#endif
 };

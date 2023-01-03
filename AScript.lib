@@ -89,3 +89,5 @@ null draw_text_in_frame(font font, string text, float x, float y, color text_col
 null gui_change_visibility(string guiTag, bool visible);Change visibility variable for <string> to <bool>;Give path to element panel1/button1 by tags. Root is in default first tag do not include it
 null gui_change_enabled(string guiTag, bool enable);Change enabled variable for <string> to <bool>;Give path to element panel1/button1 by tags. Root is in default first tag do not include it
 null code_execute_trigger(string trigger);Execute trigger <string> on current scene;Create this triggers in scene editor.
+null code_wait(int milliseconds);Suspend this trigger for <int> milliseconds
+null game_exit();Exit the game;

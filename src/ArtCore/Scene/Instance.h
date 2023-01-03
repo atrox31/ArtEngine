@@ -14,8 +14,8 @@ public:
 	~Instance();
 
 	[[nodiscard]] Uint64 GetId() const { return _id; }
-	void Delete() { Alive = false; }
-	[[nodiscard]] int GetInstanceDefinitionId() const {	return _instanceDefinitionId; }
+	void Delete();
+	[[nodiscard]] int GetInstanceDefinitionId() const {	return _instance_definition_id; }
 
 	void DrawSelf();
 	bool CheckMaskClick(SDL_FPoint&) const;
@@ -58,7 +58,7 @@ public:
 	std::vector<std::string> Variables_string;
 	event_bit EventFlag;
 
-	
+	bool SuspendedCodeState(const bool state);
 	bool CollideTest(const Instance*) const;
 private:
 	[[nodiscard]] bool CollisionCircleCircle(float c1x, float c1y, float c1r,float c2x, float c2y, float c2r) const;
@@ -86,5 +86,6 @@ public:
 private:
 	Uint64 _id = 0;
 	static Uint64 _cid;
-	int _instanceDefinitionId;
+	int _instance_definition_id;
+	uint8_t _have_suspended_code;
 };

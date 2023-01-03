@@ -1,5 +1,6 @@
 #include "Instance.h"
 
+#include "ArtCore/CodeExecutor/CodeExecutor.h"
 #include "ArtCore/Functions/Func.h"
 #include "ArtCore/Graphic/ColorDefinitions.h"
 #include "ArtCore/Graphic/Render.h"
@@ -9,7 +10,7 @@
 Uint64 Instance::_cid = 0;
 Instance::Instance(const int instance_definition_id)
 {
-	this->_instanceDefinitionId = instance_definition_id;
+	this->_instance_definition_id = instance_definition_id;
 	this->Tag = "undefined";
 	this->Name = "no_name";
 
@@ -32,6 +33,8 @@ Instance::Instance(const int instance_definition_id)
 	this->SpriteAnimationSpeed = 60.0f;
 	this->SpriteAnimationLoop = true;
 	this->EventFlag = event_bit::NONE;
+
+	this->_have_suspended_code = false;
 }
 
 Instance* Instance::GiveId()
@@ -43,6 +46,45 @@ Instance* Instance::GiveId()
 Instance::~Instance()
 {
 	Debug::NOTE_DEATH("[Instance::~Instance]: "+ Name + "'[" + (_id==0?"template": std::to_string(_id)) + "]");
+}
+
+void Instance::Delete()
+{
+	Alive = false;
+	if(_have_suspended_code > 0)
+	{
+		CodeExecutor::SuspendedCodeDeleteInstance(this);
+	}
+}
+
+/**
+ * \brief Check if can add more suspended state to instance (max is 255)
+ * \param state true if add and false if sub
+ * \return Answer is can add more state
+ */
+bool Instance::SuspendedCodeState(const bool state)
+{
+	if (state)
+	{
+		_have_suspended_code += 1;
+		if (_have_suspended_code == 0)
+		{
+			_have_suspended_code -= 1;
+			Debug::WARNING("Cannot add more suspended code to instance (max 255)!");
+			return false;
+		}
+		return true;
+	}else
+	{
+		_have_suspended_code -= 1;
+		if(_have_suspended_code == 0xFF)
+		{
+			_have_suspended_code = 0;
+			Debug::WARNING("Cannot remove suspended code to instance, there is no suspended state");
+			return false;
+		}
+		return true;
+	}
 }
 
 void Instance::DrawSelf()

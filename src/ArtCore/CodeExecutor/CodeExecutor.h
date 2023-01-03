@@ -17,7 +17,7 @@ public:
 	CodeExecutor();
 	void MapFunctions();
 	bool LoadArtLib();
-	bool LoadObjectDefinitions(BackGroundRenderer* bgr, const int p_min, const int p_max);
+	bool LoadObjectDefinitions(const BackGroundRenderer* bgr, const int p_min, const int p_max);
 	bool LoadSceneTriggers();
 	void Delete();
 
@@ -138,14 +138,48 @@ private:
 	[[nodiscard]] Inspector* CreateInspector(const std::string& code_file) const;
 	// helpers
 	static bool _break;
-	// Break from current script, rise ASSERT if in debug mode
+	// Break from current script
 	static void Break();
-	 void h_execute_script(Inspector*, Instance*);
-	void h_execute_function(Inspector* , Instance*);
-	 void h_get_value(Inspector*, Instance*);
-	 int	 h_if_test(Inspector* code, Instance* instance);
-	 void h_get_local_value(Inspector* code, Instance* instance);
-	 bool h_compare(int type, int oper);
+	// list of suspended code <time, code>
+	struct SuspendCodeStruct final
+	{
+		double Time;
+		Inspector CodeData;
+		Instance* Sender;
+		SuspendCodeStruct()
+		{
+			Time = 0.0;
+			CodeData = Inspector();
+			Sender = nullptr;
+		}
+		SuspendCodeStruct(const double time, const Inspector* code_data, Instance* sender){
+			Time = time;
+			CodeData = Inspector(*code_data); // copy
+			Sender = sender;
+			CodeExecutor::_have_suspended_code = true;
+		}
+		~SuspendCodeStruct()
+		{
+			Debug::NOTE_DEATH("~SuspendCodeStruct");
+			CodeExecutor::_have_suspended_code = CodeExecutor::_suspended_code.empty();
+		}
+	};
+	static std::vector<SuspendCodeStruct> _suspended_code;
+	static bool _have_suspended_code;
+public:
+	static void SuspendedCodeStop();
+	static void SuspendedCodeAdd(double time, const Inspector* code_data, Instance* sender);
+	static void SuspendedCodeExecute();
+	static void SuspendedCodeDeleteInstance(const Instance* sender);
+private:
+	Inspector* _current_inspector = nullptr;
+
+	void	h_execute_script(Inspector*, Instance*);
+	void	h_execute_function(Inspector* , Instance*);
+	void	h_get_value(Inspector*, Instance*);
+	int		h_if_test(Inspector* code, Instance* instance);
+	void	h_get_local_value(Inspector* code, Instance* instance);
+	bool	h_compare(int type, int operation);
 
 	//std::string h_operation(int operation, std::string value1, std::string value2);
 	static int h_operation_int(int _operator, int val1, int val2);
@@ -258,6 +292,8 @@ private:
 	Script(gui_change_visibility);
 	Script(gui_change_enabled);
 	Script(code_execute_trigger);
+	Script(code_wait);
+	Script(game_exit);
 #undef Script
 };
 //end of file

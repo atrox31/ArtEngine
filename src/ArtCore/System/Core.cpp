@@ -149,7 +149,7 @@ bool Core::Init(int argc, char* args[])
         return false;
     }Debug::LOG("PHYSFS_init");
     // primary game data
-    if (!PHYSFS_mount(fl_game_dat_file, NULL, 0))
+    if (!PHYSFS_mount(fl_game_dat_file, nullptr, 0))
     {
         std::string err(PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
         Debug::ERROR( "Error when reading 'game.dat'. Reason: " + err + "\n" + fl_game_dat_file);
@@ -564,8 +564,9 @@ int Core::Run()
                 } // step loop
             } // is any instance
         } // if game_loop
-           
 
+        // execute all suspended code
+        CodeExecutor::SuspendedCodeExecute();
 
 		// render scene background
         if (_instance._current_scene->BackGround.Texture != nullptr) {
@@ -714,6 +715,7 @@ bool Core::ChangeScene(const std::string& name)
         // exit scene
         _current_scene->Exit();
     }
+    CodeExecutor::SuspendedCodeStop();
 
     Scene* new_scene = new Scene();
     if(new_scene->Load(name))
@@ -721,6 +723,11 @@ bool Core::ChangeScene(const std::string& name)
         _current_scene = new_scene;
         if (_current_scene->Start()) {
             return true;
+        }
+        else
+        {
+            delete new_scene;
+            Debug::ERROR("[Core::ChangeScene] Error while starting new scene.");
         }
     }else
     {
@@ -733,12 +740,16 @@ bool Core::ChangeScene(const std::string& name)
             if (_current_scene->Start()) {
                 return true;
             }
+            else
+            {
+                delete primary_scene;
+                Debug::ERROR("[Core::ChangeScene] Error while starting primary scene.");
+            }
         }else
         {
             delete primary_scene;
             Debug::ERROR("[Core::ChangeScene] Error while load primary scene.");
         }
-        return false;
     }
     return false;
 }

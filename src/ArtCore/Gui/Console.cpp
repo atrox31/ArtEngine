@@ -111,7 +111,7 @@ bool Console::ProcessKey(const SDL_KeyCode key)
 	}break;
 	case SDLK_UP:
 	{
-		const Uint8* state = SDL_GetKeyboardState(NULL);
+		const Uint8* state = SDL_GetKeyboardState(nullptr);
 		if (state[SDL_SCANCODE_LCTRL]) {
 			if (m_console_page < int(m_console_str.size()) - m_console_block + 1) {
 				m_console_page++;
@@ -124,7 +124,7 @@ bool Console::ProcessKey(const SDL_KeyCode key)
 		}
 	}break;
 	case SDLK_DOWN: {
-		const Uint8* state = SDL_GetKeyboardState(NULL);
+		const Uint8* state = SDL_GetKeyboardState(nullptr);
 		if (state[SDL_SCANCODE_LCTRL]) {
 			if (m_console_page > 0) {
 				m_console_page--;

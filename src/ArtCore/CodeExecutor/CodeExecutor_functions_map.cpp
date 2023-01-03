@@ -95,5 +95,7 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["gui_change_visibility"] = &CodeExecutor::gui_change_visibility;
 	FunctionsMap["gui_change_enabled"] = &CodeExecutor::gui_change_enabled;
 	FunctionsMap["code_execute_trigger"] = &CodeExecutor::code_execute_trigger;
+	FunctionsMap["code_wait"] = &CodeExecutor::code_wait;
+	FunctionsMap["game_exit"] = &CodeExecutor::game_exit;
 }
 //end of file

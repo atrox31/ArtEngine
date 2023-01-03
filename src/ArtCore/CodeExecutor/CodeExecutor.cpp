@@ -19,23 +19,29 @@ AStack<SDL_FPoint> CodeExecutor::GlobalStack_point = AStack<SDL_FPoint>();
 AStack<Rect> CodeExecutor::GlobalStack_rect = AStack<Rect>();
 AStack<SDL_Color> CodeExecutor::GlobalStack_color = AStack<SDL_Color>();
 AStack<std::string> CodeExecutor::GlobalStack_string = AStack<std::string>();
+
 bool CodeExecutor::_break;
+
+std::vector<CodeExecutor::SuspendCodeStruct> CodeExecutor::_suspended_code;
+bool CodeExecutor::_have_suspended_code;
 CodeExecutor::CodeExecutor()
 {
 	FunctionsMap = std::map<std::string, void(*)(Instance*)>();
 	FunctionsList = std::vector<void(*)(Instance*)>() ;
 	_instance_definitions = std::vector<InstanceDefinition>();
 	_break = false;
+	_suspended_code = std::vector<CodeExecutor::SuspendCodeStruct>();
+	_have_suspended_code = false;
 }
 
 bool CodeExecutor::LoadArtLib()
 {
 	MapFunctions();
-	char* buffer = Func::GetFileBuf("files/AScript.lib", nullptr);
-	if (buffer == NULL) {
+	const char* buffer = Func::GetFileBuf("files/AScript.lib", nullptr);
+	if (buffer == nullptr) {
 		return false;
 	}
-	const std::string data = std::string(buffer);
+	const std::string data(buffer);
 	std::vector<std::string> lines = Func::Explode(data, '\n');
 	
 	if (lines.empty()) {
@@ -47,29 +53,24 @@ bool CodeExecutor::LoadArtLib()
 
 	for (std::string& line : lines) {
 		if (line.substr(0,2) == "//") continue;
-		//point new_point(float x,float y)
-		
 		// tokenize
 		int phase = 0;
 		std::string tmp;
-		for (const char i : line)
+		for (const char c : line)
 		{
 			switch (phase) {
 			case 0:
-				if (i == ' ') {
+				if (c == ' ') {
 					phase++;
-					//ArtLib.back()._return = tmp;
 					tmp = "";
 				}
 				else {
-					tmp += i;
+					tmp += c;
 				}
 				break;
 			case 1:
-				if (i == '(') {
+				if (c == '(') {
 					phase++;
-					//ArtLib.back()._name = tmp;  FunctionsList
-
 					if (FunctionsMap.contains(tmp)) {
 						FunctionsList.push_back(FunctionsMap[tmp]);
 						FunctionsMap.erase(tmp);
@@ -78,12 +79,11 @@ bool CodeExecutor::LoadArtLib()
 						FunctionsList.push_back(nullptr);
 						Debug::WARNING("function '"+ tmp+ "' not found");
 					}
-
 					tmp = "";
 					break;
 				}
 				else {
-					tmp += i;
+					tmp += c;
 				}
 				break;
 			}
@@ -136,7 +136,7 @@ Inspector* CodeExecutor::CreateInspector(const std::string& code_file) const
 	return inspector;
 }
 
-bool CodeExecutor::LoadObjectDefinitions(BackGroundRenderer* bgr, const int p_min, const int p_max)
+bool CodeExecutor::LoadObjectDefinitions(const BackGroundRenderer* bgr, const int p_min, const int p_max)
 {
 	const std::unique_ptr<Inspector> code = std::make_unique<Inspector>( *CreateInspector("object_compile.acp"));
 	// object definitions
@@ -261,19 +261,25 @@ bool CodeExecutor::LoadSceneTriggers()
 				instance.AddVariable(variable_type, code->GetString());
 			}
 			else {
-				Debug::ERROR("LoadSceneTriggers: '"+ o_name+ "' - expected 'LOCAL_VARIABLE_DEFINITION' but " + std::to_string(code->Current()) + " is given");SDL_assert(false); return false;
+				Debug::ERROR("LoadSceneTriggers: '"+ o_name+ "' - expected 'LOCAL_VARIABLE_DEFINITION' but " + std::to_string(code->Current()) + " is given");
+				ASSERT(false, "x01"); return false;
 			}
 		} // variables
 
 		// events
 		while (code->GetNextCommand() != COMMAND::END || code->IsEnd()) {
-			if (code->GetCurrentCommand() == COMMAND::FUNCTION_DEFINITION) {
+			if (code->GetCurrentCommand() != COMMAND::FUNCTION_DEFINITION) {
+				Debug::WARNING("LoadSceneTriggers: '" + o_name + "' - expected 'FUNCTION_DEFINITION' but " + std::to_string(code->Current()) + " is given");
+				ASSERT(false, "x02"); return false;
+			}
+			else {
 				std::string e_name = code->GetString();
 				const int f_size = code->GetBit();
 				const unsigned char* f_code = code->GetChunk(f_size);
 				if ((ArtCode::Command)f_code[f_size - 1] != COMMAND::END) {
 
-					Debug::ERROR("LoadSceneTriggers: '" + o_name + "' - expected 'END' but " + std::to_string(f_code[f_size - 1]) + " is given"); SDL_assert(false); return false;
+					Debug::ERROR("LoadSceneTriggers: '" + o_name + "' - expected 'END' but " + std::to_string(f_code[f_size - 1]) + " is given");
+					ASSERT(false, "x03"); return false;
 				}
 				// scene accept only def values event, every other is trigger
 				if (Event_fromString(e_name) == Event::DEF_VALUES) {
@@ -281,7 +287,12 @@ bool CodeExecutor::LoadSceneTriggers()
 					ExecuteCode(instance.Template, &def_values_code);
 				}else
 				{
-					if(const std::vector<std::string> trigger_type = Func::Split(e_name, '&'); trigger_type.size() == 2)
+					if(const std::vector<std::string> trigger_type = Func::Split(e_name, '&'); trigger_type.size() != 2)
+					{
+						//error
+						Debug::WARNING("LoadSceneTriggers: '" + o_name + "' - expected 'trigger_type.size() == 2' but " + std::to_string(trigger_type.size()) + " is given");
+						ASSERT(false, "x04"); return false;
+					}else
 					{
 						if(trigger_type[0] == "scene")
 						{
@@ -290,36 +301,27 @@ bool CodeExecutor::LoadSceneTriggers()
 						}else
 						{
 							// gui element action
-							if (const std::vector<std::string> gui_element_type = Func::Split(trigger_type[0], '#'); gui_element_type.size() == 2)
+							if (const std::vector<std::string> gui_element_type = Func::Split(trigger_type[0], '#'); gui_element_type.size() != 2)
+							{//error
+								Debug::WARNING("LoadSceneTriggers: '" + o_name + "' - expected 'gui_element_type.size() == 2' but " + std::to_string(gui_element_type.size()) + " is given");
+								ASSERT(false, "x05"); return false;
+							}else
 							{
 								Gui::GuiElementTemplate* element = Core::GetInstance()->_current_scene->GuiSystem.GetElementById(gui_element_type[1]);
 								if (element != nullptr)
 								{
 									element->SetCallback(Gui::GuiElementTemplate::EvCallback_fromString(trigger_type[1]),
-										std::pair<const unsigned char*, Uint64>(f_code, f_size)
+									                     std::pair<const unsigned char*, Uint64>(f_code, f_size)
 									);
 								}else
 								{//error
 									Debug::WARNING("LoadSceneTriggers: '" + o_name + "' - 'GuiSystem.GetElementById("+ gui_element_type[0]+"' == nullptr");
-									SDL_assert(false); return false;
+									ASSERT(false, "x06"); return false;
 								}
-							}else
-							{//error
-								Debug::WARNING("LoadSceneTriggers: '" + o_name + "' - expected 'gui_element_type.size() == 2' but " + std::to_string(gui_element_type.size()) + " is given");
-								SDL_assert(false); return false;
 							}
 						}
-					}else
-					{
-						//error
-						Debug::WARNING("LoadSceneTriggers: '" + o_name + "' - expected 'trigger_type.size() == 2' but " + std::to_string(trigger_type.size()) + " is given");
-						SDL_assert(false); return false;
 					}
 				}
-			}
-			else {
-				Debug::WARNING("LoadSceneTriggers: '" + o_name + "' - expected 'FUNCTION_DEFINITION' but " + std::to_string(code->Current()) + " is given");
-				SDL_assert(false); return false;
 			}
 		} //events
 
@@ -327,7 +329,7 @@ bool CodeExecutor::LoadSceneTriggers()
 		if (code->GetCurrentCommand() != COMMAND::END) {
 			
 			Debug::WARNING("LoadSceneTriggers 'END' but " + std::to_string(code->Current()) + " is given");
-			SDL_assert(false); return false;
+			ASSERT(false, "x07"); return false;
 		}
 
 		// execute only starting event
@@ -439,6 +441,55 @@ void CodeExecutor::Break()
 	_break = true;
 }
 
+void CodeExecutor::SuspendedCodeStop()
+{
+	_suspended_code.clear();
+	_have_suspended_code = false;
+}
+
+void CodeExecutor::SuspendedCodeAdd(const double time, const Inspector* code_data, Instance* sender)
+{
+	if (sender->SuspendedCodeState(true)) {
+		_suspended_code.emplace_back(time, code_data, sender);
+	}
+}
+
+void CodeExecutor::SuspendedCodeExecute()
+{
+	if (!_have_suspended_code) return;
+
+	for (auto it = _suspended_code.begin(); it != _suspended_code.end(); )
+	{
+		(*it).Time -= 1000.0 * Core::GetInstance()->DeltaTime;
+		if((*it).Time <= 0.0)
+		{
+			if ((*it).Sender->SuspendedCodeState(false)) {
+				_break = false;
+				Core::GetInstance()->Executor->h_execute_script(&(*it).CodeData, (*it).Sender);
+			}
+			it = _suspended_code.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
+}
+
+void CodeExecutor::SuspendedCodeDeleteInstance(const Instance* sender)
+{
+	if (!_have_suspended_code) return;
+	for (auto it = _suspended_code.begin(); it != _suspended_code.end(); )
+	{
+		if((*it).Sender->GetId() == sender->GetId())
+		{
+			it = _suspended_code.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
+}
+
 void CodeExecutor::h_execute_script(Inspector* code, Instance* instance)
 {
 	/*
@@ -446,6 +497,7 @@ void CodeExecutor::h_execute_script(Inspector* code, Instance* instance)
 							WriteBit(ref->CodeId);
 							WriteValue(var->Type, var->index);
 	* */
+	_current_inspector = code;
 	if (_break) return;
 	while (!code->IsEnd()) {
 		if (_break) return;
@@ -820,13 +872,13 @@ std::string CodeExecutor::h_operation_string(const int _operator, std::string va
 	return val2;
 }
 
-bool CodeExecutor::h_compare(const int type, const int oper)
+bool CodeExecutor::h_compare(const int type, const int operation)
 {
 	//	0		1		2		3		4		5		6		7
 	//	"||",	"&&",	"<<",	">>",	">=",	"<=",	"!=",	"=="
-	//int oper = GlobalStack_int.Get();
+	//int operation = GlobalStack_int.Get();
 
-	switch (oper) {
+	switch (operation) {
 	case 0://	"||",
 	{
 		switch (type) {

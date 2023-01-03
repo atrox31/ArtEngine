@@ -800,3 +800,15 @@ void CodeExecutor::code_execute_trigger(Instance*)
 		Core::GetInstance()->_current_scene->GetTriggerData(trigger));
 
 }
+//null code_wait(int milliseconds);Suspend this trigger for <int> milliseconds
+void CodeExecutor::code_wait(Instance* sender)
+{
+	const int milliseconds = StackIn_i;
+	CodeExecutor::SuspendedCodeAdd((double)milliseconds, Core::GetInstance()->Executor->_current_inspector, sender);
+	Break();
+}
+//null game_exit();Exit the game;
+void CodeExecutor::game_exit(Instance*)
+{
+	Core::Exit();
+}
