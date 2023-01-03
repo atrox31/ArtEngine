@@ -1,5 +1,12 @@
 # How to run this?
 Download release or clone and compile code. Move "assets.pak" and "game.dat" from any project to the folder that contains ArtCore.exe and run the executable.</br>
+Project has two depetences:
+1. Boost-preprocestor used for enum to string conversions<br>To install type:
+> vcpkg install boost-preprocessor:x64-windows
+2. Google test api, used for tests<br>To install type:
+> vcpkg gtest:x64-windows <br>
+
+[!] IMPORTANT, ArtCore is build only for x64, old x86 will not work
 
 # How to create Core.tar?
 Download release or clone and compile ArtCompiller. Copy Release binary to the main ArtCore folder and run "create_core_tar.bat". When script completes his tasks create file Core.tar that ArtEditor needs to run. THis update file contains necessary files, fonts, shaders and binarys to properly run the game.
