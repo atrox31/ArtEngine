@@ -11,25 +11,25 @@ public:
 	Rect(int x, int y, int w, int h);
 	Rect(float x, float y, float w, float h);
 
-	Rect operator+(SDL_FPoint& p) const;
-	Rect operator-(SDL_FPoint& p) const;
-	Rect operator+=(SDL_FPoint& p);
-	Rect operator-=(SDL_FPoint& p);
+	Rect operator+(const SDL_FPoint& p) const;
+	Rect operator-(const SDL_FPoint& p) const;
+	Rect operator+=(const SDL_FPoint& p);
+	Rect operator-=(const SDL_FPoint& p);
 
-	Rect operator+(SDL_Point& p) const;
-	Rect operator-(SDL_Point& p) const;
-	Rect operator+=(SDL_Point& p);
-	Rect operator-=(SDL_Point& p);
+	Rect operator+(const SDL_Point& p) const;
+	Rect operator-(const SDL_Point& p) const;
+	Rect operator+=(const SDL_Point& p);
+	Rect operator-=(const SDL_Point& p);
 
-	Rect operator*(int& i) const;
-	Rect operator*(float& i) const;
-	Rect operator/(int& i) const;
-	Rect operator/(float& i) const;
+	Rect operator*(const int& i) const;
+	Rect operator*(const float& i) const;
+	Rect operator/(const int& i) const;
+	Rect operator/(const float& i) const;
 
-	Rect operator*=(int& i);
-	Rect operator*=(float& i);
-	Rect operator/=(int& i);
-	Rect operator/=(float& i);
+	Rect operator*=(const int& i);
+	Rect operator*=(const float& i);
+	Rect operator/=(const int& i);
+	Rect operator/=(const float& i);
 
 	bool operator==(Rect const& a) const;
 	bool operator!=(Rect const& a) const;

@@ -8,7 +8,7 @@ Rect::Rect()
 	this->h = 0.0f;
 }
 
-Rect::Rect(GPU_Rect rect)
+Rect::Rect(const GPU_Rect rect)
 {
 	this->x = rect.x;
 	this->y = rect.y;
@@ -16,7 +16,7 @@ Rect::Rect(GPU_Rect rect)
 	this->h = rect.h;
 }
 
-Rect::Rect(int x, int y, int w, int h)
+Rect::Rect(const int x, const int y, const int w, const int h)
 {
 	this->x = (float)x;
 	this->y = (float)y;
@@ -24,7 +24,7 @@ Rect::Rect(int x, int y, int w, int h)
 	this->h = (float)h;
 }
 
-Rect::Rect(float x, float y, float w, float h)
+Rect::Rect(const float x, const float y, const float w, const float h)
 {
 	this->x = x;
 	this->y = y;
@@ -32,17 +32,17 @@ Rect::Rect(float x, float y, float w, float h)
 	this->h = h;
 }
 
-Rect Rect::operator+(SDL_FPoint& p) const
+Rect Rect::operator+(const SDL_FPoint& p) const
 {
 	return {x + p.x, y + p.y, w + p.x, y + p.y};
 }
 
-Rect Rect::operator-(SDL_FPoint& p) const
+Rect Rect::operator-(const SDL_FPoint& p) const
 {
 	return {x - p.x, y - p.y, w - p.x, h - p.y};
 }
 
-Rect Rect::operator+=(SDL_FPoint& p)
+Rect Rect::operator+=(const SDL_FPoint& p)
 {
 	x += p.x;
 	y += p.y;
@@ -51,7 +51,7 @@ Rect Rect::operator+=(SDL_FPoint& p)
 	return *this;
 }
 
-Rect Rect::operator-=(SDL_FPoint& p)
+Rect Rect::operator-=(const SDL_FPoint& p)
 {
 	x -= p.x;
 	y -= p.y;
@@ -60,17 +60,17 @@ Rect Rect::operator-=(SDL_FPoint& p)
 	return *this;
 }
 
-Rect Rect::operator+(SDL_Point& p) const
+Rect Rect::operator+(const SDL_Point& p) const
 {
 	return {x + (float)p.x, y + (float)p.y, w + (float)p.x, h + (float)p.y};
 }
 
-Rect Rect::operator-(SDL_Point& p) const
+Rect Rect::operator-(const SDL_Point& p) const
 {
 	return {x - (float)p.x, y - (float)p.y, w - (float)p.x, h - (float)p.y};
 }
 
-Rect Rect::operator+=(SDL_Point& p)
+Rect Rect::operator+=(const SDL_Point& p)
 {
 	x += (float)p.x;
 	y += (float)p.y;
@@ -79,7 +79,7 @@ Rect Rect::operator+=(SDL_Point& p)
 	return *this;
 }
 
-Rect Rect::operator-=(SDL_Point& p)
+Rect Rect::operator-=(const SDL_Point& p)
 {
 	x -= (float)p.x;
 	y -= (float)p.y;
@@ -88,27 +88,27 @@ Rect Rect::operator-=(SDL_Point& p)
 	return *this;
 }
 
-Rect Rect::operator*(int& i) const
+Rect Rect::operator*(const int& i) const
 {
 	return {x - (float)i, y - (float)i, w + (float)i, h + (float)i};
 }
 
-Rect Rect::operator*(float& i) const
+Rect Rect::operator*(const float& i) const
 {
 	return {x - i, y - i, w + i, h + i};
 }
 
-Rect Rect::operator/(int& i) const
+Rect Rect::operator/(const int& i) const
 {
 	return {x + (float)i, y + (float)i, w - (float)i, h - (float)i};
 }
 
-Rect Rect::operator/(float& i) const
+Rect Rect::operator/(const float& i) const
 {
 	return {x + i, y + i, w - i, h - i};
 }
 
-Rect Rect::operator*=(int& i)
+Rect Rect::operator*=(const int& i)
 {
 	x -= (float)i;
 	y -= (float)i;
@@ -117,7 +117,7 @@ Rect Rect::operator*=(int& i)
 	return *this;
 }
 
-Rect Rect::operator*=(float& i)
+Rect Rect::operator*=(const float& i)
 {
 	x -= i;
 	y -= i;
@@ -126,7 +126,7 @@ Rect Rect::operator*=(float& i)
 	return *this;
 }
 
-Rect Rect::operator/=(int& i)
+Rect Rect::operator/=(const int& i)
 {
 	x += (float)i;
 	y += (float)i;
@@ -135,7 +135,7 @@ Rect Rect::operator/=(int& i)
 	return *this;
 }
 
-Rect Rect::operator/=(float& i)
+Rect Rect::operator/=(const float& i)
 {
 	x += i;
 	y += i;
@@ -153,15 +153,15 @@ bool Rect::operator!=(Rect const& a) const
 	return ((int)x != (int)a.x && (int)y != (int)a.y && (int)w != (int)a.w && (int)h != (int)a.h);
 }
 
-void Rect::Rotate(float deg)
+void Rect::Rotate(const float deg)
 {
-	float theta = (float)((double)deg / 180.0 * M_PI);
-	float c = cos(theta);
-	float s = sin(theta);
-	float tx_x = x * c - y * s;
-	float ty_y = x * s + y * c;
-	float tx_w = w * c - h * s;
-	float ty_h = w * s + h * c;
+	const float theta = (float)((double)deg / 180.0 * M_PI);
+	const float c = cos(theta);
+	const float s = sin(theta);
+	const float tx_x = x * c - y * s;
+	const float ty_y = x * s + y * c;
+	const float tx_w = w * c - h * s;
+	const float ty_h = w * s + h * c;
 	x = tx_x;
 	y = ty_y;
 	w = tx_w;
