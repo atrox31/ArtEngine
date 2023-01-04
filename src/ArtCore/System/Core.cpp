@@ -289,6 +289,74 @@ bool Core::Init(int argc, char* args[])
     return true;
 }
 
+bool Core::ProcessCoreKeys(Sint32 sym)
+{
+#ifdef _DEBUG
+    if (sym == SDLK_F1) {
+        _debug_show_info = !_debug_show_info;
+        return true;
+    }
+    if (sym == SDLK_F2) {
+        _debug_show_stats = !_debug_show_stats;
+        return true;
+    }
+    if (sym == SDLK_F3) {
+        if (_debug_show_spy)
+        {
+            _debug_show_spy = false;
+        }
+        else
+        {
+            _debug_show_spy = true;
+            _debug_spy_line_begin = 0;
+            _debug_spy_line_max = static_cast<int>(Func::Split(Executor->DebugGetTrackInfo(), '\n').size());
+            _debug_spy_line_end = static_cast<int>(std::min(_debug_spy_line_max, 16));
+        }
+        return true;
+    }
+    if (sym == SDLK_PAGEUP && _debug_show_spy)
+    {
+	    if(_debug_spy_line_begin > 0)
+	    {
+            _debug_spy_line_begin--;
+            _debug_spy_line_end--;
+	    }
+    }
+    if (sym == SDLK_PAGEDOWN && _debug_show_spy)
+    {
+        if (_debug_spy_line_end < _debug_spy_line_max)
+        {
+            _debug_spy_line_begin++;
+            _debug_spy_line_end++;
+        }
+    }
+#endif // _DEBUG
+    if (sym == SDLK_F4) {
+        _show_fps = !_show_fps;
+        return true;
+    }
+    if (sym == SDLK_F5) {
+        use_bloom = !use_bloom;
+        return true;
+    }
+    if (sym == SDLK_F6) { // low
+        Render::SetGaussianProperties(4, 4, 0.0205f);
+        use_bloom_level = 1;
+        return true;
+    }
+    if (sym == SDLK_F7) { // medium
+        Render::SetGaussianProperties(8, 8, 0.0205f);
+        use_bloom_level = 2;
+        return true;
+    }
+    if (sym == SDLK_F8) { // high
+        Render::SetGaussianProperties(16, 16, 0.0205f);
+        use_bloom_level = 3;
+        return true;
+    }
+    return false;
+}
+
 
 SDL_Window* Core::GetWindowHandle()
 {
@@ -332,11 +400,6 @@ Uint32 Core::FpsCounterCallback(Uint32 interval, void* parms)
 
 int Core::Run()
 {
-#ifdef _DEBUG
-    bool debug_show_info = false;
-    bool debug_show_stats = false;
-#endif // _DEBUG
-    bool use_bloom = false;
     _instance.game_loop = true;
     SDL_TimerID my_timer_id = SDL_AddTimer((Uint32)1000, FpsCounterCallback, nullptr);
     while (true) {
@@ -456,30 +519,7 @@ int Core::Run()
                 break;
 
             case SDL_KEYDOWN:
-#ifdef _DEBUG
-                if (e.key.keysym.sym == SDLK_F1) {
-                    debug_show_info = !debug_show_info;
-                }
-                if (e.key.keysym.sym == SDLK_F2) {
-                    debug_show_stats = !debug_show_stats;
-                }
-#endif // _DEBUG
-                if (e.key.keysym.sym == SDLK_F5) {
-                    use_bloom = !use_bloom;
-                }
-                if (e.key.keysym.sym == SDLK_F6) { // low
-                    Render::SetGaussianProperties(4, 4, 0.0205f);
-                }
-                if (e.key.keysym.sym == SDLK_F7) { // medium
-                    Render::SetGaussianProperties(8, 8, 0.0205f);
-                }
-                if (e.key.keysym.sym == SDLK_F8) { // high
-                    Render::SetGaussianProperties(16, 16, 0.0205f);
-                }
-                if (e.key.keysym.sym == SDLK_F4) {
-                    _instance._show_fps = !_instance._show_fps;
-                    break;
-                }
+                if (_instance.ProcessCoreKeys(e.key.keysym.sym)) break;
 
                 if (!_instance.Consola->ProcessKey((SDL_KeyCode)e.key.keysym.sym)) {
                     Ev_Input = true;
@@ -526,7 +566,7 @@ int Core::Run()
                         if (EVENT_BIT_TEST(event_bit::HAVE_COLLISION, c_flag)) {
                             for (Instance* instance : _instance._current_scene->InstanceColony) {
                                 if (instance == c_instance) continue; // self
-                                if (instance->Body.Type == Instance::BodyType::None) continue; // no collision mask
+                                if (instance->IsCollider == false) continue; // no collision
                                 if (instance->CollideTest(c_instance)) {
                                     _instance._current_scene->CurrentCollisionInstance = instance;
                                     _instance._current_scene->CurrentCollisionInstanceId = instance->GetId();
@@ -536,7 +576,7 @@ int Core::Run()
                                 }
                             }
                         }
-
+                        
                         // input
                         if (Ev_Input && c_instance->Alive) {
                             if (EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT, c_flag)) {
@@ -565,6 +605,15 @@ int Core::Run()
             } // is any instance
         } // if game_loop
 
+#ifdef _DEBUG
+        // check for memory leak in global stack
+        if(CodeExecutor::GetGlobalStackSize() > 0)
+        {
+            _instance._debug_show_stats = true;
+        }
+#endif
+
+
         // execute all suspended code
         CodeExecutor::SuspendedCodeExecute();
 
@@ -586,13 +635,29 @@ int Core::Run()
         }
         
         // post process
-        if(use_bloom)Render::ProcessImageWithGaussian();
+        if(_instance.use_bloom)Render::ProcessImageWithGaussian();
         // draw interface
         _instance._current_scene->GuiSystem.Render();
 
+        float fps_draw_y = 10.f;
+        if (_instance._show_fps) {
+            GPU_DeactivateShaderProgram();
+
+            const std::string text = "FPS: " + std::to_string(_instance.fps);
+
+            const GPU_Rect info_rect = FC_GetBounds(_instance._global_font, 10.f, 10.f, FC_ALIGN_LEFT, FC_Scale{ 1.1f, 1.1f }, text.c_str());
+            fps_draw_y += info_rect.h;
+            Render::DrawRectFilled(info_rect, C_BLACK);
+            Render::DrawRect(info_rect, C_DGREEN);
+            Render::DrawTextAlign(text, _instance._global_font, { info_rect.x + 4, info_rect.y + 4 }, C_DGREEN, FC_ALIGN_LEFT);
+
+            const GPU_Rect rect = FC_GetBounds(_instance._global_font, 2, 2, FC_ALIGN_LEFT, FC_Scale({ 1, 1 }), text.c_str());
+            GPU_RectangleFilled2(_instance._screenTarget, rect, C_BLACK);
+            FC_DrawColor(_instance._global_font, _instance._screenTarget, 2, 2, C_RED, "%d", _instance.fps);
+        }
 // DEBUG DRAW
 #ifdef _DEBUG
-        if (debug_show_info) {
+        if (_instance._debug_show_info) { //F1
             if (_instance._current_scene->IsAnyInstances()) {
                 for (Instance* instance : _instance._current_scene->InstanceColony) {
 
@@ -617,18 +682,51 @@ int Core::Run()
                 }
             }
         }
-        if (debug_show_stats) {
-            Render::DrawTextAlign(
+        if (_instance._debug_show_stats) { //F2
+            const std::string text =
+                std::string(_instance._debug_show_info ? "Drawing instance debug view\n" : "") +
                 "instance count: " + std::to_string(_instance._current_scene->GetInstancesCount()) + '\n' +
                 "delta time: " + std::to_string(_instance.DeltaTime) + '\n' +
-                "global stack size[capacity]: " + std::to_string(_instance.Executor->GetGlobalStackSize()) + '[' + std::to_string(_instance.Executor->GetGlobalStackSize()) + ']' + '\n'
+                "global stack size[capacity]: " + std::to_string(CodeExecutor::GetGlobalStackSize()) + '[' + std::to_string(CodeExecutor::GetGlobalStackSize()) + ']' + '\n' +
+                "bloom draw: " + (_instance.use_bloom ? "enabled (" + std::to_string(_instance.use_bloom_level) + ")" : "disabled");
 
-                ,
-                _instance._global_font,
-                { 12.f, 40.f },
-                C_RED,
-                FC_ALIGN_LEFT
-            );
+            GPU_Rect info_rect = FC_GetBounds(_instance._global_font, 10.f, 4.f, FC_ALIGN_LEFT, FC_Scale{ 1.1f, 1.1f }, text.c_str());
+            info_rect.y += fps_draw_y;
+
+            Render::DrawRectFilled(info_rect, C_BLACK);
+            Render::DrawRect(info_rect, C_DGREEN);
+            Render::DrawTextAlign(text, _instance._global_font, { info_rect.x + 4, info_rect.y + 4 }, C_DGREEN, FC_ALIGN_LEFT);
+        }
+        if(_instance._debug_show_spy) { //F3
+            const std::vector<std::string> text = Func::Split(_instance.Executor->DebugGetTrackInfo(), '\n');
+            std::string sliced_text;
+
+            if(text.size() == 2)
+            {
+                sliced_text += text[0] + '\n' + text[1];
+            }
+            else {
+
+                if (_instance._debug_spy_line_begin > 0) {
+                    sliced_text += "<more... PG_UP>\n";
+                }
+                for (int i = _instance._debug_spy_line_begin; i < _instance._debug_spy_line_end; i++)
+                {
+                    sliced_text += text[i] + '\n';
+                }
+                if (_instance._debug_spy_line_end < _instance._debug_spy_line_max) {
+                    sliced_text += "<more... PG_DOWN>";
+                }
+            }
+
+            GPU_Rect info_rect = FC_GetBounds(_instance._global_font, 0.f, 10.f, FC_ALIGN_LEFT, FC_Scale{ 1.1f, 1.1f }, sliced_text.c_str());
+
+            // move rect to right corner
+            info_rect.x += static_cast<float>(GetScreenWidth() - (int)info_rect.w - 10);
+            Render::DrawRectFilled(info_rect, C_BLACK);
+            Render::DrawRect(info_rect, C_DGREEN);
+            Render::DrawTextAlign(sliced_text, _instance._global_font, { info_rect.x + 4, info_rect.y + 4 }, C_DGREEN, FC_ALIGN_LEFT);
+
         }
 #endif // _DEBUG
 
@@ -641,13 +739,6 @@ int Core::Run()
         // draw console
         if (_instance.Consola->IsShown()) {
             _instance.Consola->RenderConsole();
-        }
-        //Art::Core::GetInstance()->Draw_FPS();
-        if (_instance._show_fps) {
-            GPU_DeactivateShaderProgram();
-            const GPU_Rect rect = FC_GetBounds(_instance._global_font, 2, 2, FC_ALIGN_LEFT, FC_Scale({ 1, 1 }), "%d", _instance.fps);
-            GPU_RectangleFilled2(_instance._screenTarget, rect, C_BLACK);
-            FC_DrawColor(_instance._global_font, _instance._screenTarget, 2, 2, C_RED, "%d", _instance.fps);
         }
         //Art::Core::GetInstance()->ShowScreen();
         GPU_Flip(_instance._screenTarget);

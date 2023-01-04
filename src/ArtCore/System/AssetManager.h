@@ -34,6 +34,14 @@ public:
 	FC_Font* GetFont(const std::string& name);
 	int GetFontId(const std::string& name) const;
 
+#ifdef _DEBUG
+	std::vector<std::string> Debug_List_sprite_name;
+	std::vector<std::string> Debug_List_texture_name;
+	std::vector<std::string> Debug_List_music_name;
+	std::vector<std::string> Debug_List_sound_name;
+	std::vector<std::string> Debug_List_font_name;
+#endif
+
 private:
 	std::vector<Sprite*> List_sprite_id;
 	std::vector<GPU_Image*> List_texture_id;

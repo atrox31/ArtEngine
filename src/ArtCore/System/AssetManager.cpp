@@ -42,6 +42,14 @@ void AssetManager::ClearData()
 	List_music_name.clear();
 	List_sound_name.clear();
 	List_font_name.clear();
+#ifdef _DEBUG
+	Debug_List_sprite_name.clear();
+	Debug_List_texture_name.clear();
+	Debug_List_music_name.clear();
+	Debug_List_sound_name.clear();
+	Debug_List_font_name.clear();
+#endif
+
 }
 AssetManager::~AssetManager()
 {
@@ -52,7 +60,7 @@ bool AssetManager::LoadData(BackGroundRenderer* bgr, const int p_min, const int 
 {
 	
 	Sint64 buffer_size(0);
-	std::string buffer = std::string(Func::GetFileBuf("filelist.txt", &buffer_size));
+	const std::string buffer = std::string(Func::GetFileBuf("filelist.txt", &buffer_size));
 	if (buffer_size == 0) return true;
 
 	std::vector<std::string> data = Func::Explode(buffer, '\n');
@@ -115,8 +123,39 @@ bool AssetManager::LoadData(BackGroundRenderer* bgr, const int p_min, const int 
 				))
 			);
 	}
+#ifdef _DEBUG
+	// only for debug build get asset names
+	for (auto& val : List_sprite_name) {
+		List_sprite_id.push_back(val.second);
+		Debug_List_sprite_name.push_back(val.first);
+	}
+	bgr->SetProgress(p_max - 8);
 	
-	for (Sprite* val : List_sprite_name | std::views::values) {
+	for (auto& val : List_texture_name) {
+		List_texture_id.push_back(val.second);
+		Debug_List_texture_name.push_back(val.first);
+	}
+	bgr->SetProgress(p_max - 6);
+	
+	for (auto& val : List_music_name) {
+		List_music_id.push_back(val.second);
+		Debug_List_music_name.push_back(val.first);
+	}
+	bgr->SetProgress(p_max - 4);
+	
+	for (auto& val : List_sound_name) {
+		List_sound_id.push_back(val.second);
+		Debug_List_sound_name.push_back(val.first);
+	}
+	bgr->SetProgress(p_max - 2);
+	
+	for (auto& val : List_font_name) {
+		List_font_id.push_back(val.second);
+		Debug_List_font_name.push_back(val.first);
+	}
+	bgr->SetProgress(p_max - 0);
+#else
+for (Sprite* val : List_sprite_name | std::views::values) {
 		List_sprite_id.push_back(val);
 	}
 	bgr->SetProgress(p_max - 8);
@@ -140,7 +179,7 @@ bool AssetManager::LoadData(BackGroundRenderer* bgr, const int p_min, const int 
 		List_font_id.push_back(val);
 	}
 	bgr->SetProgress(p_max - 0);
-	
+#endif
 	return true;
 }
 

@@ -14,15 +14,18 @@ class Core final
 {
 public:
 	Core();
-	virtual ~Core();
+	~Core();
 	static Core* GetInstance() { return &Core::_instance; }
 	static bool Init(int argc, char* args[]);
+	bool ProcessCoreKeys(Sint32 sym);
 	static int Run();
 	static void Exit();
 	static bool LoadData();
 
 private:
 	bool game_loop;
+	bool use_bloom = false;
+	Uint8 use_bloom_level = 0;
 public:
 	static void Pause() {
 		_instance.game_loop = false;
@@ -164,5 +167,18 @@ public:
 private:
 	static Core _instance;
 	SDL_Window* m_window;
+
+#ifdef _DEBUG
+	// all debug flags and variables
+public:
+
+private:
+	bool _debug_show_spy = false;
+	int  _debug_spy_line_begin = 0;
+	int  _debug_spy_line_end = 0;
+	int  _debug_spy_line_max = 0;
+	bool _debug_show_info = false;
+	bool _debug_show_stats = false;
+#endif
 };
 
