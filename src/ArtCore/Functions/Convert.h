@@ -6,6 +6,12 @@
 class Convert
 {
 public:
+	// convert Uint32 to 2byte unsigned char array. Max value is 0xFFFF (65 535)
+	static void Uint32To2ByteChar(const unsigned int input, unsigned char* output);
+
+	// convert 2byte unsigned char array to Uint32. Max value is 0xFFFF (65 535)
+	static void TwoByteCharToUint32(const unsigned char* input, unsigned int* output);
+
 	// Get radians(direction) from degree
 	static float RadiansToDegree(float);
 

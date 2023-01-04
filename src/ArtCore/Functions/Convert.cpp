@@ -43,6 +43,17 @@ float Convert::DegreeToRadians(const float degree) {
 	return 0.0174532925f * degree;
 }
 
+void Convert::Uint32To2ByteChar(const unsigned input, unsigned char* output)
+{
+	output[0] = (input >> 8) & 0xFF;
+	output[1] = input & 0xFF;
+}
+
+void Convert::TwoByteCharToUint32(const unsigned char* input, unsigned* output)
+{
+	*output = (input[0] << 8) | (input[1] << 0);
+}
+
 float Convert::RadiansToDegree(const float angle)
 {
 	return (angle * 57.2957795131f);
