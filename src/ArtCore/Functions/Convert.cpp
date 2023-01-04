@@ -9,7 +9,7 @@ std::string Convert::Rect2Str(const Rect& rect)
 
 SDL_Point Convert::Str2Point(const std::string& text)
 {
-	auto Point = Func::Split(text, ':');
+	const auto Point = Func::Split(text, ':');
 	if (Point.size() == 2) {
 		return SDL_Point({
 			Func::TryGetInt(Point[0]),
@@ -22,7 +22,7 @@ SDL_Point Convert::Str2Point(const std::string& text)
 
 SDL_FPoint Convert::Str2FPoint(const std::string& text)
 {
-	auto Point = Func::Split(text, ':');
+	const auto Point = Func::Split(text, ':');
 	if (Point.size() == 2) {
 		return SDL_FPoint(
 			{
@@ -39,13 +39,13 @@ std::string Convert::Point2String(const SDL_Point& point)
 	return std::to_string(point.x) + ':' + std::to_string(point.y);
 }
 
-float Convert::DegreeToRadians(float degree) {
+float Convert::DegreeToRadians(const float degree) {
 	return 0.0174532925f * degree;
 }
 
-float Convert::RadiansToDegree(float angle)
+float Convert::RadiansToDegree(const float angle)
 {
-	return angle * 57.2957795131f;
+	return (angle * 57.2957795131f);
 }
 
 Rect Convert::Str2Rect(const std::string& str)
@@ -90,9 +90,9 @@ SDL_Color Convert::Hex2Color(const std::string& color)
 	if (Func::IsHex(color)) {
 		try {
 			const int len = (int)color.length();
-			Uint8 R = (Uint8)std::stoi(color.substr(1, 2), nullptr, 16);
-			Uint8 G = (Uint8)std::stoi(color.substr(3, 2), nullptr, 16);
-			Uint8 B = (Uint8)std::stoi(color.substr(5, 2), nullptr, 16);
+			const Uint8 R = (Uint8)std::stoi(color.substr(1, 2), nullptr, 16);
+			const Uint8 G = (Uint8)std::stoi(color.substr(3, 2), nullptr, 16);
+			const Uint8 B = (Uint8)std::stoi(color.substr(5, 2), nullptr, 16);
 			Uint8 A = 255;
 			if (len == 9)
 				A = (Uint8)std::stoi(color.substr(7, 2), nullptr, 16);

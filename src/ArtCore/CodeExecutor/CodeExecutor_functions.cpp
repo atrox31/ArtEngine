@@ -44,7 +44,7 @@ void CodeExecutor::new_point(Instance*) {
 //float new_direction(point from, point to);Make direction from <point> to <point>.;Value are from 0 to 359.
 void CodeExecutor::new_direction(Instance*) {
 	//redirect
-	direction_beetwen_point(nullptr);
+	direction_between_point(nullptr);
 }
 
 //Rectangle new_rectangle(int x1, int y1, int x2, int y2);Make Rectangle from <int>, <int> to <int>, <int>.;This is const Rectangle, not width and height.
@@ -160,13 +160,6 @@ void CodeExecutor::move_to_point(Instance* sender) {
 	sender->PosY += std::sinf(direction) * speed * (float)Core::GetInstance()->DeltaTime;
 }
 
-//null move_forward(float speed);Move current instance forward with <speed> px per second.;Call it every frame. Function give build-in direction variable.
-void CodeExecutor::move_forward(Instance* sender) {
-	const float speed = StackIn_f;
-	sender->PosX += std::cosf(sender->Direction) * speed * (float)Core::GetInstance()->DeltaTime;
-	sender->PosY += std::sinf(sender->Direction) * speed * (float)Core::GetInstance()->DeltaTime;
-}
-
 //null move_instant(point p);Move instantly to target <point>;This changes x and y. Not cheking for collision;
 void CodeExecutor::move_instant(Instance* sender) {
 	const SDL_FPoint dest = StackIn_p;
@@ -190,8 +183,8 @@ void CodeExecutor::distance_to_point(Instance* sender) {
 	StackOut_f(distance);
 }
 
-//float distance_beetwen_point(point p1, point p2);Give distance from <point> to <point>;Measure distance.
-void CodeExecutor::distance_beetwen_point(Instance*) {
+//float distance_between_point(point p1, point p2);Give distance from <point> to <point>;Measure distance.
+void CodeExecutor::distance_between_point(Instance*) {
 	SDL_FPoint dest = StackIn_p;
 	SDL_FPoint src = StackIn_p;
 	const float distance = Func::Distance(src, dest);
@@ -208,25 +201,41 @@ void CodeExecutor::distance_to_instance(Instance* sender) {
 		StackOut_f(Func::Distance(sender->PosX, sender->PosY, target->PosX, target->PosY));
 	}
 }
-//float direction_to_point(point p);Give direction to <point>;Measure from current instance to target point.
-void CodeExecutor::direction_to_point(Instance* instance) {
-	const SDL_FPoint dest = StackIn_p;
-	const float direction = std::atan2f(instance->PosY - dest.y, instance->PosX - dest.x);
-	StackOut_f(direction);
+
+//null move_forward(float speed);Move current instance forward with <speed> px per second.;Call it every frame. Function give build-in direction variable.
+void CodeExecutor::move_forward(Instance* sender) {
+	const float speed = StackIn_f;
+	sender->PosX += std::cosf(sender->Direction) * speed * (float)Core::GetInstance()->DeltaTime;
+	sender->PosY += std::sinf(sender->Direction) * speed * (float)Core::GetInstance()->DeltaTime;
 }
 
-//float direction_beetwen_point(point p1, point p2);Give direction from <point> to <point>;Measure distance.
-void CodeExecutor::direction_beetwen_point(Instance*) {
-	const SDL_FPoint src = StackIn_p;
+//float direction_to_point(point p);Give direction to <point> in degree (-180 : 180);Measure from current instance to target point.
+void CodeExecutor::direction_to_point(Instance* instance) {
 	const SDL_FPoint dest = StackIn_p;
-	const float direction = std::atan2f(src.y - dest.y, src.x - dest.x);
-	StackOut_f(direction);
+	const SDL_FPoint src = { instance->PosX , instance->PosY};
+
+	const float direction = std::atan2f(dest.y - src.y, dest.x - src.x);
+	StackOut_f(Convert::RadiansToDegree(direction));
 }
-//float direction_to_instance(instance i);Give direction to <instance>;Measure from current instance to target point.
+
+//float direction_between_point(point p1, point p2);Give direction from <point> to <point> in degree (-180 : 180);Measure distance.
+void CodeExecutor::direction_between_point(Instance*) {
+	const SDL_FPoint dest = StackIn_p;
+	const SDL_FPoint src = StackIn_p;
+
+	const float direction = std::atan2f(dest.y- src.y,  dest.x- src.x);
+	StackOut_f(Convert::RadiansToDegree(direction));
+}
+//float direction_to_instance(instance i);Give direction to <instance> in degree (-180 : 180);Measure from current instance to target point. If target not exists return own direction
 void CodeExecutor::direction_to_instance(Instance* self) {
-	const int id = StackIn_i;
-	const Instance* instance = Core::GetInstance()->_current_scene->GetInstanceById(id);
-	float direction = std::atan2f(self->PosY - instance->PosY, self->PosX - instance->PosX);
+	const Instance* instance = StackIn_ins;
+	if(instance == nullptr)
+	{
+		StackOut_f(Convert::RadiansToDegree(self->Direction));
+		return;
+	}
+	const float direction = std::atan2f(self->PosY - instance->PosY, self->PosX - instance->PosX);
+	StackOut_f(Convert::RadiansToDegree(direction));
 }
 
 //null draw_sprite(sprite spr, float x, float y, float frame);Draw <sprite> on location (<float>,<float>) with target frame <frame>;Draw default sprite. To more options use draw_sprite_ex
@@ -491,21 +500,26 @@ void CodeExecutor::set_body_type(Instance* sender) {
 			{
 				sender->Body.Value = 0;
 				sender->Body.Type = Instance::BodyType::None;
+				sender->IsCollider = false;
 			}break;
 			case Sprite::mask_type::PerPixel:
 			{
+					//TODO generate polygon
 				sender->Body.Value = sender->SelfSprite->GetMaskValue();
 				sender->Body.Type = Instance::BodyType::Rect;
+				sender->IsCollider = true;
 			}break;
 			case Sprite::mask_type::Rectangle:
 			{
 				sender->Body.Value = sender->SelfSprite->GetMaskValue();
 				sender->Body.Type = Instance::BodyType::Rect;
+				sender->IsCollider = true;
 			}break;
 			case Sprite::mask_type::Circle:
 			{
 				sender->Body.Value = sender->SelfSprite->GetMaskValue();
 				sender->Body.Type = Instance::BodyType::Circle;
+				sender->IsCollider = true;
 			}break;
 
 			}
@@ -513,15 +527,17 @@ void CodeExecutor::set_body_type(Instance* sender) {
 		else {
 			sender->Body.Value = 0;
 			sender->Body.Type = Instance::BodyType::None;
+			sender->IsCollider = false;
 		}
 	}
 	else {
 		sender->Body.Value = value;
 		sender->Body.Type = Instance::BodyType::Body_fromString(type);
+		sender->IsCollider = true;
 	}
 }
 
-//null instance_set_tag(string tag);Set tag for current instnance <string>.
+//null instance_set_tag(string tag);Set tag for current instance <string>.
 void CodeExecutor::instance_set_tag(Instance* sender) {
 	const std::string tag = StackIn_s;
 	sender->Tag = tag;
@@ -572,14 +588,14 @@ void CodeExecutor::scene_change_transmission(Instance*) {
 void CodeExecutor::scene_change(Instance*) {
 	Core::GetInstance()->ChangeScene(StackIn_s);
 }
-//float get_direction_of(instance target);Return direction of <instance> instance;Use with collision_get_collider, if target not exists return own direction
+//float get_direction_of(instance target);Return direction of <instance> instance in degree (-180 : 180);Use with collision_get_collider, if target not exists return own direction
 void CodeExecutor::get_direction_of(Instance* sender) {
 	const Instance* target = StackIn_ins;
 	if (target == nullptr) {
-		StackOut_f(sender->Direction);
+		StackOut_f(Convert::RadiansToDegree(sender->Direction));
 	}
 	else {
-		StackOut_f(target->Direction);
+		StackOut_f(Convert::RadiansToDegree(target->Direction));
 	}
 }
 //instance instance_spawn(string name, float x, float y);Spawn object <string> at (<float>,<float>) and return reference to it;Ypu can use reference to pass arguments;
@@ -604,18 +620,18 @@ void CodeExecutor::instance_create(Instance*) {
 	const std::string obj_name = StackIn_s;
 	Core::GetInstance()->_current_scene->CreateInstance(obj_name, x, y);
 }
-//null set_direction_for_target(instance target, float direction);Set <instance> direction to <float> value;You can get reference from id of instance
+//null set_direction_for_target(instance target, float direction);Set <instance> direction to <float> value in degree (-180 : 180);You can get reference from id of instance
 void CodeExecutor::set_direction_for_target(Instance*) {
 	const float direction = StackIn_f;
 	Instance* instance = StackIn_ins;
 	if (instance != nullptr) {
-		instance->Direction = direction;
+		instance->Direction = Convert::DegreeToRadians(direction);
 	}
 }
-//null set_direction(float direction);Set current direction to <float>;
+//null set_direction(float direction);Set current direction to <float> in degree (-180 : 180);
 void CodeExecutor::set_direction(Instance* sender) {
 	const float direction = StackIn_f;
-	sender->Direction = direction;
+	sender->Direction = Convert::DegreeToRadians(direction);
 }
 
 //float convert_int_to_float(int value);Convert <int> to float type;
@@ -746,14 +762,6 @@ void CodeExecutor::sprite_set_scale(Instance* sender) {
 		sender->SpriteScaleX = scale.x;
 		sender->SpriteScaleY = scale.y;
 	}
-}
-//float direction_from_degree(float direction);Get radian direction from <float> degree;Simply (pi/180)*radians but faster;
-void CodeExecutor::direction_from_degree(Instance* sender) {
-	StackOut_f(Convert::DegreeToRadians(StackIn_f));
-}
-//float direction_from_radians(float angle);Get degree direction from <float> radians;Simply angle*const radians but faster;
-void CodeExecutor::direction_from_radians(Instance* sender) {
-	StackOut_f(Convert::RadiansToDegree(StackIn_f));
 }
 //null draw_text_in_frame(font font, string text, float x, float y, color text_color, color frame_color, color background_color);Using <font> draw <text> in frame at (<float>,<float>) with <color>. Frame color is <color> and background <color>;
 void CodeExecutor::draw_text_in_frame(Instance*)

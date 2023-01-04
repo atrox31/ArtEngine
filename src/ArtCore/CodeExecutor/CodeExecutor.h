@@ -43,22 +43,26 @@ private:
 		//		type, fields
 		std::string Name;
 		Instance* Template;
-		std::map<int, std::vector<std::string>> VariablesNames;
+		std::map<ArtCode::variable_type, std::vector<std::string>> VariablesNames;
 
 		InstanceDefinition()
 		{
 			Template = nullptr;
 			Name = "";
 			_events = std::vector<EventData>();
-			VariablesNames = std::map<int, std::vector<std::string>>();
-			for (int v = ArtCode::variable_type::variable_typeInvalid+1; v < ArtCode::variable_type::variable_typeEND; v++)
+			VariablesNames = std::map<ArtCode::variable_type, std::vector<std::string>>();
+			for (
+				ArtCode::variable_type v = (ArtCode::variable_type)(ArtCode::variable_type::variable_typeInvalid+1);
+				v < ArtCode::variable_type::variable_typeEND;
+				v = (ArtCode::variable_type)(v + 1)
+				)
 			{
 				VariablesNames[v] = std::vector<std::string>();
 			}
 		}
 
 		void AddVariable(int type, const std::string& name) {
-			VariablesNames[type].emplace_back(name);
+			VariablesNames[(ArtCode::variable_type)type].emplace_back(name);
 			switch (type) {
 				case ArtCode::INT:
 					Template->Variables_int.emplace_back(0);
@@ -114,6 +118,7 @@ private:
 		}
 		return nullptr;
 	}
+
 public:
 	[[nodiscard]] Instance* SpawnInstance(const std::string& name) const;
 	// not safe! use only in inner functions. this not error-proof
@@ -197,7 +202,15 @@ private:
 	static SDL_Color h_operation_color(int _operator, SDL_Color val1, SDL_Color val2);
 	static std::string h_operation_string(int _operator, std::string val1, std::string val2);
 
-
+#ifdef _DEBUG
+	// all debug things
+public:
+	void DebugSetInstanceToTrack(Instance* instance);
+	std::string DebugGetTrackInfo();
+	[[nodiscard]] bool DebugGetTrackLiveStatus() const { return _debug_tracked_instance != nullptr; }
+private:
+	Instance* _debug_tracked_instance = nullptr;
+#endif
 private:
 #define Script(x) static void x(Instance*)
 //#AUTO_GENERATOR_START
@@ -216,14 +229,14 @@ private:
 	Script(sprite_set_animation_speed);
 	Script(sprite_set_animation_loop);
 	Script(move_to_point);
-	Script(move_forward);
 	Script(move_instant);
 	Script(move_to_direction);
 	Script(distance_to_point);
-	Script(distance_beetwen_point);
+	Script(distance_between_point);
 	Script(distance_to_instance);
+	Script(move_forward);
 	Script(direction_to_point);
-	Script(direction_beetwen_point);
+	Script(direction_between_point);
 	Script(direction_to_instance);
 	Script(draw_sprite);
 	Script(draw_sprite_ex);
@@ -287,8 +300,6 @@ private:
 	Script(convert_float_to_string);
 	Script(string_add);
 	Script(sprite_set_scale);
-	Script(direction_from_degree);
-	Script(direction_from_radians);
 	Script(draw_text_in_frame);
 	Script(gui_change_visibility);
 	Script(gui_change_enabled);

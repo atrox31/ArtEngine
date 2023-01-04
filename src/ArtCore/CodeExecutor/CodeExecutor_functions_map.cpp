@@ -19,14 +19,14 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["sprite_set_animation_speed"] = &CodeExecutor::sprite_set_animation_speed;
 	FunctionsMap["sprite_set_animation_loop"] = &CodeExecutor::sprite_set_animation_loop;
 	FunctionsMap["move_to_point"] = &CodeExecutor::move_to_point;
-	FunctionsMap["move_forward"] = &CodeExecutor::move_forward;
 	FunctionsMap["move_instant"] = &CodeExecutor::move_instant;
 	FunctionsMap["move_to_direction"] = &CodeExecutor::move_to_direction;
 	FunctionsMap["distance_to_point"] = &CodeExecutor::distance_to_point;
-	FunctionsMap["distance_beetwen_point"] = &CodeExecutor::distance_beetwen_point;
+	FunctionsMap["distance_between_point"] = &CodeExecutor::distance_between_point;
 	FunctionsMap["distance_to_instance"] = &CodeExecutor::distance_to_instance;
+	FunctionsMap["move_forward"] = &CodeExecutor::move_forward;
 	FunctionsMap["direction_to_point"] = &CodeExecutor::direction_to_point;
-	FunctionsMap["direction_beetwen_point"] = &CodeExecutor::direction_beetwen_point;
+	FunctionsMap["direction_between_point"] = &CodeExecutor::direction_between_point;
 	FunctionsMap["direction_to_instance"] = &CodeExecutor::direction_to_instance;
 	FunctionsMap["draw_sprite"] = &CodeExecutor::draw_sprite;
 	FunctionsMap["draw_sprite_ex"] = &CodeExecutor::draw_sprite_ex;
@@ -90,8 +90,6 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["convert_float_to_string"] = &CodeExecutor::convert_float_to_string;
 	FunctionsMap["string_add"] = &CodeExecutor::string_add;
 	FunctionsMap["sprite_set_scale"] = &CodeExecutor::sprite_set_scale;
-	FunctionsMap["direction_from_degree"] = &CodeExecutor::direction_from_degree;
-	FunctionsMap["direction_from_radians"] = &CodeExecutor::direction_from_radians;
 	FunctionsMap["draw_text_in_frame"] = &CodeExecutor::draw_text_in_frame;
 	FunctionsMap["gui_change_visibility"] = &CodeExecutor::gui_change_visibility;
 	FunctionsMap["gui_change_enabled"] = &CodeExecutor::gui_change_enabled;

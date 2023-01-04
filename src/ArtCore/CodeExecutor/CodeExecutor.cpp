@@ -10,6 +10,7 @@
 #include "ArtCore/Gui/Gui.h"
 #include "ArtCore/System/Core.h"
 #include "ArtCore/Scene/Scene.h"
+#include "ArtCore/System/AssetManager.h"
 
 AStack<int> CodeExecutor::GlobalStack_int = AStack<int>();
 AStack<float> CodeExecutor::GlobalStack_float = AStack<float>();
@@ -373,6 +374,168 @@ int CodeExecutor::GetGlobalStackCapacity()
 	return size;
 }
 
+#ifdef _DEBUG
+// very not fps frendly but for debug must be
+void CodeExecutor::DebugSetInstanceToTrack(Instance* instance)
+{
+	_debug_tracked_instance = instance;
+}
+
+std::string CodeExecutor::DebugGetTrackInfo()
+{
+	std::string _return;
+	_return += "Instance tracker\n";
+	if (_debug_tracked_instance == nullptr)
+	{
+		_return += "No target, turn console and use spy <id>";
+		return _return;
+	}
+	_return += "Name: [" + _debug_tracked_instance->Name + "]\n";
+	if (_debug_tracked_instance->GetInstanceDefinitionId() >= 0) { // instance or scene
+		_return += "Tag: [" + _debug_tracked_instance->Tag + "]\n";
+		_return += "ID: [" + std::to_string(_debug_tracked_instance->GetId()) + "]\n";
+		_return += "Build in vars\n";
+		_return += "Position: " + std::to_string(_debug_tracked_instance->PosX) + "," + std::to_string(_debug_tracked_instance->PosY) + "\n";
+		_return += "Direction: [" + std::to_string(_debug_tracked_instance->Direction) + "(" + std::to_string(Convert::RadiansToDegree(_debug_tracked_instance->Direction)) + ")" + "]\n";
+		_return += "In view: [" + std::string(_debug_tracked_instance->InView ? "true" : "false") + "]\n";
+		_return += "Collider: [" + std::string(_debug_tracked_instance->IsCollider ? "true" : "false") + "]\n";
+		_return += "Alive: [" + std::string(_debug_tracked_instance->Alive ? "true" : "false") + "]\n";
+		_return += "Body type: [" + Instance::BodyType::Body_toString(_debug_tracked_instance->Body.Type) + "]\n";
+		_return += "Sprite data\n";
+		if (_debug_tracked_instance->SelfSprite == nullptr)
+		{
+			_return += "SelfSprite not set\n";
+		}
+		else {
+			_return += "SpriteAngle: [" + std::to_string(_debug_tracked_instance->SpriteAngle) + "]\n";
+			_return += "SpriteAnimationLoop: [" + std::string(_debug_tracked_instance->SpriteAnimationLoop ? "true" : "false") + "]\n";
+			_return += "SpriteAnimationFrame: [" + std::to_string(_debug_tracked_instance->SpriteAnimationFrame) + "/" + std::to_string(_debug_tracked_instance->SelfSprite->GetMaxFrame()) + "]\n";
+			_return += "SpriteAnimationSpeed: [" + std::to_string(_debug_tracked_instance->SpriteAnimationSpeed) + "]\n";
+			_return += "SpriteCenterX: [" + std::to_string(_debug_tracked_instance->SpriteCenterX) + "]\n";
+			_return += "SpriteCenterY: [" + std::to_string(_debug_tracked_instance->SpriteCenterY) + "]\n";
+			_return += "SpriteScaleX: [" + std::to_string(_debug_tracked_instance->SpriteScaleX) + "]\n";
+			_return += "SpriteScaleY: [" + std::to_string(_debug_tracked_instance->SpriteScaleY) + "]\n";
+			_return += "Direction: [" + std::to_string(_debug_tracked_instance->SelfSprite->GetMaxFrame()) + "]\n";
+		}
+		_return += "Custom variables\n";
+	}else
+	{
+		_return += "Global variables\n";
+	}
+
+	_return += "Suspended code state: " + (_debug_tracked_instance->SuspendedCodeStateHave() ? std::to_string(_debug_tracked_instance->SuspendedCodeStateCount()) : "none");
+	
+	for (auto& val : _instance_definitions[_debug_tracked_instance->GetInstanceDefinitionId()].VariablesNames)
+	{
+		if(!val.second.empty())
+		{
+			int i = -1;
+			for (std::string& basic_string : val.second)
+			{
+				i++;
+				_return += basic_string + ": [";
+				switch (val.first) {
+				case ArtCode::INT:
+					_return += std::to_string(_debug_tracked_instance->Variables_int[i]);
+					break;
+				case ArtCode::FLOAT:
+					_return += std::to_string(_debug_tracked_instance->Variables_float[i]);
+					break;
+				case ArtCode::BOOL:
+					_return += _debug_tracked_instance->Variables_bool[i] ? "true" : "false";
+					break;
+				case ArtCode::INSTANCE:
+					if(_debug_tracked_instance->Variables_instance[i] == nullptr)
+					{
+						_return += "<null>";
+					}
+					else {
+						_return += _debug_tracked_instance->Variables_instance[i]->Name + "#" + _debug_tracked_instance->Variables_instance[i]->Tag + "(" + std::to_string(_debug_tracked_instance->Variables_instance[i]->GetId()) + ")";
+					}
+					break;
+				case ArtCode::OBJECT:
+					if (_debug_tracked_instance->Variables_object[i] == -1)
+					{
+						_return += "<null>";
+					}
+					else {
+						_return += _instance_definitions[_debug_tracked_instance->Variables_object[i]].Name;
+					}
+					break;
+				case ArtCode::SPRITE:
+					if (_debug_tracked_instance->Variables_sprite[i] == -1)
+					{
+						_return += "<null>";
+					}
+					else {
+						_return += Core::GetInstance()->assetManager->Debug_List_sprite_name[_debug_tracked_instance->Variables_sprite[i]];
+					}
+					break;
+				case ArtCode::TEXTURE:
+					if (_debug_tracked_instance->Variables_texture[i] == -1)
+					{
+						_return += "<null>";
+					}
+					else {
+						_return += Core::GetInstance()->assetManager->Debug_List_texture_name[_debug_tracked_instance->Variables_texture[i]];
+					}
+					break;
+				case ArtCode::SOUND:
+					if (_debug_tracked_instance->Variables_sound[i] == -1)
+					{
+						_return += "<null>";
+					}
+					else {
+						_return += Core::GetInstance()->assetManager->Debug_List_sound_name[_debug_tracked_instance->Variables_sound[i]];
+					}
+					break;
+				case ArtCode::MUSIC:
+					if (_debug_tracked_instance->Variables_music[i] == -1)
+					{
+						_return += "<null>";
+					}
+					else {
+						_return += Core::GetInstance()->assetManager->Debug_List_music_name[_debug_tracked_instance->Variables_music[i]];
+					}
+					break;
+				case ArtCode::FONT:
+					if (_debug_tracked_instance->Variables_font[i] == -1)
+					{
+						_return += "<null>";
+					}
+					else {
+						_return += Core::GetInstance()->assetManager->Debug_List_font_name[_debug_tracked_instance->Variables_font[i]];
+					}
+					break;
+				case ArtCode::POINT:
+					_return += "<" + std::to_string(_debug_tracked_instance->Variables_point[i].x) + ", " + std::to_string(_debug_tracked_instance->Variables_point[i].y) + ">";
+					break;
+				case ArtCode::RECT:
+					_return += "<" + 
+						std::to_string(_debug_tracked_instance->Variables_rect[i].x) + ", " + 
+						std::to_string(_debug_tracked_instance->Variables_rect[i].y) + ", " + 
+						std::to_string(_debug_tracked_instance->Variables_rect[i].w) + ", " + 
+						std::to_string(_debug_tracked_instance->Variables_rect[i].h) + ">";
+					break;
+				case ArtCode::COLOR:
+					_return += "(" +
+						std::to_string(_debug_tracked_instance->Variables_color[i].r) + ", " +
+						std::to_string(_debug_tracked_instance->Variables_color[i].g) + ", " +
+						std::to_string(_debug_tracked_instance->Variables_color[i].b) + ", " +
+						std::to_string(_debug_tracked_instance->Variables_color[i].a) + ") ";
+					_return += Convert::Color2Hex(_debug_tracked_instance->Variables_color[i]);
+					break;
+				case ArtCode::STRING:
+					_return += _debug_tracked_instance->Variables_string[i];
+					break;
+				}
+				_return += "]\n";
+			}
+		}
+	}
+	return _return;
+}
+#endif
 
 Instance* CodeExecutor::SpawnInstance(const std::string& name) const
 {
