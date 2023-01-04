@@ -13,15 +13,15 @@ int sprite_get_frames(sprite spr);Get _frames number of <sprite>;Get int value.
 null sprite_set_animation_speed(float speed);Set animation value <float> _frames per second;Every sprite can have own animation speed
 null sprite_set_animation_loop(bool loop);Set animation loop value <bool>;Every animation end generate event ON_ANIMATION_END
 null move_to_point(point p, float speed);Move current instance to <point> with <speed> px per second.;Call it every frame.
-null move_forward(float speed);Move current instance forward with <speed> px per second.;Call it every frame. Function give build-in direction variable.
 null move_instant(point p);Move instantly to target <point>;This changes x and y. Not cheking for collision;
 null move_to_direction(float direction, float speed);Move instance toward direction of <float> (0-359) with <float> speed px per seccond;If direction is not in range its clipped to 360.
 float distance_to_point(point p);Give distance to <point>;Measure from current instance to target point.
-float distance_beetwen_point(point p1, point p2);Give distance from <point> to <point>;Measure distance.
+float distance_between_point(point p1, point p2);Give distance from <point> to <point>;Measure distance.
 float distance_to_instance(instance i);Give distance to <instance> instance;Measure from current instance to target point. If target not exists return 0
-float direction_to_point(point p);Give direction to <point>;Measure from current instance to target point.
-float direction_beetwen_point(point p1, point p2);Give direction from <point> to <point>;Measure distance.
-float direction_to_instance(instance i);Give direction to <instance>;Measure from current instance to target point.
+null move_forward(float speed);Move current instance forward with <speed> px per second.;Call it every frame. Function give build-in direction variable.
+float direction_to_point(point p);Give direction to <point> in degree (-180 : 180);Measure from current instance to target point.
+float direction_between_point(point p1, point p2);Give direction from <point> to <point> in degree (-180 : 180);Measure distance.
+float direction_to_instance(instance i);Give direction to <instance> in degree (-180 : 180);Measure from current instance to target point. If target not exists return own direction
 null draw_sprite(sprite spr, float x, float y, float frame);Draw <sprite> on location (<float>,<float>) with target frame <frame>;Draw default sprite. To more options use draw_sprite_ex
 null draw_sprite_ex(sprite spr, float x, float y, float frame, float x_scale, float y_scale, float x_center, float y_center, float angle, float alpha);
 null draw_texture(texture tex, float x, float y);Draw <texture> on (<float>,<float>).;Draw standard texture with it normal dimensions. For extended option use 'Draw texture extended';
@@ -50,7 +50,7 @@ null sprite_prev_frame(); Set SelfSprite previus frame; If sprite loop is enable
 null sprite_set_frame(int frame); Set SelfSprite frame no <int>.; If frame is not exists nothing happen;
 null code_do_nothing();Do nothing, empty action;Use when there is no else in if
 null set_body_type(string type, int value);Set body type for instance, of <string> and optional <int> value; type is enum: None,Sprite,Rect,Circle
-null instance_set_tag(string tag);Set tag for current instnance <string>.
+null instance_set_tag(string tag);Set tag for current instance <string>.
 instance collision_get_collider();Return reference to instance with this object is collide;Other colliders must be solid too to collide;
 string collision_get_collider_tag();Get tag of instance that is coliding with this object;Other colliders must be solid too to collide;
 string collision_get_collider_name();Get name of instance that is coliding with this object;Other colliders must be solid too to collide;
@@ -59,12 +59,12 @@ int get_random(int max);Get random value [0,<int>).;0 is include max is exclude;
 int get_random_range(int min, int max);Get random value [<int>,<int>).;0 is include max is exclude;
 null scene_change_transmission(string scene, string transmission);[NOT_IMPLEMENTED_YET];0;
 null scene_change(string scene);Change scene to <scene>;This is quick change, for transmission use scene_change_transmission[NOT_IMPLEMENTED_YET];
-float get_direction_of(instance target);Return direction of <instance> instance;Use with collision_get_collider, if target not exists return own direction
+float get_direction_of(instance target);Return direction of <instance> instance in degree (-180 : 180);Use with collision_get_collider, if target not exists return own direction
 instance instance_spawn(string name, float x, float y);Spawn object <string> at (<float>,<float>) and return reference to it;Ypu can use reference to pass arguments;
 instance instance_spawn_on_point(string name, point xy);Spawn object <string> at (<point>) and return reference to it;Ypu can use reference to pass arguments;
 null instance_create(string name, float x, float y);Spawn object <string> at (<float>,<float>) in current scene;This not return reference;
-null set_direction_for_target(instance target, float direction);Set <instance> direction to <float> value;You can get reference from id of instance
-null set_direction(float direction);Set current direction to <float>;
+null set_direction_for_target(instance target, float direction);Set <instance> direction to <float> value in degree (-180 : 180);You can get reference from id of instance
+null set_direction(float direction);Set current direction to <float> in degree (-180 : 180);
 float convert_int_to_float(int value);Convert <int> to float type;
 int convert_float_to_int(float value);Convert <float> to int type;
 null instance_delete_self();Delete self;
@@ -84,8 +84,6 @@ string convert_int_to_string(int input);Convert <int> to string;
 string convert_float_to_string(int input);Convert <int> to string;
 string string_add(string str1, string str2);Create new string from <string> and <string>
 null sprite_set_scale(point scale);Set scale for self sprite <point>;Scale is from point (width, height)
-float direction_from_degree(float direction);Get radian direction from <float> degree;Simply (pi/180)*radians but faster;
-float direction_from_radians(float angle);Get degree direction from <float> radians;Simply angle*const radians but faster;
 null draw_text_in_frame(font font, string text, float x, float y, color text_color, color frame_color, color background_color);Using <font> draw <text> in frame at (<float>,<float>) with <color>. Frame color is <color> and background <color>;
 null gui_change_visibility(string guiTag, bool visible);Change visibility variable for <string> to <bool>;Give path to element panel1/button1 by tags. Root is in default first tag do not include it
 null gui_change_enabled(string guiTag, bool enable);Change enabled variable for <string> to <bool>;Give path to element panel1/button1 by tags. Root is in default first tag do not include it
