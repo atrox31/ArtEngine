@@ -22,6 +22,10 @@ public:
 	static void Exit();
 	static bool LoadData();
 
+	static Scene* GetCurrentScene()
+	{
+		return _instance._current_scene;
+	}
 private:
 	bool game_loop;
 	bool use_bloom = false;
