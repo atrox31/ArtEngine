@@ -687,7 +687,8 @@ int Core::Run()
                 std::string(_instance._debug_show_info ? "Drawing instance debug view\n" : "") +
                 "instance count: " + std::to_string(_instance._current_scene->GetInstancesCount()) + '\n' +
                 "delta time: " + std::to_string(_instance.DeltaTime) + '\n' +
-                "global stack size[capacity]: " + std::to_string(CodeExecutor::GetGlobalStackSize()) + '[' + std::to_string(CodeExecutor::GetGlobalStackSize()) + ']' + '\n' +
+                "Executor global stack size[capacity]: " + std::to_string(CodeExecutor::GetGlobalStackSize()) + '[' + std::to_string(CodeExecutor::GetGlobalStackSize()) + ']' + '\n' +
+                "Executor if-test stack size: " + std::to_string(Core::GetInstance()->Executor->DebugGetIfTestResultStackSize()) + ']' + '\n' +
                 "bloom draw: " + (_instance.use_bloom ? "enabled (" + std::to_string(_instance.use_bloom_level) + ")" : "disabled");
 
             GPU_Rect info_rect = FC_GetBounds(_instance._global_font, 10.f, 4.f, FC_ALIGN_LEFT, FC_Scale{ 1.1f, 1.1f }, text.c_str());
