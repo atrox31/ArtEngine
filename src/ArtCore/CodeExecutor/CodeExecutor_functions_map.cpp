@@ -102,5 +102,9 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["instance_create_point"] = &CodeExecutor::instance_create_point;
 	FunctionsMap["instance_delete_other"] = &CodeExecutor::instance_delete_other;
 	FunctionsMap["instance_find_by_tag"] = &CodeExecutor::instance_find_by_tag;
+	FunctionsMap["instance_exists"] = &CodeExecutor::instance_exists;
+	FunctionsMap["instance_alive"] = &CodeExecutor::instance_alive;
+	FunctionsMap["scene_get_width"] = &CodeExecutor::scene_get_width;
+	FunctionsMap["scene_get_height"] = &CodeExecutor::scene_get_height;
 }
 //end of file
