@@ -151,16 +151,20 @@ private:
 		double Time;
 		Inspector CodeData;
 		Instance* Sender;
+		AStack<bool> IfTestState;
 		SuspendCodeStruct()
 		{
 			Time = 0.0;
 			CodeData = Inspector();
 			Sender = nullptr;
+			IfTestState = AStack<bool>();
 		}
-		SuspendCodeStruct(const double time, const Inspector* code_data, Instance* sender){
+		SuspendCodeStruct(const double time, const Inspector* code_data, Instance* sender, 
+			const AStack<bool>& if_test_state){
 			Time = time;
 			CodeData = Inspector(*code_data); // copy
 			Sender = sender;
+			IfTestState = AStack<bool>(if_test_state); // copy
 			CodeExecutor::_have_suspended_code = true;
 		}
 		~SuspendCodeStruct()
@@ -173,7 +177,7 @@ private:
 	static bool _have_suspended_code;
 public:
 	static void SuspendedCodeStop();
-	static void SuspendedCodeAdd(double time, const Inspector* code_data, Instance* sender);
+	static void SuspendedCodeAdd(double time, Instance* sender);
 	static void SuspendedCodeExecute();
 	static void SuspendedCodeDeleteInstance(const Instance* sender);
 private:
@@ -183,6 +187,8 @@ private:
 	void	h_execute_function(Inspector* , Instance*);
 	void	h_get_value(Inspector*, Instance*);
 	int		h_if_test(Inspector* code, Instance* instance);
+	// stack of if test result, 
+	AStack<bool> _if_test_result;
 	void	h_get_local_value(Inspector* code, Instance* instance);
 	bool	h_compare(int type, int operation);
 
@@ -201,10 +207,13 @@ private:
 	static Rect h_operation_rect(int _operator, Rect val1, Rect val2);
 	static SDL_Color h_operation_color(int _operator, SDL_Color val1, SDL_Color val2);
 	static std::string h_operation_string(int _operator, std::string val1, std::string val2);
-
 #ifdef _DEBUG
 	// all debug things
 public:
+	int DebugGetIfTestResultStackSize() const
+	{
+		return _if_test_result.Size();
+	}
 	void DebugSetInstanceToTrack(Instance* instance);
 	std::string DebugGetTrackInfo();
 	[[nodiscard]] bool DebugGetTrackLiveStatus() const { return _debug_tracked_instance != nullptr; }
@@ -312,6 +321,10 @@ private:
 	Script(instance_create_point);
 	Script(instance_delete_other);
 	Script(instance_find_by_tag);
+	Script(instance_exists);
+	Script(instance_alive);
+	Script(scene_get_width);
+	Script(scene_get_height);
 #undef Script
 };
 //end of file

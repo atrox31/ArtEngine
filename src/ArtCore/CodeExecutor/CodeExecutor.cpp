@@ -179,7 +179,12 @@ bool CodeExecutor::LoadObjectDefinitions(const BackGroundRenderer* bgr, const in
 		while (code->GetNextCommand() != COMMAND::END || code->IsEnd()) {
 			if (code->GetCurrentCommand() == COMMAND::FUNCTION_DEFINITION) {
 				std::string e_name = code->GetString();
-				const int f_size = code->GetBit();
+				const unsigned char size_2_bit[2]
+				{
+					code->GetBit(), code->GetBit()
+				};
+				unsigned int f_size;
+				Convert::TwoByteCharToUint32(size_2_bit, &f_size);
 				const unsigned char* f_code = code->GetChunk(f_size);
 				if ((ArtCode::Command)f_code[f_size - 1] != COMMAND::END) {
 
@@ -191,7 +196,7 @@ bool CodeExecutor::LoadObjectDefinitions(const BackGroundRenderer* bgr, const in
 					Debug::ERROR("instance: '" + o_name + "' - wrong event '" + e_name + "'"); SDL_assert(false); return false;
 				}
 
-				instance._events.push_back(InstanceDefinition::EventData{ Event_fromString(e_name), f_size, f_code });
+				instance._events.push_back(InstanceDefinition::EventData{ Event_fromString(e_name), static_cast<int>(f_size), f_code });
 			}
 			else {
 				Debug::ERROR("instance: '" + o_name + "' - expected 'FUNCTION_DEFINITION' but " + std::to_string(code->Current()) + " is given"); SDL_assert(false); return false;
@@ -234,7 +239,7 @@ bool CodeExecutor::LoadObjectDefinitions(const BackGroundRenderer* bgr, const in
 
 bool CodeExecutor::LoadSceneTriggers()
 {
-	const std::unique_ptr<Inspector> code = std::make_unique<Inspector>(*CreateInspector("scene/" + Core::GetInstance()->_current_scene->GetName() + "/scene_triggers.acp"));
+	const std::unique_ptr<Inspector> code = std::make_unique<Inspector>(*CreateInspector("scene/" + Core::GetCurrentScene()->GetName() + "/scene_triggers.acp"));
 	// object definitions
 	while (!code->IsEnd()) {
 		// first is OBJECT_DEFINITION command
@@ -275,7 +280,13 @@ bool CodeExecutor::LoadSceneTriggers()
 			}
 			else {
 				std::string e_name = code->GetString();
-				const int f_size = code->GetBit();
+				const unsigned char size_2_bit[2]
+				{
+					code->GetBit(), code->GetBit()
+				};
+				unsigned int f_size;
+				Convert::TwoByteCharToUint32(size_2_bit, &f_size);
+				
 				const unsigned char* f_code = code->GetChunk(f_size);
 				if ((ArtCode::Command)f_code[f_size - 1] != COMMAND::END) {
 
@@ -298,7 +309,7 @@ bool CodeExecutor::LoadSceneTriggers()
 						if(trigger_type[0] == "scene")
 						{
 							// triggers
-							Core::GetInstance()->_current_scene->SetTriggerData(e_name, f_code, f_size);
+							Core::GetCurrentScene()->SetTriggerData(e_name, f_code, f_size);
 						}else
 						{
 							// gui element action
@@ -308,7 +319,7 @@ bool CodeExecutor::LoadSceneTriggers()
 								ASSERT(false, "x05"); return false;
 							}else
 							{
-								Gui::GuiElementTemplate* element = Core::GetInstance()->_current_scene->GuiSystem.GetElementById(gui_element_type[1]);
+								Gui::GuiElementTemplate* element = Core::GetCurrentScene()->GuiSystem.GetElementById(gui_element_type[1]);
 								if (element != nullptr)
 								{
 									element->SetCallback(Gui::GuiElementTemplate::EvCallback_fromString(trigger_type[1]),
@@ -334,7 +345,7 @@ bool CodeExecutor::LoadSceneTriggers()
 		}
 
 		// execute only starting event
-		Core::GetInstance()->_current_scene->SetVariableHolder( new Instance(*instance.Template) );
+		Core::GetCurrentScene()->SetVariableHolder( new Instance(*instance.Template) );
 	}
 	return true;
 }
@@ -415,7 +426,6 @@ std::string CodeExecutor::DebugGetTrackInfo()
 			_return += "SpriteCenterY: [" + std::to_string(_debug_tracked_instance->SpriteCenterY) + "]\n";
 			_return += "SpriteScaleX: [" + std::to_string(_debug_tracked_instance->SpriteScaleX) + "]\n";
 			_return += "SpriteScaleY: [" + std::to_string(_debug_tracked_instance->SpriteScaleY) + "]\n";
-			_return += "Direction: [" + std::to_string(_debug_tracked_instance->SelfSprite->GetMaxFrame()) + "]\n";
 		}
 		_return += "Custom variables\n";
 	}else
@@ -424,7 +434,8 @@ std::string CodeExecutor::DebugGetTrackInfo()
 	}
 
 	_return += "Suspended code state: " + (_debug_tracked_instance->SuspendedCodeStateHave() ? std::to_string(_debug_tracked_instance->SuspendedCodeStateCount()) : "none");
-	
+	_return += '\n';
+
 	for (auto& val : _instance_definitions[_debug_tracked_instance->GetInstanceDefinitionId()].VariablesNames)
 	{
 		if(!val.second.empty())
@@ -558,6 +569,7 @@ Instance* CodeExecutor::SpawnInstance(const int id) const
 void CodeExecutor::ExecuteCode(Instance* instance, std::pair<const unsigned char*, Sint64>* code_data)
 {
 	if (code_data == nullptr) return;
+	_if_test_result.Erase();
 
 #ifndef _DEBUG
 	Inspector code(code_data->first, code_data->second);
@@ -575,6 +587,7 @@ void CodeExecutor::ExecuteScript(Instance* instance, const Event script)
 	CodeExecutor::InstanceDefinition::EventData* code_data = CodeExecutor::GetEventData(instance->GetInstanceDefinitionId(), script);
 	// no error because GetEventData print error
 	if (code_data == nullptr) return;
+	_if_test_result.Erase();
 	
 #ifndef _DEBUG
 	Inspector code(code_data->data, code_data->size);
@@ -610,10 +623,10 @@ void CodeExecutor::SuspendedCodeStop()
 	_have_suspended_code = false;
 }
 
-void CodeExecutor::SuspendedCodeAdd(const double time, const Inspector* code_data, Instance* sender)
+void CodeExecutor::SuspendedCodeAdd(const double time, Instance* sender)
 {
 	if (sender->SuspendedCodeState(true)) {
-		_suspended_code.emplace_back(time, code_data, sender);
+		_suspended_code.emplace_back(time, Core::GetInstance()->Executor->_current_inspector, sender, Core::GetInstance()->Executor->_if_test_result);
 	}
 }
 
@@ -628,6 +641,8 @@ void CodeExecutor::SuspendedCodeExecute()
 		{
 			if ((*it).Sender->SuspendedCodeState(false)) {
 				_break = false;
+				// flip ifs status, to continue execute
+				Core::GetInstance()->Executor->_if_test_result = (*it).IfTestState;
 				Core::GetInstance()->Executor->h_execute_script(&(*it).CodeData, (*it).Sender);
 			}
 			it = _suspended_code.erase(it);
@@ -646,6 +661,7 @@ void CodeExecutor::SuspendedCodeDeleteInstance(const Instance* sender)
 		if((*it).Sender->GetId() == sender->GetId())
 		{
 			it = _suspended_code.erase(it);
+			// no return, one instance can have many suspended code
 		}
 		else {
 			++it;
@@ -696,7 +712,7 @@ void CodeExecutor::h_execute_script(Inspector* code, Instance* instance)
 
 		case COMMAND::OTHER: {
 			const int instance_type = (int)code->GetBit();
-			Instance* other = Core::GetInstance()->_current_scene->CurrentCollisionInstance;
+			Instance* other = Core::GetCurrentScene()->CurrentCollisionInstance;
 			if (other == nullptr) {
 				Break();
 				return;
@@ -740,7 +756,19 @@ void CodeExecutor::h_execute_script(Inspector* code, Instance* instance)
 		case COMMAND::IF_TEST: {
 			code->Skip(h_if_test(code, instance));
 		} break;
-
+		case COMMAND::ELSE:
+			const unsigned char skip_2_bit[2]
+			{
+				code->GetBit(), code->GetBit()
+			};
+			unsigned int skip;
+			Convert::TwoByteCharToUint32(skip_2_bit, &skip);
+			if (_if_test_result.Get() == true)
+			{
+				// skip else
+				code->Skip(skip);
+			}
+			break;
 		}
 	}
 }
@@ -759,7 +787,7 @@ int CodeExecutor::h_if_test(Inspector* code, Instance* instance) {
 
 		case COMMAND::OTHER: {
 			const int instance_type = (int)code->GetBit();
-			const Instance* other = Core::GetInstance()->_current_scene->CurrentCollisionInstance;
+			const Instance* other = Core::GetCurrentScene()->CurrentCollisionInstance;
 			if (other == nullptr) {
 				Break();
 				// error - other is null
@@ -768,7 +796,7 @@ int CodeExecutor::h_if_test(Inspector* code, Instance* instance) {
 				Break();
 				// error - wrong type
 			}
-			h_get_local_value(code, Core::GetInstance()->_current_scene->CurrentCollisionInstance);
+			h_get_local_value(code, Core::GetCurrentScene()->CurrentCollisionInstance);
 		} break;
 
 		case COMMAND::FUNCTION:
@@ -801,30 +829,38 @@ int CodeExecutor::h_if_test(Inspector* code, Instance* instance) {
 
 		case COMMAND::IF_BODY: {
 			const int type = (int)code->GetBit();
-			const int skip = (int)code->GetBit();
+			const unsigned char skip_2_bit[2]
+			{
+				code->GetBit(), code->GetBit()
+			};
+			unsigned int skip;
+			Convert::TwoByteCharToUint32(skip_2_bit, &skip);
 			if (have_operator) {
 				//GlobalStack_int.Add(operator_index);
 				if (h_compare(type, operator_index)) {
+					_if_test_result.Add(true);
 					return 0;
 				}
 				else {
-					return skip;
+					_if_test_result.Add(false);
+					return static_cast<int>(skip);
 				}
 			}
 			else {
-				const bool test = GlobalStack_bool.Get();
-				if (test) {
+				if (const bool test = GlobalStack_bool.Get()) {
+					_if_test_result.Add(true);
 					return 0;
 				}
 				else {
-					return skip;
+					_if_test_result.Add(false);
+					return static_cast<int>(skip);
 				}
 			}
 		}break;
 
 		}
 	}
-	// coœ posz³o nie tak, lepiej olaæ skrypt
+	// error
 	Break();
 	return 0;
 }
@@ -1279,7 +1315,7 @@ void CodeExecutor::h_get_value(Inspector* code, Instance* instance) {
 		case ArtCode::variable_type::INT:		GlobalStack_int.Add(Func::TryGetInt( code->GetString() )); break;
 		case ArtCode::variable_type::FLOAT:		GlobalStack_float.Add(Func::TryGetFloat(code->GetString())); break;
 		case ArtCode::variable_type::BOOL:		GlobalStack_bool.Add( Convert::Str2Bool( code->GetString()) ); break;
-		case ArtCode::variable_type::INSTANCE:	GlobalStack_instance.Add( Core::GetInstance()->_current_scene->GetInstanceById(Func::TryGetInt(code->GetString())) ); break;
+		case ArtCode::variable_type::INSTANCE:	GlobalStack_instance.Add( Core::GetCurrentScene()->GetInstanceById(Func::TryGetInt(code->GetString())) ); break;
 		case ArtCode::variable_type::OBJECT:		GlobalStack_int.Add(Func::TryGetInt(code->GetString())); break;
 		case ArtCode::variable_type::SPRITE:		GlobalStack_int.Add(Func::TryGetInt(code->GetString())); break;
 		case ArtCode::variable_type::TEXTURE:	GlobalStack_int.Add(Func::TryGetInt(code->GetString())); break;
