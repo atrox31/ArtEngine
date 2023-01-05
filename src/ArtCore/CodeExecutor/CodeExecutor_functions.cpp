@@ -545,26 +545,26 @@ void CodeExecutor::instance_set_tag(Instance* sender) {
 
 //instance collision_get_collider();Return reference to instance with this object is collide;Other colliders must be solid too to collide;
 void CodeExecutor::collision_get_collider(Instance*) {
-	StackOut_ins( Core::GetInstance()->_current_scene->CurrentCollisionInstance );
+	StackOut_ins( Core::GetCurrentScene()->CurrentCollisionInstance );
 }
 //string collision_get_collider_tag();Get tag of instance that is coliding with this object;Other colliders must be solid too to collide;
 void CodeExecutor::collision_get_collider_tag(Instance*) {
-	if (Core::GetInstance()->_current_scene->CurrentCollisionInstance != nullptr)
-		StackOut_s(Core::GetInstance()->_current_scene->CurrentCollisionInstance->Tag);
+	if (Core::GetCurrentScene()->CurrentCollisionInstance != nullptr)
+		StackOut_s(Core::GetCurrentScene()->CurrentCollisionInstance->Tag);
 	else
 		StackOut_s("nul");
 }
 //string collision_get_collider_name();Get name of instance that is coliding with this object;Other colliders must be solid too to collide;
 void CodeExecutor::collision_get_collider_name(Instance*) {
-	if (Core::GetInstance()->_current_scene->CurrentCollisionInstance != nullptr)
-		StackOut_s(Core::GetInstance()->_current_scene->CurrentCollisionInstance->Name);
+	if (Core::GetCurrentScene()->CurrentCollisionInstance != nullptr)
+		StackOut_s(Core::GetCurrentScene()->CurrentCollisionInstance->Name);
 	else
 		StackOut_s("nul");
 }
 //int collision_get_collider_id();Get id of instance that is coliding with this object;Other colliders must be solid too to collide;
 void CodeExecutor::collision_get_collider_id(Instance*) {
-	if (Core::GetInstance()->_current_scene->CurrentCollisionInstance != nullptr)
-		StackOut_i((int)Core::GetInstance()->_current_scene->CurrentCollisionInstanceId);
+	if (Core::GetCurrentScene()->CurrentCollisionInstance != nullptr)
+		StackOut_i((int)Core::GetCurrentScene()->CurrentCollisionInstanceId);
 	else
 		StackOut_i(-1);
 }
@@ -603,14 +603,14 @@ void CodeExecutor::instance_spawn(Instance*) {
 	const float y = StackIn_f;
 	const float x = StackIn_f;
 	const std::string obj_name = StackIn_s;
-	Instance* ref = Core::GetInstance()->_current_scene->CreateInstance(obj_name, x, y);
+	Instance* ref = Core::GetCurrentScene()->CreateInstance(obj_name, x, y);
 	StackOut_ins(ref);
 }
 //instance instance_spawn_on_point(string name, point xy);Spawn object <string> at (<point>) and return reference to it;Ypu can use reference to pass arguments;
 void CodeExecutor::instance_spawn_on_point(Instance*) {
 	const SDL_FPoint xy = StackIn_p;
 	const std::string obj_name = StackIn_s;
-	Instance* ref = Core::GetInstance()->_current_scene->CreateInstance(obj_name, xy.x, xy.y);
+	Instance* ref = Core::GetCurrentScene()->CreateInstance(obj_name, xy.x, xy.y);
 	StackOut_ins(ref);
 }
 //null instance_create(string name, float x, float y);Spawn object <string> at (<float>,<float>) in current scene;This not return reference;
@@ -618,7 +618,7 @@ void CodeExecutor::instance_create(Instance*) {
 	const float y = StackIn_f;
 	const float x = StackIn_f;
 	const std::string obj_name = StackIn_s;
-	Core::GetInstance()->_current_scene->CreateInstance(obj_name, x, y);
+	Core::GetCurrentScene()->CreateInstance(obj_name, x, y);
 }
 //null set_direction_for_target(instance target, float direction);Set <instance> direction to <float> value in degree (-180 : 180);You can get reference from id of instance
 void CodeExecutor::set_direction_for_target(Instance*) {
@@ -687,7 +687,7 @@ void CodeExecutor::get_point_y(Instance* sender) {
 void CodeExecutor::collision_push_other(Instance* self) {
 	const bool myself = StackIn_b;
 
-	Instance* other = Core::GetInstance()->_current_scene->CurrentCollisionInstance;
+	Instance* other = Core::GetCurrentScene()->CurrentCollisionInstance;
 	if (other == nullptr) return;
 
 	const float direction = std::atan2f(other->PosY - self->PosY, other->PosX - self->PosX);
@@ -787,7 +787,7 @@ void CodeExecutor::gui_change_visibility(Instance*)
 	const bool visible = StackIn_b;
 	const std::string guiTag = StackIn_s;
 
-	Gui::GuiElementTemplate* element = Core::GetInstance()->_current_scene->GuiSystem.Element(guiTag);
+	Gui::GuiElementTemplate* element = Core::GetCurrentScene()->GuiSystem.Element(guiTag);
 	if (element == nullptr) return;
 	element->SetVisible(visible);
 }
@@ -797,7 +797,7 @@ void CodeExecutor::gui_change_enabled(Instance*)
 	const bool enable = StackIn_b;
 	const std::string guiTag = StackIn_s;
 
-	Gui::GuiElementTemplate* element = Core::GetInstance()->_current_scene->GuiSystem.Element(guiTag);
+	Gui::GuiElementTemplate* element = Core::GetCurrentScene()->GuiSystem.Element(guiTag);
 	if (element == nullptr) return;
 	element->SetEnabled(enable);
 }
@@ -806,15 +806,15 @@ void CodeExecutor::code_execute_trigger(Instance*)
 {
 	const std::string trigger = StackIn_s;
 	Core::GetInstance()->Executor->ExecuteCode(
-		Core::GetInstance()->_current_scene->GetVariableHolder(),
-		Core::GetInstance()->_current_scene->GetTriggerData(trigger));
+		Core::GetCurrentScene()->GetVariableHolder(),
+		Core::GetCurrentScene()->GetTriggerData(trigger));
 
 }
 //null code_wait(int milliseconds);Suspend this trigger for <int> milliseconds
 void CodeExecutor::code_wait(Instance* sender)
 {
 	const int milliseconds = StackIn_i;
-	CodeExecutor::SuspendedCodeAdd((double)milliseconds, Core::GetInstance()->Executor->_current_inspector, sender);
+	CodeExecutor::SuspendedCodeAdd((double)milliseconds, sender);
 	Break();
 }
 //null game_exit();Exit the game;
@@ -861,7 +861,7 @@ void CodeExecutor::get_instance_position_y(Instance*)
 void CodeExecutor::instance_create_point(Instance*) {
 	const SDL_FPoint xy = StackIn_p;
 	const std::string obj_name = StackIn_s;
-	Core::GetInstance()->_current_scene->CreateInstance(obj_name, xy.x, xy.y);
+	Core::GetCurrentScene()->CreateInstance(obj_name, xy.x, xy.y);
 }
 
 //null instance_delete_other(instance instance);Delete <instance>;
@@ -878,6 +878,32 @@ void CodeExecutor::instance_delete_other(Instance*) {
 //instance instance_find_by_tag(string tag);Find instance by tag: <string>;All tags must be unique, else returned instance is first found;
 void CodeExecutor::instance_find_by_tag(Instance*) {
 	const std::string tag = StackIn_s;
-	Instance* instance = Core::GetInstance()->_current_scene->GetInstanceByTag(tag);
+	Instance* instance = Core::GetCurrentScene()->GetInstanceByTag(tag);
 	StackOut_ins(instance);
+}
+
+//bool instance_exists(instance instance);Get current status of <instance>
+void CodeExecutor::instance_exists(Instance*) {
+	const Instance* instance = StackIn_ins;
+	StackOut_b(instance != nullptr);
+}
+//bool instance_alive(instance instance);Get current status of <instance>
+void CodeExecutor::instance_alive(Instance*) {
+	const Instance* instance = StackIn_ins;
+	if(instance != nullptr)
+	{
+		StackOut_b(false);
+	}else
+	{
+		StackOut_b(instance->Alive);
+	}
+}
+
+//int scene_get_width();Get scene width;
+void CodeExecutor::scene_get_width(Instance*) {
+	StackOut_i(Core::GetCurrentScene()->GetWidth());
+}
+//int scene_get_height();Get scene height;
+void CodeExecutor::scene_get_height(Instance*) {
+	StackOut_i(Core::GetCurrentScene()->GetHeight());
 }
