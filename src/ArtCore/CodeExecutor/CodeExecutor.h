@@ -141,8 +141,6 @@ private:
 	static AStack<std::string> GlobalStack_string;
 private:
 	[[nodiscard]] Inspector* CreateInspector(const std::string& code_file) const;
-	// helpers
-	static bool _break;
 	// Break from current script
 	static void Break();
 	// list of suspended code <time, code>

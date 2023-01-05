@@ -885,7 +885,13 @@ void CodeExecutor::instance_find_by_tag(Instance*) {
 //bool instance_exists(instance instance);Get current status of <instance>
 void CodeExecutor::instance_exists(Instance*) {
 	const Instance* instance = StackIn_ins;
-	StackOut_b(instance != nullptr);
+	if(instance != nullptr)
+	{
+		StackOut_b(instance->Alive);
+	}else
+	{
+		StackOut_b(false);
+	}
 }
 //bool instance_alive(instance instance);Get current status of <instance>
 void CodeExecutor::instance_alive(Instance*) {

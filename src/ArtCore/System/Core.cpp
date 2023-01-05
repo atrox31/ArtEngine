@@ -599,6 +599,7 @@ int Core::Run()
                     }
                     else {
                         _instance.Executor->ExecuteScript(c_instance, Event::EvOnDestroy);
+                        delete (*it);
                         it = _instance._current_scene->DeleteInstance(it);
                     }
                 } // step loop
@@ -685,7 +686,7 @@ int Core::Run()
         if (_instance._debug_show_stats) { //F2
             const std::string text =
                 std::string(_instance._debug_show_info ? "Drawing instance debug view\n" : "") +
-                "instance count: " + std::to_string(_instance._current_scene->GetInstancesCount()) + '\n' +
+                "instance count[colony size]: " + std::to_string(_instance._current_scene->GetInstancesCount()) + '[' + std::to_string(_instance._current_scene->InstanceColony.size()) + ']' + '\n' +
                 "delta time: " + std::to_string(_instance.DeltaTime) + '\n' +
                 "Executor global stack size[capacity]: " + std::to_string(CodeExecutor::GetGlobalStackSize()) + '[' + std::to_string(CodeExecutor::GetGlobalStackSize()) + ']' + '\n' +
                 "Executor if-test stack size: " + std::to_string(Core::GetInstance()->Executor->DebugGetIfTestResultStackSize()) + ']' + '\n' +

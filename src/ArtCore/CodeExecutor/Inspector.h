@@ -40,6 +40,7 @@ public:
 		_size = copy._size;
 		_pos = copy._pos;
 		_current_bit = copy._current_bit;
+		Break = copy.Break;
 	}
 
 	Inspector()
@@ -162,7 +163,9 @@ public:
 	float GetFloat() {
 		return Func::TryGetFloat(GetString());
 	}
-
+public:
+		// break flag
+	bool Break = false;
 private:
 	const unsigned char* _code;
 	Sint64 _size;

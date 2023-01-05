@@ -21,8 +21,6 @@ AStack<Rect> CodeExecutor::GlobalStack_rect = AStack<Rect>();
 AStack<SDL_Color> CodeExecutor::GlobalStack_color = AStack<SDL_Color>();
 AStack<std::string> CodeExecutor::GlobalStack_string = AStack<std::string>();
 
-bool CodeExecutor::_break;
-
 std::vector<CodeExecutor::SuspendCodeStruct> CodeExecutor::_suspended_code;
 bool CodeExecutor::_have_suspended_code;
 CodeExecutor::CodeExecutor()
@@ -30,7 +28,6 @@ CodeExecutor::CodeExecutor()
 	FunctionsMap = std::map<std::string, void(*)(Instance*)>();
 	FunctionsList = std::vector<void(*)(Instance*)>() ;
 	_instance_definitions = std::vector<InstanceDefinition>();
-	_break = false;
 	_suspended_code = std::vector<CodeExecutor::SuspendCodeStruct>();
 	_have_suspended_code = false;
 }
@@ -581,7 +578,6 @@ void CodeExecutor::ExecuteCode(Instance* instance, std::pair<const unsigned char
 
 void CodeExecutor::ExecuteScript(Instance* instance, const Event script)
 {
-	_break = false;
 	if (instance == nullptr) return;
 	if (script == Event::EventInvalid) return;
 	CodeExecutor::InstanceDefinition::EventData* code_data = CodeExecutor::GetEventData(instance->GetInstanceDefinitionId(), script);
@@ -614,7 +610,7 @@ void CodeExecutor::EraseGlobalStack()
 
 void CodeExecutor::Break()
 {
-	_break = true;
+	Core::GetInstance()->Executor->_current_inspector->Break = true;
 }
 
 void CodeExecutor::SuspendedCodeStop()
@@ -640,7 +636,8 @@ void CodeExecutor::SuspendedCodeExecute()
 		if((*it).Time <= 0.0)
 		{
 			if ((*it).Sender->SuspendedCodeState(false)) {
-				_break = false;
+				// restore script break data
+				(*it).CodeData.Break = false;
 				// flip ifs status, to continue execute
 				Core::GetInstance()->Executor->_if_test_result = (*it).IfTestState;
 				Core::GetInstance()->Executor->h_execute_script(&(*it).CodeData, (*it).Sender);
@@ -677,9 +674,9 @@ void CodeExecutor::h_execute_script(Inspector* code, Instance* instance)
 							WriteValue(var->Type, var->index);
 	* */
 	_current_inspector = code;
-	if (_break) return;
+	if (code->Break) return;
 	while (!code->IsEnd()) {
-		if (_break) return;
+		if (code->Break) return;
 		switch (code->GetNextCommand()) {
 		case COMMAND::SET: {
 			const int operation = (int)code->GetBit();
@@ -774,7 +771,7 @@ void CodeExecutor::h_execute_script(Inspector* code, Instance* instance)
 }
 
 int CodeExecutor::h_if_test(Inspector* code, Instance* instance) {
-	if (_break) return 0;
+	if (code->Break) return 0;
 	bool have_operator = false;
 	int operator_index = -1;
 	// get value to compare
@@ -1300,7 +1297,7 @@ void CodeExecutor::h_get_local_value(Inspector* code, Instance* instance)
 }
 
 void CodeExecutor::h_get_value(Inspector* code, Instance* instance) {
-	if (_break) return;
+	if (code->Break) return;
 	switch (code->GetNextCommand()) {
 	case COMMAND::FUNCTION:
 		h_execute_function(code, instance);
@@ -1342,9 +1339,9 @@ void CodeExecutor::h_get_value(Inspector* code, Instance* instance) {
 
 void CodeExecutor::h_execute_function(Inspector* code, Instance* instance)
 {
-	if (_break) return;
+	if (code->Break) return;
 	while (!code->IsEnd()) {
-		if (_break) return;
+		if (code->Break) return;
 		const int function_index = (int)code->GetBit();
 		int args = (int)code->GetBit();
 		while (args-- > 0) {
