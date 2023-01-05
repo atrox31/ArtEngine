@@ -62,7 +62,7 @@ public:
 	// get count of suspended code
 	[[nodiscard]] Uint8 SuspendedCodeStateCount() const { return _have_suspended_code;  }
 	// get info if have at least one suspended code
-	[[nodiscard]] bool SuspendedCodeStateHave() const { return _have_suspended_code > 0;  }
+	[[nodiscard]] bool SuspendedCodeStateHave() const { return _have_suspended_code > (uint8_t)0;  }
 	bool CollideTest(const Instance*) const;
 private:
 	[[nodiscard]] bool CollisionCircleCircle(float c1x, float c1y, float c1r,float c2x, float c2y, float c2r) const;
