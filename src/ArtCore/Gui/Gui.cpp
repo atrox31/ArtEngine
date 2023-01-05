@@ -434,7 +434,7 @@ bool Gui::GuiElementTemplate::OnClick()
 	if(_callback_script[EvCallback::EvOnClick].first != nullptr)
 	{
 		Core::GetInstance()->Executor->ExecuteCode(
-			Core::GetInstance()->_current_scene->GetVariableHolder(),
+			Core::GetCurrentScene()->GetVariableHolder(),
 			&_callback_script[EvCallback::EvOnClick]);
 		return true;
 	}

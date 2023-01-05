@@ -37,13 +37,13 @@ void Console::Init() {
 	AddFunction("resume", 0, Core::Play() , "Game resume")
 	AddFunction("exit", 0, Core::GetInstance()->Exit();, "Game exit")
 	AddFunction("spawn_instance", 3, {
-		Core::GetInstance()->_current_scene->CreateInstance(args[1], Func::TryGetFloat(args[2]), Func::TryGetFloat(args[3]));
+		Core::GetCurrentScene()->CreateInstance(args[1], Func::TryGetFloat(args[2]), Func::TryGetFloat(args[3]));
 		}, "Instance spawned")
 #ifdef _DEBUG
 	AddFunction("spy", 1, 
 		{
 			Core::GetInstance()->Executor->DebugSetInstanceToTrack(
-				Core::GetInstance()->_current_scene->GetInstanceById(Func::TryGetInt(args[1]))
+				Core::GetCurrentScene()->GetInstanceById(Func::TryGetInt(args[1]))
 			);
 		}, "Get target info, press F4 to show info")
 #endif
