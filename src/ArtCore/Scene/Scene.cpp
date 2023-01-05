@@ -144,7 +144,7 @@ bool Scene::Start()
 	}
 	return true;
 }
-Instance* Scene::CreateInstance(const std::string& name, float x, float y)
+Instance* Scene::CreateInstance(const std::string& name, const float x, const float y)
 {
 	Instance* ins = Core::GetInstance()->Executor->SpawnInstance(name);
 	if (ins == nullptr) return nullptr;
@@ -156,16 +156,24 @@ Instance* Scene::CreateInstance(const std::string& name, float x, float y)
 }
 void Scene::SpawnAll()
 {
+	/*
+	 Problem: when instance on create get reference to another created instance cannot find it
+	 Fix: First create all instances, after that execute onCreate on all of it
+	 if instance in onCreate script have to get reference to own 'child' it must be
+	 assign to variable. Instance reference in Instance variables is const, always valid.
+	 If instance on spawn create another instance, 'child' will be born in next frame
+	 */
 	if (_is_any_new_instances) {
-		size_t ins_siz = _instances_new.size();
-		while (ins_siz) {
-			Core::GetInstance()->Executor->ExecuteScript(_instances_new.back(), Event::EvOnCreate);
-			InstanceColony.insert(_instances_new.back());
-			_instances_new.pop_back();
-			--ins_siz;
+		const size_t new_ins_size = _instances_new.size();
+		for(size_t i = 0; i < new_ins_size; i++){
+			InstanceColony.insert(_instances_new[i]);
 			_instances_size++;
 		}
-		_is_any_new_instances = false;
+		for (size_t i = 0; i < new_ins_size; i++) {
+			Core::GetInstance()->Executor->ExecuteScript(_instances_new[i], Event::EvOnCreate);
+		}
+		_instances_new.erase(_instances_new.begin(), _instances_new.begin() + new_ins_size);
+		_is_any_new_instances = !_instances_new.empty();
 	}
 }
 void Scene::Exit()
@@ -175,7 +183,7 @@ void Scene::Exit()
 	// TODO: regions
 }
 
-Instance* Scene::GetInstanceById(int id)
+Instance* Scene::GetInstanceById(const int id)
 {
 	for (Instance* instance : InstanceColony) {
 		if (instance->GetId() == id) return instance;
