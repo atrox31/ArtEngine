@@ -96,3 +96,7 @@ float get_instance_position_y(instance instance);Get position Y of <instance>;
 null instance_create_point(string name, point xy);Spawn object <string> at (<point>) in current scene;This not return reference;
 null instance_delete_other(instance instance);Delete <instance>;
 instance instance_find_by_tag(string tag);Find instance by tag: <string>;All tags must be unique, else returned instance is first found;
+bool instance_exists(instance instance);Get current status of <instance>
+bool instance_alive(instance instance);Get current status of <instance>
+int scene_get_width();Get scene width;
+int scene_get_height();Get scene height;
