@@ -585,37 +585,6 @@ bool Core::Run()
                 }
             }
         }
-        /*
-        bool collision = false;
-        std::string collision_name = "";
-        Instance* tmp = new Instance(-1);
-        tmp->PosX = _instance.Mouse.X;
-        tmp->PosY = _instance.Mouse.Y;
-        tmp->Body.Type = Instance::BodyType::Circle;
-        tmp->Body.Value = 64;
-        tmp->IsCollider = true;
-
-        for (Instance* instance : _instance._current_scene->InstanceColony) {
-        	if(Physics::CollisionTest(instance, tmp))
-	            {
-                Render::DrawLine({ tmp->PosX , tmp->PosY }, { instance->PosX , instance->PosY }, 2.f, C_RED);
-                    collision = true;
-                    collision_name = instance->Name + "_" + Instance::BodyType::Body_toString(instance->Body.Type);
-
-                    break;
-	            }
-            
-        }
-        if (collision) {
-            Render::DrawCircleFilled(_instance.Mouse.XYf, tmp->Body.Value, C_RED);
-        }else
-        {
-            Render::DrawCircle(_instance.Mouse.XYf, tmp->Body.Value, C_RED);
-        }
-        Render::DrawRect(tmp->GetBodyMask().ToGPU_Rect(), C_RED);
-        Render::DrawText(collision_name, _instance._global_font, _instance.Mouse.XYf, C_BLUE);
-        delete tmp;
-        */
         
         // post process
         if(_instance.use_bloom)Render::ProcessImageWithGaussian();
