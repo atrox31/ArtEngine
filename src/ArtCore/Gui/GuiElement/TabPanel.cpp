@@ -2,6 +2,7 @@
 
 #include "Panel.h"
 #include "ArtCore/Graphic/Render.h"
+#include "ArtCore/Gui/Console.h"
 
 void GuiElement::TabPanel::Render() {
 	GPU_SetLineThickness(2.0f);
@@ -47,7 +48,7 @@ GuiElement::TabPanel* GuiElement::TabPanel::SetActiveTab(const std::string& tab)
 			return this;
 		}
 	}
-	Debug::WARNING("GuiElementTemplate::tabPanel : setActiveTab - tab '" + tab + "' not found");
+	Console::WriteLine("GuiElementTemplate::tabPanel : setActiveTab - tab '" + tab + "' not found");
 	return this;
 }
 std::string GuiElement::TabPanel::GetTabTag(const std::string& tab) const

@@ -82,10 +82,7 @@ void Physics::BounceInstance(Instance* object1, Instance* object2)
 	if (object2->Body.Type == Instance::BodyType::None) return;
 
 	// direction vector
-	vec2f sender_direction_vec(
-		std::cosf(object1->Direction),
-		std::sinf(object1->Direction)
-	);
+	vec2f sender_direction_vec = Func::GetDirectionVector(object1->Direction);
 	// direction of collision vector, if value is -1 then direction id opposite
 	vec2f collision_direction_vector(1.f, 1.f);
 	//Instance::BodyType::Sprite is copied to circle or rect on create
@@ -125,7 +122,7 @@ void Physics::BounceInstance(Instance* object1, Instance* object2)
 	}
 
 	sender_direction_vec *= collision_direction_vector;
-	object1->Direction = std::atan2f(sender_direction_vec.y, sender_direction_vec.x );
+	object1->Direction = Func::GetVectorFromDirection(sender_direction_vec);
 
 	// move 1 unit to avoid mistakes
 	const float direction_to_object_2 = std::atan2f(object2->PosY - object1->PosY, object2->PosX - object1->PosX);
@@ -135,7 +132,60 @@ void Physics::BounceInstance(Instance* object1, Instance* object2)
 }
 void Physics::BounceRectRect(vec2f& collision_vector, const Instance* object1, const Instance* object2)
 {
+	/*
+		 0,0				+X, 0
+			+----+----+----+
+			| LU | MU | RU |
+			+----+----+----+
+			| LM |    | RM |
+			+----+----+----+
+			| LB | MB | RB |
+			+----+----+----+
+		0, +Y				+X, +Y
+	 */
+	 // ReSharper disable CppInconsistentNaming
+	const Rect object2BodyMask = object2->GetBodyMask();
+	const float object2UpBoundary = object2BodyMask.y;
+	const float object2DownBoundary = object2BodyMask.h;
+	const float object2LeftBoundary = object2BodyMask.x;
+	const float object2RightBoundary = object2BodyMask.w;
 
+	const Rect object1BodyMask = object1->GetBodyMask();
+	const float object1UpBoundary = object1BodyMask.h;
+	const float object1DownBoundary = object1BodyMask.y;
+	const float object1LeftBoundary = object1BodyMask.w;
+	const float object1RightBoundary = object1BodyMask.x;
+
+	bool LM = (object1RightBoundary > object2LeftBoundary) && (object1RightBoundary < object2RightBoundary);
+	bool RM = (object1LeftBoundary < object2RightBoundary) && (object1LeftBoundary > object2LeftBoundary);
+	bool MU = (object1DownBoundary > object2UpBoundary) && (object1DownBoundary < object2DownBoundary);
+	bool MB = (object1UpBoundary < object2DownBoundary) && (object1UpBoundary > object2UpBoundary);
+
+	if ((LM == true) && (RM == true))
+	{// in middle
+		LM = false;
+		RM = false;
+	}
+	if ((MU == true) && (MB == true))
+	{// in middle
+		MU = false;
+		MB = false;
+	}
+
+	const bool LU = LM && MU;
+	const bool RU = MU && RM;
+	const bool RB = RM && MB;
+	const bool LB = MB && LM;
+	// ReSharper restore CppInconsistentNaming
+
+	if ((LU || LM || LB) || (RU || RM || RB))
+	{
+		collision_vector.x = -1.f;
+	}
+	if ((LU || MU || RU) || (LB || MB || RB))
+	{
+		collision_vector.y = -1.f;
+	}
 }
 
 void Physics::BounceCircleCircle(vec2f& collision_vector, const Instance* object1, const Instance* object2)

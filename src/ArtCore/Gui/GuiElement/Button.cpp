@@ -26,7 +26,7 @@ void GuiElement::Button::SetVariableFromStringEx(const std::string& name, const 
 	{
 		SetText(value); return;
 	}
-	Debug::WARNING("[GuiElement::Button::SetVariableFromStringEx]: '" + name + "' not found");
+	Console::WriteLine("[GuiElement::Button::SetVariableFromStringEx]: '" + name + "' not found");
 }
 
 void GuiElement::Button::Render()

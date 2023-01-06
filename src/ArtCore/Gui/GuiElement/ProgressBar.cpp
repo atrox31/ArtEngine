@@ -3,6 +3,7 @@
 #include "ArtCore/Graphic/Render.h"
 #include "ArtCore/Functions/Func.h"
 #include "ArtCore/Functions/SDL_Color_extend.h"
+#include "ArtCore/Gui/Console.h"
 
 
 GuiElement::ProgressBar::ProgressBar() {
@@ -142,5 +143,5 @@ void GuiElement::ProgressBar::SetVariableFromStringEx(const std::string& name, c
 	{
 		_drawing_style = DrawingStyle_fromString(value); return;
 	}
-	Debug::WARNING("[GuiElement::Label::SetVariableFromStringEx]: '" + name + "' not found");
+	Console::WriteLine("[GuiElement::Label::SetVariableFromStringEx]: '" + name + "' not found");
 }

@@ -11,7 +11,6 @@ public:
 	explicit Instance(int instance_definition_id);
 	// do not use, this give unique id for instance
 	Instance* GiveId();
-	~Instance();
 
 	[[nodiscard]] Uint64 GetId() const { return _id; }
 	void Delete();
@@ -77,12 +76,7 @@ public:
 	private:
 	};
 	BodyType Body;
-	Rect GetBodyMask() const;
-#ifdef _DEBUG
-	void DebugDrawMask() const;
-	void DebugDrawCollision();
-#endif // _DEBUG
-
+	[[nodiscard]] Rect GetBodyMask() const;
 private:
 	Uint64 _id = 0;
 	static Uint64 _cid;

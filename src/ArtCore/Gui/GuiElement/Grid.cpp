@@ -165,7 +165,7 @@ GuiElement::Grid::gh_button* GuiElement::Grid::GetButton(const SDL_Point xy) con
 void GuiElement::Grid::SetElementSpacing(const int index)
 {
 	if (index < 0) {
-		Debug::WARNING("grid_holder::SetElementSpacing error index=" + std::to_string(index));
+		Console::WriteLine("grid_holder::SetElementSpacing error index=" + std::to_string(index));
 		return;
 	}
 	_spacing = index;
@@ -224,13 +224,13 @@ void GuiElement::Grid::SetVariableFromStringEx(const std::string& name, const st
 	{
 		_spacing = std::stoi(value); return;
 	}
-	Debug::WARNING("[GuiElement::Grid::SetVariableFromStringEx]: '" + name + "' not found");
+	Console::WriteLine("[GuiElement::Grid::SetVariableFromStringEx]: '" + name + "' not found");
 }
 
 void GuiElement::Grid::SetElementSize(const int w, const int h)
 {
 	if (w < 1 || h < 1) {
-		Debug::WARNING("grid_holder::SetElementSize error w=" + std::to_string(w) + ", h=" + std::to_string(h));
+		Console::WriteLine("grid_holder::SetElementSize error w=" + std::to_string(w) + ", h=" + std::to_string(h));
 		return;
 	}
 	_element_size = { w, h };

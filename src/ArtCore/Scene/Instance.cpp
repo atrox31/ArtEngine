@@ -43,11 +43,6 @@ Instance* Instance::GiveId()
 	return this;
 }
 
-Instance::~Instance()
-{
-	Debug::NOTE_DEATH("[Instance::~Instance]: "+ Name + "'[" + (_id==0?"template": std::to_string(_id)) + "]");
-}
-
 void Instance::Delete()
 {
 	Alive = false;
@@ -70,7 +65,7 @@ bool Instance::SuspendedCodeState(const bool state)
 		if (_have_suspended_code == 0)
 		{
 			_have_suspended_code -= 1;
-			Debug::WARNING("Cannot add more suspended code to instance (max 255)!");
+			Console::WriteLine("Cannot add more suspended code to instance (max 255)!");
 			return false;
 		}
 		return true;
@@ -80,7 +75,7 @@ bool Instance::SuspendedCodeState(const bool state)
 		if(_have_suspended_code == 0xFF)
 		{
 			_have_suspended_code = 0;
-			Debug::WARNING("Cannot remove suspended code to instance, there is no suspended state");
+			Console::WriteLine("Cannot remove suspended code to instance, there is no suspended state");
 			return false;
 		}
 		return true;
@@ -130,7 +125,6 @@ bool Instance::CheckMaskClick(SDL_FPoint& point) const
 	return false;
 }
 
-#ifdef _DEBUG
 Rect Instance::GetBodyMask() const
 {
 	switch(Body.Type)
@@ -154,45 +148,3 @@ Rect Instance::GetBodyMask() const
 	}
 	
 }
-void Instance::DebugDrawMask() const
-{
-	return;
-	if (SelfSprite == nullptr) return;
-
-	const Sprite::mask_type MaskType = SelfSprite->GetMaskType();
-	if (MaskType == Sprite::mask_type::None) return;
-
-	const float MaskValue = SelfSprite->GetMaskValue();
-	if (MaskValue < 1.f) return;
-
-	if (MaskType == Sprite::mask_type::Circle) {
-		const SDL_FPoint spoint{
-			PosX + SelfSprite->GetCenterXRel(),
-			PosY + SelfSprite->GetCenterYRel()
-		};
-		Render::DrawCircle(spoint, (float)SelfSprite->GetMaskValue(), C_RED);
-		return;
-	}
-	if (MaskType == Sprite::mask_type::Rectangle) {
-		Rect spoint{
-			PosX -  SelfSprite->GetMaskValue(),
-			PosY -  SelfSprite->GetMaskValue(),
-			PosX +  SelfSprite->GetMaskValue(),
-			PosY + SelfSprite->GetMaskValue()
-		};
-		SDL_FPoint mov{ SelfSprite->GetCenterXRel(), SelfSprite->GetCenterYRel() };
-		spoint += mov;
-		Render::DrawRect(spoint.ToGPU_Rect(), C_RED);
-	}
-
-}
-void Instance::DebugDrawCollision() {
-	if (Body.Type == Instance::BodyType::Circle) {
-		const float radius_scale = Body.Value * ((SpriteScaleX + SpriteScaleY) / 2.f);
-		Render::DrawCircle({ PosX,PosY }, radius_scale, C_BLUE);
-	}
-	if (Body.Type == Instance::BodyType::Rect) {
-		Render::DrawRect(GetBodyMask().ToGPU_Rect(), C_BLUE);
-	}
-}
-#endif // _DEBUG

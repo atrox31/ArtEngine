@@ -125,7 +125,7 @@ public:
 	[[nodiscard]] Instance* SpawnInstance(int id) const; 
 	void ExecuteScript(Instance* instance, Event script);
 	void ExecuteCode(Instance* instance, std::pair<const unsigned char*, Sint64>* code_data);
-private:
+
 	std::map<std::string, void(*)(Instance*)> FunctionsMap;
 	std::vector<void(*)(Instance*)> FunctionsList;
 
@@ -167,7 +167,6 @@ private:
 		}
 		~SuspendCodeStruct()
 		{
-			Debug::NOTE_DEATH("~SuspendCodeStruct");
 			CodeExecutor::_have_suspended_code = CodeExecutor::_suspended_code.empty();
 		}
 	};

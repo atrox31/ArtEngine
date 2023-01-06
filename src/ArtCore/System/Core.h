@@ -18,7 +18,7 @@ public:
 	static Core* GetInstance() { return &Core::_instance; }
 	static bool Init(int argc, char* args[]);
 	bool ProcessCoreKeys(Sint32 sym);
-	static int Run();
+	static bool Run();
 	static void Exit();
 	static bool LoadData();
 
@@ -59,24 +59,26 @@ private:
 			_window_framerate = 0;
 			_window_vsync = 0;
 		};
-		void SetScreenResolution(int w, int h) {
+		void SetScreenResolution(const int w, const int h) {
 			_window_width = w;
 			_window_height = h;
 		};
-		void SetFullScreen(bool value) {
+		void SetFullScreen(const bool value) {
 			_window_fullscreen = value;
 		};
-		void SetFramerate(int framerate) {
+		void SetFramerate(const int framerate) {
 			_window_framerate = framerate;
 		};
-		void SetVSync(bool vsync) {
+		void SetVSync(const bool vsync) {
 			_window_vsync = vsync;
 		};
 		void Apply() const;
-		int GetWindowWidth() {
+		int GetWindowWidth() const
+		{
 			return _window_width;
 		};
-		int GetWindowHeight() {
+		int GetWindowHeight() const
+		{
 			return _window_height;
 		};
 	private:
@@ -97,13 +99,13 @@ private:
 			_audio_music = 0.0f;
 			_audio_sound = 0.0f;
 		};
-		void SetAudioMasterLevel(float level) {
+		void SetAudioMasterLevel(const float level) {
 			_audio_master = level;
 		};
-		void SetAudioSoundLevel(float level) {
+		void SetAudioSoundLevel(const float level) {
 			_audio_music = level;
 		};
-		void SetAudioMusicLevel(float level) {
+		void SetAudioMusicLevel(const float level) {
 			_audio_sound = level;
 		};
 		void Apply();
@@ -118,7 +120,7 @@ public:
 public:
 	// fps
 	static Uint32 FpsCounterCallback(Uint32 interval, void* parms);
-	double DeltaTime;
+	static inline double DeltaTime;
 	int fps;
 private:
 	Uint64 NOW, LAST;
@@ -139,24 +141,33 @@ public:
 
 	struct MouseState {
 		enum class ButtonState {
-			PRESSED, RELASED, NONE
+			PRESSED, RELEASED, NONE
 		};
+		// Current event of mouse buttons
 		ButtonState LeftEvent = ButtonState::NONE;
+		// Current event of mouse buttons
 		ButtonState RightEvent = ButtonState::NONE;
+		// current state of buttons
 		bool LeftPressed = false;
 		bool RightPressed = false;
+		// Current mouse coordinate X
 		int X = 0;
+		// Current mouse coordinate X
 		int Y = 0;
+		// Current mouse coordinate int (x,y)
 		SDL_Point XY = { 0,0 };
+		// Current mouse coordinate float (x,y)
 		SDL_FPoint XYf = { 0.f,0.f };
-		int WHELL = 0;
-	} Mouse;
-
+		// Current mouse wheel position
+		int Wheel = 0;
+		void Reset();
+	};
+	static MouseState Mouse;
 
 	std::map<std::string, std::string> SettingsData;
-	static int SD_GetInt(std::string field, int _default);
-	static float SD_GetFloat(std::string field, float _default);
-	static std::string SD_GetString(std::string field, std::string _default);
+	static int SD_GetInt(const std::string& field, int _default);
+	static float SD_GetFloat(const std::string& field, float _default);
+	static std::string SD_GetString(const std::string& field, std::string _default);
 
 	// inner list
 	FC_Font* _global_font;
@@ -165,9 +176,6 @@ public:
 	// scene
 	Scene* _current_scene;
 	std::string _primary_scene;
-
-	// members
-	Console* Consola;
 private:
 	static Core _instance;
 	SDL_Window* m_window;
@@ -177,12 +185,49 @@ private:
 public:
 
 private:
-	bool _debug_show_spy = false;
-	int  _debug_spy_line_begin = 0;
-	int  _debug_spy_line_end = 0;
-	int  _debug_spy_line_max = 0;
-	bool _debug_show_info = false;
-	bool _debug_show_stats = false;
+	
+	class CoreDebug
+	{
+	public:
+		CoreDebug();
+		bool ProcessEvent(SDL_Event* e);
+		void Draw();
+		void SetSpyLines(const int& lines)
+		{
+			_spy_line_max = lines;
+			_spy_line_begin = 0;
+			_spy_line_end = std::min(_spy_line_max,8);
+		}
+	private:
+		bool _show_debug_options = false;
+		int  _selected_debug_option = -1;
+		bool _any_panel_shown = false;
+
+		bool _show_performance = false;
+		bool _show_collider = false;
+		bool _show_instance_info = false;
+		bool _show_directions = false;
+		bool _show_spy_window = false;
+		// spy window
+		int _spy_line_begin = 0;
+		int _spy_line_end = 2;
+		int _spy_line_max = 2;
+		struct option
+		{
+			std::string Text;
+			bool* Anchor;
+			SDL_Keycode Key;
+			option(const std::string& text, bool* anchor, const SDL_Keycode key)
+			{
+				Text = text;
+				Anchor = anchor;
+				Key = key;
+			}
+		};
+		std::vector < option > Options;
+	};
+public:
+	CoreDebug CoreDebug;
 #endif
 };
 

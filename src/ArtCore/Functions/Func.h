@@ -17,6 +17,9 @@ public:
 	static float Distance(SDL_FPoint&, SDL_FPoint&);
 	// return distance from point to point
 	static float Distance(float p1_x, float p1_y, float p2_x, float p2_y);
+
+	static vec2f GetDirectionVector(const float& direction);
+	static float GetVectorFromDirection(const vec2f& vector);
 	
 	//get file name with or without extension
 	static std::string GetFileName(const std::string& path, const char separator = '/', bool with_extension = false);
@@ -56,11 +59,11 @@ public:
 		virtual ~DataValues();
 		std::string GetData(const std::string& section, const std::string& field);
 		std::vector<std::string> GetSection(const std::string& section);
-		bool IsOk() {
+		bool IsOk() const
+		{
 			return !_data.empty();
 		}
 	private:
 		std::map<std::string, std::vector <std::string>> _data;
 	};
 };
-

@@ -47,12 +47,12 @@ Gui::Gui()
 bool Gui::LoadFromJson(const json& data) const
 {
 	if (!data.is_object()) {
-		Debug::WARNING("[Gui::LoadFromJson] error, wrong data structure, object expect");
+		Console::WriteLine("[Gui::LoadFromJson] error, wrong data structure, object expect");
 		return false;
 	}
 	if (data["Name"].get<std::string>() != "root")
 	{
-		Debug::WARNING("[Gui::LoadFromJson] error, first node must be root");
+		Console::WriteLine("[Gui::LoadFromJson] error, first node must be root");
 		return false;
 	}
 
@@ -106,7 +106,7 @@ bool Gui::SpawnElementFromJsonData(GuiElementTemplate* parrent, const nlohmann::
 		new_element = _root_element;
 	}else
 	{
-		Debug::WARNING("[Gui::SpawnElementFromJsonData]: unknown element type '" + type + "'");
+		Console::WriteLine("[Gui::SpawnElementFromJsonData]: unknown element type '" + type + "'");
 		return false;
 	}
 
@@ -128,7 +128,6 @@ bool Gui::SpawnElementFromJsonData(GuiElementTemplate* parrent, const nlohmann::
 
 void Gui::Clear() const
 {
-	Debug::NOTE_DEATH("[Gui::Clear]");
 	if (!_root_element->_elements.empty()) {
 		for (auto it = _root_element->_elements.begin(); it != _root_element->_elements.end();)
 		{
@@ -143,7 +142,6 @@ void Gui::GuiElementTemplate::_deleteElement()
 	if (_elements.empty()) {
 		for (auto it = _elements.begin(); it != _elements.end();)
 		{
-			Debug::NOTE_DEATH("[Gui::_deleteElement]: " + GuiElementTemplate::Type_toString((*it)->_type) + "#" + (*it)->GetTag());
 			(*it)->_deleteElement();
 			delete* it;
 			it = _elements.erase(it);
@@ -287,7 +285,7 @@ void Gui::GuiElementTemplate::SetVariableFromStringEx(const std::string& name, c
 	{
 		_pallet.Font = Convert::Hex2Color(value); return;
 	}
-	Debug::WARNING("[GuiElement::GuiElementTemplate::SetVariableFromStringEx]: '" + name + "' not found");
+	Console::WriteLine("[GuiElement::GuiElementTemplate::SetVariableFromStringEx]: '" + name + "' not found");
 }
 
 void Gui::_updateView(GuiElementTemplate* e) {
@@ -338,12 +336,12 @@ Gui::GuiElementTemplate* Gui::AddElement(GuiElementTemplate* target, GuiElementT
 
 Gui::GuiElementTemplate* Gui::Element(const std::string& tag) const
 {
-	if (tag.length() == 0) { Debug::WARNING("gui element: tag size");  return nullptr; }
+	if (tag.length() == 0) { Console::WriteLine("gui element: tag size");  return nullptr; }
 
 	const std::vector<std::string> path = Func::Split(tag, '/');
 	const size_t path_size = path.size();
 
-	if (path_size == 0) { Debug::WARNING("gui element: path error");  return nullptr; }
+	if (path_size == 0) { Console::WriteLine("gui element: path error");  return nullptr; }
 
 	if (path_size == 1) {
 		for (Gui::GuiElementTemplate* elm : _root_element->_elements) {
@@ -359,12 +357,12 @@ Gui::GuiElementTemplate* Gui::Element(const std::string& tag) const
 				break;
 			}
 			if (elm == target->_elements.back()) {
-				Debug::WARNING("gui element: path error target not found");
+				Console::WriteLine("gui element: path error target not found");
 				return nullptr;
 			}
 		}
 	}
-	if (target == _root_element) { Debug::WARNING("gui element: element not found");  return nullptr; }
+	if (target == _root_element) { Console::WriteLine("gui element: element not found");  return nullptr; }
 	return (target);
 }
 

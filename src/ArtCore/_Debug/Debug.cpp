@@ -1,3 +1,4 @@
+/*
 #include "Debug.h"
 #include <sstream>
 #include <fstream>
@@ -32,7 +33,7 @@ void Debug::NOTE_DEATH(const std::string& name)
 	SDL_LogInfo(0, "~%s", name.c_str());
 }
 
-void Debug::LOG(std::initializer_list<std::string> messages, bool new_line)
+void Console::WriteLine(std::initializer_list<std::string> messages, bool new_line)
 {
 	for (auto s : messages) {
 		LOG(s + (new_line ? "\n" : ""));
@@ -40,12 +41,12 @@ void Debug::LOG(std::initializer_list<std::string> messages, bool new_line)
 
 }
 
-void Debug::LOG(std::string message)
+void Console::WriteLine(std::string message)
 {
 	write(message);
 }
 
-void Debug::LOG(SDL_Rect& rect)
+void Console::WriteLine(SDL_Rect& rect)
 {
 	std::stringstream string("");
 	string << "SDL_Rect( x:" << rect.x << ", y:" << rect.y << ", w:" << rect.w << ", h:" << rect.h << " )";
@@ -54,7 +55,7 @@ void Debug::LOG(SDL_Rect& rect)
 	if (WRITE_TO_SYSTEM_CONSOLE) SDL_LogInfo(0, string.str().c_str());
 }
 
-void Debug::LOG(SDL_FRect& rect)
+void Console::WriteLine(SDL_FRect& rect)
 {
 	std::stringstream string("");
 	string << "SDL_Rect( x:" << rect.x << ", y:" << rect.y << ", w:" << rect.w << ", h:" << rect.h << " )";
@@ -63,7 +64,7 @@ void Debug::LOG(SDL_FRect& rect)
 	if (WRITE_TO_SYSTEM_CONSOLE) SDL_LogInfo(0, string.str().c_str());
 }
 
-void Debug::LOG(GPU_Rect& rect)
+void Console::WriteLine(GPU_Rect& rect)
 {
 	std::stringstream string("");
 	string << "SDL_Rect( x:" << rect.x << ", y:" << rect.y << ", w:" << rect.w << ", h:" << rect.h << " )";
@@ -72,14 +73,14 @@ void Debug::LOG(GPU_Rect& rect)
 	if (WRITE_TO_SYSTEM_CONSOLE) SDL_LogInfo(0, string.str().c_str());
 }
 
-void Debug::WARNING(std::initializer_list<std::string> messages, bool new_line)
+void Console::WriteLine(std::initializer_list<std::string> messages, bool new_line)
 {
 	for (auto s : messages) {
 		WARNING(s + (new_line ? "\n" : ""));
 	}
 }
 
-void Debug::WARNING(std::string message)
+void Console::WriteLine(std::string message)
 {
 #ifndef DEBUG_EDITOR
 //	SDL_TriggerBreakpoint();
@@ -103,7 +104,7 @@ void Debug::WARNING(std::string message)
 	}
 }
 
-void Debug::ERROR(std::string message)
+void Console::WriteLine(std::string message)
 {
 	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "ArtCore Error", message.c_str(), Core::GetInstance()->GetWindowHandle());
 	message = "[AC_ERROR]" + message;
@@ -111,7 +112,7 @@ void Debug::ERROR(std::string message)
 	Core::GetInstance()->Exit();
 }
 
-void Debug::SDL_ERROR(std::string message)
+void Console::WriteLine(std::string message)
 {
 	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "SDL Error", message.c_str(), Core::GetInstance()->GetWindowHandle());
 	message = "[SDL_ERROR]" + message + SDL_GetError();
@@ -201,3 +202,4 @@ void Debug::write_to_windows_console(const std::string& string)
 {
 	if (WRITE_TO_SYSTEM_CONSOLE) SDL_LogInfo(0, "%s %s", Debug::get_header().c_str(), string.c_str());
 }
+*/

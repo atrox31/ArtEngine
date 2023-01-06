@@ -9,232 +9,367 @@
 #include <ArtCore/predefined_headers/consola.h>
 
 #include "ArtCore/CodeExecutor/CodeExecutor.h"
+#include "ArtCore/Functions/Convert.h"
 
-// must be static only for show list of functions
-std::map<std::string, void(*)(std::vector<std::string> args, int argc)> Console::_m_console_fun;
+Console* Console::_instance = nullptr;
 
-Console::Console(): _m_visible(false), _m_font(nullptr)
-{
-	_m_console_str = std::vector<std::string>();
-	_m_console_str_history = std::vector<std::string>();
+
+
+
+void Console::Create() {
+	if (_instance != nullptr) return;
+	_instance = new Console();
 }
 
-#define AddFunction(name,argc,body,info)														\
-_m_console_fun[name]=[](std::vector<std::string> args, int arg){									\
-	if((argc)+1 == arg){																			\
-		body;																					\
-		WrLn(info);																				\
-	}else{																						\
-		WrLn(std::string("Error, '")+(name)+"' require "+std::to_string(argc)+" arguments");		\
-	}																							\
-};																								\
-
 void Console::Init() {
-	_m_font = FC_CreateFont();
-	FC_LoadFont_RW(_m_font, SDL_RWFromConstMem(consola_ttf, 459181), 1, 16, C_BLACK, TTF_STYLE_NORMAL);
-
-	AddFunction("pause", 0, Core::Pause() , "Game paused")
-	AddFunction("resume", 0, Core::Play() , "Game resume")
-	AddFunction("exit", 0, Core::GetInstance()->Exit();, "Game exit")
-	AddFunction("spawn_instance", 3, {
-		Core::GetCurrentScene()->CreateInstance(args[1], Func::TryGetFloat(args[2]), Func::TryGetFloat(args[3]));
-		}, "Instance spawned")
-#ifdef _DEBUG
-	AddFunction("spy", 1, 
-		{
-			Core::GetInstance()->Executor->DebugSetInstanceToTrack(
-				Core::GetCurrentScene()->GetInstanceById(Func::TryGetInt(args[1]))
-			);
-		}, "Get target info, press F4 to show info")
-#endif
-		AddFunction("help", 0, {
-					for (const std::string& function_name : _m_console_fun | std::views::keys)
-					{
-						WrLn(function_name);
-					}
-			}, "... end list")
+	if (_instance == nullptr)
+	{
+		Create();
+	}
+	_instance->_font = FC_CreateFont();
+	FC_LoadFont_RW(_instance->_font, SDL_RWFromConstMem(consola_ttf, 459181), 1, 16, C_BLACK, TTF_STYLE_NORMAL);
+	// generate lines to test console height, +1 to input line
+	std::string tmp_test;
+	for (int i = 0; i < _instance->_console_lines_to_show + 1; i++)
+	{
+		tmp_test += "A\n";
+	}
+	const GPU_Rect tmp_rect = FC_GetBounds(_instance->_font, 0.f, 0.f, FC_ALIGN_LEFT, { 1.f, 1.f }, "%s", tmp_test.c_str());
+	_instance->_console_lines_height = tmp_rect.h;
 }
 
 Console::~Console()
 {
-	FC_FreeFont(_m_font);
+	FC_FreeFont(_instance->_font);
 }
 
-void Console::ProcessTextInput(const std::string& txinput) {
-	_m_console_buf += txinput;
-	_m_console_shadow = "";
-	std::string prediction;
-	for (const auto& key : _m_console_fun | std::views::keys) {
-		bool find = false;
-		for (int i = 0; i < std::min(_m_console_buf.length(), key.length()); i++) {
-			if (key[i] == _m_console_buf[i]) {
-				find = true;
-			}
-			else {
-				find = false;
-			}
-		}
-		if (find) {
-			prediction = key;
-		}
-	}
-	if (prediction.length() > 0) {
-		_m_console_shadow = prediction;
-	}
-	else {
-		_m_console_shadow = "";
-	}
-}
-
-bool Console::ProcessKey(const SDL_KeyCode key)
+void Console::SetOutputFile(const std::string& str)
 {
-	if (key == SDLK_HOME) {
-		_m_visible = !_m_visible;
-		if (_m_visible) Show(); else Hide();
-		return true;
-	}
-	if (!_m_visible) {
-		return false;
-	}
-	switch (key) {
-	case SDLK_BACKSPACE:
-	{
-		if (_m_console_buf.length() > 0) {
-			_m_console_buf.pop_back();
-			if (_m_console_buf.length() == 0) {
-				_m_console_shadow = "";
-			}
-		}
-		else {
-			_m_console_shadow = "";
-		}
-	}break;
-	case SDLK_RETURN:
-	{
-		if (_m_console_buf.length() > 0) {
-			if (!_m_console_str_history.empty() && _m_console_str_history[0] != _m_console_buf) {
-				_m_console_str_history.insert(_m_console_str_history.begin(), _m_console_buf);
-			}
-			else {
-				if (_m_console_str_history.empty()) {
-					_m_console_str_history.insert(_m_console_str_history.begin(), _m_console_buf);
-				}
-			}
-			Execute(_m_console_buf);
-			_m_console_buf = "";
-			_m_console_shadow = "";
-			_m_console_shadow_pos = 0;
-			_m_console_page = 0;
-		}
-	}break;
-	case SDLK_UP:
-	{
-		const Uint8* state = SDL_GetKeyboardState(nullptr);
-		if (state[SDL_SCANCODE_LCTRL]) {
-			if (_m_console_page < int(_m_console_str.size()) - _m_console_block + 1) {
-				_m_console_page++;
-			}
-		}
-		else {
-			if (_m_console_shadow_pos < int( _m_console_str_history.size() )) {
-				_m_console_buf = _m_console_str_history[_m_console_shadow_pos++];
-			}
-		}
-	}break;
-	case SDLK_DOWN: {
-		const Uint8* state = SDL_GetKeyboardState(nullptr);
-		if (state[SDL_SCANCODE_LCTRL]) {
-			if (_m_console_page > 0) {
-				_m_console_page--;
-			}
-		}
-		else {
-			if (_m_console_shadow_pos > 0) {
-				_m_console_buf = _m_console_str_history[--_m_console_shadow_pos];
+	if (_instance == nullptr) return;
+	_instance->_output_file = str;
+	_instance->_write_output_to_file = true;
+}
 
-			}
-		}
-	} break;
-	case SDLK_RIGHT: {
-		if (!_m_console_shadow.empty()) {
-			_m_console_buf = _m_console_shadow;
-		}
-	}break;
-	}
-	return _m_visible;
+void Console::Exit()
+{
+	delete _instance;
 }
 
 void Console::WriteLine(const std::string& text)
 {
-	_m_console_str.insert(_m_console_str.begin(), text + '\n');
+	if (_instance == nullptr) return;
+	_console_lines.emplace_back( "[" + GetCurrentTime() +"] " + text + '\n');
+#ifdef _DEBUG
+	SDL_Log("%s", text.c_str());
+#endif
 }
 
 void Console::Execute(const std::string& command)
 {
+	if (_instance == nullptr) return;
+	if (command.empty()) return;
 	const std::vector<std::string> arg = Func::Explode(command, ' ');
-	if (_m_console_fun.contains(arg[0])) {
-		WriteLine(command);
-		_m_console_fun[arg[0]](arg, static_cast<int>(arg.size()));
+	if (arg.empty()) return;
+	if(Core::GetInstance()->Executor->FunctionsMap.contains(arg[0]))
+	{
+		if(arg.size() > 1)
+		{
+			for (int i = 1; i < arg.size(); i++) {
+				std::vector<std::string> argument = Func::Split(arg[i], '|');
+				if(argument.size() != 2)
+				{
+					WriteLine("Error: argument must be in TYPE|value style");
+					CodeExecutor::EraseGlobalStack();
+					return;
+				}
+				switch (ArtCode::variable_type type = ArtCode::variable_type_fromString(argument[0])) {
+					case ArtCode::variable_type::INT:		CodeExecutor::GlobalStack_int.Add(Func::TryGetInt(argument[1])); break;
+					case ArtCode::variable_type::FLOAT: CodeExecutor::GlobalStack_float.Add(Func::TryGetFloat(argument[1])); break;
+					case ArtCode::variable_type::BOOL: CodeExecutor::GlobalStack_bool.Add( Convert::Str2Bool(argument[1])); break;
+					//case ArtCode::variable_type::INSTANCE: CodeExecutor::GlobalStack_instance.Add(); break;
+					//case ArtCode::variable_type::OBJECT:		CodeExecutor::GlobalStack_int.Add(Func::TryGetInt(argument[1])); break;
+					//case ArtCode::variable_type::SPRITE:		CodeExecutor::GlobalStack_int.Add(Func::TryGetInt(argument[1])); break;
+					//case ArtCode::variable_type::TEXTURE:	CodeExecutor::GlobalStack_int.Add(Func::TryGetInt(argument[1])); break;
+					//case ArtCode::variable_type::SOUND:		CodeExecutor::GlobalStack_int.Add(Func::TryGetInt(argument[1])); break;
+					//case ArtCode::variable_type::MUSIC:		CodeExecutor::GlobalStack_int.Add(Func::TryGetInt(argument[1])); break;
+					//case ArtCode::variable_type::FONT:		CodeExecutor::GlobalStack_int.Add(Func::TryGetInt(argument[1])); break;
+					case ArtCode::variable_type::POINT: CodeExecutor::GlobalStack_point.Add(Convert::Str2FPoint(argument[1])); break;
+					case ArtCode::variable_type::RECT: CodeExecutor::GlobalStack_rect.Add(Convert::Str2Rect(argument[1])); break;
+					case ArtCode::variable_type::COLOR: CodeExecutor::GlobalStack_color.Add(Convert::Hex2Color(argument[1])); break;
+					case ArtCode::variable_type::STRING: CodeExecutor::GlobalStack_string.Add(argument[1]); break;
+				default:
+					{
+					WriteLine("Error: argument "+ arg[i]+" is invalid");
+					CodeExecutor::EraseGlobalStack();
+					return;
+					}
+					}
+			}
+		}
+		Core::GetInstance()->Executor->FunctionsMap[arg[0]](nullptr);
+		CodeExecutor::EraseGlobalStack();
+		WriteLine("Execute: " + command);
+	}else
+	{
+		// handle core functions
+		if(arg[0] == "exit")
+		{
+			Core::Exit();
+			return;
+		}
 	}
-	else {
-		WriteLine("err: " + arg[0] + " - not found");
-	}
+	WriteLine("Command: '" + command + "' not found.");
 }
 
-void Console::RenderConsole()
+void Console::RenderConsole(GPU_Target* surface)
 {
-	if (!_m_visible) return;
-	GPU_ActivateShaderProgram(0, nullptr);
-	const int block_size = FC_GetLineHeight(_m_font) - 2;
-	// draw back
-
-	const int _screen_height = Core::GetScreenHeight();
-	const int _screen_width = Core::GetScreenWidth();
-	GPU_RectangleFilled(Core::GetScreenTarget(), 0, static_cast<float>(_screen_height),
-	                    static_cast<float>(_screen_width),
-	                    static_cast<float>(_screen_height - block_size * _m_console_block), C_DGRAY);
-	FC_SetDefaultColor(_m_font, C_GREEN);
-	for (int i = 0; i < std::min(_m_console_str.size(), (static_cast<size_t>(_m_console_block) - 1)); i++)
-	{
-		FC_DrawAlign(_m_font, Core::GetScreenTarget(), 2.0f,
-		             static_cast<float>(_screen_height - (block_size) * (i + 2) - 4),
-		             FC_ALIGN_LEFT, _m_console_str[static_cast<size_t>(i + _m_console_page)].c_str());
-	}
-	FC_SetDefaultColor(_m_font, C_DGREEN);
-	FC_DrawAlign(_m_font, Core::GetScreenTarget(), 2.0f,
-	             static_cast<float>(_screen_height - (block_size) - 4),
-	             FC_ALIGN_LEFT, _m_console_shadow.c_str());
-	FC_SetDefaultColor(_m_font, C_GREEN);
-	_m_cursor_interval += Core::GetInstance()->DeltaTime;
-	if (_m_cursor_interval > 0.5)
-	{
-		_m_cursor_interval = 0.0;
-		_m_show_cursor = !_m_show_cursor;
-	}
-	std::string content = ">" + _m_console_buf + (_m_show_cursor ? "|" : "");
-	FC_DrawAlign(_m_font, Core::GetInstance()->GetScreenTarget(), 2.0f,
-	             static_cast<float>(_screen_height - (block_size) - 4),
-	             FC_ALIGN_LEFT, content.c_str());
+	if (_instance == nullptr) return;
+	if (!_instance->_visible) return;
+	_instance->InnerRender(surface);
 }
+
 
 void Console::Show()
 {
+	if (_instance == nullptr) return;
 	SDL_StartTextInput();
-	_m_visible = true;
-	_m_console_buf = "";
-	_m_console_shadow = "";
-	_m_console_shadow_pos = 0;
-	_m_console_page = 0;
-	_m_console_block = 12;
+	_instance->_visible = true;
+	_instance->_current_input = "";
+	_instance->_current_cursor_pos = 0;
 }
 
 void Console::Hide()
 {
+	if (_instance == nullptr) return;
 	SDL_StopTextInput();
-	_m_visible = false;
+	_instance->_visible = false;
 }
 
-void Console::WrLn(const std::string& line)
+bool Console::ProcessEvent(const SDL_Event* sdl_event)
 {
-	Core::GetInstance()->Consola->WriteLine(line);
+	if (_instance == nullptr) return false;
+	return _instance->InnerProcessInput(sdl_event);
+}
+
+void Console::SaveToFile()
+{
+	std::ostringstream opt;
+	time_t local_time;
+	tm tm_obj{};
+	time(&local_time);
+	localtime_s(&tm_obj, &local_time);
+	opt << _output_file << "_" << tm_obj.tm_year + 1900 <<
+		"_" << std::setfill('0') << std::setw(2) << tm_obj.tm_mon + 1 <<
+		"_" << std::setfill('0') << std::setw(2) << tm_obj.tm_mday << "_" <<
+		std::setfill('0') << std::setw(2) << tm_obj.tm_hour <<
+		"_" << std::setfill('0') << std::setw(2) << tm_obj.tm_min <<
+		"_" << std::setfill('0') << std::setw(2) << tm_obj.tm_sec << ".log";
+
+	SDL_RWops* file = SDL_RWFromFile(opt.str().c_str(), "w");
+	if (file != nullptr)
+	{
+		for (const std::string& console_line : _console_lines)
+		{
+			SDL_RWwrite(file, console_line.c_str(), sizeof(char), console_line.length());
+		}
+		//Close file handler
+		SDL_RWclose(file);
+	}
+}
+
+std::string Console::GetCurrentDate()
+{
+	std::ostringstream opt;
+	time_t local_time;
+	tm tm_obj{};
+	time(&local_time);
+	localtime_s(&tm_obj, &local_time);
+	opt << tm_obj.tm_year + 1900 << 
+	"." << std::setfill('0') << std::setw(2) << tm_obj.tm_mon + 1 << 
+	"." << std::setfill('0') << std::setw(2) << tm_obj.tm_mday;
+	return opt.str();
+}
+
+std::string Console::GetCurrentTime()
+{
+	std::ostringstream opt;
+	time_t local_time;
+	tm tm_obj{};
+	time(&local_time);
+	localtime_s(&tm_obj, &local_time);
+	opt << std::setfill('0') << std::setw(2) << tm_obj.tm_hour << 
+	":" << std::setfill('0') << std::setw(2) << tm_obj.tm_min << 
+	":" << std::setfill('0') << std::setw(2) << tm_obj.tm_sec;
+	return opt.str();
+}
+
+bool Console::InnerProcessInput(const SDL_Event* sdl_event)
+{
+	if (_instance == nullptr) return false;
+	if (sdl_event->type == SDL_KEYDOWN) {
+		if (sdl_event->key.keysym.sym == SDLK_HOME) {
+			_visible = !_visible;
+			if (_visible)
+			{
+				Show(); return true;
+			}
+			else
+			{
+				Hide(); return true;
+			}
+		}
+	}
+	// not console interesting event
+	if (!_visible) return false;
+
+	if (sdl_event->type == SDL_KEYDOWN)
+	{
+		switch (sdl_event->key.keysym.sym) {
+		case SDLK_BACKSPACE:
+		{
+			if ((_current_input.length() > 0) && (_current_cursor_pos > 0))
+			{
+				_current_input.erase(_current_cursor_pos-1, 1);
+				_current_cursor_pos--;
+			}
+			return true;
+		}
+		case SDLK_DELETE:
+		{
+			if ((_current_input.length() > 0) && (_current_cursor_pos < (int)_current_input.length() ))
+			{
+				_current_input.erase(_current_cursor_pos, 1);
+				
+			}
+			return true;
+		}
+		case SDLK_RETURN:
+		{
+			if (_current_input.length() > 0) {
+				_console_lines.emplace_back(_current_input);
+				_current_cursor_pos = 0;
+				_string_input_history.emplace_back(_current_input);
+				_string_input_history_pos = static_cast<int>(_string_input_history.size());
+				Execute(_current_input);
+				_current_input.clear();
+			}
+			return true;
+		}
+		case SDLK_UP:
+		{
+			if (_string_input_history.empty()) return true;
+			if (_string_input_history_pos > 0) {
+				_string_input_history_pos--;
+			}
+			_current_input = _string_input_history[_string_input_history_pos];
+			_current_cursor_pos = static_cast<int>(_current_input.length());
+			return true;
+		}
+		case SDLK_DOWN:
+		{
+			if (_string_input_history.empty()) return true;
+			if (_string_input_history_pos < static_cast<int>(_string_input_history.size()-1)) {
+				_string_input_history_pos++;
+			}
+			_current_input = _string_input_history[_string_input_history_pos];
+			_current_cursor_pos = static_cast<int>(_current_input.length());
+			return true;
+		}
+		case SDLK_RIGHT:
+		{
+			if (_current_cursor_pos < static_cast<int>(_current_input.length())) {
+				_current_cursor_pos++;
+			}
+			_show_cursor = true;
+			return true;
+		}
+		case SDLK_LEFT:
+		{
+			if (_current_cursor_pos > 0) {
+				_current_cursor_pos--;
+			}
+			_show_cursor = true;
+			return true;
+		}
+		
+		}
+	}
+	else {
+		// if not key then text input
+		if(sdl_event->type == SDL_TEXTINPUT)
+		{
+			//e.text.text
+			if(_current_cursor_pos < static_cast<int>(_current_input.length()))
+			{
+				_current_input.insert(_current_cursor_pos, sdl_event->text.text);
+			}else
+			{
+				_current_input += sdl_event->text.text;
+			}
+			_current_cursor_pos++;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void Console::InnerRender(GPU_Target* surface)
+{
+	if (_instance == nullptr) return;
+	_cursor_interval += Core::DeltaTime;
+	if(_cursor_interval >= 1.0)
+	{
+		_cursor_interval = 0.0;
+		_show_cursor = !_show_cursor;
+	}
+	// input box
+	float width = 0.f;
+	float height = 0.f;
+	float cursor_pos = 0.f;
+	for(int i=0; i<static_cast<int>(_current_input.length()); i++)
+	{
+		const GPU_Rect char_size = FC_GetBounds(_font, 0.f, 0.f, FC_ALIGN_LEFT, { 1.f, 1.f }, "%c", _current_input[i]);
+		width += char_size.w;
+		height = std::max(height, char_size.h);
+		if(i == _current_cursor_pos-1)
+		{
+			cursor_pos = width;
+		}
+	}
+	if(_current_input.length() == 0)
+	{
+		height = FC_GetBounds(_font, 0.f, 0.f, FC_ALIGN_LEFT, { 1.f, 1.f }, "A").h;
+	}
+	float current_height = static_cast<float>(Core::GetScreenHeight() - 1) - height;
+
+	// render
+	GPU_ActivateShaderProgram(0, nullptr);
+	const GPU_Rect console_area{
+		1.f, static_cast<float>(Core::GetScreenHeight() - 1) - _console_lines_height,
+		static_cast<float>(Core::GetScreenWidth() - 1), _console_lines_height
+	};
+
+	GPU_RectangleFilled2(surface, console_area, C_DGRAY);
+	GPU_Rectangle2(surface, console_area, C_LGREEN);
+
+	const float line_h= FC_DrawEffect(_font, surface, 4.f, current_height, { FC_ALIGN_LEFT, {1.f, 1.f}, C_LGREEN }, "%s", _current_input.c_str()).h + 2.f;
+	if (_show_cursor) {
+		FC_DrawEffect(_font, surface, cursor_pos, current_height, { FC_ALIGN_LEFT, {1.f, 1.f}, C_LGREEN },"|");
+	}
+	current_height -= line_h;
+
+	if (_current_input.length() == 0)
+	{
+		current_height -= FC_GetBounds(_font, 0.f, 0.f, FC_ALIGN_LEFT, { 1.f, 1.f }, "A").h;
+	}
+	// rest of console
+	const int star_line = (int)_console_lines.size()-1;
+	const int end_line = std::max(0, star_line - _console_lines_to_show + 1);
+	for(int i = star_line; i > end_line; i--)
+	{
+		current_height -= FC_DrawEffect(_font, surface, 4.f, current_height, { FC_ALIGN_LEFT, {1.f, 1.f}, C_GREEN }, "%s", _console_lines[i].c_str()).h + 2.f;
+		
+	}
+
 }

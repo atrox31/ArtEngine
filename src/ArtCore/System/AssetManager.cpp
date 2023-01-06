@@ -6,29 +6,26 @@
 
 #include <ranges>
 
+#include "ArtCore/Gui/Console.h"
+
 AssetManager::AssetManager()
 = default;
 
 void AssetManager::ClearData()
 {
 	for (const auto v : List_sprite_id) {
-		Debug::NOTE_DEATH("[AssetManager::ClearData]: ~Sprite");
 		Sprite::Delete(v);
 	}
 	for (const auto v : List_texture_id) {
-		Debug::NOTE_DEATH("[AssetManager::ClearData]: ~Texture");
 		GPU_FreeImage(v);
 	}
 	for (const auto v : List_music_id) {
-		Debug::NOTE_DEATH("[AssetManager::ClearData]: ~Mix_Music");
 		Mix_FreeMusic(v);
 	}
 	for (const auto v : List_sound_id) {
-		Debug::NOTE_DEATH("[AssetManager::ClearData]: ~Mix_Chunk");
 		Mix_FreeChunk(v);
 	}
 	for (const auto v : List_font_id) {
-		Debug::NOTE_DEATH("[AssetManager::ClearData]: ~FC_Font");
 		FC_FreeFont(v);
 	}
 	List_sprite_id.clear();
@@ -112,7 +109,7 @@ bool AssetManager::LoadData(BackGroundRenderer* bgr, const int p_min, const int 
 			if (tmp == nullptr) return false;
 			List_font_name.insert({ normal_name, tmp });
 		}
-			Debug::LOG("AssetManager::LoadData - file loaded: " + file);
+			Console::WriteLine("AssetManager::LoadData - file loaded: " + file);
 			bgr->SetProgress(
 				static_cast<int>(Func::LinearScale(
 					static_cast<float>(c_pos),

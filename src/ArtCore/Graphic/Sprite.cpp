@@ -1,6 +1,7 @@
 #include "Sprite.h"
 
 #include "ArtCore/Functions/Func.h"
+#include "ArtCore/Gui/Console.h"
 #include "ArtCore/_Debug/Debug.h"
 
 #include "nlohmann/json.hpp"
@@ -61,12 +62,12 @@ Sprite* Sprite::Load(const std::string& file)
 			new_sprite->m_texture[i] = GPU_LoadImage_RW(Func::GetFileRWops(tex_name, nullptr), true);
 			
 			if(new_sprite->m_texture[i] == nullptr){
-				Debug::WARNING("Sprite::Load - " + sprite_name + " texture '" + tex_name + "' not found");
+				Console::WriteLine("Sprite::Load - " + sprite_name + " texture '" + tex_name + "' not found");
 			}
 		}
 	}else
 	{
-		Debug::WARNING("Sprite::Load - " + sprite_name + " 0 textures found");
+		Console::WriteLine("Sprite::Load - " + sprite_name + " 0 textures found");
 	}
 
 	new_sprite->m_mask_type = Sprite::mask_type_fromString(data["CollisionMask"].get<std::string>());

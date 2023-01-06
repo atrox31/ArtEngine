@@ -29,25 +29,36 @@ extern "C"
 }
 
 int protected_main(int argc, char* args[]) {
-	Core::Init(argc, args);
-	if (!Core::LoadData()) return EXIT_FAILURE;
-	return Core::Run();
+	if(!Core::Init(argc, args))
+	{
+		Console::WriteLine("Core init fail.");
+		Console::SaveToFile();
+		return EXIT_FAILURE;
+	}
+	if(!Core::LoadData())
+	{
+		Console::WriteLine("Load data fail.");
+		Console::SaveToFile();
+		return EXIT_FAILURE;
+	}
+	if(!Core::Run())
+	{
+		Console::WriteLine("Execute fail.");
+		Console::SaveToFile();
+		return EXIT_FAILURE;
+	}
+	return EXIT_SUCCESS;
 }
 
 int SDL_main(int argc, char* argv[]) {
-#ifdef _DEBUG
-#ifndef DEBUG_EDITOR
-		Debug::WRITE_NECROLOGY = true;
-#endif
-#endif
-
 	try
 	{
 		return protected_main(argc, argv);
 	}
 	catch (const std::exception& e)
 	{
-		std::cout << e.what() << std::endl;
+		Console::WriteLine("Error throw: " + std::string(e.what()));
+		Console::SaveToFile();
 		return EXIT_FAILURE;
 	}
 }

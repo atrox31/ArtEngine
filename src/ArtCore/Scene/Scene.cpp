@@ -48,8 +48,7 @@ void Scene::Clear()
 Scene::~Scene()
 {
 	_trigger_data.clear();
-
-	Debug::NOTE_DEATH("[Scene::~Scene]: " + _name);
+	
 	Clear();
 }
 bool Scene::Load(const std::string& name)
@@ -76,12 +75,12 @@ bool Scene::Load(const std::string& name)
 		BackGround.TypeWrap = Scene::BackGround::BTypeWrap_fromString(dv.GetData(std::string("setup"), std::string("BackGroundWrapMode")));
 		BackGround.Texture = Core::GetInstance()->assetManager->GetTexture(dv.GetData("setup", std::string("BackGroundTexture")));
 		if (BackGround.Texture == nullptr) {
-			Debug::WARNING("Background texture not exists '" + dv.GetData(std::string("setup"), std::string("BackGroundTexture")) + "'");
+			Console::WriteLine("Background texture not exists '" + dv.GetData(std::string("setup"), std::string("BackGroundTexture")) + "'");
 			BackGround.SetDefault();
 		}
 	}
 	else {
-		Debug::WARNING("new_scene.BackGround.type unknown");
+		Console::WriteLine("new_scene.BackGround.type unknown");
 		BackGround.SetDefault();
 	}
 
@@ -99,7 +98,7 @@ bool Scene::Load(const std::string& name)
 	for (std::string& instance : dv.GetSection(std::string("instance"))) {
 		std::vector<std::string> data = Func::Split(instance, '|');
 		if (data.size() != 3) {
-			Debug::WARNING("Instance error: '" + instance + "'");
+			Console::WriteLine("Instance error: '" + instance + "'");
 			continue;
 		}
 		_begin_instances.emplace_back( data[0], Func::TryGetInt(data[1]), Func::TryGetInt(data[2]) );
@@ -113,7 +112,7 @@ bool Scene::Load(const std::string& name)
 	const json data = json::parse(gui_schema_json_buffer);
 	if (!data.is_object())
 	{
-		Debug::WARNING("GuiSchema error");
+		Console::WriteLine("GuiSchema error");
 	}
 	else
 	{

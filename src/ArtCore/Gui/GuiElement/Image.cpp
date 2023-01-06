@@ -67,6 +67,6 @@ void GuiElement::Image::SetVariableFromStringEx(const std::string& name, const s
 	{
 		_sprite = Core::GetInstance()->assetManager->GetSprite(value);
 	}
-	Debug::WARNING("[GuiElement::Image::SetVariableFromStringEx]: '" + name + "' not found");
+	Console::WriteLine("[GuiElement::Image::SetVariableFromStringEx]: '" + name + "' not found");
 }
 

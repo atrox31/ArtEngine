@@ -23,7 +23,6 @@ public:
 	Gui();
 	~Gui()
 	{
-		Debug::NOTE_DEATH("[Gui::~Gui]");
 		Clear();
 	}
 public:

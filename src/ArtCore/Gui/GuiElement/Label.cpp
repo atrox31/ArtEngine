@@ -1,6 +1,7 @@
 #include "Label.h"
 
 #include "ArtCore/Graphic/Render.h"
+#include "ArtCore/Gui/Console.h"
 
 
 GuiElement::Label::Label()
@@ -17,7 +18,7 @@ void GuiElement::Label::SetVariableFromStringEx(const std::string& name, const s
 	{
 		SetText(value); return;
 	}
-	Debug::WARNING("[GuiElement::Label::SetVariableFromStringEx]: '" + name + "' not found");
+	Console::WriteLine("[GuiElement::Label::SetVariableFromStringEx]: '" + name + "' not found");
 }
 
 void GuiElement::Label::Render()

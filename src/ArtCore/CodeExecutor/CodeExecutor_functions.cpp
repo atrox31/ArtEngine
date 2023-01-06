@@ -73,7 +73,7 @@ void CodeExecutor::get_sprite(Instance*) {
 	const std::string name = StackIn_s;
 	const int sprite = Core::GetInstance()->assetManager->GetSpriteId(name);
 	if (sprite == -1) {
-		Debug::WARNING("CodeExecutor::get_sprite() - '" + name + "' not found");
+		Console::WriteLine("CodeExecutor::get_sprite() - '" + name + "' not found");
 	}
 	StackOut_i(sprite);
 }
@@ -83,7 +83,7 @@ void CodeExecutor::get_texture(Instance*) {
 	const std::string name = StackIn_s;
 	const int texture = Core::GetInstance()->assetManager->GetTextureId(name);
 	if (texture == -1) {
-		Debug::WARNING("CodeExecutor::get_texture() - '" + name + "' not found");
+		Console::WriteLine("CodeExecutor::get_texture() - '" + name + "' not found");
 	}
 	StackOut_i(texture);
 }
@@ -93,7 +93,7 @@ void CodeExecutor::get_music(Instance*) {
 	const std::string name = StackIn_s;
 	const int texture = Core::GetInstance()->assetManager->GetMusicId(name);
 	if (texture == -1) {
-		Debug::WARNING("CodeExecutor::get_music() - '" + name + "' not found");
+		Console::WriteLine("CodeExecutor::get_music() - '" + name + "' not found");
 	}
 	StackOut_i(texture);
 }
@@ -103,7 +103,7 @@ void CodeExecutor::get_sound(Instance*) {
 	const std::string name = StackIn_s;
 	const int texture = Core::GetInstance()->assetManager->GetSoundId(name);
 	if (texture == -1) {
-		Debug::WARNING("CodeExecutor::get_sound() - '" + name + "' not found");
+		Console::WriteLine("CodeExecutor::get_sound() - '" + name + "' not found");
 	}
 	StackOut_i(texture);
 }
@@ -113,7 +113,7 @@ void CodeExecutor::get_font(Instance*) {
 	const std::string name = StackIn_s;
 	const int font = Core::GetInstance()->assetManager->GetFontId(name);
 	if (font == -1) {
-		Debug::WARNING("CodeExecutor::get_font() - '" + name + "' not found");
+		Console::WriteLine("CodeExecutor::get_font() - '" + name + "' not found");
 	}
 	StackOut_i(font);
 }

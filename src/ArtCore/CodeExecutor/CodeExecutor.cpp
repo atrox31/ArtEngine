@@ -73,11 +73,11 @@ bool CodeExecutor::LoadArtLib()
 					phase++;
 					if (FunctionsMap.contains(tmp)) {
 						FunctionsList.push_back(FunctionsMap[tmp]);
-						FunctionsMap.erase(tmp);
+						//FunctionsMap.erase(tmp);
 					}
 					else {
 						FunctionsList.push_back(nullptr);
-						Debug::WARNING("function '"+ tmp+ "' not found");
+						Console::WriteLine("function '"+ tmp+ "' not found");
 					}
 					tmp = "";
 					break;
@@ -89,14 +89,16 @@ bool CodeExecutor::LoadArtLib()
 			}
 		}
 	}
+	/*
 	if (!FunctionsMap.empty()) {
 		for (const auto& key : FunctionsMap | std::views::keys) {
-			Debug::LOG("Function: '" + key + "' not found");
+			Console::WriteLine("Function: '" + key + "' not found");
 		}
 	}
+	*/
 	FunctionsList.shrink_to_fit();
 	// free memory
-	FunctionsMap.clear();
+	//FunctionsMap.clear();
 	return true;
 }
 
@@ -121,14 +123,14 @@ Inspector* CodeExecutor::CreateInspector(const std::string& code_file) const
 	}
 
 	if (header[0] != 'A' || header[1] != 'C') {
-		Debug::ERROR("can not read object data, wrong header");
+		Console::WriteLine("can not read object data, wrong header");
 		return nullptr;
 	}
 
 	const int ac_main_version = (int)header[2];
 	const int ac_minor_version = (int)header[3];
 	if (ac_main_version < MINIMUM_ART_COMPILER_MAIN && ac_minor_version < MINIMUM_ART_COMPILER_MINOR) {
-		Debug::ERROR("Scripts are created in ACompiler " + std::to_string(ac_main_version) + '.' + std::to_string(ac_minor_version) +
+		Console::WriteLine("Scripts are created in ACompiler " + std::to_string(ac_main_version) + '.' + std::to_string(ac_minor_version) +
 			"! Application requires minimum: " + std::to_string(MINIMUM_ART_COMPILER_MAIN) + '.' + std::to_string(MINIMUM_ART_COMPILER_MINOR) + "\nUpdate game files");
 		return nullptr;
 	}
@@ -147,7 +149,7 @@ bool CodeExecutor::LoadObjectDefinitions(const BackGroundRenderer* bgr, const in
 			if (code->GetCurrentCommand() == COMMAND::END && code->IsEnd()) {
 				break;
 			}
-			Debug::ERROR("expected 'OBJECT_DEFINITION' but " + std::to_string(code->Current()) + " is given"); SDL_assert(false); return false;
+			Console::WriteLine("expected 'OBJECT_DEFINITION' but " + std::to_string(code->Current()) + " is given"); SDL_assert(false); return false;
 		}
 
 		InstanceDefinition instance;
@@ -170,7 +172,7 @@ bool CodeExecutor::LoadObjectDefinitions(const BackGroundRenderer* bgr, const in
 			}
 			else {
 
-				Debug::ERROR("instance: '" + o_name + "' - expected 'LOCAL_VARIABLE_DEFINITION' but " + std::to_string(code->Current()) + " is given"); SDL_assert(false); return false;
+				Console::WriteLine("instance: '" + o_name + "' - expected 'LOCAL_VARIABLE_DEFINITION' but " + std::to_string(code->Current()) + " is given"); SDL_assert(false); return false;
 			}
 		} // variables
 
@@ -187,25 +189,25 @@ bool CodeExecutor::LoadObjectDefinitions(const BackGroundRenderer* bgr, const in
 				const unsigned char* f_code = code->GetChunk(f_size);
 				if ((ArtCode::Command)f_code[f_size - 1] != COMMAND::END) {
 
-					Debug::ERROR("instance: '" + o_name + "' - expected 'END' but " + std::to_string(f_code[f_size - 1]) + " is given"); SDL_assert(false); return false;
+					Console::WriteLine("instance: '" + o_name + "' - expected 'END' but " + std::to_string(f_code[f_size - 1]) + " is given"); SDL_assert(false); return false;
 				}
 
 				//instance._events
 				if (Event_fromString(e_name) == Event::EventInvalid) {
-					Debug::ERROR("instance: '" + o_name + "' - wrong event '" + e_name + "'"); SDL_assert(false); return false;
+					Console::WriteLine("instance: '" + o_name + "' - wrong event '" + e_name + "'"); SDL_assert(false); return false;
 				}
 
 				instance._events.push_back(InstanceDefinition::EventData{ Event_fromString(e_name), static_cast<int>(f_size), f_code });
 			}
 			else {
-				Debug::ERROR("instance: '" + o_name + "' - expected 'FUNCTION_DEFINITION' but " + std::to_string(code->Current()) + " is given"); SDL_assert(false); return false;
+				Console::WriteLine("instance: '" + o_name + "' - expected 'FUNCTION_DEFINITION' but " + std::to_string(code->Current()) + " is given"); SDL_assert(false); return false;
 			}
 		} //events
 
 		// expected end
 		if (code->GetCurrentCommand() != COMMAND::END) {
 
-			Debug::ERROR("expected 'END' but " + std::to_string(code->Current()) + " is given"); SDL_assert(false); return false;
+			Console::WriteLine("expected 'END' but " + std::to_string(code->Current()) + " is given"); SDL_assert(false); return false;
 		}
 
 		// give name if every is ok
@@ -247,7 +249,7 @@ bool CodeExecutor::LoadSceneTriggers()
 			if (code->GetCurrentCommand() == COMMAND::END && code->IsEnd()) {
 				break;
 			}
-			Debug::ERROR("expected 'OBJECT_DEFINITION' but " + std::to_string(code->Current()) + " is given");SDL_assert(false); return false;
+			Console::WriteLine("expected 'OBJECT_DEFINITION' but " + std::to_string(code->Current()) + " is given");SDL_assert(false); return false;
 		}
 		const std::string o_name = code->GetString();
 		InstanceDefinition instance;
@@ -266,7 +268,7 @@ bool CodeExecutor::LoadSceneTriggers()
 				instance.AddVariable(variable_type, code->GetString());
 			}
 			else {
-				Debug::ERROR("LoadSceneTriggers: '"+ o_name+ "' - expected 'LOCAL_VARIABLE_DEFINITION' but " + std::to_string(code->Current()) + " is given");
+				Console::WriteLine("LoadSceneTriggers: '"+ o_name+ "' - expected 'LOCAL_VARIABLE_DEFINITION' but " + std::to_string(code->Current()) + " is given");
 				ASSERT(false, "x01"); return false;
 			}
 		} // variables
@@ -274,7 +276,7 @@ bool CodeExecutor::LoadSceneTriggers()
 		// events
 		while (code->GetNextCommand() != COMMAND::END || code->IsEnd()) {
 			if (code->GetCurrentCommand() != COMMAND::FUNCTION_DEFINITION) {
-				Debug::WARNING("LoadSceneTriggers: '" + o_name + "' - expected 'FUNCTION_DEFINITION' but " + std::to_string(code->Current()) + " is given");
+				Console::WriteLine("LoadSceneTriggers: '" + o_name + "' - expected 'FUNCTION_DEFINITION' but " + std::to_string(code->Current()) + " is given");
 				ASSERT(false, "x02"); return false;
 			}
 			else {
@@ -289,7 +291,7 @@ bool CodeExecutor::LoadSceneTriggers()
 				const unsigned char* f_code = code->GetChunk(f_size);
 				if ((ArtCode::Command)f_code[f_size - 1] != COMMAND::END) {
 
-					Debug::ERROR("LoadSceneTriggers: '" + o_name + "' - expected 'END' but " + std::to_string(f_code[f_size - 1]) + " is given");
+					Console::WriteLine("LoadSceneTriggers: '" + o_name + "' - expected 'END' but " + std::to_string(f_code[f_size - 1]) + " is given");
 					ASSERT(false, "x03"); return false;
 				}
 				// scene accept only def values event, every other is trigger
@@ -301,7 +303,7 @@ bool CodeExecutor::LoadSceneTriggers()
 					if(const std::vector<std::string> trigger_type = Func::Split(e_name, '&'); trigger_type.size() != 2)
 					{
 						//error
-						Debug::WARNING("LoadSceneTriggers: '" + o_name + "' - expected 'trigger_type.size() == 2' but " + std::to_string(trigger_type.size()) + " is given");
+						Console::WriteLine("LoadSceneTriggers: '" + o_name + "' - expected 'trigger_type.size() == 2' but " + std::to_string(trigger_type.size()) + " is given");
 						ASSERT(false, "x04"); return false;
 					}else
 					{
@@ -314,7 +316,7 @@ bool CodeExecutor::LoadSceneTriggers()
 							// gui element action
 							if (const std::vector<std::string> gui_element_type = Func::Split(trigger_type[0], '#'); gui_element_type.size() != 2)
 							{//error
-								Debug::WARNING("LoadSceneTriggers: '" + o_name + "' - expected 'gui_element_type.size() == 2' but " + std::to_string(gui_element_type.size()) + " is given");
+								Console::WriteLine("LoadSceneTriggers: '" + o_name + "' - expected 'gui_element_type.size() == 2' but " + std::to_string(gui_element_type.size()) + " is given");
 								ASSERT(false, "x05"); return false;
 							}else
 							{
@@ -326,7 +328,7 @@ bool CodeExecutor::LoadSceneTriggers()
 									);
 								}else
 								{//error
-									Debug::WARNING("LoadSceneTriggers: '" + o_name + "' - 'GuiSystem.GetElementById("+ gui_element_type[0]+"' == nullptr");
+									Console::WriteLine("LoadSceneTriggers: '" + o_name + "' - 'GuiSystem.GetElementById("+ gui_element_type[0]+"' == nullptr");
 									ASSERT(false, "x06"); return false;
 								}
 							}
@@ -339,7 +341,7 @@ bool CodeExecutor::LoadSceneTriggers()
 		// expected end
 		if (code->GetCurrentCommand() != COMMAND::END) {
 			
-			Debug::WARNING("LoadSceneTriggers 'END' but " + std::to_string(code->Current()) + " is given");
+			Console::WriteLine("LoadSceneTriggers 'END' but " + std::to_string(code->Current()) + " is given");
 			ASSERT(false, "x07"); return false;
 		}
 
@@ -789,6 +791,7 @@ int CodeExecutor::h_if_test(Inspector* code, Instance* instance) {
 			const Instance* other = Core::GetCurrentScene()->CurrentCollisionInstance;
 			if (other == nullptr) {
 				Break();
+				return -1;
 				// error - other is null
 			}
 			if (instance_type != other->GetInstanceDefinitionId()) {
@@ -1354,7 +1357,7 @@ void CodeExecutor::h_execute_function(Inspector* code, Instance* instance)
 		}
 		else {
 #ifdef _DEBUG
-			Debug::WARNING(instance->Name + " script error, function not found, event name:'" + code->DebugGetFName() + "' token pos:" + std::to_string(code->DebugGetCurrentPos()) + " function index: " + std::to_string(function_index));
+			Console::WriteLine(instance->Name + " script error, function not found, event name:'" + code->DebugGetFName() + "' token pos:" + std::to_string(code->DebugGetCurrentPos()) + " function index: " + std::to_string(function_index));
 #endif
 		}
 		break;
@@ -1375,7 +1378,7 @@ CodeExecutor::InstanceDefinition::EventData* CodeExecutor::GetEventData(const in
 			/* TODO: cos z tym jest nie tak
 			if (_Event > e.event) {
 				if (_Event == Event::DEF_VALUES) return nullptr;
-				Debug::WARNING("Event '" + Event_toString(_Event) + "' not found for instance '" + InstanceDefinitions[_id]._name + "'");
+				Console::WriteLine("Event '" + Event_toString(_Event) + "' not found for instance '" + InstanceDefinitions[_id]._name + "'");
 				InstanceDefinitions[_id]._events.push_back({ _Event, 0, nullptr });
 				// sort events
 				std::sort(InstanceDefinitions[_id]._events.begin(), InstanceDefinitions[_id]._events.end());

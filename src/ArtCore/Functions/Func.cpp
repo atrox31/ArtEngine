@@ -10,6 +10,7 @@
 #include "ArtCore/_Debug/Debug.h"
 #include "physfs-3.0.2/src/physfs.h"
 #include "ArtCore/Functions/SDL_FPoint_extend.h"
+#include "ArtCore/Gui/Console.h"
 
 // ReSharper disable once CppInconsistentNaming
 bool Func::PointInGPU_Rect(const SDL_FPoint& point, const GPU_Rect& rect)
@@ -23,7 +24,7 @@ bool Func::PointInGPU_Rect(const float& x, const float& y, const GPU_Rect& rect)
 
 int Func::TryGetInt(const std::string& str)
 {
-	int a = 0;
+	int a;
 	try {
 		a = std::stoi(str);
 	}
@@ -46,7 +47,7 @@ int Func::TryGetInt(const std::string& str)
 
 float Func::TryGetFloat(const std::string& str)
 {
-	float a = 0.f;
+	float a;
 	try {
 		a = std::stof(str);
 	}
@@ -74,6 +75,19 @@ float Func::Distance(SDL_FPoint& p1, SDL_FPoint& p2)
 float Func::Distance(float p1_x, float p1_y, float p2_x, float p2_y)
 {
 	return std::hypotf(p2_x - p1_x, p2_y - p1_y);
+}
+
+vec2f Func::GetDirectionVector(const float& direction)
+{
+	return {
+		std::cosf(direction),
+		std::sinf(direction)
+	};
+}
+
+float Func::GetVectorFromDirection(const vec2f& vector)
+{
+	return std::atan2f(vector.y, vector.x);
 }
 
 
@@ -211,7 +225,7 @@ char* Func::GetFileBuf(const std::string& file, Sint64* len)
 		}
 		return my_buf;
 	}
-	Debug::WARNING("File not exists in archive: '" + file + "'!");
+	Console::WriteLine("File not exists in archive: '" + file + "'!");
 	return nullptr;
 }
 
@@ -231,7 +245,7 @@ unsigned char* Func::GetFileBytes(const std::string& file, Sint64* len)
 		}
 		return my_buf;
 	}
-	Debug::WARNING("File not exists in archive: '" + file + "'!");
+	Console::WriteLine("File not exists in archive: '" + file + "'!");
 	return nullptr;
 }
 SDL_RWops* Func::GetFileRWops(const std::string& file, Sint64* len)
@@ -250,7 +264,7 @@ SDL_RWops* Func::GetFileRWops(const std::string& file, Sint64* len)
 		}
 		return SDL_RWFromMem(buffer, (int)length_read);
 	}
-	Debug::WARNING("File not exists in archive: '" + file + "'!");
+	Console::WriteLine("File not exists in archive: '" + file + "'!");
 	return nullptr;
 }
 
@@ -288,7 +302,7 @@ SDL_GLattr Func::GetSdlAttrFromString(const std::string& arg, bool* error)
 		// ReSharper restore StringLiteralTypo
 	else {
 		*error = true;
-		Debug::WARNING("wrong sdl attr parameter '" + arg + "'!");
+		Console::WriteLine("wrong sdl attr parameter '" + arg + "'!");
 		return SDL_GL_RED_SIZE;
 
 	}
@@ -341,7 +355,7 @@ Func::DataValues::DataValues(const char* data, const Sint64 size)
 {
 	_data = std::map <std::string, std::vector <std::string>>();
 	if (size == 0) {
-		Debug::WARNING("DataValues: size is 0");
+		Console::WriteLine("DataValues: size is 0");
 		return;
 	}
 	std::vector<std::string> values = std::vector<std::string>();
@@ -368,7 +382,7 @@ Func::DataValues::DataValues(const char* data, const Sint64 size)
 			c_section = v.substr(1, v.size() - 2);
 
 			if (_data.contains(c_section)) {
-				Debug::WARNING("DataValues: section '" + c_section + "' is exists!");
+				Console::WriteLine("DataValues: section '" + c_section + "' is exists!");
 			}
 			else {
 				_data.insert({ c_section, std::vector<std::string>() });
@@ -393,7 +407,7 @@ Func::DataValues::~DataValues()
 std::string Func::DataValues::GetData(const std::string& section, const std::string& field)
 {
 	if (!_data.contains(section)) {
-		Debug::WARNING("DataValues: section '" + section + "' not found!");
+		Console::WriteLine("DataValues: section '" + section + "' not found!");
 		return "NULL";
 	}
 
@@ -406,14 +420,14 @@ std::string Func::DataValues::GetData(const std::string& section, const std::str
 		}
 		return data[1];
 	}
-	Debug::WARNING("DataValues: section '" + section + "' field '"+field+"' not found!");
+	Console::WriteLine("DataValues: section '" + section + "' field '"+field+"' not found!");
 	return "";
 }
 
 std::vector<std::string> Func::DataValues::GetSection(const std::string& section)
 {
 	if (!_data.contains(section)) {
-		Debug::WARNING("DataValues: section '" + section + "' not found!");
+		Console::WriteLine("DataValues: section '" + section + "' not found!");
 		std::vector<std::string> _return = std::vector<std::string>();
 		return _return;
 	}

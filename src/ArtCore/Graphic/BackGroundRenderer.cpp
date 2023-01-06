@@ -19,7 +19,7 @@ BackGroundRenderer::BackGroundRenderer()
 void BackGroundRenderer::SetProgress(const int progress) const
 {
     if (bg_renderer == nullptr) {
-        Debug::WARNING("BackGroundRenderer: can not set progress, thread is not running!");
+        Console::WriteLine("BackGroundRenderer: can not set progress, thread is not running!");
         return;
     }
     SDL_SemWait(_bg_data_lock);
@@ -30,12 +30,12 @@ void BackGroundRenderer::SetProgress(const int progress) const
 void BackGroundRenderer::Stop()
 {
     if (bg_renderer == nullptr) {
-        Debug::WARNING("BackGroundRenderer: can not stop process, thread is not running!");
+        Console::WriteLine("BackGroundRenderer: can not stop process, thread is not running!");
         return;
     }
 
     SDL_SemWait(_bg_data_lock);
-    Debug::LOG( "bg stop at:" + std::to_string(_bg_target_percent) + "%");
+    Console::WriteLine( "bg stop at:" + std::to_string(_bg_target_percent) + "%");
     SDL_SemPost(_bg_data_lock);
 
     SetProgress(-1);
@@ -49,7 +49,7 @@ void BackGroundRenderer::Stop()
 void BackGroundRenderer::Run()
 {
     if (bg_renderer != nullptr) {
-        Debug::WARNING("BackGroundRenderer: can not start process, thread is running!");
+        Console::WriteLine("BackGroundRenderer: can not start process, thread is running!");
         return;
     }
     bg_renderer = SDL_CreateThread(BackGroundRenderer::ThreadDrawingFunction, "bg_renderer", nullptr);
