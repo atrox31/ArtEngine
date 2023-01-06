@@ -279,7 +279,7 @@ SDL_FRect Rect::ToSDL_FRect() const
 
 GPU_Rect Rect::ToGPU_Rect_wh() const
 {
-	return GPU_Rect{x, y, x + w, y + h};
+	return GPU_Rect{x, y, w-x, h-y};
 }
 
 SDL_Rect Rect::ToSDL_Rect_wh() const

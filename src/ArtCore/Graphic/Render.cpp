@@ -73,7 +73,7 @@ Render::~Render()
 	DestroyRender();
 }
 
-void Render::DrawTexture(GPU_Image* texture, const vec2f& postion, const vec2f& scale, float angle, float alpha)
+void Render::DrawTexture(GPU_Image* texture, const vec2f& postion, const vec2f& scale, const float angle, float alpha)
 {
 	const bool alpha_flag = alpha < 1.0f;
 	if (alpha_flag) {
@@ -104,11 +104,11 @@ void Render::DrawLine(const SDL_FPoint& point_begin, const SDL_FPoint& point_end
 	GPU_SetLineThickness(lt);
 }
 
-void Render::DrawSprite(Sprite* sprite, const vec2f& postion, int frame) {
+void Render::DrawSprite(Sprite* sprite, const vec2f& postion, const int frame) {
 	DrawSprite_ex(sprite, postion.x, postion.y, frame, 1.0f, 1.0f, (float)sprite->GetCenterX(), (float)sprite->GetCenterY(), 0.0f, 1.0f);
 }
 
-void Render::DrawSprite_ex(Sprite* sprite, float pos_x, float pos_y, int frame, float scale_x, float scale_y, float center_x, float center_y, float angle, float alpha) {
+void Render::DrawSprite_ex(Sprite* sprite, const float pos_x, const float pos_y, int frame, const float scale_x, const float scale_y, const float center_x, const float center_y, const float angle, float alpha) {
 	if (sprite == nullptr) return;
 
 	const int spr_max_frames = sprite->GetMaxFrame();
@@ -197,23 +197,23 @@ void Render::DrawRectFilled(const GPU_Rect rect, const SDL_Color color)
 
 void Render::DrawRectRounded(const GPU_Rect rect, const float round_factor, const SDL_Color color)
 {
-	GPU_RectangleRound(_instance->_screenTexture_target, rect.x, rect.y, rect.w, rect.h, round_factor, color);
+	GPU_RectangleRound2(_instance->_screenTexture_target, rect, round_factor, color);
 }
 
 void Render::DrawRectRoundedFilled(const GPU_Rect rect, const float round_factor, const SDL_Color color)
 {
-	GPU_RectangleRoundFilled(_instance->_screenTexture_target, rect.x, rect.y, rect.w, rect.h, round_factor, color);
+	GPU_RectangleRoundFilled2(_instance->_screenTexture_target, rect, round_factor, color);
 }
 
 
-void Render::DrawCircle(const vec2f& postion, const float radius, const SDL_Color color)
+void Render::DrawCircle(const vec2f& position, const float radius, const SDL_Color color)
 {
-	GPU_Circle(_instance->_screenTexture_target, postion.x, postion.y, radius, color);
+	GPU_Circle(_instance->_screenTexture_target, position.x, position.y, radius, color);
 }
 
-void Render::DrawCircleFilled(const vec2f& postion, const float radius, SDL_Color color)
+void Render::DrawCircleFilled(const vec2f& position, const float radius, const SDL_Color color)
 {
-	GPU_CircleFilled(_instance->_screenTexture_target, postion.x, postion.y, radius, color);
+	GPU_CircleFilled(_instance->_screenTexture_target, position.x, position.y, radius, color);
 }
 
 void Render::DrawTriangle(const vec2f& a, const vec2f& b, const vec2f& c, const SDL_Color color)
@@ -264,7 +264,7 @@ void Render::ProcessImageWithGaussian()
 	GPU_BlitRect(_instance->_shader_gaussian_texture, nullptr, _instance->_screenTexture_target, nullptr);
 }
 
-void Render::SetGaussianProperties(int quality, int directions, float distance)
+void Render::SetGaussianProperties(const int quality, const int directions, const float distance)
 {
 	_instance->_shader_gaussian_var_quality = quality;
 	_instance->_shader_gaussian_var_directions = directions;

@@ -34,33 +34,28 @@ void GuiElement::Button::Render()
 	GPU_SetLineThickness(2.0f);
 	if (_enabled) {
 		if (_focus) {
-			Render::DrawRectRoundedFilled(_dimensions.ToGPU_Rect_wh(), 2.0f, _pallet.Active);
+			Render::DrawRectRoundedFilled(_dimensions.ToGPU_Rect(), 2.0f, _pallet.Active);
 			if (Core::GetInstance()->Mouse.LeftPressed) {
 				GPU_SetShapeBlending(true);
-				Render::DrawRectRoundedFilled(_dimensions.ToGPU_Rect_wh(), 2.0f, { 0,0,0,100 });
-				const GPU_Rect frame_border = {
-				_dimensions.x + 2.0f,
-				_dimensions.y + 2.0f,
-				_dimensions.x + _dimensions.w - 2.0f,
-				_dimensions.y + _dimensions.h - 2.0f
-				};
+				Render::DrawRectRoundedFilled(_dimensions.ToGPU_Rect(), 2.0f, { 0,0,0,100 });
+				const GPU_Rect frame_border = (_dimensions / 2).ToGPU_Rect();
 				Render::DrawRectRounded(frame_border, 2.0f, { 0,0,0,100 });
 				GPU_SetShapeBlending(false);
 			}
 		}
 		else {
-			Render::DrawRectRoundedFilled(_dimensions.ToGPU_Rect_wh(), 2.0f, _pallet.Background);
+			Render::DrawRectRoundedFilled(_dimensions.ToGPU_Rect(), 2.0f, _pallet.Background);
 		}
 	}
 	else {
-		Render::DrawRectRoundedFilled(_dimensions.ToGPU_Rect_wh(), 2.0f, _pallet.BackgroundDisable);
+		Render::DrawRectRoundedFilled(_dimensions.ToGPU_Rect(), 2.0f, _pallet.BackgroundDisable);
 	}
-	Render::DrawRectRounded(_dimensions.ToGPU_Rect_wh(), 2.0f, _pallet.Frame);
+	Render::DrawRectRounded(_dimensions.ToGPU_Rect(), 2.0f, _pallet.Frame);
 	if (_focus) {
 		if (Core::GetInstance()->Mouse.LeftPressed) {
 			GPU_SetShapeBlending(true);
 			GPU_SetLineThickness(4.0f);
-			Render::DrawRectRoundedFilled(_dimensions.ToGPU_Rect_wh(), 2.0f, { 0,0,0,100 });
+			Render::DrawRectRoundedFilled(_dimensions.ToGPU_Rect(), 2.0f, { 0,0,0,100 });
 			GPU_SetLineThickness(2.0f);
 			GPU_SetShapeBlending(false);
 		}

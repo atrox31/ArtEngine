@@ -13,14 +13,14 @@ void GuiElement::Panel::Render()
 	if (_enabled) {
 		Gui::Pallet shadow_copy_background = _pallet;
 		shadow_copy_background.Background.a = 200;
-		Render::DrawRectRoundedFilled(_dimensions.ToGPU_Rect_wh(), 6.0f, shadow_copy_background.Background);
+		Render::DrawRectRoundedFilled(_dimensions.ToGPU_Rect(), 6.0f, shadow_copy_background.Background);
 	}
 	else {
-		Render::DrawRectRoundedFilled(_dimensions.ToGPU_Rect_wh(), 6.0f, _pallet.BackgroundDisable);
+		Render::DrawRectRoundedFilled(_dimensions.ToGPU_Rect(), 6.0f, _pallet.BackgroundDisable);
 	}
 
 	if (_enable_transparent)GPU_SetShapeBlending(false);
-	Render::DrawRectRounded(_dimensions.ToGPU_Rect_wh(), 6.0f, _pallet.Frame);
+	Render::DrawRectRounded(_dimensions.ToGPU_Rect(), 6.0f, _pallet.Frame);
 	GPU_SetLineThickness(1.0f);
 
 }
