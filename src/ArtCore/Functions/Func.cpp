@@ -6,13 +6,19 @@
 #include <stdexcept>
 #include <sstream>
 
+#include "ArtCore/Structs/Rect.h"
 #include "ArtCore/_Debug/Debug.h"
 #include "physfs-3.0.2/src/physfs.h"
+#include "ArtCore/Functions/SDL_FPoint_extend.h"
 
 // ReSharper disable once CppInconsistentNaming
-bool Func::PointInGPU_Rect(SDL_FPoint point, GPU_Rect rect)
+bool Func::PointInGPU_Rect(const SDL_FPoint& point, const GPU_Rect& rect)
 {
 	return (point.x > rect.x && point.x < rect.w && point.y > rect.y && point.y < rect.h);
+}
+bool Func::PointInGPU_Rect(const float& x, const float& y, const GPU_Rect& rect)
+{
+	return (x > rect.x && x < rect.w && y > rect.y && y < rect.h);
 }
 
 int Func::TryGetInt(const std::string& str)
@@ -70,21 +76,6 @@ float Func::Distance(float p1_x, float p1_y, float p2_x, float p2_y)
 	return std::hypotf(p2_x - p1_x, p2_y - p1_y);
 }
 
-bool Func::RectCircleColliding(float circle_x, float circle_y, float circle_r, GPU_Rect rectangle_wh)
-{
-	const float distX = std::fabsf(circle_x - rectangle_wh.x - rectangle_wh.w / 2);
-	const float distY = std::fabsf(circle_y - rectangle_wh.y - rectangle_wh.h / 2);
-
-	if (distX > (rectangle_wh.w / 2 + circle_r)) { return false; }
-	if (distY > (rectangle_wh.h / 2 + circle_r)) { return false; }
-
-	if (distX <= (rectangle_wh.w / 2)) { return true; }
-	if (distY <= (rectangle_wh.h / 2)) { return true; }
-
-	const float dx = distX - rectangle_wh.w / 2;
-	const float dy = distY - rectangle_wh.h / 2;
-	return (dx * dx + dy * dy <= (circle_r * circle_r));
-}
 
 std::string Func::GetFileName(const std::string& path, const char separator, bool with_extension)
 {

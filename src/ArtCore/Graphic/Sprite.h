@@ -3,21 +3,13 @@
 #include <string>
 
 #include "ArtCore/Structs/Rect.h"
+#include "ArtCore/Enums/enumstring.h"
 
 class Sprite final
 {
 public:
-	enum class mask_type {
-		None, Circle, Rectangle, PerPixel
-	};
-	static mask_type MaskTypeFromString(const std::string& name)
-	{
-		if (name == "None") return mask_type::None;
-		if (name == "Circle") return mask_type::Circle;
-		if (name == "Rectangle") return mask_type::Rectangle;
-		if (name == "PerPixel") return mask_type::PerPixel;
-		return mask_type::None;
-	}
+	ENUM_WITH_STRING_CONVERSION(mask_type,(None)(Circle) (Rectangle))
+	
 	Sprite();
 	virtual ~Sprite();
 	static void Delete(Sprite*);
@@ -61,7 +53,7 @@ public:
 	{
 		return m_mask_type;
 	}
-	[[nodiscard]] constexpr int GetMaskValue() const
+	[[nodiscard]] constexpr float GetMaskValue() const
 	{
 		return m_mask_value;
 	}
@@ -73,7 +65,7 @@ private:
 	std::vector<GPU_Image*> m_texture;
 	int m_texture_size;
 
-	int m_mask_value;
+	float m_mask_value;
 	mask_type m_mask_type;
 
 	int m_center_x;

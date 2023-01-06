@@ -46,7 +46,7 @@ Sprite* Sprite::Load(const std::string& file)
 	Sprite* new_sprite = new Sprite();
 	new_sprite->m_width = data["SpriteWidth"].get<int>();
 	new_sprite->m_height = data["SpriteHeight"].get<int>();
-	new_sprite->m_mask_value = data["CollisionMaskValue"].get<int>();
+	new_sprite->m_mask_value = data["CollisionMaskValue"].get<float>();
 	new_sprite->m_center_x = data["SpriteCenterX"].get<int>();
 	new_sprite->m_center_y = data["SpriteCenterY"].get<int>();
 
@@ -69,7 +69,7 @@ Sprite* Sprite::Load(const std::string& file)
 		Debug::WARNING("Sprite::Load - " + sprite_name + " 0 textures found");
 	}
 
-	new_sprite->m_mask_type = Sprite::MaskTypeFromString(data["CollisionMask"].get<std::string>());
+	new_sprite->m_mask_type = Sprite::mask_type_fromString(data["CollisionMask"].get<std::string>());
 	return new_sprite;
 
 }

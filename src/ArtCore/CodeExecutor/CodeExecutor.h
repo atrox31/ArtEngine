@@ -323,6 +323,7 @@ private:
 	Script(instance_alive);
 	Script(scene_get_width);
 	Script(scene_get_height);
+	Script(collision_bounce);
 #undef Script
 };
 //end of file

@@ -3,6 +3,7 @@
 #include "CodeExecutor.h"
 #include "ArtCore/Functions/Convert.h"
 #include "ArtCore/Graphic/Render.h"
+#include "ArtCore/Physics/Physics.h"
 #include "ArtCore/Scene/Instance.h"
 #include "ArtCore/System/Core.h"
 #include "ArtCore/System/AssetManager.h"
@@ -408,7 +409,7 @@ void CodeExecutor::set_self_sprite(Instance* instance) {
 			if (instance->Body.Type == Instance::BodyType::Sprite) {
 				//null set_body_type(string type, int value);Set body type for instance, of <string> and optional <int> value; type is enum: None,Sprite,Rect,Circle
 				StackOut_s("Sprite");
-				StackOut_i(instance->SelfSprite->GetMaskValue());
+				StackOut_f(instance->SelfSprite->GetMaskValue());
 				set_body_type(instance);
 			}
 			return;
@@ -435,7 +436,7 @@ void CodeExecutor::get_pos_y(Instance* instance) {
 	StackOut_f(instance->PosY);
 }
 
-//null sound_play(sound asset);Play <asset> sound global;For postion call sound_play_at(sound asset)
+//null sound_play(sound asset);Play <asset> sound global;For position call sound_play_at(sound asset)
 void CodeExecutor::sound_play(Instance*) {
 	const int SoundId = StackIn_i;
 	Mix_Chunk* sound = Core::GetInstance()->assetManager->GetSound(SoundId);
@@ -464,7 +465,7 @@ void CodeExecutor::sprite_next_frame(Instance* sender) {
 	}
 }
 
-//null sprite_prev_frame(); Set SelfSprite previus frame; If sprite loop is enable, frame = frame_max if frame < frame_max 0;
+//null sprite_prev_frame(); Set SelfSprite previous frame; If sprite loop is enable, frame = frame_max if frame < frame_max 0;
 void CodeExecutor::sprite_prev_frame(Instance* sender) {
 	if (sender->SelfSprite == nullptr) return;
 	if ( (int)(--sender->SpriteAnimationFrame) < 0) {
@@ -488,9 +489,9 @@ void CodeExecutor::sprite_set_frame(Instance* sender) {
 void CodeExecutor::code_do_nothing(Instance*) {
 	return;
 }
-//null set_body_type(string type, int value);Set body type for instance, of <string> and optional <int> value; type is enum: None,Sprite,Rect,Circle
+//null set_body_type(string type, float value);Set body type for instance, of <string> and optional <float> value; type is enum: None,Sprite,Rect,Circle
 void CodeExecutor::set_body_type(Instance* sender) {
-	const int value = StackIn_i;
+	const float value = StackIn_f;
 	const std::string type = StackIn_s;
 	if (Instance::BodyType::Body_fromString(type) == Instance::BodyType::BodyInvalid) return;
 	if (Instance::BodyType::Body_fromString(type) == Instance::BodyType::Sprite) {
@@ -501,13 +502,6 @@ void CodeExecutor::set_body_type(Instance* sender) {
 				sender->Body.Value = 0;
 				sender->Body.Type = Instance::BodyType::None;
 				sender->IsCollider = false;
-			}break;
-			case Sprite::mask_type::PerPixel:
-			{
-					//TODO generate polygon
-				sender->Body.Value = sender->SelfSprite->GetMaskValue();
-				sender->Body.Type = Instance::BodyType::Rect;
-				sender->IsCollider = true;
 			}break;
 			case Sprite::mask_type::Rectangle:
 			{
@@ -896,7 +890,7 @@ void CodeExecutor::instance_exists(Instance*) {
 //bool instance_alive(instance instance);Get current status of <instance>
 void CodeExecutor::instance_alive(Instance*) {
 	const Instance* instance = StackIn_ins;
-	if(instance != nullptr)
+	if(instance == nullptr)
 	{
 		StackOut_b(false);
 	}else
@@ -912,4 +906,11 @@ void CodeExecutor::scene_get_width(Instance*) {
 //int scene_get_height();Get scene height;
 void CodeExecutor::scene_get_height(Instance*) {
 	StackOut_i(Core::GetCurrentScene()->GetHeight());
+}
+
+//null collision_bounce();Change direction of this object, bounce of other.;This trigger works only in OnCollision event!
+void CodeExecutor::collision_bounce(Instance* sender) {
+	Instance* target = Core::GetCurrentScene()->CurrentCollisionInstance;
+	// all error checks is in Physics
+	Physics::BounceInstance(sender, target);
 }

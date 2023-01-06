@@ -2,6 +2,7 @@
 
 #include "ArtCore/Graphic/Render.h"
 #include "ArtCore/Functions/Func.h"
+#include "ArtCore/Functions/SDL_Color_extend.h"
 
 
 GuiElement::ProgressBar::ProgressBar() {

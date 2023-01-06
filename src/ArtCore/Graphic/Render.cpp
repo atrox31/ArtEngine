@@ -96,6 +96,14 @@ void Render::DrawTextureBox(GPU_Image* texture, GPU_Rect* input_box, GPU_Rect* o
 	GPU_BlitRect(texture, input_box, _instance->_screenTexture_target, output_box);
 }
 
+void Render::DrawLine(const SDL_FPoint& point_begin, const SDL_FPoint& point_end, const float& line_thickness,
+	const SDL_Color& color)
+{
+	const float lt = GPU_SetLineThickness(line_thickness);
+	GPU_Line(_instance->_screenTexture_target, point_begin.x, point_begin.y, point_end.x, point_end.y, color);
+	GPU_SetLineThickness(lt);
+}
+
 void Render::DrawSprite(Sprite* sprite, const vec2f& postion, int frame) {
 	DrawSprite_ex(sprite, postion.x, postion.y, frame, 1.0f, 1.0f, (float)sprite->GetCenterX(), (float)sprite->GetCenterY(), 0.0f, 1.0f);
 }
@@ -173,7 +181,8 @@ void Render::DrawSpriteBox(const Sprite* sprite, GPU_Rect box, int frame, const 
 
 void Render::DrawRect(const GPU_Rect rect, const SDL_Color color)
 {
-	GPU_Rectangle2(_instance->_screenTexture_target, rect, color);
+	//GPU_Rectangle2(_instance->_screenTexture_target, rect, color);
+	GPU_Rectangle(_instance->_screenTexture_target, rect.x, rect.y, rect.w, rect.h, color);
 }
 
 void Render::DrawRect_wh(const GPU_Rect rect, const SDL_Color color)

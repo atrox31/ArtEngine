@@ -114,6 +114,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\ArtCore\CodeExecutor\ArtCode.cpp" />
+    <ClCompile Include="src\ArtCore\Physics\Physics.cpp" />
     <ClCompile Include="src\ArtCore\System\AssetManager.cpp" />
     <ClCompile Include="src\ArtCore\Graphic\BackGroundRenderer.cpp" />
     <ClCompile Include="src\ArtCore\Gui\GuiElement\Button.cpp" />
@@ -169,6 +170,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ArtCore\CodeExecutor\ArtCode.h" />
+    <ClInclude Include="src\ArtCore\Functions\SDL_Color_extend.h" />
+    <ClInclude Include="src\ArtCore\Functions\SDL_FPoint_extend.h" />
+    <ClInclude Include="src\ArtCore\Functions\SDL_Point_extend.h" />
+    <ClInclude Include="src\ArtCore\Physics\Physics.h" />
     <ClInclude Include="src\ArtCore\System\AssetManager.h" />
     <ClInclude Include="src\ArtCore\Graphic\BackGroundRenderer.h" />
     <ClInclude Include="src\ArtCore\Gui\GuiElement\Button.h" />

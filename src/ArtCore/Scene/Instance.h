@@ -63,25 +63,21 @@ public:
 	[[nodiscard]] Uint8 SuspendedCodeStateCount() const { return _have_suspended_code;  }
 	// get info if have at least one suspended code
 	[[nodiscard]] bool SuspendedCodeStateHave() const { return _have_suspended_code > (uint8_t)0;  }
-	bool CollideTest(const Instance*) const;
-private:
-	[[nodiscard]] bool CollisionCircleCircle(float c1x, float c1y, float c1r,float c2x, float c2y, float c2r) const;
-	static bool CollisionCircleRect(float c1x, float c1y, float c1r, GPU_Rect rect);
-	static bool CollisionRectRect(const SDL_FRect& rect1, const SDL_FRect& rect2);
 public:
 	struct BodyType {
 	public:
 		ENUM_WITH_STRING_CONVERSION(Body,(None)(Sprite)(Rect)(Circle))
 		Body Type;
-		int Value;
+		float Value;
 		BodyType() {
 			Type = Body::None;
-			Value = 0;
+			Value = 0.f;
 		}
 
 	private:
 	};
 	BodyType Body;
+	Rect GetBodyMask() const;
 #ifdef _DEBUG
 	void DebugDrawMask() const;
 	void DebugDrawCollision();

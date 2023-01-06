@@ -3,102 +3,13 @@
 #include <string>
 #include <vector>
 
+#include "ArtCore/Structs/Rect.h"
 #include "SDL2/IncludeAll.h"
-
-// point compare
-inline bool operator==(SDL_Point const& a, SDL_Point const& b)
-{
-	return a.x == b.x && a.y == b.y;
-}
-inline bool operator!=(SDL_Point const& a, SDL_Point const& b)
-{
-	return !(a == b);
-}
-inline bool operator>=(SDL_Point const& a, SDL_Point const& b)
-{
-	return a.x >= b.x && a.y >= b.y;
-}
-inline bool operator <= (SDL_Point const& a, SDL_Point const& b)
-{
-	return a.x <= b.x && a.y <= b.y;
-}
-inline bool operator>(SDL_Point const& a, SDL_Point const& b)
-{
-	return a.x > b.x && a.y > b.y;
-}
-inline bool operator<(SDL_Point const& a, SDL_Point const& b)
-{
-	return a.x < b.x && a.y < b.y;
-}
-// float point compare
-inline bool operator==(SDL_FPoint const& a, SDL_FPoint const& b)
-{
-	return a.x == b.x && a.y == b.y;
-}
-inline bool operator!=(SDL_FPoint const& a, SDL_FPoint const& b)
-{
-	return !(a == b);
-}
-inline bool operator>=(SDL_FPoint const& a, SDL_FPoint const& b)
-{
-	return a.x >= b.x && a.y >= b.y;
-}
-inline bool operator <= (SDL_FPoint const& a, SDL_FPoint const& b)
-{
-	return a.x <= b.x && a.y <= b.y;
-}
-inline bool operator>(SDL_FPoint const& a, SDL_FPoint const& b)
-{
-	return a.x > b.x && a.y > b.y;
-}
-inline bool operator<(SDL_FPoint const& a, SDL_FPoint const& b)
-{
-	return a.x < b.x && a.y < b.y;
-}
-// float operations
-inline SDL_FPoint operator+=(SDL_FPoint const& a, SDL_FPoint const& b)
-{
-	return SDL_FPoint({ a.x + b.x, a.y + b.y });
-}
-inline SDL_FPoint operator-=(SDL_FPoint const& a, SDL_FPoint const& b)
-{
-	return SDL_FPoint({ a.x - b.x, a.y - b.y });
-}
-inline SDL_FPoint operator*=(SDL_FPoint const& a, SDL_FPoint const& b)
-{
-	return SDL_FPoint({ a.x * b.x, a.y * b.y });
-}
-inline SDL_FPoint operator/=(SDL_FPoint const& a, SDL_FPoint const& b)
-{
-	return SDL_FPoint({ a.x / b.x, a.y / b.y });
-}
-
-// color compare
-inline bool operator==(SDL_Color const& a, SDL_Color const& b)
-{
-	return a.r == b.r && a.g == b.g && a.b == b.b && a.a == b.a;
-}
-inline bool operator!=(SDL_Color const& a, SDL_Color const& b)
-{
-	return a.r != b.r && a.g != b.g && a.b != b.b && a.a != b.a;
-}
-// Mix two colors together using middle value for every color
-inline SDL_Color operator*(SDL_Color const& a, SDL_Color const& b)
-{
-	return SDL_Color({
-		(Uint8)((a.r + b.r) / 2),
-		(Uint8)((a.g + b.g) / 2),
-		(Uint8)((a.b + b.b) / 2),
-		(Uint8)((a.a + b.a) / 2)
-		});
-}
-
-
-
 class Func
 {
 public:
-	static bool PointInGPU_Rect(SDL_FPoint, GPU_Rect);
+	static bool PointInGPU_Rect(const SDL_FPoint&, const  GPU_Rect&);
+	static bool PointInGPU_Rect(const float& x, const float& y, const GPU_Rect&);
 	static int TryGetInt(const std::string&);
 	static float TryGetFloat(const std::string&);
 
@@ -106,10 +17,7 @@ public:
 	static float Distance(SDL_FPoint&, SDL_FPoint&);
 	// return distance from point to point
 	static float Distance(float p1_x, float p1_y, float p2_x, float p2_y);
-
-	// if Circle and Rectangle have intersection
-	static bool RectCircleColliding(float circle_x, float circle_y, float circle_r, GPU_Rect rectangle);
-
+	
 	//get file name with or without extension
 	static std::string GetFileName(const std::string& path, const char separator = '/', bool with_extension = false);
 

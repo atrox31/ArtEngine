@@ -160,6 +160,9 @@
     <ClCompile Include="src\ArtCore\Enums\Event.cpp">
       <Filter>ArtCore\Enums</Filter>
     </ClCompile>
+    <ClCompile Include="src\ArtCore\Physics\Physics.cpp">
+      <Filter>ArtCore\Physics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ArtCore\main.h">
@@ -285,6 +288,18 @@
     <ClInclude Include="src\ArtCore\predefined_headers\consola.h">
       <Filter>ArtCore\predefined_headers</Filter>
     </ClInclude>
+    <ClInclude Include="src\ArtCore\Physics\Physics.h">
+      <Filter>ArtCore\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ArtCore\Functions\SDL_Color_extend.h">
+      <Filter>ArtCore\Functions</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ArtCore\Functions\SDL_FPoint_extend.h">
+      <Filter>ArtCore\Functions</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ArtCore\Functions\SDL_Point_extend.h">
+      <Filter>ArtCore\Functions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ArtCore">
@@ -334,6 +349,9 @@
     </Filter>
     <Filter Include="outsource\json">
       <UniqueIdentifier>{4799f497-e486-4cc2-a92f-f7d77018682b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ArtCore\Physics">
+      <UniqueIdentifier>{1a498dea-69ec-42d8-8b8c-0c4fa0fa5bfa}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -2,10 +2,12 @@
 
 #include "vec2f.h"
 
+	constexpr float SQRT2 = 1.414214f;
 class Rect
 {
 public:
 	float x, y, w, h;
+	
 	Rect();
 	Rect(GPU_Rect);
 	Rect(int x, int y, int w, int h);
@@ -34,9 +36,41 @@ public:
 	bool operator==(Rect const& a) const;
 	bool operator!=(Rect const& a) const;
 
+	//Left upper corner
+	// X-------+
+	// |	|
+	// +-------+
+	[[nodiscard]] SDL_FPoint A() const;
+
+	//Right upper corner
+	// +-------X
+	// |	|
+	// +-------+
+	[[nodiscard]] SDL_FPoint B() const;
+
+	//Right lower corner
+	// +-------+
+	// |	|
+	// +-------X
+	[[nodiscard]] SDL_FPoint C() const;
+
+	//Left lower corner
+	// +-------+
+	// |	|
+	// X-------+
+	[[nodiscard]] SDL_FPoint D() const;
+
+	[[nodiscard]] float Width() const;
+	[[nodiscard]] float Height() const;
 
 	void Rotate(float deg);
 	[[nodiscard]] SDL_FPoint GetCenter() const;
+	[[nodiscard]] float GetCenterX() const;
+	[[nodiscard]] float GetCenterY() const;
+
+	[[nodiscard]] float Diagonal() const;
+
+	[[nodiscard]] bool PointInRect(const float& px, const float& py) const;
 
 	[[nodiscard]] bool PointInRect(const SDL_Point&) const;
 	[[nodiscard]] bool PointInRect_wh(const SDL_Point& p) const;

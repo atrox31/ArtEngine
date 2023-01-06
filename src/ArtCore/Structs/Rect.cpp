@@ -153,6 +153,40 @@ bool Rect::operator!=(Rect const& a) const
 	return ((int)x != (int)a.x && (int)y != (int)a.y && (int)w != (int)a.w && (int)h != (int)a.h);
 }
 
+SDL_FPoint Rect::A() const
+{
+	return {
+		x, y
+	};
+}
+SDL_FPoint Rect::B() const
+{
+	return {
+		w, y
+	};
+}
+SDL_FPoint Rect::C() const
+{
+	return {
+		w, h
+	};
+}
+SDL_FPoint Rect::D() const
+{
+	return {
+		x, h
+	};
+}
+
+float Rect::Width() const
+{
+	return w - x;
+}
+float Rect::Height() const
+{
+	return h - y;
+}
+
 void Rect::Rotate(const float deg)
 {
 	const float theta = (float)((double)deg / 180.0 * M_PI);
@@ -173,38 +207,59 @@ SDL_FPoint Rect::GetCenter() const
 	return SDL_FPoint { (x + w) * 0.5f, (y + h) * 0.5f };
 }
 
+float Rect::GetCenterX() const
+{
+	return (x + w) * 0.5f;
+}
+
+float Rect::GetCenterY() const
+{
+	return  (y + h) * 0.5f ;
+}
+
+float Rect::Diagonal() const
+{
+	return ((Width() + Height()) / 2.f) * SQRT2;
+}
+
+bool Rect::PointInRect(const float& px, const float& py) const
+{
+	return ((px >= x) && (px <= (w)) &&
+		(py >= y) && (py <= h));
+}
+
 bool Rect::PointInRect(const SDL_Point& p) const
 {
 	return ((p.x >= x) && (p.x <= (w)) &&
-		(p.y >= y) && (p.y <= h)) ? true : false;
+		(p.y >= y) && (p.y <= h));
 }
 bool Rect::PointInRect_wh(const SDL_Point& p) const
 {
 	return ((p.x >= x) && (p.x <= (x+w)) &&
-		(p.y >= y) && (p.y <= y+h)) ? true : false;
+		(p.y >= y) && (p.y <= y+h));
 }
 
 bool Rect::PointInRect(const SDL_FPoint& p) const
 {
 	return ((p.x >= x) && (p.x <= (w)) &&
-		(p.y >= y) && (p.y <= (h))) ? true : false;
+		(p.y >= y) && (p.y <= (h)));
 }
 
 bool Rect::PointInRect_wh(const SDL_FPoint& p) const
 {
 	return ((p.x >= x) && (p.x <= (x+w)) &&
-		(p.y >= y) && (p.y <= (y+h))) ? true : false;
+		(p.y >= y) && (p.y <= (y+h)));
 }
 
 bool Rect::PointInRect(const vec2f& p) const
 {
 	return ((p.x >= x) && (p.x <= (w)) &&
-		(p.y >= y) && (p.y <= (h))) ? true : false;
+		(p.y >= y) && (p.y <= (h)));
 }
 bool Rect::PointInRect_wh(const vec2f& p) const
 {
 	return ((p.x >= x) && (p.x <= (x+w)) &&
-		(p.y >= y) && (p.y <= (y+h))) ? true : false;
+		(p.y >= y) && (p.y <= (y+h)));
 }
 
 GPU_Rect Rect::ToGPU_Rect() const
@@ -229,10 +284,10 @@ GPU_Rect Rect::ToGPU_Rect_wh() const
 
 SDL_Rect Rect::ToSDL_Rect_wh() const
 {
-	return SDL_Rect{(int)x, (int)y, (int)x - (int)w, (int)y - (int)h};
+	return SDL_Rect{(int)x, (int)y, (int)w - (int)x, (int)h - (int)y};
 }
 
 SDL_FRect Rect::ToSDL_FRect_wh() const
 {
-	return SDL_FRect{ x, y, x - w, y - h };
+	return SDL_FRect{ x, y, w-x, h-y };
 }

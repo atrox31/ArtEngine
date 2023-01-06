@@ -4,6 +4,7 @@
 #include "ArtCore/Graphic/ColorDefinitions.h"
 #include "ArtCore/Graphic/Render.h"
 #include "ArtCore/System/Core.h"
+#include "ArtCore/Functions/SDL_Point_extend.h"
 
 GuiElement::Grid::Grid() {
 	this->_type = GuiElementTemplate::Type::GRID;

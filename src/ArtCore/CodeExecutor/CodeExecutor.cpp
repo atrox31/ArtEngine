@@ -11,6 +11,8 @@
 #include "ArtCore/System/Core.h"
 #include "ArtCore/Scene/Scene.h"
 #include "ArtCore/System/AssetManager.h"
+#include "ArtCore/Functions/SDL_FPoint_extend.h"
+#include "ArtCore/Functions/SDL_Color_extend.h"
 
 AStack<int> CodeExecutor::GlobalStack_int = AStack<int>();
 AStack<float> CodeExecutor::GlobalStack_float = AStack<float>();
@@ -408,7 +410,7 @@ std::string CodeExecutor::DebugGetTrackInfo()
 		_return += "In view: [" + std::string(_debug_tracked_instance->InView ? "true" : "false") + "]\n";
 		_return += "Collider: [" + std::string(_debug_tracked_instance->IsCollider ? "true" : "false") + "]\n";
 		_return += "Alive: [" + std::string(_debug_tracked_instance->Alive ? "true" : "false") + "]\n";
-		_return += "Body type: [" + Instance::BodyType::Body_toString(_debug_tracked_instance->Body.Type) + "]\n";
+		_return += "Body type: [" + Instance::BodyType::Body_toString(_debug_tracked_instance->Body.Type) + "]" + " value: " +std::to_string(_debug_tracked_instance->Body.Value) + "\n";
 		_return += "Sprite data\n";
 		if (_debug_tracked_instance->SelfSprite == nullptr)
 		{
@@ -871,16 +873,16 @@ case 4: // ":="
 int CodeExecutor::h_operation_int(const int _operator, int val1, const int val2) {
 	switch (_operator) {
 	case 0: // "+=",
-		return val1 += val2;
+		return val1 + val2;
 			break;
 	case 1: //" -=",
-		return val1 -= val2;
+		return val1 - val2;
 			break;
 	case 2: // "*=",
-		return val1 *= val2;
+		return val1 * val2;
 			break;
 	case 3: // "/=",
-		return val1 /= val2;
+		return val1 / val2;
 			break;
 	case 4: // ":=",
 		return val2;
@@ -892,16 +894,16 @@ float CodeExecutor::h_operation_float(const int _operator, float val1, const flo
 	switch(_operator){
 
 	case 0: // "+=",
-		return val1 += val2;
+		return val1 + val2;
 		break;
 	case 1: //" -=",
-		return val1 -= val2;
+		return val1 - val2;
 		break;
 	case 2: // "*=",
-		return val1 *= val2;
+		return val1 * val2;
 		break;
 	case 3: // "/=",
-		return val1 /= val2;
+		return val1 / val2;
 		break;
 	case 4: // ":=",
 		return val2;
@@ -1009,13 +1011,13 @@ SDL_FPoint CodeExecutor::h_operation_point(const int _operator, const SDL_FPoint
 	switch (_operator) {
 
 	case 0: // "+=",
-		return val1 += val2;
+		return val1 + val2;
 	case 1: //" -=",
-		return val1 -= val2;
+		return val1 - val2;
 	case 2: // "*=",
-		return val1 *= val2;
+		return val1 * val2;
 	case 3: // "/=",
-		return val1 /= val2;
+		return val1 / val2;
 	case 4: // ":=",
 		return val2;
 	}
@@ -1232,7 +1234,7 @@ bool CodeExecutor::h_compare(const int type, const int operation)
 		case ArtCode::variable_type::SOUND:		return (GlobalStack_int.Get() != GlobalStack_int.Get());  break;
 		case ArtCode::variable_type::MUSIC:		return (GlobalStack_int.Get() != GlobalStack_int.Get());  break;
 		case ArtCode::variable_type::FONT:		return (GlobalStack_int.Get() != GlobalStack_int.Get());  break;
-		case ArtCode::variable_type::POINT:		return (GlobalStack_point.Get() != GlobalStack_point.Get());  break;
+		//case ArtCode::variable_type::POINT:		return (GlobalStack_point.Get() != GlobalStack_point.Get());  break;
 		case ArtCode::variable_type::RECT:		return (GlobalStack_rect.Get() != GlobalStack_rect.Get());  break;
 		//case ArtCode::variable_type::COLOR:		return (GlobalStack_color.Get() != GlobalStack_color.Get());  break;
 		case ArtCode::variable_type::STRING:		return (GlobalStack_string.Get() != GlobalStack_string.Get());  break;
@@ -1256,7 +1258,7 @@ bool CodeExecutor::h_compare(const int type, const int operation)
 		case ArtCode::variable_type::SOUND:		return (GlobalStack_int.Get() == GlobalStack_int.Get());  break;
 		case ArtCode::variable_type::MUSIC:		return (GlobalStack_int.Get() == GlobalStack_int.Get());  break;
 		case ArtCode::variable_type::FONT:		return (GlobalStack_int.Get() == GlobalStack_int.Get());  break;
-		case ArtCode::variable_type::POINT:		return (GlobalStack_point.Get() == GlobalStack_point.Get());  break;
+		//case ArtCode::variable_type::POINT:		return (GlobalStack_point.Get() == GlobalStack_point.Get());  break;
 		case ArtCode::variable_type::RECT:		return (GlobalStack_rect.Get() == GlobalStack_rect.Get());  break;
 		case ArtCode::variable_type::COLOR:		return (GlobalStack_color.Get() == GlobalStack_color.Get());  break;
 		case ArtCode::variable_type::STRING:		return (GlobalStack_string.Get() == GlobalStack_string.Get());  break;

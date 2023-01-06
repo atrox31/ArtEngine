@@ -22,6 +22,8 @@ public:
 	 */
 	static void DrawTextureBox(GPU_Image* texture, GPU_Rect* input_box, GPU_Rect* output_box);
 
+	static void DrawLine(const SDL_FPoint& point_begin, const SDL_FPoint& point_end, const float& line_thickness, const SDL_Color& color);
+
 	static void DrawSprite(Sprite* sprite, const vec2f& postion, int frame);
 	static void DrawSprite_ex(Sprite* sprite, float pos_x, float pos_y, int frame, float scale_x, float scale_y, float center_x, float center_y, float angle, float alpha);
 	static void DrawSpriteBox(const Sprite* sprite, GPU_Rect box, int frame = 0, const float& angle = 0.0f, float alpha = 1.0f);

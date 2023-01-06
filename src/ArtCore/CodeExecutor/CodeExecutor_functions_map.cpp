@@ -106,5 +106,6 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["instance_alive"] = &CodeExecutor::instance_alive;
 	FunctionsMap["scene_get_width"] = &CodeExecutor::scene_get_width;
 	FunctionsMap["scene_get_height"] = &CodeExecutor::scene_get_height;
+	FunctionsMap["collision_bounce"] = &CodeExecutor::collision_bounce;
 }
 //end of file
