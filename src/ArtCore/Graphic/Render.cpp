@@ -227,21 +227,21 @@ void Render::DrawTriangleFilled(const vec2f& a, const vec2f& b, const vec2f& c, 
 }
 
 // Draw text, default align is left
-void Render::DrawText(const std::string& text,FC_Font* font, const vec2f& pos, const SDL_Color color)
+GPU_Rect Render::DrawText(const std::string& text,FC_Font* font, const vec2f& pos, const SDL_Color color)
 {
-	DrawTextAlign(text, font, pos, color, FC_ALIGN_LEFT);
+	return DrawTextAlign(text, font, pos, color, FC_ALIGN_LEFT);
 }
 
 // Draw text
-void Render::DrawTextAlign(const std::string& text, FC_Font* font, const vec2f& pos, const SDL_Color color, const FC_AlignEnum align)
+GPU_Rect Render::DrawTextAlign(const std::string& text, FC_Font* font, const vec2f& pos, const SDL_Color color, const FC_AlignEnum align)
 {
-	FC_DrawEffect(font, _instance->_screenTexture_target, pos.x, pos.y, FC_MakeEffect(align, { 1.f,1.f }, color), text.c_str());
+	return FC_DrawEffect(font, _instance->_screenTexture_target, pos.x, pos.y, FC_MakeEffect(align, { 1.f,1.f }, color), text.c_str());
 }
 
 // Draw text
-void Render::DrawTextBox(const std::string& text, FC_Font* font, const GPU_Rect& box, const SDL_Color color, const FC_AlignEnum align)
+GPU_Rect Render::DrawTextBox(const std::string& text, FC_Font* font, const GPU_Rect& box, const SDL_Color color, const FC_AlignEnum align)
 {
-	FC_DrawBoxEffect(font, _instance->_screenTexture_target, box, FC_MakeEffect(align, { 1.0f,1.0f }, color), text.c_str());
+	return FC_DrawBoxEffect(font, _instance->_screenTexture_target, box, FC_MakeEffect(align, { 1.0f,1.0f }, color), text.c_str());
 }
 
 // Render cached texture to target

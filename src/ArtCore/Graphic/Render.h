@@ -42,9 +42,9 @@ public:
 	static void DrawTriangleFilled(const vec2f& a, const vec2f& b, const vec2f& c, SDL_Color color);
 
 	// text
-	static void DrawText(const std::string&, FC_Font*, const vec2f&, SDL_Color);
-	static void DrawTextAlign(const std::string&, FC_Font*, const vec2f&, SDL_Color, FC_AlignEnum);
-	static void DrawTextBox(const std::string& text, FC_Font* font, const GPU_Rect& box, SDL_Color color, FC_AlignEnum align);
+	static GPU_Rect DrawText(const std::string&, FC_Font*, const vec2f&, SDL_Color);
+	static GPU_Rect DrawTextAlign(const std::string&, FC_Font*, const vec2f&, SDL_Color, FC_AlignEnum);
+	static GPU_Rect DrawTextBox(const std::string& text, FC_Font* font, const GPU_Rect& box, SDL_Color color, FC_AlignEnum align);
 
 	// system
 	static void RenderToTarget(GPU_Target* target);
