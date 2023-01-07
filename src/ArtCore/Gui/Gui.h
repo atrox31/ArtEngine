@@ -27,6 +27,7 @@ public:
 	}
 public:
 	class GuiElementTemplate;
+	static void SortAllElements(GuiElementTemplate*);
 	bool LoadFromJson(const json& data) const;
 	bool SpawnElementFromJsonData(GuiElementTemplate* parrent, const nlohmann::basic_json<>& data) const;
 	void Clear() const;
@@ -94,6 +95,9 @@ public:
 			(LABEL)
 			(IMAGE)
 			(PROGRESS_BAR)
+			(SLIDER)
+			(CHECK_BUTTON)
+			(DROP_DOWN_BUTTON)
 		)
 
 		GuiElementTemplate() {
@@ -127,7 +131,7 @@ public:
 		ENUM_WITH_STRING_CONVERSION(EvCallback, (EvOnClick)(EvOnHover))
 		virtual ~GuiElementTemplate() = default;
 		// pure virtual, every gui element have its own render function
-		virtual void Render(){};
+		virtual void Render(){}
 		virtual void ApplyStyle();
 		virtual bool OnClick();
 
@@ -142,25 +146,26 @@ public:
 
 		virtual void Clear();
 
-		virtual void SetEnabledOnPause(const bool e) final { this->_enable_on_pause = e; }
-		virtual void SetTransparent(const bool e) final { this->_enable_transparent = e; }
-		virtual void SetEnabled(bool e) final;
-		virtual void SetVisible(bool v) final;
-		virtual void SetCallback(const EvCallback ev, const std::pair<const unsigned char*, Sint64> code) final { _callback_script[ev] = code; }
-		virtual void SetPosition(const int x, const int y) final { _x = x; _y = y;  };
-		virtual void SetSound(std::string sound) final;
-		virtual void SetDefaultFont(FC_Font* font) { _default_font = font; };
-		virtual void SetPosition(const int x1, const int y1, const int x2, const int y2) final {
+		virtual GuiElementTemplate* SetFocus(const bool f) final { _focus = f; return this; }
+		virtual GuiElementTemplate* SetEnabledOnPause(const bool e) final { this->_enable_on_pause = e; return this; }
+		virtual GuiElementTemplate* SetTransparent(const bool e) final { this->_enable_transparent = e; return this;}
+		virtual GuiElementTemplate* SetEnabled(bool e) final;
+		virtual GuiElementTemplate* SetVisible(bool v) final;
+		virtual GuiElementTemplate* SetCallback(const EvCallback ev, const std::pair<const unsigned char*, Sint64> code) final { _callback_script[ev] = code; return this;}
+		virtual GuiElementTemplate* SetPosition(const int x, const int y) final { _x = x; _y = y;  return this;}
+		virtual GuiElementTemplate* SetSound(std::string sound) final;
+		virtual GuiElementTemplate* SetDefaultFont(FC_Font* font) final { _default_font = font; return this;}
+		virtual GuiElementTemplate* SetPosition(const int x1, const int y1, const int x2, const int y2) final {
 			_x = x1;
 			_y = y1;
 			_dimensions = { (float)(x1),(float)(y1),(float)(x2),(float)(y2) };
 			ApplyStyle();
-		};
-		virtual void SetTag(const std::string& tag) final { _tag = tag; }
-		virtual void SetPallet(Pallet* pallet) final { _pallet = *pallet; }
-		virtual void SetParent(GuiElementTemplate* parrent) final { _parent = parrent; }
-		virtual void SetStyle(Style s);
-		virtual void SetText(std::string, FC_AlignEnum = FC_AlignEnum::FC_ALIGN_LEFT, FC_Scale = { 1.0f, 1.0f });
+		return this;};
+		virtual GuiElementTemplate* SetTag(const std::string& tag) final { _tag = tag; return this;}
+		virtual GuiElementTemplate* SetPallet(Pallet* pallet) final { _pallet = *pallet; return this;}
+		virtual GuiElementTemplate* SetParent(GuiElementTemplate* parrent) final { _parent = parrent; return this;}
+		virtual GuiElementTemplate* SetStyle(Style s);
+		virtual GuiElementTemplate* SetText(std::string, FC_AlignEnum = FC_AlignEnum::FC_ALIGN_LEFT, FC_Scale = { 1.0f, 1.0f });
 
 		virtual void SetVariableFromString(const std::string& name, const std::string& value) final;
 		// for root element, else must be override
@@ -200,8 +205,9 @@ public:
 	static FC_Font* GlobalFont;
 private:
 	static void _render(GuiElementTemplate*);
-	static void _events(GuiElementTemplate*, SDL_Event*);
+	static bool _events(GuiElementTemplate*, SDL_Event*);
 	static void _updateView(GuiElementTemplate*);
 	GuiElementTemplate* _root_element;
 };
+
 

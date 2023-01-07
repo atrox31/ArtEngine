@@ -9,11 +9,14 @@
 #include "ArtCore/System/AssetManager.h"
 
 #include "GuiElement/Button.h"
+#include "GuiElement/CheckButton.h"
+#include "GuiElement/DropDownList.h"
 #include "GuiElement/Grid.h"
 #include "GuiElement/Image.h"
 #include "GuiElement/Label.h"
 #include "GuiElement/Panel.h"
 #include "GuiElement/ProgressBar.h"
+#include "GuiElement/Slider.h"
 #include "GuiElement/TabPanel.h"
 
 FC_Font* Gui::GlobalFont;
@@ -67,7 +70,22 @@ bool Gui::LoadFromJson(const json& data) const
 	{
 		if (!SpawnElementFromJsonData(_root_element, object)) return false;
 	}
+
+	SortAllElements(_root_element);
+
 	return true;
+}
+void Gui::SortAllElements(GuiElementTemplate* root)
+{
+	for (GuiElementTemplate* element : root->_elements)
+	{
+		SortAllElements(element);
+	}
+
+	std::ranges::sort(root->_elements, [](GuiElementTemplate* a, GuiElementTemplate* b) {
+		return a->GetY() < b->GetY();
+		});
+
 }
 
 bool Gui::SpawnElementFromJsonData(GuiElementTemplate* parrent, const nlohmann::basic_json<>& data) const
@@ -101,6 +119,18 @@ bool Gui::SpawnElementFromJsonData(GuiElementTemplate* parrent, const nlohmann::
 	{
 		new_element = new GuiElement::TabPanel();
 	}
+	else if(type == "DropDownList")
+	{
+		new_element = new GuiElement::DropDownList();
+	}
+	else if(type == "Slider")
+	{
+		new_element = new GuiElement::Slider();
+	}
+	else if(type == "CheckButton")
+	{
+		new_element = new GuiElement::CheckButton();
+	}
 	else if(type == "root")
 	{
 		new_element = _root_element;
@@ -109,7 +139,7 @@ bool Gui::SpawnElementFromJsonData(GuiElementTemplate* parrent, const nlohmann::
 		Console::WriteLine("[Gui::SpawnElementFromJsonData]: unknown element type '" + type + "'");
 		return false;
 	}
-
+	new_element->SetParent(parrent);
 	for (const auto& variables : data["_elementVariables"])
 	{
 		const std::string v_name =  variables["Name"].get<std::string>();
@@ -161,15 +191,18 @@ void Gui::Render() const
 }
 void Gui::_render(Gui::GuiElementTemplate* e)
 {
-	e->_focus = e->_dimensions.PointInRect_wh(Core::GetInstance()->Mouse.XYf);
+	e->_focus = e->_dimensions.PointInRect_wh(Core::Mouse.XYf);
 	e->Render();
 	if (!e->_elements.empty()) {
-		for (const auto& var : e->_elements)
+		for (std::vector<GuiElementTemplate*>::reverse_iterator i = e->_elements.rbegin();
+			i != e->_elements.rend(); ++i) 
+		//for (int i = 0; i < e->_elements.size(); ++i)
 		{
-			if (var->_visible) {
-				_render(var);
+			if ((*i)->_visible) {
+				_render((*i));
 			}
 		}
+		
 	}
 }
 
@@ -188,23 +221,29 @@ void Gui::Events(SDL_Event* e) const
 
 }
 
-void Gui::_events(GuiElementTemplate* e, SDL_Event* se)
+bool Gui::_events(GuiElementTemplate* e, SDL_Event* se)
 {
 	//e->ApplyStyle();
 	if (!e->GetChildren().empty()) {
-		for (const auto& var : e->_elements)
+		//for (int i = 0; i < e->_elements.size(); ++i)
+		for (const auto & element : e->_elements)
 		{
-			_events(var, se);
+			if (_events(element, se))
+			{
+				return true;
+			}
 		}
+		
 	}
-	if (se == nullptr) return;
+	if (se == nullptr) return false;
 	if (e->_enabled && e->_visible) {
 		if (e->_focus) {
 			if (se->button.button == SDL_BUTTON_LEFT) {
-				if (Core::GetInstance()->Mouse.LeftPressed) {
+				if (Core::Mouse.LeftPressed) {
 					if (e->OnClick()) {
 						if (e->_sound_onClick != nullptr) {
 							// play audio(e->_sound_onClick);
+							return true;
 						}
 					}
 					e->_focus = false;
@@ -213,6 +252,7 @@ void Gui::_events(GuiElementTemplate* e, SDL_Event* se)
 
 		}
 	}
+	return false;
 }
 
 void Gui::GuiElementTemplate::SetVariableFromString(const std::string& name, const std::string& value)
@@ -329,7 +369,7 @@ Gui::GuiElementTemplate* Gui::AddElement(GuiElementTemplate* target, GuiElementT
 {
 	target->_elements.push_back(element);
 	element->_pallet = _root_element->_pallet;
-	element->_parent = target;
+	//element->_parent = target;
 	element->ApplyStyle();
 	return element;
 }
@@ -450,33 +490,38 @@ void Gui::GuiElementTemplate::Clear()
 	}
 }
 
-void Gui::GuiElementTemplate::SetEnabled(bool e)
+Gui::GuiElementTemplate* Gui::GuiElementTemplate::SetEnabled(bool e)
 {
 	this->_enabled = e;
+	return this;
 }
 
-void Gui::GuiElementTemplate::SetVisible(bool v)
+Gui::GuiElementTemplate* Gui::GuiElementTemplate::SetVisible(bool v)
 {
 	this->_visible = v;
+	return this;
 }
 
-void Gui::GuiElementTemplate::SetSound(std::string sound)
+Gui::GuiElementTemplate* Gui::GuiElementTemplate::SetSound(const std::string sound)
 {
 	_sound_onClick = Core::GetInstance()->assetManager->GetSound(sound);
+	return this;
 }
 
-void Gui::GuiElementTemplate::SetStyle(Style s)
+Gui::GuiElementTemplate* Gui::GuiElementTemplate::SetStyle(Style s)
 {
 	_style = s;
 	ApplyStyle();
+	return this;
 }
 
-void Gui::GuiElementTemplate::SetText(const std::string text, const FC_AlignEnum align, const FC_Scale scale)
+Gui::GuiElementTemplate* Gui::GuiElementTemplate::SetText(const std::string text, const FC_AlignEnum align, const FC_Scale scale)
 {
 	_text = text;
 	_text_scale = scale;
 	_text_align = align;
 	_text_area = FC_GetBounds(_parent->_default_font, 0, 0, align, scale, text.c_str());
+	return this;
 }
 
 
