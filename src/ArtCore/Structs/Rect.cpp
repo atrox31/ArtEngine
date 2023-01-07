@@ -60,34 +60,6 @@ Rect Rect::operator-=(const SDL_FPoint& p)
 	return *this;
 }
 
-Rect Rect::operator+(const SDL_Point& p) const
-{
-	return {x + (float)p.x, y + (float)p.y, w + (float)p.x, h + (float)p.y};
-}
-
-Rect Rect::operator-(const SDL_Point& p) const
-{
-	return {x - (float)p.x, y - (float)p.y, w - (float)p.x, h - (float)p.y};
-}
-
-Rect Rect::operator+=(const SDL_Point& p)
-{
-	x += (float)p.x;
-	y += (float)p.y;
-	w += (float)p.x;
-	h += (float)p.y;
-	return *this;
-}
-
-Rect Rect::operator-=(const SDL_Point& p)
-{
-	x -= (float)p.x;
-	y -= (float)p.y;
-	w -= (float)p.x;
-	h -= (float)p.y;
-	return *this;
-}
-
 Rect Rect::operator*(const int& i) const
 {
 	return {x - (float)i, y - (float)i, w + (float)i, h + (float)i};

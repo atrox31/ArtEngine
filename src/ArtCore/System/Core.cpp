@@ -380,7 +380,7 @@ bool Core::Run()
         // FPS measurement
         _instance.LAST = _instance.NOW;
         _instance.NOW = SDL_GetTicks64();
-        _instance.DeltaTime = ((double)(_instance.NOW - _instance.LAST) / 1000.0);
+        DeltaTime = ((double)(_instance.NOW - _instance.LAST) / 1000.0);
         _instance._frames++;
         // Set global mouse state
         Mouse.Reset();
@@ -548,7 +548,7 @@ bool Core::Run()
                                     _instance.Executor->ExecuteScript(c_instance, Event::EvOnMouseDown);
                                 }
                                 if (!Ev_ClickedDone && EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT_CLICK, c_flag) && Ev_OnMouseInputDown) {
-                                    if (c_instance->CheckMaskClick(_instance.Mouse.XYf)) {
+                                    if (c_instance->CheckMaskClick(Mouse.XYf)) {
                                         _instance.Executor->ExecuteScript(c_instance, Event::EvClicked);
                                         Ev_ClickedDone = true;
                                     }

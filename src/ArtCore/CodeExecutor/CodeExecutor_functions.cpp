@@ -387,7 +387,7 @@ void CodeExecutor::math_max(Instance*) {
 
 //point global_get_mouse();Get point of current mouse postion;If map is bigger than screen this give map coords not screen;
 void CodeExecutor::global_get_mouse(Instance*) {
-	StackOut_p(Core::GetInstance()->Mouse.XYf);
+	StackOut_p(Core::Mouse.XYf);
 }
 //null set_self_sprite(sprite spr); Set self sprite to <sprite> with default scale, angle, speed, loop; You can mod sprite via set_sprite_ etc.;
 void CodeExecutor::set_self_sprite(Instance* instance) {
@@ -702,11 +702,11 @@ void CodeExecutor::collision_push_other(Instance* self) {
 void CodeExecutor::mouse_is_pressed(Instance* sender) {
 	const int button = StackIn_i;
 	if (button == 1) {
-		StackOut_b(Core::GetInstance()->Mouse.LeftPressed);
+		StackOut_b(Core::Mouse.LeftPressed);
 		return;
 	}
 	if ((button == 3)) {
-		StackOut_b(Core::GetInstance()->Mouse.RightPressed);
+		StackOut_b(Core::Mouse.RightPressed);
 		return;
 	}
 	// else

@@ -163,6 +163,15 @@
     <ClCompile Include="src\ArtCore\Physics\Physics.cpp">
       <Filter>ArtCore\Physics</Filter>
     </ClCompile>
+    <ClCompile Include="src\ArtCore\Gui\GuiElement\DropDownList.cpp">
+      <Filter>ArtCore\Gui\GuiElement</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ArtCore\Gui\GuiElement\CheckButton.cpp">
+      <Filter>ArtCore\Gui\GuiElement</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ArtCore\Gui\GuiElement\Slider.cpp">
+      <Filter>ArtCore\Gui\GuiElement</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ArtCore\main.h">
@@ -299,6 +308,15 @@
     </ClInclude>
     <ClInclude Include="src\ArtCore\Functions\SDL_Point_extend.h">
       <Filter>ArtCore\Functions</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ArtCore\Gui\GuiElement\DropDownList.h">
+      <Filter>ArtCore\Gui\GuiElement</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ArtCore\Gui\GuiElement\CheckButton.h">
+      <Filter>ArtCore\Gui\GuiElement</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ArtCore\Gui\GuiElement\Slider.h">
+      <Filter>ArtCore\Gui\GuiElement</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

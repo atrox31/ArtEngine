@@ -18,11 +18,6 @@ public:
 	Rect operator+=(const SDL_FPoint& p);
 	Rect operator-=(const SDL_FPoint& p);
 
-	Rect operator+(const SDL_Point& p) const;
-	Rect operator-(const SDL_Point& p) const;
-	Rect operator+=(const SDL_Point& p);
-	Rect operator-=(const SDL_Point& p);
-
 	Rect operator*(const int& i) const;
 	Rect operator*(const float& i) const;
 	Rect operator/(const int& i) const;
