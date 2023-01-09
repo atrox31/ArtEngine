@@ -4,7 +4,7 @@
 #include "Instance.h"
 #include "ArtCore/Gui/Gui.h"
 
-#include "plf_colony-master/plf_colony.h"
+#include "plf/plf_colony-master/plf_colony.h"
 
 class Instance;
 class Scene final

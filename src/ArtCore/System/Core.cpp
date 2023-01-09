@@ -1,3 +1,4 @@
+// ReSharper disable CppUseAuto
 #include "Core.h"
 #include "Core.h"
 
@@ -14,6 +15,11 @@
 #include "ArtCore/Graphic/ColorDefinitions.h"
 
 #include "physfs-3.0.2/src/physfs.h"
+
+#ifdef _DEBUG
+// time measurment of core events
+#include "ArtCore/_Debug/Time.h"
+#endif
 
 Core Core::_instance = Core();
 
@@ -84,7 +90,7 @@ Core::~Core()
 
     _asset_manager->ClearData();
     delete _asset_manager;
-
+    const bool gpu_has_init = (_screenTarget != nullptr);
     Render::DestroyRender();
     GPU_FreeTarget(_screenTarget);
 
@@ -101,7 +107,9 @@ Core::~Core()
     if (_global_font != nullptr)
         FC_FreeFont(_global_font);
 
-    GPU_Quit();
+    if (gpu_has_init) {
+        GPU_Quit();
+    }
     IMG_Quit();
     TTF_Quit();
     Mix_CloseAudio();
@@ -111,6 +119,10 @@ Core::~Core()
 }
 bool Core::Init(int argc, char* args[])
 {
+#ifdef _DEBUG
+    Time timer;
+    timer.StartTest();
+#endif
     // flags
 #ifdef _DEBUG
 	#ifdef DEBUG_EDITOR
@@ -305,6 +317,11 @@ bool Core::Init(int argc, char* args[])
     Graphic.SetFullScreen(SD_GetInt("FullScreen", 0) == 1);
     //Graphic.Apply();
 
+#ifdef _DEBUG
+    timer.EndTest();
+    timer.PrintTest("Core::Init()");
+#endif
+
     Console::WriteLine("rdy");
     return true;
 }
@@ -313,6 +330,10 @@ bool Core::ProcessCoreKeys(const Sint32 sym)
 {
     if (sym == SDLK_INSERT) {
         _show_fps = !_show_fps;
+        return true;
+    }
+    if (sym == SDLK_HOME) {
+        Console::ConsoleHomeButtonPressed();
         return true;
     }
 	/*
@@ -342,7 +363,6 @@ bool Core::ProcessCoreKeys(const Sint32 sym)
 
 bool Core::ProcessEvents()
 {
-
     SDL_Event e;
     while (SDL_PollEvent(&e) != 0) {
         if (e.type == SDL_QUIT)
@@ -355,11 +375,12 @@ bool Core::ProcessEvents()
         case SDL_KEYDOWN:
         {
 #ifdef _DEBUG
-            if (_instance.CoreDebug.ProcessEvent(&e)) {
+            if (CoreDebug.ProcessEvent(&e)) {
                 return false;
             }
 #endif
-            if (_instance.ProcessCoreKeys(e.key.keysym.sym)) break;
+            if (ProcessCoreKeys(e.key.keysym.sym)) break;
+            if (Console::ProcessEvent(&e)) break;
         } break;
 
         case SDL_TEXTINPUT:
@@ -403,14 +424,16 @@ bool Core::ProcessEvents()
     return false;
 }
 
-void Core::ProcessStep()
+void Core::ProcessStep() const
 {
     // interface (gui) events
     const bool gui_have_event = _current_scene->GuiSystem.Events();
     // add all new instances to scene and execute OnCreate event
     _current_scene->SpawnAll();
     if (_current_scene->IsAnyInstances()) {
-        for (plf::colony<Instance*>::iterator it = _current_scene->InstanceColony.begin(); it != _current_scene->InstanceColony.end();) {
+        for (plf::colony<Instance*>::iterator it = _current_scene->InstanceColony.begin(); 
+            it != _current_scene->InstanceColony.end();)
+        {
             if (Instance* c_instance = (*it); c_instance->Alive) {
                 // step
                 Executor()->ExecuteScript(c_instance, Event::EvStep);
@@ -471,11 +494,11 @@ void Core::ProcessStep()
 		CodeExecutor::SuspendedCodeExecute();
     }
 }
-
-void Core::ProcessPhysics()
+#include "ArtCore/_Debug/Time.h"
+void Core::ProcessPhysics() const
 {
-    for (plf::colony<Instance*>::iterator it = _current_scene->InstanceColony.begin(); it != _current_scene->InstanceColony.end();) {
-        if (Instance* instance = (*it); instance->Alive) {
+    for (const auto instance : _current_scene->InstanceColony) {
+        if (instance->Alive) {
             // collision
             if (EVENT_BIT_TEST(event_bit::HAVE_COLLISION, instance->EventFlag)) {
                 for (Instance* target : _current_scene->InstanceColony) {
@@ -492,7 +515,7 @@ void Core::ProcessPhysics()
     }
 }
 
-void Core::ProcessRender()
+void Core::ProcessSceneRender() const
 {
     // render scene background
     if (_current_scene->BackGround.Texture != nullptr) {
@@ -500,9 +523,9 @@ void Core::ProcessRender()
     }
     else
     {
-        Render::RenderClear(_current_scene->BackGround.Color);
+        Render::RenderClearColor(_current_scene->BackGround.Color);
     }
-    
+
     // draw all instances if in view (defined in step event)
     if (_current_scene->IsAnyInstances()) {
         for (Instance* instance : _current_scene->InstanceColony) {
@@ -511,11 +534,30 @@ void Core::ProcessRender()
             }
         }
     }
+}
 
-    // post process
+void Core::ProcessPostProcessRender() const
+{
+	// post process
     if (use_bloom)Render::ProcessImageWithGaussian();
-    // draw interface
+
+	// draw interface
     _current_scene->GuiSystem.Render();
+
+    // draw all scene to screen buffer
+    Render::RenderToTarget(_screenTarget);
+}
+
+void Core::ProcessSystemRender() const
+{
+    // DEBUG DRAW
+#ifdef _DEBUG
+    _instance.CoreDebug.Draw();
+#endif // _DEBUG
+
+    // draw console
+    Console::RenderConsole(_screenTarget);
+
 
     if (_instance._show_fps) {
         GPU_DeactivateShaderProgram();
@@ -526,24 +568,12 @@ void Core::ProcessRender()
         info_rect.y += info_rect_move;
         info_rect.w += info_rect_move;
         info_rect.h += info_rect_move;
-        Render::DrawRectFilled(info_rect, C_BLACK);
-        Render::DrawRect(info_rect, C_DGREEN);
-        Render::DrawTextAlign(text, _global_font, { info_rect.x + 4.f, info_rect.y }, C_DGREEN, FC_ALIGN_LEFT);
+
+        GPU_RectangleFilled2(_screenTarget, info_rect, C_BLACK);
+        GPU_Rectangle2(_screenTarget, info_rect, C_DGREEN);
+
+        FC_DrawEffect(_global_font, _screenTarget, info_rect.x + 4.f, info_rect.y, FC_MakeEffect(FC_ALIGN_LEFT, { 1.f,1.f }, C_DGREEN), text.c_str());
     }
-
-    // draw arr render data to actual screen target
-    Render::RenderToTarget(_screenTarget);
-
-    // DEBUG DRAW
-#ifdef _DEBUG
-    _instance.CoreDebug.Draw();
-#endif // _DEBUG
-
-    // draw console
-    Console::RenderConsole(_screenTarget);
-
-    GPU_Flip(_screenTarget);
-    Render::RenderClear();
 }
 
 Scene* Core::GetCurrentScene()
@@ -601,7 +631,9 @@ Uint32 Core::FpsCounterCallback(Uint32 interval, void*)
 {
     Core::GetInstance()->fps = Core::GetInstance()->_frames;
     Core::GetInstance()->_frames = 0;
-
+#ifdef _DEBUG
+    Core::GetInstance()->CoreDebug.PerformanceTimeSecondPassed();
+#endif
     return interval;
 }
 
@@ -609,9 +641,42 @@ bool Core::Run()
 {
     _instance.game_loop = true;
     SDL_TimerID my_timer_id = SDL_AddTimer(static_cast<Uint32>(1000), FpsCounterCallback, nullptr);
-    while (true) {
-        if (_instance._current_scene == nullptr) return EXIT_FAILURE;
+#ifdef _DEBUG
+    Time performance_all;
+    Time performance_step;
+    Time performance_physics;
+    Time performance_render;
+    Time performance_post_process;
+    Time performance_counter_gpu_flip;
 
+#define debug_test_counter_start(counter)   \
+	if(_instance.CoreDebug._show_performance_times) {   \
+    (counter).StartTest();  \
+};                      \
+
+#define debug_test_counter_end(counter)     \
+	if(_instance.CoreDebug._show_performance_times) {   \
+    (counter).EndTest();    \
+};     \
+
+#define debug_test_counter_get(counter, target)             \
+	if(_instance.CoreDebug._show_performance_times) {   \
+    (target) += (counter).GetTestTime();    \
+};     \
+
+#else
+
+#define debug_test_counter_start(counter)
+#define debug_test_counter_end(counter) 
+#define debug_test_counter_get(counter, target) 
+
+#endif
+
+
+    
+    while (true) {
+        debug_test_counter_start(performance_all);
+        if (_instance._current_scene == nullptr) return EXIT_FAILURE;
         // FPS measurement
         _instance.LAST = _instance.NOW;
         _instance.NOW = SDL_GetTicks64();
@@ -621,6 +686,7 @@ bool Core::Run()
         // Set global mouse state
         Mouse.Reset();
 
+        debug_test_counter_start(performance_step)
         if(_instance.ProcessEvents())
         { // exit call
             return true;
@@ -628,15 +694,51 @@ bool Core::Run()
 
         if (_instance.game_loop) {
             _instance.ProcessStep();
+        debug_test_counter_end(performance_step)
+
+        debug_test_counter_start(performance_physics)
             _instance.ProcessPhysics();
+        debug_test_counter_end(performance_physics)
         }
 
-        _instance.ProcessRender();
+        debug_test_counter_start(performance_render)
+        Render::RenderClear();
+        // render scene
+        _instance.ProcessSceneRender();
+        debug_test_counter_end(performance_render)
+
+
+    	debug_test_counter_start(performance_post_process)
+        // render interface and make scene pretty
+        _instance.ProcessPostProcessRender();
+        debug_test_counter_end(performance_post_process)
+
+    	debug_test_counter_start(performance_counter_gpu_flip)
+        // render console, debug panels etc
+        _instance.ProcessSystemRender();
+
+        // get all to screen
+        GPU_Flip(_instance._screenTarget);
+        debug_test_counter_end(performance_counter_gpu_flip)
+
+        debug_test_counter_end(performance_all);
+
+
+        debug_test_counter_get(performance_all, _instance.CoreDebug._performance_counter_all_rt);
+        debug_test_counter_get(performance_step, _instance.CoreDebug._performance_counter_step_rt);
+        debug_test_counter_get(performance_physics, _instance.CoreDebug._performance_counter_psychics_rt);
+        debug_test_counter_get(performance_render, _instance.CoreDebug._performance_counter_render_rt);
+        debug_test_counter_get(performance_post_process, _instance.CoreDebug._performance_counter_post_process_rt);
+        debug_test_counter_get(performance_counter_gpu_flip, _instance.CoreDebug._performance_counter_gpu_flip_rt);
     }
 }
 
 bool Core::LoadData()
 {
+#ifdef _DEBUG
+    Time timer;
+    timer.StartTest();
+#endif
     SDL_SetWindowBordered(SDL_GetWindowFromID(_instance._screenTarget->context->windowID), SDL_TRUE);
     Graphic.Apply();
     GPU_Clear(GetScreenTarget());
@@ -677,6 +779,10 @@ bool Core::LoadData()
     bgr.SetProgress(100);
 
     bgr.Stop();
+#ifdef _DEBUG
+    timer.EndTest();
+    timer.PrintTest("Core::LoadData()");
+#endif
     return true;
 }
 
@@ -728,6 +834,27 @@ bool Core::ChangeScene(const std::string& name)
     return false;
 }
 #ifdef _DEBUG
+void Core::CoreDebug::PerformanceTimeSecondPassed()
+{
+    if (!_show_performance_times) return;
+    _performance_counter_all =          _performance_counter_all_rt / _instance.fps;
+	_performance_counter_step =         _performance_counter_step_rt / _instance.fps;
+    _performance_counter_psychics =     _performance_counter_psychics_rt / _instance.fps;
+    _performance_counter_render =       _performance_counter_render_rt / _instance.fps;
+    _performance_counter_post_process = _performance_counter_post_process_rt / _instance.fps;
+    _performance_counter_gpu_flip =     _performance_counter_gpu_flip_rt / _instance.fps;
+
+    _performance_counter_other = 
+        _performance_counter_all - _performance_counter_step - _performance_counter_psychics - 
+        _performance_counter_render - _performance_counter_post_process - _performance_counter_gpu_flip;
+
+    _performance_counter_all_rt = 0.0;
+    _performance_counter_step_rt = 0.0;
+    _performance_counter_psychics_rt = 0.0;
+    _performance_counter_render_rt = 0.0;
+    _performance_counter_post_process_rt = 0.0;
+    _performance_counter_gpu_flip_rt = 0.0;
+}
 Core::CoreDebug::CoreDebug()
 {
     Options.emplace_back( "Performance", &_show_performance, SDLK_F2);
@@ -735,6 +862,7 @@ Core::CoreDebug::CoreDebug()
     Options.emplace_back( "Draw Collider`s", &_show_collider, SDLK_F4);
     Options.emplace_back( "Draw Direction`s", &_show_directions, SDLK_F5);
     Options.emplace_back( "Show spy window", &_show_spy_window, SDLK_F6);
+    Options.emplace_back( "Show performance counters", &_show_performance_times, SDLK_F7);
 }
 
 bool Core::CoreDebug::ProcessEvent(SDL_Event* e)
@@ -788,7 +916,7 @@ bool Core::CoreDebug::ProcessEvent(SDL_Event* e)
     return false;
 }
 
-void Core::CoreDebug::Draw()
+void Core::CoreDebug::Draw() const
 {
     if (_show_instance_info || _show_collider || _show_directions)
     {
@@ -912,6 +1040,111 @@ void Core::CoreDebug::Draw()
 		GPU_RectangleFilled2(_instance._screenTarget, info_rect, C_BLACK);
         GPU_Rectangle2(_instance._screenTarget, info_rect, C_DGREEN);
         FC_DrawColor(_instance._global_font, _instance._screenTarget,  info_rect.x + 4, info_rect.y + 4 , C_DGREEN, "%s", sliced_text.c_str());
+
+        FC_DrawEffect(_instance._global_font, _instance._screenTarget, info_rect.x + info_rect.w / 2.f, info_rect.h + info_rect.y - 42.f, { FC_ALIGN_CENTER, {1.f,1.f},C_DGREEN }, "<PG_UP> <PG_DOWN>");
+    }
+    if(_show_performance_times)
+    {
+        const std::string header = "Performance counters\n";
+        const std::string text_left = 
+            std::string("All time:")    + '\n' +
+            std::string("Step events:") + '\n' +
+            std::string("Physics:")     + '\n' +
+            std::string("Render:")      + '\n' +
+            std::string("Post process:")+ '\n' +
+            std::string("GPU_Flip:")    + '\n' +
+            std::string("Other:");
+
+        const std::string text_right = 
+            std::string("%.4f ms") + '\n' +
+            std::string("%.4f ms") + '\n' +
+            std::string("%.4f ms") + '\n' +
+            std::string("%.4f ms") + '\n' +
+            std::string("%.4f ms") + '\n' +
+            std::string("%.4f ms") + '\n' +
+            std::string("%.4f ms");
+
+        GPU_Rect info_rect_left = FC_GetBounds(_instance._global_font, 0.f, 0.f, FC_ALIGN_LEFT, FC_Scale{ 1.f, 1.f }, text_left.c_str());
+        GPU_Rect info_rect_right = FC_GetBounds(_instance._global_font, 0.f, 0.f, FC_ALIGN_RIGHT, FC_Scale{ 1.f, 1.f }, text_right.c_str(),
+            _performance_counter_all,
+            _performance_counter_step,
+            _performance_counter_psychics,
+            _performance_counter_render,
+            _performance_counter_post_process,
+            _performance_counter_gpu_flip,
+            _performance_counter_other
+            );
+        
+        GPU_Rect info_rect = {
+            16.f, 16.f + (_instance._show_fps ? 64.f : 0.f),
+            info_rect_left.w + 16.f + info_rect_right.w,
+            std::max(info_rect_left.h, info_rect_right.h) + 16.f
+        };
+
+        const double percent_step = _performance_counter_step / _performance_counter_all * 360.0;
+        const double percent_psychics = _performance_counter_psychics / _performance_counter_all * 360.0;
+        const double percent_render = _performance_counter_render / _performance_counter_all * 360.0;
+        const double percent_post_process = _performance_counter_post_process / _performance_counter_all * 360.0;
+        const double percent_gpu_flip = _performance_counter_gpu_flip / _performance_counter_all * 360.0;
+        const double percent_other = _performance_counter_other / _performance_counter_all * 360.0;
+
+        float angle = 0.f;
+
+        const SDL_Color color_table[] = {
+            C_LGREEN, C_GREEN, C_RED, C_GOLD, C_BLUE, C_DYELLOW, C_GRAY
+        };
+
+        GPU_ArcFilled(_instance._screenTarget, info_rect.x + 128.f, info_rect.y + info_rect.h + 128.f + 16.f,
+            128.f, angle, angle + static_cast<float>(percent_step),
+            color_table[1]);
+        angle += static_cast<float>(percent_step);
+
+        GPU_ArcFilled(_instance._screenTarget, info_rect.x + 128.f, info_rect.y + info_rect.h + 128.f + 16.f,
+            128.f, angle, angle + static_cast<float>(percent_psychics),
+            color_table[2]);
+        angle += static_cast<float>(percent_psychics);
+
+        GPU_ArcFilled(_instance._screenTarget, info_rect.x + 128.f, info_rect.y + info_rect.h + 128.f + 16.f,
+            128.f, angle, angle + static_cast<float>(percent_render),
+            color_table[3]);
+        angle += static_cast<float>(percent_render);
+
+        GPU_ArcFilled(_instance._screenTarget, info_rect.x + 128.f, info_rect.y + info_rect.h + 128.f + 16.f,
+            128.f, angle, angle + static_cast<float>(percent_post_process),
+            color_table[4]);
+        angle += static_cast<float>(percent_post_process);
+
+        GPU_ArcFilled(_instance._screenTarget, info_rect.x + 128.f, info_rect.y + info_rect.h + 128.f + 16.f,
+            128.f, angle, angle + static_cast<float>(percent_gpu_flip),
+            color_table[5]);
+        angle += static_cast<float>(percent_gpu_flip);
+
+        GPU_ArcFilled(_instance._screenTarget, info_rect.x + 128.f, info_rect.y + info_rect.h + 128.f + 16.f,
+            128.f, angle, angle + static_cast<float>(percent_other),
+            color_table[6]);
+
+
+
+        GPU_RectangleFilled2(_instance._screenTarget, info_rect, C_BLACK);
+        GPU_Rectangle2(_instance._screenTarget, info_rect, C_DGREEN);
+
+        //FC_DrawColor(_instance._global_font, _instance._screenTarget, info_rect.x + 4.f, info_rect.y + 4.f, C_DGREEN, text_left.c_str());
+        float current_height = info_rect.y;
+        std::vector<std::string> spliced_text = Func::Split(text_left, '\n');
+        int i = 0;
+    	for (std::string& text : spliced_text)
+        {
+            current_height += FC_DrawColor(_instance._global_font, _instance._screenTarget, info_rect.x + 4.f, current_height + 4.f, color_table[i++], text.c_str()).h;
+        }
+
+        FC_DrawColor(_instance._global_font, _instance._screenTarget, info_rect.x + info_rect.w - info_rect_right.w - 8.f, info_rect.y + 4.f, C_DGREEN, text_right.c_str(),
+            _performance_counter_all,
+            _performance_counter_step,
+            _performance_counter_psychics,
+            _performance_counter_render,
+            _performance_counter_post_process,
+            _performance_counter_gpu_flip,
+            _performance_counter_other);
     }
 }
 #endif

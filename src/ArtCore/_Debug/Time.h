@@ -28,6 +28,10 @@ public:
 	{
 		std::cout << "test '" << test << "' complite. Time: " << _time.count() << std::endl;
 	}
+	[[nodiscard]] double GetTestTime() const
+	{
+		return _time.count();
+	}
 
 private:
 	std::chrono::steady_clock::time_point _start;

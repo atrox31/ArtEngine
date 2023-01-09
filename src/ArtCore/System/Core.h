@@ -26,9 +26,11 @@ public:
 	static void Exit();
 
 	bool ProcessEvents();
-	void ProcessStep();
-	void ProcessPhysics();
-	void ProcessRender();
+	void ProcessStep() const;
+	void ProcessPhysics() const;
+	void ProcessSceneRender() const;
+	void ProcessPostProcessRender() const;
+	void ProcessSystemRender() const;
 
 	// getters
 	static Core* GetInstance() { return &Core::_instance; }
@@ -199,19 +201,39 @@ private:
 	public:
 		CoreDebug();
 		bool ProcessEvent(SDL_Event* e);
-		void Draw();
+		void Draw() const;
 		void SetSpyLines(const int& lines)
 		{
 			_spy_line_max = lines;
 			_spy_line_begin = 0;
 			_spy_line_end = std::min(_spy_line_max,8);
 		}
+
+		void PerformanceTimeSecondPassed();
+
 	private:
 		bool _show_debug_options = false;
 		int  _selected_debug_option = -1;
 		bool _any_panel_shown = false;
 
 		bool _show_performance = false;
+	public:
+		bool _show_performance_times = false;
+		double _performance_counter_all_rt{};
+		double _performance_counter_step_rt{};
+		double _performance_counter_psychics_rt{};
+		double _performance_counter_post_process_rt{};
+		double _performance_counter_render_rt{};
+		double _performance_counter_gpu_flip_rt{};
+	private:
+		double _performance_counter_all{};
+		double _performance_counter_other{};
+		double _performance_counter_step{};
+		double _performance_counter_psychics{};
+		double _performance_counter_render{};
+		double _performance_counter_post_process{};
+		double _performance_counter_gpu_flip{};
+
 		bool _show_collider = false;
 		bool _show_instance_info = false;
 		bool _show_directions = false;
