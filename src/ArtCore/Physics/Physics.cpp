@@ -145,16 +145,16 @@ void Physics::BounceRectRect(vec2f& collision_vector, const Instance* object1, c
 	 */
 	 // ReSharper disable CppInconsistentNaming
 	const Rect object2BodyMask = object2->GetBodyMask();
-	const float object2UpBoundary = object2BodyMask.y;
-	const float object2DownBoundary = object2BodyMask.h;
-	const float object2LeftBoundary = object2BodyMask.x;
-	const float object2RightBoundary = object2BodyMask.w;
+	const float object2UpBoundary = object2BodyMask.Y;
+	const float object2DownBoundary = object2BodyMask.H;
+	const float object2LeftBoundary = object2BodyMask.X;
+	const float object2RightBoundary = object2BodyMask.W;
 
 	const Rect object1BodyMask = object1->GetBodyMask();
-	const float object1UpBoundary = object1BodyMask.h;
-	const float object1DownBoundary = object1BodyMask.y;
-	const float object1LeftBoundary = object1BodyMask.w;
-	const float object1RightBoundary = object1BodyMask.x;
+	const float object1UpBoundary = object1BodyMask.H;
+	const float object1DownBoundary = object1BodyMask.Y;
+	const float object1LeftBoundary = object1BodyMask.W;
+	const float object1RightBoundary = object1BodyMask.X;
 
 	bool LM = (object1RightBoundary > object2LeftBoundary) && (object1RightBoundary < object2RightBoundary);
 	bool RM = (object1LeftBoundary < object2RightBoundary) && (object1LeftBoundary > object2LeftBoundary);
@@ -209,10 +209,10 @@ void Physics::BounceCircleRect(vec2f& collision_vector, const Instance* object1,
 	 */
 	// ReSharper disable CppInconsistentNaming
 	const Rect object2BodyMask = object2->GetBodyMask();
-	const float object2UpBoundary = object2BodyMask.y;
-	const float object2DownBoundary = object2BodyMask.h;
-	const float object2LeftBoundary = object2BodyMask.x;
-	const float object2RightBoundary = object2BodyMask.w;
+	const float object2UpBoundary = object2BodyMask.Y;
+	const float object2DownBoundary = object2BodyMask.H;
+	const float object2LeftBoundary = object2BodyMask.X;
+	const float object2RightBoundary = object2BodyMask.W;
 
 	const float radius_scale = object1->Body.Value * ((object1->SpriteScaleX + object1->SpriteScaleY) / 2.f);
 	const float object1UpBoundary = object1->PosY - radius_scale;

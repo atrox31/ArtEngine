@@ -14,25 +14,24 @@ GuiElement::DropDownList* GuiElement::DropDownList::SetText(const std::string& t
 {
 	this->_text = text;
 	this->_dimensions = FC_GetBounds(Gui::GlobalFont, 0, 0, FC_ALIGN_LEFT, FC_MakeScale(1.0f, 1.0f), text.c_str());
-	this->_dimensions.w += 12;
-	this->_dimensions.h += 2;
+	this->_dimensions.W += 12;
+	this->_dimensions.H += 2;
 	return this;
 }
 bool GuiElement::DropDownList::OnClick()
 {
 	_show_list = !_show_list;
-	const auto parrent_children_list = _parent->GetChildren();
-	for (int i = 0; i < parrent_children_list.size(); ++i)
+	for (const auto parrent_children_list = _parent->GetChildren(); const auto i : parrent_children_list)
 	{
-		if (parrent_children_list[i] == this) continue;
+		if (i == this) continue;
 		if(_show_list)
 		{
-			_child_state.emplace_back(parrent_children_list[i]->GetEnabled());
-			parrent_children_list[i]->SetEnabled(false);
+			_child_state.emplace_back(i->GetEnabled());
+			i->SetEnabled(false);
 		}else
 		{
-			parrent_children_list[i]->SetEnabled(_child_state.back());
-			parrent_children_list[i]->SetFocus(false);
+			i->SetEnabled(_child_state.back());
+			i->SetFocus(false);
 			_child_state.pop_back();
 		}
 	}
@@ -47,6 +46,7 @@ bool GuiElement::DropDownList::OnClick()
 	{
 		std::reverse(_child_state.begin(), _child_state.end());
 	}
+	GuiElementTemplate::OnClick();
 	return true;
 }
 
@@ -97,22 +97,22 @@ void GuiElement::DropDownList::Render()
 		}
 	}
 	const GPU_Rect temp_dimensions = {
-				_dimensions.x ,
-				_dimensions.y + (_focus ? 1.0f : 0.0f),
-				_dimensions.w ,
-				_dimensions.h };
+				_dimensions.X ,
+				_dimensions.Y + (_focus ? 1.0f : 0.0f),
+				_dimensions.W ,
+				_dimensions.H };
 	
 	Render::DrawTextBox(_text, _default_font, temp_dimensions, _pallet.Font, FC_ALIGN_CENTER);
 
 	Rect alter_dimensions = _dimensions;
-	alter_dimensions.y += _dimensions.h + 4.f;
+	alter_dimensions.Y += _dimensions.H + 4.f;
 
 	if (_show_list) {
 		int tmp_i = -1;
 		for (const auto& value : _values)
 		{
 			tmp_i++;
-			const bool element_focus = alter_dimensions.PointInRect_wh(Core::Mouse.XYf);
+			const bool element_focus = alter_dimensions.PointInRectWh(Core::Mouse.XYf);
 			if(element_focus)
 			{
 				_temp_selected_index = tmp_i;
@@ -123,12 +123,12 @@ void GuiElement::DropDownList::Render()
 					_pallet.Active : _pallet.Background)
 			);
 			Render::DrawRectRounded(alter_dimensions.ToGPU_Rect(), 2.0f, _pallet.Frame);
-			alter_dimensions.y += Render::DrawTextBox(value, _default_font, alter_dimensions.ToGPU_Rect(), _pallet.Font, FC_ALIGN_CENTER).h + 2.f;
+			alter_dimensions.Y += Render::DrawTextBox(value, _default_font, alter_dimensions.ToGPU_Rect(), _pallet.Font, FC_ALIGN_CENTER).h + 2.f;
 		}
 	}else
 	{
 		Render::DrawRectRoundedFilled(alter_dimensions.ToGPU_Rect(), 2.0f, _pallet.BackgroundDisable);
-		Render::DrawTextBox(_selected_value, _default_font, alter_dimensions.ToGPU_Rect(), _pallet.Font, FC_ALIGN_CENTER).h + 2.f;
+		Render::DrawTextBox(_selected_value, _default_font, alter_dimensions.ToGPU_Rect(), _pallet.Font, FC_ALIGN_CENTER);
 	}
 
 	GPU_SetLineThickness(line_thickness);

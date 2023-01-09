@@ -71,7 +71,7 @@ void CodeExecutor::new_rectangle_f(Instance*) {
 //sprite get_sprite(string name);Get asset handle by name <string>;Expensive function, try to not call it every frame. Call it to function and store.
 void CodeExecutor::get_sprite(Instance*) {
 	const std::string name = StackIn_s;
-	const int sprite = Core::GetInstance()->assetManager->GetSpriteId(name);
+	const int sprite = Core::GetAssetManager()->GetSpriteId(name);
 	if (sprite == -1) {
 		Console::WriteLine("CodeExecutor::get_sprite() - '" + name + "' not found");
 	}
@@ -81,7 +81,7 @@ void CodeExecutor::get_sprite(Instance*) {
 //texture get_texture(string name);Get asset handle by name <string>;Expensive function, try to not call it every frame. Call it to function and store.
 void CodeExecutor::get_texture(Instance*) {
 	const std::string name = StackIn_s;
-	const int texture = Core::GetInstance()->assetManager->GetTextureId(name);
+	const int texture = Core::GetAssetManager()->GetTextureId(name);
 	if (texture == -1) {
 		Console::WriteLine("CodeExecutor::get_texture() - '" + name + "' not found");
 	}
@@ -91,7 +91,7 @@ void CodeExecutor::get_texture(Instance*) {
 //music get_music(string name);Get asset handle by name <string>;Expensive function, try to not call it every frame. Call it to function and store.
 void CodeExecutor::get_music(Instance*) {
 	const std::string name = StackIn_s;
-	const int texture = Core::GetInstance()->assetManager->GetMusicId(name);
+	const int texture = Core::GetAssetManager()->GetMusicId(name);
 	if (texture == -1) {
 		Console::WriteLine("CodeExecutor::get_music() - '" + name + "' not found");
 	}
@@ -101,7 +101,7 @@ void CodeExecutor::get_music(Instance*) {
 //sound get_sound(string name);Get asset handle by name <string>;Expensive function, try to not call it every frame. Call it to function and store.
 void CodeExecutor::get_sound(Instance*) {
 	const std::string name = StackIn_s;
-	const int texture = Core::GetInstance()->assetManager->GetSoundId(name);
+	const int texture = Core::GetAssetManager()->GetSoundId(name);
 	if (texture == -1) {
 		Console::WriteLine("CodeExecutor::get_sound() - '" + name + "' not found");
 	}
@@ -111,7 +111,7 @@ void CodeExecutor::get_sound(Instance*) {
 //font get_font(string name);Get asset handle by name <string>;Expensive function, try to not call it every frame. Call it to function and store.
 void CodeExecutor::get_font(Instance*) {
 	const std::string name = StackIn_s;
-	const int font = Core::GetInstance()->assetManager->GetFontId(name);
+	const int font = Core::GetAssetManager()->GetFontId(name);
 	if (font == -1) {
 		Console::WriteLine("CodeExecutor::get_font() - '" + name + "' not found");
 	}
@@ -121,7 +121,7 @@ void CodeExecutor::get_font(Instance*) {
 //int sprite_get_width(sprite spr);Get width of <sprite>;Get int value.
 void CodeExecutor::sprite_get_width(Instance*) {
 	const int id = StackIn_i;
-	const Sprite* sprite = Core::GetInstance()->assetManager->GetSprite(id);
+	const Sprite* sprite = Core::GetAssetManager()->GetSprite(id);
 	if (sprite == nullptr) StackOut_i(0);
 	else StackOut_i(sprite->GetWidth());
 }
@@ -129,7 +129,7 @@ void CodeExecutor::sprite_get_width(Instance*) {
 //int sprite_get_height(sprite spr);Get height of <sprite>;Get int value.
 void CodeExecutor::sprite_get_height(Instance*) {
 	const int id = StackIn_i;
-	const Sprite* sprite = Core::GetInstance()->assetManager->GetSprite(id);
+	const Sprite* sprite = Core::GetAssetManager()->GetSprite(id);
 	if (sprite == nullptr) StackOut_i(0);
 	else StackOut_i(sprite->GetHeight());
 }
@@ -137,7 +137,7 @@ void CodeExecutor::sprite_get_height(Instance*) {
 //int sprite_get_frames(sprite spr);Get _frames number of <sprite>;Get int value.
 void CodeExecutor::sprite_get_frames(Instance*) {
 	const int id = StackIn_i;
-	const Sprite* sprite = Core::GetInstance()->assetManager->GetSprite(id);
+	const Sprite* sprite = Core::GetAssetManager()->GetSprite(id);
 	if (sprite == nullptr) StackOut_i(0);
 	else StackOut_i(sprite->GetMaxFrame());
 }
@@ -157,8 +157,8 @@ void CodeExecutor::move_to_point(Instance* sender) {
 	const float speed = StackIn_f;
 	const SDL_FPoint dest = StackIn_p;
 	const float direction = std::atan2f(dest.y - sender->PosY, dest.x - sender->PosX);
-	sender->PosX += std::cosf(direction) * speed * (float)Core::GetInstance()->DeltaTime;
-	sender->PosY += std::sinf(direction) * speed * (float)Core::GetInstance()->DeltaTime;
+	sender->PosX += std::cosf(direction) * speed * static_cast<float>(Core::DeltaTime);
+	sender->PosY += std::sinf(direction) * speed * static_cast<float>(Core::DeltaTime);
 }
 
 //null move_instant(point p);Move instantly to target <point>;This changes x and y. Not cheking for collision;
@@ -172,8 +172,8 @@ void CodeExecutor::move_instant(Instance* sender) {
 void CodeExecutor::move_to_direction(Instance* sender) {
 	const float speed = StackIn_f;
 	const float direction = StackIn_f;
-	sender->PosX += std::cosf(direction) * speed * (float)Core::GetInstance()->DeltaTime;
-	sender->PosY += std::sinf(direction) * speed * (float)Core::GetInstance()->DeltaTime;
+	sender->PosX += std::cosf(direction) * speed * static_cast<float>(Core::DeltaTime);
+	sender->PosY += std::sinf(direction) * speed * static_cast<float>(Core::DeltaTime);
 }
 
 //float distance_to_point(point p);Give distance to <point>;Measure from current instance to target point.
@@ -206,8 +206,8 @@ void CodeExecutor::distance_to_instance(Instance* sender) {
 //null move_forward(float speed);Move current instance forward with <speed> px per second.;Call it every frame. Function give build-in direction variable.
 void CodeExecutor::move_forward(Instance* sender) {
 	const float speed = StackIn_f;
-	sender->PosX += std::cosf(sender->Direction) * speed * (float)Core::GetInstance()->DeltaTime;
-	sender->PosY += std::sinf(sender->Direction) * speed * (float)Core::GetInstance()->DeltaTime;
+	sender->PosX += std::cosf(sender->Direction) * speed * static_cast<float>(Core::DeltaTime);
+	sender->PosY += std::sinf(sender->Direction) * speed * static_cast<float>(Core::DeltaTime);
 }
 
 //float direction_to_point(point p);Give direction to <point> in degree (-180 : 180);Measure from current instance to target point.
@@ -245,7 +245,7 @@ void CodeExecutor::draw_sprite(Instance*) {
 	float y = StackIn_f;
 	float x = StackIn_f;
 	const int spriteId = StackIn_i;
-	Render::DrawSprite(Core::GetInstance()->assetManager->GetSprite(spriteId), { x, y }, (int)frame);
+	Render::DrawSprite(Core::GetAssetManager()->GetSprite(spriteId), { x, y }, static_cast<int>(frame));
 }
 
 //null draw_sprite_ex(sprite spr, float x, float y, float frame, float x_scale, float y_scale, float x_center, float y_center, float angle, float alpha);
@@ -260,7 +260,7 @@ void CodeExecutor::draw_sprite_ex(Instance*) {
 	const float y = StackIn_f;
 	const float x = StackIn_f;
 	const int spriteId = StackIn_i;
-	Render::DrawSprite_ex(Core::GetInstance()->assetManager->GetSprite(spriteId), x, y, (int)frame, x_scale, y_scale, x_center, y_center, angle, alpha);
+	Render::DrawSprite_ex(Core::GetAssetManager()->GetSprite(spriteId), x, y, static_cast<int>(frame), x_scale, y_scale, x_center, y_center, angle, alpha);
 }
 
 //null draw_texture(texture tex, float x, float y);Draw <texture> on (<float>,<float>).;Draw standard texture with it normal dimensions. For extended option use 'Draw texture extended';
@@ -268,7 +268,7 @@ void CodeExecutor::draw_texture(Instance*) {
 	float y = StackIn_f;
 	float x = StackIn_f;
 	const int textureId = StackIn_i;
-	Render::DrawTexture(Core::GetInstance()->assetManager->GetTexture(textureId), { x,y }, { 1.0f, 1.0f }, 0.0f, 1.0f);
+	Render::DrawTexture(Core::GetAssetManager()->GetTexture(textureId), { x,y }, { 1.0f, 1.0f }, 0.0f, 1.0f);
 }
 
 //null draw_texture_ex(texture tex, float x, float y, float x_scale, float y_scale, float angle, float alpha);Draw <texture> on (<float>,<float>), with scale (<float>,<float>), angle <float> and aplha <float>;Angle range is (0 - 359) alpha (0.0f - 1.0f).
@@ -280,7 +280,7 @@ void CodeExecutor::draw_texture_ex(Instance*) {
 	float y = StackIn_f;
 	float x = StackIn_f;
 	const int textureId = StackIn_i;
-	Render::DrawTexture(Core::GetInstance()->assetManager->GetTexture(textureId), { x,y }, { x_scale, y_scale }, angle, alpha);
+	Render::DrawTexture(Core::GetAssetManager()->GetTexture(textureId), { x,y }, { x_scale, y_scale }, angle, alpha);
 }
 
 //null draw_sprite_self();Draw self sprite on self coords with sprite scale and angle;Use build-in variables;
@@ -393,13 +393,13 @@ void CodeExecutor::global_get_mouse(Instance*) {
 void CodeExecutor::set_self_sprite(Instance* instance) {
 	const int spriteId = StackIn_i;
 	if (spriteId != -1) {
-		Sprite* sprite = Core::GetInstance()->assetManager->GetSprite(spriteId);
+		Sprite* sprite = Core::GetAssetManager()->GetSprite(spriteId);
 		if (sprite != nullptr) {
 			instance->SelfSprite = sprite;
 			instance->SpriteScaleX = 1.0f;
 			instance->SpriteScaleY = 1.0f;
-			instance->SpriteCenterX = (int)sprite->GetCenterX();
-			instance->SpriteCenterY = (int)sprite->GetCenterY();
+			instance->SpriteCenterX = static_cast<int>(sprite->GetCenterX());
+			instance->SpriteCenterY = static_cast<int>(sprite->GetCenterY());
 			instance->SpriteAngle = 0.0f;
 			instance->SpriteAnimationFrame = 0.0f;
 			instance->SpriteAnimationSpeed = 60.0f;
@@ -439,7 +439,7 @@ void CodeExecutor::get_pos_y(Instance* instance) {
 //null sound_play(sound asset);Play <asset> sound global;For position call sound_play_at(sound asset)
 void CodeExecutor::sound_play(Instance*) {
 	const int SoundId = StackIn_i;
-	Mix_Chunk* sound = Core::GetInstance()->assetManager->GetSound(SoundId);
+	Mix_Chunk* sound = Core::GetAssetManager()->GetSound(SoundId);
 	if (sound == nullptr) return;
 	Mix_PlayChannel(-1, sound, 0);
 }
@@ -447,7 +447,7 @@ void CodeExecutor::sound_play(Instance*) {
 //null music_play(music asset);Play <asset> music.;There is only one music at once;
 void CodeExecutor::music_play(Instance*) {
 	const int SoundId = StackIn_i;
-	Mix_Music* music = Core::GetInstance()->assetManager->GetMusic(SoundId);
+	Mix_Music* music = Core::GetAssetManager()->GetMusic(SoundId);
 	if (music == nullptr) return;
 	Mix_PlayMusic(music, 0);
 }
@@ -455,12 +455,12 @@ void CodeExecutor::music_play(Instance*) {
 //null sprite_next_frame(); Set SelfSprite next frame; If sprite loop is enable, frame = 0 if frame > frame_max;
 void CodeExecutor::sprite_next_frame(Instance* sender) {
 	if (sender->SelfSprite == nullptr) return;
-	if ( (int)(++sender->SpriteAnimationFrame) >= sender->SelfSprite->GetMaxFrame()) {
+	if ( static_cast<int>(++sender->SpriteAnimationFrame) >= sender->SelfSprite->GetMaxFrame()) {
 		if (sender->SpriteAnimationLoop) {
 			sender->SpriteAnimationFrame = 0;
 		}
 		else {
-			sender->SpriteAnimationFrame = (float)sender->SelfSprite->GetMaxFrame();
+			sender->SpriteAnimationFrame = static_cast<float>(sender->SelfSprite->GetMaxFrame());
 		}
 	}
 }
@@ -468,9 +468,9 @@ void CodeExecutor::sprite_next_frame(Instance* sender) {
 //null sprite_prev_frame(); Set SelfSprite previous frame; If sprite loop is enable, frame = frame_max if frame < frame_max 0;
 void CodeExecutor::sprite_prev_frame(Instance* sender) {
 	if (sender->SelfSprite == nullptr) return;
-	if ( (int)(--sender->SpriteAnimationFrame) < 0) {
+	if ( static_cast<int>(--sender->SpriteAnimationFrame) < 0) {
 		if (sender->SpriteAnimationLoop) {
-			sender->SpriteAnimationFrame = (float)sender->SelfSprite->GetMaxFrame() - 1;
+			sender->SpriteAnimationFrame = static_cast<float>(sender->SelfSprite->GetMaxFrame()) - 1;
 		}
 		else {
 			sender->SpriteAnimationFrame = 0.0f;
@@ -482,7 +482,7 @@ void CodeExecutor::sprite_prev_frame(Instance* sender) {
 void CodeExecutor::sprite_set_frame(Instance* sender) {
 	const int frame = StackIn_i;
 	if (frame < 0 || frame >= sender->SelfSprite->GetMaxFrame()) return;
-	sender->SpriteAnimationFrame = (float)frame;
+	sender->SpriteAnimationFrame = static_cast<float>(frame);
 }
 
 //null code_do_nothing();Do nothing, empty action;Use when there is no else in if
@@ -558,7 +558,7 @@ void CodeExecutor::collision_get_collider_name(Instance*) {
 //int collision_get_collider_id();Get id of instance that is coliding with this object;Other colliders must be solid too to collide;
 void CodeExecutor::collision_get_collider_id(Instance*) {
 	if (Core::GetCurrentScene()->CurrentCollisionInstance != nullptr)
-		StackOut_i((int)Core::GetCurrentScene()->CurrentCollisionInstanceId);
+		StackOut_i(static_cast<int>(Core::GetCurrentScene()->CurrentCollisionInstanceId));
 	else
 		StackOut_i(-1);
 }
@@ -687,15 +687,15 @@ void CodeExecutor::collision_push_other(Instance* self) {
 	const float direction = std::atan2f(other->PosY - self->PosY, other->PosX - self->PosX);
 	float move;
 	if (myself) {
-		other->PosX += std::cosf(direction) * 16.f * (float)Core::GetInstance()->DeltaTime;
-		other->PosY += std::sinf(direction) * 16.f * (float)Core::GetInstance()->DeltaTime;
+		other->PosX += std::cosf(direction) * 16.f * static_cast<float>(Core::DeltaTime);
+		other->PosY += std::sinf(direction) * 16.f * static_cast<float>(Core::DeltaTime);
 		move = 16.f;
 	}
 	else {
 		move = 32.f;
 	}
-	other->PosX += std::cosf(direction - 180.f) * move * (float)Core::GetInstance()->DeltaTime;
-	other->PosY += std::sinf(direction - 180.f) * move * (float)Core::GetInstance()->DeltaTime;
+	other->PosX += std::cosf(direction - 180.f) * move * static_cast<float>(Core::DeltaTime);
+	other->PosY += std::sinf(direction - 180.f) * move * static_cast<float>(Core::DeltaTime);
 
 }
 //bool mouse_is_pressed(int button);Return state of button <int>;Left button is 1, right is 3
@@ -714,7 +714,7 @@ void CodeExecutor::mouse_is_pressed(Instance* sender) {
 }
 //float get_delta_time();Return delta time of frame.;Every build-in action of moving or collision uses delta time, do not use twice!
 void CodeExecutor::get_delta_time(Instance* sender) {
-	StackOut_f( (float)Core::GetInstance()->DeltaTime );
+	StackOut_f( static_cast<float>(Core::DeltaTime) );
 }
 //null code_break(); Break from current function; Everything will be lost...
 void CodeExecutor::code_break(Instance*) {
@@ -724,12 +724,12 @@ void CodeExecutor::code_break(Instance*) {
 void CodeExecutor::draw_text(Instance*) {
 	const SDL_Color color = StackIn_c;
 	const std::string text = StackIn_s;
-	float y = (float)StackIn_i;
-	float x = (float)StackIn_i;
+	float y = static_cast<float>(StackIn_i);
+	float x = static_cast<float>(StackIn_i);
 	const int fontId = StackIn_i;
-	FC_Font* font = Core::GetInstance()->assetManager->GetFont(fontId);
+	FC_Font* font = Core::GetAssetManager()->GetFont(fontId);
 	if (font == nullptr) {
-		font = Core::GetInstance()->_global_font;
+		font = Core::GetGlobalFont();
 	}
 
 	Render::DrawText(text, font, { x,y }, color);
@@ -766,9 +766,9 @@ void CodeExecutor::draw_text_in_frame(Instance*)
 	const float y = StackIn_f;
 	const float x = StackIn_f;
 	const std::string text = StackIn_s;
-	FC_Font* font = Core::GetInstance()->assetManager->GetFont(StackIn_i);
+	FC_Font* font = Core::GetAssetManager()->GetFont(StackIn_i);
 	if (font == nullptr) {
-		font = Core::GetInstance()->_global_font;
+		font = Core::GetGlobalFont();
 	}
 	const GPU_Rect box = FC_GetBounds(font, x, y, FC_ALIGN_CENTER, FC_MakeScale(1.f, 1.f), text.c_str());
 	Render::DrawRectFilled(box, background_color);
@@ -799,12 +799,12 @@ void CodeExecutor::gui_change_enabled(Instance*)
 void CodeExecutor::code_execute_trigger(Instance*)
 {
 	const std::string trigger = StackIn_s;
-	Core::GetInstance()->Executor->ExecuteCode(
+	Core::Executor()->ExecuteCode(
 		Core::GetCurrentScene()->GetVariableHolder(),
 		Core::GetCurrentScene()->GetTriggerData(trigger));
 
 }
-//null code_wait(int milliseconds);Suspend this trigger for <int> milliseconds
+//null code_wait(int milliseconds);Suspend this trigger for <int> milliseconds.;This suspend future execution of this trigger until time have pass.
 void CodeExecutor::code_wait(Instance* sender)
 {
 	const int milliseconds = StackIn_i;

@@ -28,23 +28,23 @@ void GuiElement::Grid::Render() {
 	_clicked_element = _null_focus;
 	for (int y = 0; y < _rows; y++) {
 		for (int x = 0; x < _columns; x++) {
-			int v = x + (y * _columns);
+			const int v = x + (y * _columns);
 			const SDL_Point grid_selected_point = { x, y };
 
 			GPU_Rect grid_box_dimensions = {
-				_dimensions.x + ((_spacing * (x + 1)) + (_element_size.x * x)),
-				_dimensions.y + ((_spacing * (y + 1)) + (_element_size.y * y)),
-				(float)_element_size.x,(float)_element_size.y
+				_dimensions.X + ((_spacing * (x + 1)) + (_element_size.x * x)),
+				_dimensions.Y + ((_spacing * (y + 1)) + (_element_size.y * y)),
+				static_cast<float>(_element_size.x),static_cast<float>(_element_size.y)
 			};
 			if (_grid_elements[v] == nullptr) {
 				Render::DrawRectRoundedFilled(grid_box_dimensions, 2.f, _pallet.BackgroundDisable);
 			}
 			else {
-				if (Func::PointInGPU_Rect(Core::GetInstance()->Mouse.XYf, grid_box_dimensions)) {
+				if (Func::PointInGPU_Rect(Core::Mouse.XYf, grid_box_dimensions)) {
 					if (_focus_element == _null_focus) {
 						_focus_element = grid_selected_point;
 					}
-					if (Core::GetInstance()->Mouse.LeftPressed) {
+					if (Core::Mouse.LeftPressed) {
 						_clicked_element = grid_selected_point;
 					}
 				}
@@ -83,7 +83,7 @@ void GuiElement::Grid::Render() {
 						GPU_SetLineThickness(1);
 
 						this->_focus_xy = { grid_box_dimensions.x, grid_box_dimensions.y - grid_box_dimensions.h };
-						_grid_elements[v]->_hover_time += (float)Core::GetInstance()->DeltaTime;
+						_grid_elements[v]->_hover_time += static_cast<float>(Core::DeltaTime);
 					}
 					else {
 						_grid_elements[v]->_hover_time = 0.0f;
@@ -95,7 +95,7 @@ void GuiElement::Grid::Render() {
 	}
 
 	if (_focus_element != _null_focus) {
-		gh_button* t = GetButton(_focus_element.x, _focus_element.y);
+		const gh_button* t = GetButton(_focus_element.x, _focus_element.y);
 		if (t->call_back_hover == nullptr) return;
 		t->call_back_hover(t->arg, t->_hover_time, _focus_xy);
 	}
@@ -170,9 +170,9 @@ void GuiElement::Grid::SetElementSpacing(const int index)
 	}
 	_spacing = index;
 	_dimensions = {
-		(float)_x,(float)_y,
-		(float)(_element_size.x * _columns + (_columns + 2) * _spacing),
-		(float)(_element_size.y * _rows + (_rows + 2) * _spacing)
+		static_cast<float>(_x),static_cast<float>(_y),
+		static_cast<float>(_element_size.x * _columns + (_columns + 2) * _spacing),
+		static_cast<float>(_element_size.y * _rows + (_rows + 2) * _spacing)
 	};
 }
 
@@ -235,8 +235,8 @@ void GuiElement::Grid::SetElementSize(const int w, const int h)
 	}
 	_element_size = { w, h };
 	_dimensions = {
-		(float)_x,(float)_y,
-		(float)(_element_size.x * _columns + (_columns + 2) * _spacing),
-		(float)(_element_size.y * _rows + (_rows + 2) * _spacing)
+		static_cast<float>(_x),static_cast<float>(_y),
+		static_cast<float>(_element_size.x * _columns + (_columns + 2) * _spacing),
+		static_cast<float>(_element_size.y * _rows + (_rows + 2) * _spacing)
 	};
 }

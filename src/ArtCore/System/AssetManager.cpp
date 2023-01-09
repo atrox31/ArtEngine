@@ -85,7 +85,8 @@ bool AssetManager::LoadData(BackGroundRenderer* bgr, const int p_min, const int 
 		
 		if (path[0] == "Textures") {
 			
-			GPU_Image* tmp = GPU_LoadImage_RW(Func::GetFileRWops(file, nullptr), 1);
+			GPU_Image* tmp = GPU_LoadImage_RW(Func::GetFileRWops(file, nullptr), true);
+			GPU_GenerateMipmaps(tmp);
 			if (tmp == nullptr) return false;
 			List_texture_name.insert({ normal_name, tmp });
 		}else if(path[0] == "Sprites") {

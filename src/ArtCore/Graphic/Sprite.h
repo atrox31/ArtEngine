@@ -3,7 +3,7 @@
 #include <string>
 
 #include "ArtCore/Structs/Rect.h"
-#include "ArtCore/Enums/enumstring.h"
+#include "ArtCore/Enums/EnumExtend.h"
 
 class Sprite final
 {

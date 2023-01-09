@@ -57,7 +57,8 @@ public:
 	std::vector<std::string> Variables_string;
 	event_bit EventFlag;
 
-	bool SuspendedCodeState(bool state);
+	bool SuspendedCodeAdd();
+	bool SuspendedCodePop();
 	// get count of suspended code
 	[[nodiscard]] Uint8 SuspendedCodeStateCount() const { return _have_suspended_code;  }
 	// get info if have at least one suspended code

@@ -70,7 +70,7 @@ void Console::Execute(const std::string& command)
 	if (command.empty()) return;
 	const std::vector<std::string> arg = Func::Explode(command, ' ');
 	if (arg.empty()) return;
-	if(Core::GetInstance()->Executor->FunctionsMap.contains(arg[0]))
+	if(Core::Executor()->FunctionsMap.contains(arg[0]))
 	{
 		if(arg.size() > 1)
 		{
@@ -106,7 +106,7 @@ void Console::Execute(const std::string& command)
 					}
 			}
 		}
-		Core::GetInstance()->Executor->FunctionsMap[arg[0]](nullptr);
+		Core::Executor()->FunctionsMap[arg[0]](nullptr);
 		CodeExecutor::EraseGlobalStack();
 		WriteLine("Execute: " + command);
 	}else

@@ -23,5 +23,5 @@ void GuiElement::Label::SetVariableFromStringEx(const std::string& name, const s
 
 void GuiElement::Label::Render()
 {
-	Render::DrawText(_text, _default_font, { _dimensions.x, _dimensions.y }, _pallet.Font);
+	Render::DrawText(_text, _default_font, { _dimensions.X, _dimensions.Y }, _pallet.Font);
 }

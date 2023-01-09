@@ -60,7 +60,7 @@ Sprite* Sprite::Load(const std::string& file)
 		for (int i = 0; i < new_sprite->m_texture_size; i++) {
 			const std::string tex_name = "Sprites/" + sprite_name + "/" + std::to_string(i) + ".png";
 			new_sprite->m_texture[i] = GPU_LoadImage_RW(Func::GetFileRWops(tex_name, nullptr), true);
-			
+			GPU_GenerateMipmaps(new_sprite->m_texture[i]);
 			if(new_sprite->m_texture[i] == nullptr){
 				Console::WriteLine("Sprite::Load - " + sprite_name + " texture '" + tex_name + "' not found");
 			}

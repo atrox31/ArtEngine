@@ -73,7 +73,7 @@ bool Scene::Load(const std::string& name)
 	else if (dv.GetData(std::string("setup"), "BackGroundType") == "DrawTexture") {
 		BackGround.Type = Scene::BackGround::BType::DrawTexture;
 		BackGround.TypeWrap = Scene::BackGround::BTypeWrap_fromString(dv.GetData(std::string("setup"), std::string("BackGroundWrapMode")));
-		BackGround.Texture = Core::GetInstance()->assetManager->GetTexture(dv.GetData("setup", std::string("BackGroundTexture")));
+		BackGround.Texture = Core::GetAssetManager()->GetTexture(dv.GetData("setup", std::string("BackGroundTexture")));
 		if (BackGround.Texture == nullptr) {
 			Console::WriteLine("Background texture not exists '" + dv.GetData(std::string("setup"), std::string("BackGroundTexture")) + "'");
 			BackGround.SetDefault();
@@ -127,7 +127,7 @@ bool Scene::Start()
 	// get gui triggers
 	if (PHYSFS_exists(std::string("scene/" + _name + "/scene_triggers.acp").c_str()))
 	{
-		if(!Core::GetInstance()->Executor->LoadSceneTriggers())
+		if(!Core::Executor()->LoadSceneTriggers())
 		{
 			return false;
 		}
@@ -139,13 +139,13 @@ bool Scene::Start()
 	}
 	if(have_triggers && _begin_trigger.length() > 0)
 	{
-		Core::GetInstance()->Executor->ExecuteCode(_variables_holder, GetTriggerData(_begin_trigger));
+		Core::Executor()->ExecuteCode(_variables_holder, GetTriggerData(_begin_trigger));
 	}
 	return true;
 }
 Instance* Scene::CreateInstance(const std::string& name, const float x, const float y)
 {
-	Instance* ins = Core::GetInstance()->Executor->SpawnInstance(name);
+	Instance* ins = Core::Executor()->SpawnInstance(name);
 	if (ins == nullptr) return nullptr;
 	ins->PosX = x;
 	ins->PosY = y;
@@ -169,7 +169,7 @@ void Scene::SpawnAll()
 			_instances_size++;
 		}
 		for (size_t i = 0; i < new_ins_size; i++) {
-			Core::GetInstance()->Executor->ExecuteScript(_instances_new[i], Event::EvOnCreate);
+			Core::Executor()->ExecuteScript(_instances_new[i], Event::EvOnCreate);
 		}
 		_instances_new.erase(_instances_new.begin(), _instances_new.begin() + new_ins_size);
 		_is_any_new_instances = !_instances_new.empty();

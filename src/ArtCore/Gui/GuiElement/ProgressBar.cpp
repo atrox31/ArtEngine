@@ -19,7 +19,7 @@ GuiElement::ProgressBar::ProgressBar() {
 	this->_type = GuiElementTemplate::Type::PROGRESS_BAR;
 }
 void GuiElement::ProgressBar::Render() {
-	GPU_SetLineThickness(2.0f);
+	const float line_thickness = GPU_SetLineThickness(2.0f);
 
 	if (_enable_transparent)GPU_SetShapeBlending(true);
 	if (_enabled) {
@@ -40,13 +40,13 @@ void GuiElement::ProgressBar::Render() {
 	case ProgressBar::DrawingStyle::STEP:
 	case ProgressBar::DrawingStyle::STEP_BLEND:
 	{
-		const float stepW = _dimensions.w / (float)(_max - _min);
+		const float stepW = _dimensions.W / (float)(_max - _min);
 		for (int i = (int)_min; i < (int)_value; i += _step) {
 			GPU_Rect block = {
-				_dimensions.x + 1 + (i * stepW),
-				_dimensions.y + 2,
+				_dimensions.X + 1 + (i * stepW),
+				_dimensions.Y + 2,
 				stepW - 2 ,
-				_dimensions.h - 4
+				_dimensions.H - 4
 			};
 			const float current_percent = (float)i / (float)_max;
 			SDL_Color color;
@@ -78,7 +78,7 @@ void GuiElement::ProgressBar::Render() {
 	GPU_SetLineThickness(2.0f);
 	if (_enable_transparent)GPU_SetShapeBlending(false);
 	Render::DrawRectRounded(_dimensions.ToGPU_Rect_wh(), 6.f, _pallet.Frame);
-	GPU_SetLineThickness(1.0f);
+	GPU_SetLineThickness(line_thickness);
 }
 
 GuiElement::ProgressBar* GuiElement::ProgressBar::SetValue(const float value)
@@ -137,7 +137,7 @@ void GuiElement::ProgressBar::SetVariableFromStringEx(const std::string& name, c
 	}
 	if (name == "height")
 	{
-		_dimensions.h = std::stof(value); return;
+		_dimensions.H = std::stof(value); return;
 	}
 	if (name == "DrawingStyle")
 	{

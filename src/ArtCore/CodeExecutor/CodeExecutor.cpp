@@ -480,7 +480,7 @@ std::string CodeExecutor::DebugGetTrackInfo()
 						_return += "<null>";
 					}
 					else {
-						_return += Core::GetInstance()->assetManager->Debug_List_sprite_name[_debug_tracked_instance->Variables_sprite[i]];
+						_return += Core::GetAssetManager()->Debug_List_sprite_name[_debug_tracked_instance->Variables_sprite[i]];
 					}
 					break;
 				case ArtCode::TEXTURE:
@@ -489,7 +489,7 @@ std::string CodeExecutor::DebugGetTrackInfo()
 						_return += "<null>";
 					}
 					else {
-						_return += Core::GetInstance()->assetManager->Debug_List_texture_name[_debug_tracked_instance->Variables_texture[i]];
+						_return += Core::GetAssetManager()->Debug_List_texture_name[_debug_tracked_instance->Variables_texture[i]];
 					}
 					break;
 				case ArtCode::SOUND:
@@ -498,7 +498,7 @@ std::string CodeExecutor::DebugGetTrackInfo()
 						_return += "<null>";
 					}
 					else {
-						_return += Core::GetInstance()->assetManager->Debug_List_sound_name[_debug_tracked_instance->Variables_sound[i]];
+						_return += Core::GetAssetManager()->Debug_List_sound_name[_debug_tracked_instance->Variables_sound[i]];
 					}
 					break;
 				case ArtCode::MUSIC:
@@ -507,7 +507,7 @@ std::string CodeExecutor::DebugGetTrackInfo()
 						_return += "<null>";
 					}
 					else {
-						_return += Core::GetInstance()->assetManager->Debug_List_music_name[_debug_tracked_instance->Variables_music[i]];
+						_return += Core::GetAssetManager()->Debug_List_music_name[_debug_tracked_instance->Variables_music[i]];
 					}
 					break;
 				case ArtCode::FONT:
@@ -516,7 +516,7 @@ std::string CodeExecutor::DebugGetTrackInfo()
 						_return += "<null>";
 					}
 					else {
-						_return += Core::GetInstance()->assetManager->Debug_List_font_name[_debug_tracked_instance->Variables_font[i]];
+						_return += Core::GetAssetManager()->Debug_List_font_name[_debug_tracked_instance->Variables_font[i]];
 					}
 					break;
 				case ArtCode::POINT:
@@ -524,10 +524,10 @@ std::string CodeExecutor::DebugGetTrackInfo()
 					break;
 				case ArtCode::RECT:
 					_return += "<" + 
-						std::to_string(_debug_tracked_instance->Variables_rect[i].x) + ", " + 
-						std::to_string(_debug_tracked_instance->Variables_rect[i].y) + ", " + 
-						std::to_string(_debug_tracked_instance->Variables_rect[i].w) + ", " + 
-						std::to_string(_debug_tracked_instance->Variables_rect[i].h) + ">";
+						std::to_string(_debug_tracked_instance->Variables_rect[i].X) + ", " + 
+						std::to_string(_debug_tracked_instance->Variables_rect[i].Y) + ", " + 
+						std::to_string(_debug_tracked_instance->Variables_rect[i].W) + ", " + 
+						std::to_string(_debug_tracked_instance->Variables_rect[i].H) + ">";
 					break;
 				case ArtCode::COLOR:
 					_return += "(" +
@@ -614,7 +614,7 @@ void CodeExecutor::EraseGlobalStack()
 
 void CodeExecutor::Break()
 {
-	Core::GetInstance()->Executor->_current_inspector->Break = true;
+	Core::Executor()->_current_inspector->Break = true;
 }
 
 void CodeExecutor::SuspendedCodeStop()
@@ -625,8 +625,8 @@ void CodeExecutor::SuspendedCodeStop()
 
 void CodeExecutor::SuspendedCodeAdd(const double time, Instance* sender)
 {
-	if (sender->SuspendedCodeState(true)) {
-		_suspended_code.emplace_back(time, Core::GetInstance()->Executor->_current_inspector, sender, Core::GetInstance()->Executor->_if_test_result);
+	if (sender->SuspendedCodeAdd()) {
+		_suspended_code.emplace_back(time, Core::Executor()->_current_inspector, sender, Core::Executor()->_if_test_result);
 	}
 }
 
@@ -636,15 +636,15 @@ void CodeExecutor::SuspendedCodeExecute()
 
 	for (auto it = _suspended_code.begin(); it != _suspended_code.end(); )
 	{
-		(*it).Time -= 1000.0 * Core::GetInstance()->DeltaTime;
-		if((*it).Time <= 0.0)
+		(*it).Time -= 1000.0 * Core::DeltaTime;
+		if ((*it).Time <= 0.0)
 		{
-			if ((*it).Sender->SuspendedCodeState(false)) {
+			if ((*it).Sender->SuspendedCodePop()) {
 				// restore script break data
 				(*it).CodeData.Break = false;
 				// flip ifs status, to continue execute
-				Core::GetInstance()->Executor->_if_test_result = (*it).IfTestState;
-				Core::GetInstance()->Executor->h_execute_script(&(*it).CodeData, (*it).Sender);
+				Core::Executor()->_if_test_result = (*it).IfTestState;
+				Core::Executor()->h_execute_script(&(*it).CodeData, (*it).Sender);
 			}
 			it = _suspended_code.erase(it);
 		}
@@ -767,7 +767,7 @@ void CodeExecutor::h_execute_script(Inspector* code, Instance* instance)
 			if (_if_test_result.Get() == true)
 			{
 				// skip else
-				code->Skip(skip);
+				code->Skip(static_cast<int>(skip));
 			}
 			break;
 		}

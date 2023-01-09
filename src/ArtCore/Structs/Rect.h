@@ -6,12 +6,20 @@
 class Rect
 {
 public:
-	float x, y, w, h;
+	float X, Y, W, H;
 	
 	Rect();
-	Rect(GPU_Rect);
+	Rect(const GPU_Rect&);
+	Rect(const SDL_Rect&);
+	Rect(const SDL_FRect&);
+	Rect(const Rect&);
 	Rect(int x, int y, int w, int h);
 	Rect(float x, float y, float w, float h);
+
+	~Rect() = default;
+	Rect(Rect&&) = default;
+	Rect& operator=(Rect&&) = default;
+	Rect& operator=(const Rect&) = default;
 
 	Rect operator+(const SDL_FPoint& p) const;
 	Rect operator-(const SDL_FPoint& p) const;
@@ -37,11 +45,23 @@ public:
 	// +-------+
 	[[nodiscard]] SDL_FPoint A() const;
 
+	//Left upper corner
+	// X-------+
+	// |	|
+	// +-------+
+	[[nodiscard]] SDL_FPoint A_wh() const;
+
 	//Right upper corner
 	// +-------X
 	// |	|
 	// +-------+
 	[[nodiscard]] SDL_FPoint B() const;
+
+	//Right upper corner
+	// +-------X
+	// |	|
+	// +-------+
+	[[nodiscard]] SDL_FPoint B_wh() const;
 
 	//Right lower corner
 	// +-------+
@@ -49,11 +69,23 @@ public:
 	// +-------X
 	[[nodiscard]] SDL_FPoint C() const;
 
+	//Right lower corner
+	// +-------+
+	// |	|
+	// +-------X
+	[[nodiscard]] SDL_FPoint C_wh() const;
+
 	//Left lower corner
 	// +-------+
 	// |	|
 	// X-------+
 	[[nodiscard]] SDL_FPoint D() const;
+
+	//Left lower corner
+	// +-------+
+	// |	|
+	// X-------+
+	[[nodiscard]] SDL_FPoint D_wh() const;
 
 	[[nodiscard]] float Width() const;
 	[[nodiscard]] float Height() const;
@@ -68,11 +100,11 @@ public:
 	[[nodiscard]] bool PointInRect(const float& px, const float& py) const;
 
 	[[nodiscard]] bool PointInRect(const SDL_Point&) const;
-	[[nodiscard]] bool PointInRect_wh(const SDL_Point& p) const;
+	[[nodiscard]] bool PointInRectWh(const SDL_Point& p) const;
 	[[nodiscard]] bool PointInRect(const SDL_FPoint&) const;
-	[[nodiscard]] bool PointInRect_wh(const SDL_FPoint& p) const;
+	[[nodiscard]] bool PointInRectWh(const SDL_FPoint& p) const;
 	[[nodiscard]] bool PointInRect(const vec2f&) const;
-	[[nodiscard]] bool PointInRect_wh(const vec2f& p) const;
+	[[nodiscard]] bool PointInRectWh(const vec2f& p) const;
 
 	// converts
 	[[nodiscard]] GPU_Rect ToGPU_Rect() const;

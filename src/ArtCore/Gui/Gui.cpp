@@ -23,7 +23,7 @@ FC_Font* Gui::GlobalFont;
 
 //TODO refactor this
 
-bool Gui::PointOnInterface(SDL_FPoint p) const
+bool Gui::PointOnInterface(const SDL_FPoint p) const
 {
 	if (!_root_element->_elements.empty()) {
 		for (auto it = _root_element->_elements.begin(); it != _root_element->_elements.end();)
@@ -42,7 +42,7 @@ bool Gui::PointOnInterface(SDL_FPoint p) const
 
 Gui::Gui()
 {
-	GlobalFont = Core::GetInstance()->_global_font;
+	GlobalFont = Core::GetGlobalFont();
 	_root_element = new GuiElementTemplate();
 	_root_element->_type = GuiElementTemplate::Type::ROOT_ELEMENT;
 }
@@ -191,7 +191,7 @@ void Gui::Render() const
 }
 void Gui::_render(Gui::GuiElementTemplate* e)
 {
-	e->_focus = e->_dimensions.PointInRect_wh(Core::Mouse.XYf);
+	e->_focus = e->_dimensions.PointInRectWh(Core::Mouse.XYf);
 	e->Render();
 	if (!e->_elements.empty()) {
 		for (std::vector<GuiElementTemplate*>::reverse_iterator i = e->_elements.rbegin();
@@ -208,48 +208,47 @@ void Gui::_render(Gui::GuiElementTemplate* e)
 
 
 
-void Gui::Events(SDL_Event* e) const
+bool Gui::Events() const
 {
 	if (!_root_element->_elements.empty()) {
 		for (const auto& var : _root_element->_elements)
 		{
-			if ((e == nullptr) || (var->_enabled && var->_visible)) {
-				_events(var, e);
+			if ((var->_enabled && var->_visible)) {
+				if(_events(var))
+				{
+					// some of gui element handle event so return
+					return true;
+				}
 			}
 		}
 	}
-
+	return false;
 }
 
-bool Gui::_events(GuiElementTemplate* e, SDL_Event* se)
+bool Gui::_events(GuiElementTemplate* e)
 {
 	//e->ApplyStyle();
 	if (!e->GetChildren().empty()) {
 		//for (int i = 0; i < e->_elements.size(); ++i)
 		for (const auto & element : e->_elements)
 		{
-			if (_events(element, se))
+			if (_events(element))
 			{
 				return true;
 			}
 		}
-		
 	}
-	if (se == nullptr) return false;
 	if (e->_enabled && e->_visible) {
 		if (e->_focus) {
-			if (se->button.button == SDL_BUTTON_LEFT) {
-				if (Core::Mouse.LeftPressed) {
-					if (e->OnClick()) {
-						if (e->_sound_onClick != nullptr) {
-							// play audio(e->_sound_onClick);
-							return true;
-						}
+			if (Core::Mouse.LeftEvent == Core::MouseState::ButtonState::PRESSED) {
+				if (e->OnClick()) {
+					if (e->_sound_onClick != nullptr) {
+						// play audio(e->_sound_onClick);
 					}
-					e->_focus = false;
+					return true;
 				}
+				e->_focus = false;
 			}
-
 		}
 	}
 	return false;
@@ -281,11 +280,11 @@ void Gui::GuiElementTemplate::SetVariableFromString(const std::string& name, con
 	}
 	if(name == "Width")
 	{
-		_dimensions.w = std::stof(value); return;
+		_dimensions.W = std::stof(value); return;
 	}
 	if(name == "Height")
 	{
-		_dimensions.h = std::stof(value); return;
+		_dimensions.H = std::stof(value); return;
 	}
 	if(name == "Enabled")
 	{
@@ -367,9 +366,12 @@ Gui::GuiElementTemplate* Gui::GetElementById(const std::string& tag, GuiElementT
 
 Gui::GuiElementTemplate* Gui::AddElement(GuiElementTemplate* target, GuiElementTemplate* element) const
 {
-	target->_elements.push_back(element);
+	// add element on front, draw functions use reverse order to draw
+	target->_elements.insert(target->_elements.begin(), element);
 	element->_pallet = _root_element->_pallet;
-	//element->_parent = target;
+	if (element->_parent == nullptr) {
+		element->_parent = target;
+	}
 	element->ApplyStyle();
 	return element;
 }
@@ -416,49 +418,49 @@ void Gui::GuiElementTemplate::ApplyStyle()
 		{
 			this->_x = this->_create_x + _parent->GetX();
 			this->_y = this->_create_y + _parent->GetY();
-			this->_dimensions.x = (float)this->_create_x + _parent->GetX();
-			this->_dimensions.y = (float)this->_y;
+			this->_dimensions.X = (float)this->_create_x + _parent->GetX();
+			this->_dimensions.Y = (float)this->_y;
 		}
 		break;
 		case Gui::Style::ALIGN_RIGHT:
 		{
 			this->_x = this->_create_x + _parent->GetX();
 			this->_y = this->_create_y + _parent->GetY();
-			this->_dimensions.x = (float)_parent->GetX() + _parent->GetDimensions().w - this->_dimensions.w - this->_create_x;
-			this->_dimensions.y = (float)(this->_y);
+			this->_dimensions.X = (float)_parent->GetX() + _parent->GetDimensions().W - this->_dimensions.W - this->_create_x;
+			this->_dimensions.Y = (float)(this->_y);
 		}
 		break;
 		case Gui::Style::ALIGN_CENTER:
 		{
 			this->_x = this->_create_x + _parent->GetX();
 			this->_y = this->_create_y + _parent->GetY();
-			this->_dimensions.x = (float)_parent->GetX() + _parent->GetDimensions().w * 0.5f - this->_dimensions.w * 0.5f;
-			this->_dimensions.y = (float)(this->_y);
+			this->_dimensions.X = (float)_parent->GetX() + _parent->GetDimensions().W * 0.5f - this->_dimensions.W * 0.5f;
+			this->_dimensions.Y = (float)(this->_y);
 		}
 		break;
 		case Gui::Style::FILL_CENTER:
 		{
 			this->_x = this->_create_x + _parent->GetX();
 			this->_y = this->_create_y + _parent->GetY();
-			this->_dimensions.x = (float)(this->_x);
-			this->_dimensions.y = (float)(this->_y);
-			this->_dimensions.w = _parent->GetDimensions().w - _create_x * 2;
+			this->_dimensions.X = (float)(this->_x);
+			this->_dimensions.Y = (float)(this->_y);
+			this->_dimensions.W = _parent->GetDimensions().W - _create_x * 2;
 		}
 		break;
 		case Gui::Style::RELATIVE_PARENT:
 		{
 			this->_x = this->_create_x + _parent->GetX();
 			this->_y = this->_create_y + _parent->GetY();
-			this->_dimensions.x = (float)(this->_x);
-			this->_dimensions.y = (float)(this->_y);
+			this->_dimensions.X = (float)(this->_x);
+			this->_dimensions.Y = (float)(this->_y);
 		}
 		break;
 		case Gui::Style::ABSOLUTE:
 		{
 			this->_x = _create_x;
 			this->_y = _create_y;
-			this->_dimensions.x = (float)(this->_x);
-			this->_dimensions.y = (float)(this->_y);
+			this->_dimensions.X = (float)(this->_x);
+			this->_dimensions.Y = (float)(this->_y);
 		}
 		break;
 		default:
@@ -471,7 +473,7 @@ bool Gui::GuiElementTemplate::OnClick()
 {
 	if(_callback_script[EvCallback::EvOnClick].first != nullptr)
 	{
-		Core::GetInstance()->Executor->ExecuteCode(
+		Core::Executor()->ExecuteCode(
 			Core::GetCurrentScene()->GetVariableHolder(),
 			&_callback_script[EvCallback::EvOnClick]);
 		return true;
@@ -502,9 +504,9 @@ Gui::GuiElementTemplate* Gui::GuiElementTemplate::SetVisible(bool v)
 	return this;
 }
 
-Gui::GuiElementTemplate* Gui::GuiElementTemplate::SetSound(const std::string sound)
+Gui::GuiElementTemplate* Gui::GuiElementTemplate::SetSound(const std::string& sound)
 {
-	_sound_onClick = Core::GetInstance()->assetManager->GetSound(sound);
+	_sound_onClick = Core::GetAssetManager()->GetSound(sound);
 	return this;
 }
 
@@ -515,7 +517,7 @@ Gui::GuiElementTemplate* Gui::GuiElementTemplate::SetStyle(Style s)
 	return this;
 }
 
-Gui::GuiElementTemplate* Gui::GuiElementTemplate::SetText(const std::string text, const FC_AlignEnum align, const FC_Scale scale)
+Gui::GuiElementTemplate* Gui::GuiElementTemplate::SetText(const std::string& text, const FC_AlignEnum align, const FC_Scale scale)
 {
 	_text = text;
 	_text_scale = scale;

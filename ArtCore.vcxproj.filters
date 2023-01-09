@@ -234,7 +234,7 @@
     <ClInclude Include="src\ArtCore\Functions\Convert.h">
       <Filter>ArtCore\Functions</Filter>
     </ClInclude>
-    <ClInclude Include="src\ArtCore\Enums\enumstring.h">
+    <ClInclude Include="src\ArtCore\Enums\EnumExtend.h">
       <Filter>ArtCore\Enums</Filter>
     </ClInclude>
     <ClInclude Include="src\ArtCore\System\Core.h">

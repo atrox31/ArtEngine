@@ -53,12 +53,7 @@ public:
 		_f_name = "";
 #endif
 	}
-
-	~Inspector() {
-		//delete _code;
-		//Debug::NOTE_DEATH(" ~Inspector");
-	}
-
+	
 	Inspector(Inspector&&) = default;
 	Inspector& operator=(const Inspector&) = default;
 	Inspector& operator=(Inspector&&) = default;
@@ -84,13 +79,24 @@ public:
 		return (_pos >= _size);
 	}
 
+	// Set current position of code, return if operation ends success
+	[[nodiscard]] bool SetPosition(const Sint64& position)
+	{
+		if(position >= 0 && position < _size)
+		{
+			_pos = position;
+			_current_bit = _code[_pos];
+			return true;
+		}
+		return false;
+	}
+
 	std::string GetString() {
 		_pos++;
 		std::string string;
 		while (_pos < _size) {
-			if (IsEnd()) return "";
+			if (IsEnd()) return string;
 			if (_code[_pos] == '\1') {
-				//_pos++;
 				_current_bit = _code[_pos];
 				return string;
 			}
@@ -102,6 +108,10 @@ public:
 	// skip x bytes and return isEnd()
 	bool Skip(const int count) {
 		_pos += count;
+		if (_pos < 0)
+		{
+			_pos = 0;
+		}
 		if (IsEnd()) {
 			_pos = _size;
 			return true;
@@ -111,12 +121,12 @@ public:
 
 	ArtCode::Command GetNextCommand() {
 		_current_bit = _code[++_pos];
-		return (ArtCode::Command)_code[_pos];
+		return static_cast<ArtCode::Command>(_code[_pos]);
 	}
 
 	ArtCode::Command GetCurrentCommand() {
 		_current_bit = _code[_pos];
-		return (ArtCode::Command)_code[_pos];
+		return static_cast<ArtCode::Command>(_code[_pos]);
 	}
 
 	[[nodiscard]] unsigned char Current() const
@@ -130,16 +140,27 @@ public:
 		if (_pos + 1 <= _size) return _code[_pos + 1];
 		return '\0';
 	}
+	[[nodiscard]] unsigned char SeekPrev() const
+	{
+		if (_pos - 1 > 0) return _code[_pos - 1];
+		return '\0';
+	}
 
 	[[nodiscard]] ArtCode::Command SeekNextCommand() const
 	{
-		if (_pos + 1 <= _size) return  (ArtCode::Command)_code[_pos + 1];
+		if (_pos + 1 <= _size) return  static_cast<ArtCode::Command>(_code[_pos + 1]);
+		return ArtCode::Command::INVALID;
+	}
+
+	[[nodiscard]] ArtCode::Command SeekPrevCommand() const
+	{
+		if (_pos - 1 >= 0) return  static_cast<ArtCode::Command>(_code[_pos - 1]);
 		return ArtCode::Command::INVALID;
 	}
 
 	const unsigned char* GetChunk(const int count) {
 
-		unsigned char* _return = (unsigned char*)malloc(((size_t)count + 1));
+		unsigned char* _return = static_cast<unsigned char*>(malloc((static_cast<size_t>(count) + 1)));
 		memcpy_s(_return, count, _code + _pos + 1, count);
 		if (_return) {
 			_return[count] = '\0';

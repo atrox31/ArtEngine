@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include "enumstring.h"
+#include "EnumExtend.h"
 
 ENUM_WITH_STRING_CONVERSION(
     Event,
@@ -54,11 +54,11 @@ enum class event_bit : E_TYPE {
 
 };
 event_bit EventBitFromEvent(Event);
-inline constexpr event_bit operator|(event_bit a, event_bit b) {
+constexpr event_bit operator|(event_bit a, event_bit b) {
     return static_cast<event_bit>(static_cast<E_TYPE>(a) | static_cast<E_TYPE>(b));
 }
 
-inline constexpr event_bit operator&(event_bit a, event_bit b) {
+constexpr event_bit operator&(event_bit a, event_bit b) {
     return static_cast<event_bit>(static_cast<E_TYPE>(a) & static_cast<E_TYPE>(b));
 
 }

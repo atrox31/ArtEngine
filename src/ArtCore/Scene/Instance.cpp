@@ -51,40 +51,41 @@ void Instance::Delete()
 		CodeExecutor::SuspendedCodeDeleteInstance(this);
 	}
 }
-
 /**
  * \brief Check if can add more suspended state to instance (max is 255)
- * \param state true if add and false if sub
  * \return Answer is can add more state
  */
-bool Instance::SuspendedCodeState(const bool state)
+bool Instance::SuspendedCodeAdd()
 {
-	if (state)
-	{
-		_have_suspended_code += 1;
-		if (_have_suspended_code == 0)
-		{
-			_have_suspended_code -= 1;
-			Console::WriteLine("Cannot add more suspended code to instance (max 255)!");
-			return false;
-		}
-		return true;
-	}else
+	_have_suspended_code += 1;
+	if (_have_suspended_code == 0)
 	{
 		_have_suspended_code -= 1;
-		if(_have_suspended_code == 0xFF)
-		{
-			_have_suspended_code = 0;
-			Console::WriteLine("Cannot remove suspended code to instance, there is no suspended state");
-			return false;
-		}
-		return true;
+		Console::WriteLine("Cannot add more suspended code to instance (max 255)!");
+		return false;
 	}
+	return true;
+}
+
+/**
+ * \brief Pop suspended code
+ * \return Operation success state
+ */
+bool Instance::SuspendedCodePop()
+{
+	_have_suspended_code -= 1;
+	if (_have_suspended_code == UINT8_MAX)
+	{
+		_have_suspended_code = 0;
+		Console::WriteLine("Cannot remove suspended code to instance, there is no suspended state");
+		return false;
+	}
+	return true;
 }
 
 void Instance::DrawSelf()
 {
-	SpriteAnimationFrame += (SpriteAnimationSpeed * (float)Core::GetInstance()->DeltaTime);
+	SpriteAnimationFrame += (SpriteAnimationSpeed * (float)Core::DeltaTime);
 	if (!SpriteAnimationLoop && SpriteAnimationFrame > float(SelfSprite->GetMaxFrame())) {
 		SpriteAnimationSpeed = 0.0f;
 	}
@@ -124,6 +125,7 @@ bool Instance::CheckMaskClick(SDL_FPoint& point) const
 
 	return false;
 }
+
 
 Rect Instance::GetBodyMask() const
 {

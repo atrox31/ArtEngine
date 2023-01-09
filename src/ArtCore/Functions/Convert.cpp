@@ -4,7 +4,7 @@
 
 std::string Convert::Rect2Str(const Rect& rect)
 {
-	return std::to_string(rect.x) + ':' + std::to_string(rect.y) + ':' + std::to_string(rect.w) + ':' + std::to_string(rect.h);
+	return std::to_string(rect.X) + ':' + std::to_string(rect.Y) + ':' + std::to_string(rect.W) + ':' + std::to_string(rect.H);
 }
 
 SDL_Point Convert::Str2Point(const std::string& text)

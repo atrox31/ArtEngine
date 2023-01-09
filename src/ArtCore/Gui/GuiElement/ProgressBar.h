@@ -17,8 +17,8 @@ public:
 	ProgressBar* SetMax(int max) { _max = max; return this; }
 	ProgressBar* SetValue(float value);
 	ProgressBar* SetStep(int value) { _step = value; return this; }
-	ProgressBar* SetWidth(int value) { _dimensions.w = (float)value; return this; }
-	ProgressBar* SetHeight(int value) { _dimensions.h = (float)value; return this; }
+	ProgressBar* SetWidth(int value) { _dimensions.W = (float)value; return this; }
+	ProgressBar* SetHeight(int value) { _dimensions.H = (float)value; return this; }
 
 	ProgressBar* SetDrawingColor(SDL_Color start, SDL_Color middle, SDL_Color end);
 	ProgressBar* SetDrawingColor(SDL_Color start, SDL_Color end);

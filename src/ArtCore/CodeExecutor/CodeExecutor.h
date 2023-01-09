@@ -157,7 +157,7 @@ private:
 			Sender = nullptr;
 			IfTestState = AStack<bool>();
 		}
-		SuspendCodeStruct(const double time, const Inspector* code_data, Instance* sender, 
+		SuspendCodeStruct(const double time, const Inspector* code_data, Instance* sender,
 			const AStack<bool>& if_test_state){
 			Time = time;
 			CodeData = Inspector(*code_data); // copy

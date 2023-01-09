@@ -1,9 +1,12 @@
 #pragma once
+#include <algorithm>
 #include <map>
 #include <string>
 #include <vector>
 
+#include "ArtCore/Functions/Func.h"
 #include "ArtCore/Gui/Console.h"
+#include "ArtCore/Structs/Rect.h"
 #include "FC_Fontcache/SDL_FontCache.h"
 #include "SDL2/IncludeAll.h"
 
@@ -12,133 +15,139 @@ class AssetManager;
 class CodeExecutor;
 class Core final
 {
-public:
+	private:
 	Core();
 	~Core();
-	static Core* GetInstance() { return &Core::_instance; }
-	static bool Init(int argc, char* args[]);
-	bool ProcessCoreKeys(Sint32 sym);
-	static bool Run();
-	static void Exit();
-	static bool LoadData();
-
-	static Scene* GetCurrentScene()
-	{
-		return _instance._current_scene;
-	}
-private:
-	bool game_loop;
-	bool use_bloom = false;
-	Uint8 use_bloom_level = 0;
 public:
-	static void Pause() {
-		_instance.game_loop = false;
-	}
-	static void Play() {
-		_instance.game_loop = true;
-	}
+	// Core step execute
+	static bool Init(int argc, char* args[]);
+	static bool Run();
+	static bool LoadData();
+	static void Exit();
+
+	bool ProcessEvents();
+	void ProcessStep();
+	void ProcessPhysics();
+	void ProcessRender();
+
+	// getters
+	static Core* GetInstance() { return &Core::_instance; }
+	static Scene* GetCurrentScene();
+	static GPU_Target* GetScreenTarget() { return _instance._screenTarget; }
+	static SDL_Window* GetWindowHandle();
+	static int GetScreenWidth() {	return Graphic.GetWindowWidth();	}
+	static int GetScreenHeight() {	return Graphic.GetWindowHeight();	}
+	static FC_Font* GetGlobalFont() { return _instance._global_font;  }
+	static AssetManager* GetAssetManager() { return _instance._asset_manager; }
 
 
+	// setters
+	static void Pause() {_instance.game_loop = false;}
+	static void Play() {_instance.game_loop = true;	}
+	static CodeExecutor* Executor() {return _instance._executor;}
 	bool ChangeScene(const std::string& name);
 
+	static inline double DeltaTime;
 private:
+	bool ProcessCoreKeys(Sint32 sym);
+	bool game_loop;
 	// graphic
+	bool use_bloom = false;
+	Uint8 use_bloom_level = 0;
 	GPU_Target* _screenTarget;
-public:
-	static GPU_Target* GetScreenTarget() { return _instance._screenTarget; }
-public:
-	CodeExecutor* Executor;
-private:
-	// core data
-	class graphic {
-	public:
-		graphic() {
-			_window_width = 0;
-			_window_height = 0;
-			_window_fullscreen = 0;
-			_window_framerate = 0;
-			_window_vsync = 0;
-		};
-		void SetScreenResolution(const int w, const int h) {
-			_window_width = w;
-			_window_height = h;
-		};
-		void SetFullScreen(const bool value) {
-			_window_fullscreen = value;
-		};
-		void SetFramerate(const int framerate) {
-			_window_framerate = framerate;
-		};
-		void SetVSync(const bool vsync) {
-			_window_vsync = vsync;
-		};
-		void Apply() const;
-		int GetWindowWidth() const
-		{
-			return _window_width;
-		};
-		int GetWindowHeight() const
-		{
-			return _window_height;
-		};
-	private:
-		int _window_width;
-		int _window_height;
-		bool _window_fullscreen;
-		int _window_framerate;
-		bool _window_vsync;
-	};
-public:
-	static graphic Graphic;
+	CodeExecutor* _executor;
 
-private:
-	class audio {
-	public:
-		audio() {
-			_audio_master = 0.0f;
-			_audio_music = 0.0f;
-			_audio_sound = 0.0f;
-		};
-		void SetAudioMasterLevel(const float level) {
-			_audio_master = level;
-		};
-		void SetAudioSoundLevel(const float level) {
-			_audio_music = level;
-		};
-		void SetAudioMusicLevel(const float level) {
-			_audio_sound = level;
-		};
-		void Apply();
-	private:
-		float _audio_master;
-		float _audio_music;
-		float _audio_sound;
-	};
-public:
-	static audio Audio;
-
-public:
 	// fps
 	static Uint32 FpsCounterCallback(Uint32 interval, void* parms);
-	static inline double DeltaTime;
 	int fps;
-private:
 	Uint64 NOW, LAST;
 	int _frames;
 	bool _show_fps;
 
 public:
-	// getters
-	static SDL_Window* GetWindowHandle();
+	// systems of handle game audio/video
+	class graphic {
+	public:
+		graphic() {
+			_window_width = 0;
+			_window_height = 0;
+			_window_fullscreen = false;
+			_window_frame_rate = 0;
+			_window_v_sync = false;
+			_screen_rect = {};
+		}
+		void SetScreenResolution(const int w, const int h) {
+			_window_width = w;
+			_window_height = h;
+		}
+		void SetFullScreen(const bool value) {
+			_window_fullscreen = value;
+		}
+		void SetFrameRate(const int frame_rate) {
+			_window_frame_rate = frame_rate;
+		}
+		void SetVSync(const bool v_sync) {
+			_window_v_sync = v_sync;
+		}
+		void Apply();
+		[[nodiscard]] int GetWindowWidth() const
+		{
+			return _window_width;
+		}
 
-	static int GetScreenWidth() {
-		return Graphic.GetWindowWidth();
-	}
+		[[nodiscard]] int GetWindowHeight() const
+		{
+			return _window_height;
+		}
 
-	static int GetScreenHeight() {
-		return Graphic.GetWindowHeight();
-	}
+		Rect* GetScreenSpace()
+		{
+			return &_screen_rect;
+		}
 
+	private:
+		int _window_width;
+		int _window_height;
+		bool _window_fullscreen;
+		int _window_frame_rate;
+		bool _window_v_sync;
+		Rect _screen_rect;
+	} inline static Graphic;
+	class audio {
+	public:
+		audio() {
+			_audio_music_level = 0.0f;
+			_audio_sound_level = 0.0f;
+			_audio_master = true;
+			_audio_music = true;
+			_audio_sound = true;
+		}
+		// setters
+		void SetSoundLevel(const float level) {
+			_audio_sound_level = std::clamp(level, 0.f, 100.f);
+			Apply();
+		}
+		void SetMusicLevel(const float level) {
+			_audio_music_level = std::clamp(level, 0.f, 100.f);
+			Apply();
+		}
+		void SetMaster(const bool& enabled) { _audio_master = enabled; Apply();	}
+		void SetSound(const bool& enabled) { _audio_sound = enabled; Apply();	}
+		void SetMusic(const bool& enabled) { _audio_music = enabled; Apply();	}
+		// getters
+		[[nodiscard]] float GetMusicLevel() const { return (_audio_master && _audio_music) ? _audio_music_level : 0.f; }
+		[[nodiscard]] float GetSoundLevel() const { return (_audio_master && _audio_sound) ? _audio_sound_level : 0.f; }
+
+		void Apply() const;
+	private:
+		float _audio_music_level;
+		float _audio_sound_level;
+
+		bool _audio_master;
+		bool _audio_music;
+		bool _audio_sound;
+	} inline static  Audio;
+	
 	struct MouseState {
 		enum class ButtonState {
 			PRESSED, RELEASED, NONE
@@ -161,29 +170,28 @@ public:
 		// Current mouse wheel position
 		int Wheel = 0;
 		void Reset();
-	};
-	static MouseState Mouse;
-
+	} inline static  Mouse;
+private:
+	// settings data -> global settings
 	std::map<std::string, std::string> SettingsData;
+public:
 	static int SD_GetInt(const std::string& field, int _default);
 	static float SD_GetFloat(const std::string& field, float _default);
 	static std::string SD_GetString(const std::string& field, std::string _default);
 
+private:
 	// inner list
 	FC_Font* _global_font;
-	std::vector<std::string> ProgramArguments;
-	AssetManager* assetManager;
-	// scene
+	std::vector<std::string> _program_arguments;
+	AssetManager* _asset_manager;
+
 	Scene* _current_scene;
 	std::string _primary_scene;
-private:
-	static Core _instance;
-	SDL_Window* m_window;
 
+	static Core _instance;
+	SDL_Window* _window;
 #ifdef _DEBUG
 	// all debug flags and variables
-public:
-
 private:
 	
 	class CoreDebug

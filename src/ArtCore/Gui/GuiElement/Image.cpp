@@ -27,16 +27,16 @@ void GuiElement::Image::ApplyStyle()
 		_dimensions = { (float)(_parent->GetX() + _x),(float)(_parent->GetY() + _y), (float)_sprite->GetWidth(), (float)_sprite->GetHeight() };
 		break;
 	case Gui::ImageStyle::RIGHT:
-		_dimensions = { (float)(_parent->GetDimensions().w + _x - _sprite->GetWidth()),(float)(_parent->GetY() + _y), (float)_sprite->GetWidth(), (float)_sprite->GetHeight() };
+		_dimensions = { (float)(_parent->GetDimensions().W + _x - _sprite->GetWidth()),(float)(_parent->GetY() + _y), (float)_sprite->GetWidth(), (float)_sprite->GetHeight() };
 		break;
 	case Gui::ImageStyle::CENTER:
-		_dimensions = { (float)(_parent->GetDimensions().w) * .5f, (float)(_parent->GetDimensions().h * .5f), (float)_sprite->GetWidth(), (float)_sprite->GetHeight() };
+		_dimensions = { (float)(_parent->GetDimensions().W) * .5f, (float)(_parent->GetDimensions().H * .5f), (float)_sprite->GetWidth(), (float)_sprite->GetHeight() };
 		break;
 	case Gui::ImageStyle::CENTER_TOP:
-		_dimensions = { (float)(_parent->GetDimensions().w) * .5f, (float)(_parent->GetY() + _y), (float)_sprite->GetWidth(), (float)_sprite->GetHeight() };
+		_dimensions = { (float)(_parent->GetDimensions().W) * .5f, (float)(_parent->GetY() + _y), (float)_sprite->GetWidth(), (float)_sprite->GetHeight() };
 		break;
 	case Gui::ImageStyle::CENTER_BOTTOM:
-		_dimensions = { (float)(_parent->GetDimensions().w) * .5f, (float)(_parent->GetDimensions().h - _y - _sprite->GetHeight() * .5f), (float)_sprite->GetWidth(), (float)_sprite->GetHeight() };
+		_dimensions = { (float)(_parent->GetDimensions().W) * .5f, (float)(_parent->GetDimensions().H - _y - _sprite->GetHeight() * .5f), (float)_sprite->GetWidth(), (float)_sprite->GetHeight() };
 		break;
 	case Gui::ImageStyle::TOP:
 		//TODO ImageStyle::TOP for image in GuiElementTemplate
@@ -45,7 +45,7 @@ void GuiElement::Image::ApplyStyle()
 		//TODO ImageStyle::BOTTOM for image in GuiElementTemplate
 		break;
 	case Gui::ImageStyle::FILL:
-		_dimensions = { (float)(_parent->GetDimensions().w) * .5f, (float)(_parent->GetDimensions().h * .5f), (float)_parent->GetDimensions().w, (float)_parent->GetDimensions().h };
+		_dimensions = { (float)(_parent->GetDimensions().W) * .5f, (float)(_parent->GetDimensions().H * .5f), (float)_parent->GetDimensions().W, (float)_parent->GetDimensions().H };
 		break;
 	default:
 		break;
@@ -65,7 +65,7 @@ void GuiElement::Image::SetVariableFromStringEx(const std::string& name, const s
 	 */
 	if (name == "Sprite")
 	{
-		_sprite = Core::GetInstance()->assetManager->GetSprite(value);
+		_sprite = Core::GetAssetManager()->GetSprite(value);
 	}
 	Console::WriteLine("[GuiElement::Image::SetVariableFromStringEx]: '" + name + "' not found");
 }

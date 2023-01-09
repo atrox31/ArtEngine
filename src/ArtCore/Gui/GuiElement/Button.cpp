@@ -12,8 +12,8 @@ GuiElement::Button* GuiElement::Button::SetText(const std::string& text)
 {
 	this->_text = text;
 	this->_dimensions = FC_GetBounds(Gui::GlobalFont, 0, 0, FC_ALIGN_LEFT, FC_MakeScale(1.0f, 1.0f), text.c_str());
-	this->_dimensions.w += 12;
-	this->_dimensions.h += 2;
+	this->_dimensions.W += 12;
+	this->_dimensions.H += 2;
 	return this;
 }
 
@@ -31,11 +31,11 @@ void GuiElement::Button::SetVariableFromStringEx(const std::string& name, const 
 
 void GuiElement::Button::Render()
 {
-	GPU_SetLineThickness(2.0f);
+	const float line_thickness = GPU_SetLineThickness(2.0f);
 	if (_enabled) {
 		if (_focus) {
 			Render::DrawRectRoundedFilled(_dimensions.ToGPU_Rect(), 2.0f, _pallet.Active);
-			if (Core::GetInstance()->Mouse.LeftPressed) {
+			if (Core::Mouse.LeftPressed) {
 				GPU_SetShapeBlending(true);
 				Render::DrawRectRoundedFilled(_dimensions.ToGPU_Rect(), 2.0f, { 0,0,0,100 });
 				const GPU_Rect frame_border = (_dimensions / 2).ToGPU_Rect();
@@ -52,7 +52,7 @@ void GuiElement::Button::Render()
 	}
 	Render::DrawRectRounded(_dimensions.ToGPU_Rect(), 2.0f, _pallet.Frame);
 	if (_focus) {
-		if (Core::GetInstance()->Mouse.LeftPressed) {
+		if (Core::Mouse.LeftPressed) {
 			GPU_SetShapeBlending(true);
 			GPU_SetLineThickness(4.0f);
 			Render::DrawRectRoundedFilled(_dimensions.ToGPU_Rect(), 2.0f, { 0,0,0,100 });
@@ -61,11 +61,11 @@ void GuiElement::Button::Render()
 		}
 	}
 	const GPU_Rect temp_dimensions = {
-				_dimensions.x ,
-				_dimensions.y + (_focus ? 1.0f : 0.0f),
-				_dimensions.w ,
-				_dimensions.h };
+				_dimensions.X ,
+				_dimensions.Y + (_focus ? 1.0f : 0.0f),
+				_dimensions.W ,
+				_dimensions.H };
 	
 	Render::DrawTextBox(_text, _default_font, temp_dimensions, _pallet.Font, FC_ALIGN_CENTER);
-	GPU_SetLineThickness(1.0f);
+	GPU_SetLineThickness(line_thickness);
 }

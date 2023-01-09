@@ -5,7 +5,7 @@
 #include "ArtCore/Gui/Console.h"
 
 void GuiElement::TabPanel::Render() {
-	GPU_SetLineThickness(2.0f);
+	const float line_thickness = GPU_SetLineThickness(2.0f);
 
 	if (_enable_transparent)GPU_SetShapeBlending(true);
 	if (_enabled) {
@@ -21,13 +21,13 @@ void GuiElement::TabPanel::Render() {
 
 	if (_enable_transparent)GPU_SetShapeBlending(false);
 	Render::DrawRectRounded(_dimensions.ToGPU_Rect_wh(), 6.f, _pallet.Frame);
-	GPU_SetLineThickness(1.0f);
+	GPU_SetLineThickness(line_thickness);
 }
 
 GuiElement::TabPanel* GuiElement::TabPanel::CreateTab(const std::string& tab)
 {
 	const auto element = new Panel();
-	element->SetPosition((int)_dimensions.x, (int)_dimensions.y, (int)_dimensions.w, (int)_dimensions.h);
+	element->SetPosition((int)_dimensions.X, (int)_dimensions.Y, (int)_dimensions.W, (int)_dimensions.H);
 	element->SetTag(tab);
 	element->SetPallet(&_pallet);
 	element->SetParent(this);

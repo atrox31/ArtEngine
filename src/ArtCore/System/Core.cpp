@@ -16,34 +16,54 @@
 #include "physfs-3.0.2/src/physfs.h"
 
 Core Core::_instance = Core();
-Core::graphic Core::Graphic = graphic();
-Core::audio Core::Audio = audio();
-Core::MouseState Core::Mouse = MouseState();
 
-void Core::graphic::Apply() const
+void Core::graphic::Apply()
 {
     GPU_SetFullscreen(_window_fullscreen, false);
-    GPU_SetWindowResolution((Uint16)_window_width, (Uint16)_window_height);
+    GPU_SetWindowResolution(static_cast<Uint16>(_window_width), static_cast<Uint16>(_window_height));
     if (!_window_fullscreen)
         SDL_SetWindowPosition(Core::GetWindowHandle(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-    if (_window_vsync == 0) {
+    if (_window_v_sync == 0) {
         SDL_GL_SetSwapInterval(0);
     }
     else {
         SDL_GL_SetSwapInterval(1);
     }
     Render::CreateRender(_window_width, _window_height);
+    _screen_rect.X = 0.f;
+    _screen_rect.Y = 0.f;
+    _screen_rect.W = static_cast<float>(_window_width);
+    _screen_rect.H = static_cast<float>(_window_height);
 }
 
-void Core::audio::Apply()
+void Core::audio::Apply() const
 {
+    Mix_MasterVolume(
+        ((_audio_master && _audio_sound) ? static_cast<int>(Func::LinearScale(
+            _audio_sound_level,
+            0.f,
+            100.f,
+            0.f,
+            static_cast<float>(MIX_MAX_VOLUME)
+        ))
+            : 0));
 
+    Mix_VolumeMusic(
+        ((_audio_master && _audio_music) ? static_cast<int>(Func::LinearScale(
+        _audio_music_level,
+        0.f,
+        100.f,
+        0.f,
+        static_cast<float>(MIX_MAX_VOLUME)
+    ))
+        : 0));
+    
 }
 
 Core::Core()
 {
     game_loop = false;
-    m_window = nullptr;
+    _window = nullptr;
     _screenTarget = nullptr;
     DeltaTime = 0.0;
     LAST = 0;
@@ -53,38 +73,41 @@ Core::Core()
     _frames = 0;
     _current_scene = nullptr;
     _show_fps = false; 
-    assetManager = new AssetManager();
-    Executor = new CodeExecutor();
+    _asset_manager = new AssetManager();
+    _executor = new CodeExecutor();
 }
 
 Core::~Core()
 {
-    Executor->Delete();
+    _executor->Delete();
+    delete _executor;
+
+    _asset_manager->ClearData();
+    delete _asset_manager;
+
     Render::DestroyRender();
-    assetManager->ClearData();
-    delete assetManager;
     GPU_FreeTarget(_screenTarget);
+
     SettingsData.clear();
-	if(_current_scene != nullptr)
-	{
+    if (_current_scene != nullptr)
+    {
         _current_scene->Exit();
         delete _current_scene;
-	}
-    delete Executor;
+    }
+
     //Console::SaveToFile();
     Console::Exit();
 
-    if(_global_font!=nullptr)
-    FC_FreeFont(_global_font);
-    
-    if (SDL_WasInit(0) != 0) {
-        GPU_Quit();
-        IMG_Quit();
-        TTF_Quit();
-        Mix_CloseAudio();
-        SDLNet_Quit();
-        SDL_Quit();
-    }
+    if (_global_font != nullptr)
+        FC_FreeFont(_global_font);
+
+    GPU_Quit();
+    IMG_Quit();
+    TTF_Quit();
+    Mix_CloseAudio();
+    SDLNet_Quit();
+    SDL_Quit();
+
 }
 bool Core::Init(int argc, char* args[])
 {
@@ -258,17 +281,17 @@ bool Core::Init(int argc, char* args[])
         Sint64 len = 0;
         const char* buf = Func::GetFileBuf("files/gamecontrollerdb.txt", &len);
         if (buf != nullptr)
-            SDL_GameControllerAddMappingsFromRW(SDL_RWFromConstMem(buf, (int)len), 1);
+            SDL_GameControllerAddMappingsFromRW(SDL_RWFromConstMem(buf, static_cast<int>(len)), 1);
     }Console::WriteLine("gamecontrollerdb.txt load");
     {
         Sint64 len = 0;
         const char* buf = Func::GetFileBuf("files/TitilliumWeb-Light.ttf", &len);
         _instance._global_font = FC_CreateFont();
         if (buf != nullptr)
-            FC_LoadFont_RW(_instance._global_font, SDL_RWFromConstMem(buf, (int)len), 1, 24, C_BLACK, TTF_STYLE_NORMAL);
+            FC_LoadFont_RW(_instance._global_font, SDL_RWFromConstMem(buf, static_cast<int>(len)), 1, 24, C_BLACK, TTF_STYLE_NORMAL);
     }Console::WriteLine("TitilliumWeb-Light.ttf load");
 
-    srand((unsigned int)time(nullptr));
+    srand(static_cast<unsigned int>(time(nullptr)));
     Console::Init();
 
     _instance.DeltaTime = 0.0;
@@ -277,8 +300,8 @@ bool Core::Init(int argc, char* args[])
     _instance._frames = 0;
     FC_SetDefaultColor(_instance._global_font, C_BLACK);
     //Render::CreateRender(SD_GetInt("DefaultResolution_x", 1920), SD_GetInt("DefaultResolution_y", 1080));
-    Graphic.SetScreenResolution(SD_GetInt("DefaultResolution_x", 1920), SD_GetInt("DefaultResolution_y", 1080));
-    Graphic.SetFramerate(SD_GetInt("DefaultFramerate", 60));
+	Graphic.SetScreenResolution(SD_GetInt("DefaultResolution_x", 1920), SD_GetInt("DefaultResolution_y", 1080));
+    Graphic.SetFrameRate(SD_GetInt("DefaultFramerate", 60));
     Graphic.SetFullScreen(SD_GetInt("FullScreen", 0) == 1);
     //Graphic.Apply();
 
@@ -286,7 +309,7 @@ bool Core::Init(int argc, char* args[])
     return true;
 }
 
-bool Core::ProcessCoreKeys(Sint32 sym)
+bool Core::ProcessCoreKeys(const Sint32 sym)
 {
     if (sym == SDLK_INSERT) {
         _show_fps = !_show_fps;
@@ -315,6 +338,217 @@ bool Core::ProcessCoreKeys(Sint32 sym)
     }
     */
     return false;
+}
+
+bool Core::ProcessEvents()
+{
+
+    SDL_Event e;
+    while (SDL_PollEvent(&e) != 0) {
+        if (e.type == SDL_QUIT)
+        {
+            Console::WriteLine("exit request");
+            return true;
+        }
+
+        switch (e.type) {
+        case SDL_KEYDOWN:
+        {
+#ifdef _DEBUG
+            if (_instance.CoreDebug.ProcessEvent(&e)) {
+                return false;
+            }
+#endif
+            if (_instance.ProcessCoreKeys(e.key.keysym.sym)) break;
+        } break;
+
+        case SDL_TEXTINPUT:
+        {
+            if (Console::ProcessEvent(&e)) break;
+        } break;
+
+		case SDL_MOUSEBUTTONDOWN:
+        {
+            if (e.button.button == SDL_BUTTON_LEFT) {
+                Mouse.LeftEvent = Core::MouseState::ButtonState::PRESSED;
+            }
+            if (e.button.button == SDL_BUTTON_RIGHT) {
+                Mouse.RightEvent = Core::MouseState::ButtonState::PRESSED;
+            }
+        } break;
+        
+        case SDL_MOUSEBUTTONUP: {
+            if (e.button.button == SDL_BUTTON_LEFT) {
+                Mouse.LeftEvent = Core::MouseState::ButtonState::RELEASED;
+            }
+            if (e.button.button == SDL_BUTTON_RIGHT) {
+                Mouse.RightEvent = Core::MouseState::ButtonState::RELEASED;
+            }
+        } break;
+
+        case SDL_KEYUP:
+        case SDL_WINDOWEVENT:
+        case SDL_CONTROLLERDEVICEADDED:
+        case SDL_CONTROLLERDEVICEREMOVED:
+        case SDL_RENDER_TARGETS_RESET:/**< The render targets have been reset and their contents need to be updated */
+        case SDL_RENDER_DEVICE_RESET: /**< The device has been reset and all textures need to be recreated */
+        case SDL_CONTROLLERAXISMOTION:
+        case SDL_CONTROLLERBUTTONDOWN:
+        case SDL_CONTROLLERBUTTONUP:
+        case SDL_MOUSEWHEEL:
+            break;
+        default:continue;
+        }
+    }
+    return false;
+}
+
+void Core::ProcessStep()
+{
+    // interface (gui) events
+    const bool gui_have_event = _current_scene->GuiSystem.Events();
+    // add all new instances to scene and execute OnCreate event
+    _current_scene->SpawnAll();
+    if (_current_scene->IsAnyInstances()) {
+        for (plf::colony<Instance*>::iterator it = _current_scene->InstanceColony.begin(); it != _current_scene->InstanceColony.end();) {
+            if (Instance* c_instance = (*it); c_instance->Alive) {
+                // step
+                Executor()->ExecuteScript(c_instance, Event::EvStep);
+                const event_bit c_flag = c_instance->EventFlag;
+
+                // in view
+                if (c_instance->Alive) {
+                    SDL_FPoint pos{ c_instance->PosX, c_instance->PosY };
+                    const bool oldInView = c_instance->InView;
+                    c_instance->InView = Graphic.GetScreenSpace()->PointInRect(pos);
+                    if (c_instance->InView != oldInView) {
+                        if (EVENT_BIT_TEST(event_bit::HAVE_VIEW_CHANGE, c_flag)) {
+                            if (oldInView == true) { // be inside, now exit view
+                                Executor()->ExecuteScript(c_instance, Event::EvOnViewLeave);
+                            }
+                            else {
+                                Executor()->ExecuteScript(c_instance, Event::EvOnViewEnter);
+                            }
+                        }
+                    }
+                }
+
+                // mouse input
+                if (c_instance->Alive && (!gui_have_event)) {
+	                if (EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT, c_flag)) {
+		                if (Mouse.LeftEvent == MouseState::ButtonState::PRESSED) {
+			                // global click
+			                if (EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT_DOWN, c_flag)) {
+				                Executor()->ExecuteScript(c_instance, Event::EvOnMouseDown);
+			                }
+			                // on mask click
+			                if (EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT_CLICK, c_flag)) {
+				                if (c_instance->CheckMaskClick(Mouse.XYf)) {
+					                Executor()->ExecuteScript(c_instance, Event::EvClicked);
+				                }
+			                }
+		                }
+		                if (Mouse.LeftEvent == MouseState::ButtonState::RELEASED) {
+			                if (EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT_UP, c_flag)) {
+				                Executor()->ExecuteScript(c_instance, Event::EvOnMouseUp);
+			                }
+		                }
+	                }
+                }
+                // go to next instance
+                ++it;
+            }
+            else {
+                // delete instance if not alive
+                if (EVENT_BIT_TEST(event_bit::HAVE_ON_DESTROY, c_instance->EventFlag)) {
+                    Executor()->ExecuteScript(c_instance, Event::EvOnDestroy);
+                }
+                delete (*it);
+                it = _instance._current_scene->DeleteInstance(it);
+            }
+        }
+        // execute all suspended code
+		CodeExecutor::SuspendedCodeExecute();
+    }
+}
+
+void Core::ProcessPhysics()
+{
+    for (plf::colony<Instance*>::iterator it = _current_scene->InstanceColony.begin(); it != _current_scene->InstanceColony.end();) {
+        if (Instance* instance = (*it); instance->Alive) {
+            // collision
+            if (EVENT_BIT_TEST(event_bit::HAVE_COLLISION, instance->EventFlag)) {
+                for (Instance* target : _current_scene->InstanceColony) {
+                    if (Physics::CollisionTest(instance, target)) {
+                        _current_scene->CurrentCollisionInstance = target;
+                        _current_scene->CurrentCollisionInstanceId = target->GetId();
+                        Executor()->ExecuteScript(instance, Event::EvOnCollision);
+                        _current_scene->CurrentCollisionInstance = nullptr;
+                        _current_scene->CurrentCollisionInstanceId = -1;
+                    }
+                }
+            }
+        }
+    }
+}
+
+void Core::ProcessRender()
+{
+    // render scene background
+    if (_current_scene->BackGround.Texture != nullptr) {
+        Render::DrawTextureBox(_current_scene->BackGround.Texture, nullptr, nullptr);
+    }
+    else
+    {
+        Render::RenderClear(_current_scene->BackGround.Color);
+    }
+    
+    // draw all instances if in view (defined in step event)
+    if (_current_scene->IsAnyInstances()) {
+        for (Instance* instance : _current_scene->InstanceColony) {
+            if (instance->InView) {
+                Executor()->ExecuteScript(instance, Event::EvDraw);
+            }
+        }
+    }
+
+    // post process
+    if (use_bloom)Render::ProcessImageWithGaussian();
+    // draw interface
+    _current_scene->GuiSystem.Render();
+
+    if (_instance._show_fps) {
+        GPU_DeactivateShaderProgram();
+        const std::string text = "FPS: " + std::to_string(fps);
+        GPU_Rect info_rect = FC_GetBounds(_global_font, 0, 0, FC_ALIGN_LEFT, FC_Scale{ 1.2f, 1.2f }, text.c_str());
+        constexpr float info_rect_move = 8.f;
+        info_rect.x += info_rect_move;
+        info_rect.y += info_rect_move;
+        info_rect.w += info_rect_move;
+        info_rect.h += info_rect_move;
+        Render::DrawRectFilled(info_rect, C_BLACK);
+        Render::DrawRect(info_rect, C_DGREEN);
+        Render::DrawTextAlign(text, _global_font, { info_rect.x + 4.f, info_rect.y }, C_DGREEN, FC_ALIGN_LEFT);
+    }
+
+    // draw arr render data to actual screen target
+    Render::RenderToTarget(_screenTarget);
+
+    // DEBUG DRAW
+#ifdef _DEBUG
+    _instance.CoreDebug.Draw();
+#endif // _DEBUG
+
+    // draw console
+    Console::RenderConsole(_screenTarget);
+
+    GPU_Flip(_screenTarget);
+    Render::RenderClear();
+}
+
+Scene* Core::GetCurrentScene()
+{
+	return _instance._current_scene;
 }
 
 
@@ -374,255 +608,31 @@ Uint32 Core::FpsCounterCallback(Uint32 interval, void*)
 bool Core::Run()
 {
     _instance.game_loop = true;
-    SDL_TimerID my_timer_id = SDL_AddTimer((Uint32)1000, FpsCounterCallback, nullptr);
+    SDL_TimerID my_timer_id = SDL_AddTimer(static_cast<Uint32>(1000), FpsCounterCallback, nullptr);
     while (true) {
         if (_instance._current_scene == nullptr) return EXIT_FAILURE;
+
         // FPS measurement
         _instance.LAST = _instance.NOW;
         _instance.NOW = SDL_GetTicks64();
-        DeltaTime = ((double)(_instance.NOW - _instance.LAST) / 1000.0);
+        DeltaTime = (static_cast<double>(_instance.NOW - _instance.LAST) / 1000.0);
         _instance._frames++;
+
         // Set global mouse state
         Mouse.Reset();
-        //if (Art::Core::GetInstance()->Run_events()) break;
-        bool Ev_Input = false;
-        bool Ev_OnMouseInputDown = false;
-        bool Ev_OnMouseInputUp = false;
-        bool Ev_OnKeyboardInputDown = false;
-        bool Ev_OnKeyboardInputUp = false;
-        bool Ev_OnControllerInput = false;
-        bool Ev_ClickedDone = false;
 
-        SDL_Event e;
-        while (SDL_PollEvent(&e) != 0) {
-            if(e.type == SDL_QUIT)
-            {
-                Console::WriteLine("exit request");
-                return true;
-            }
-#ifdef _DEBUG
-			// core shortcuts, only on debug mode
-            if (e.type == SDL_KEYDOWN) { 
-                if (_instance.CoreDebug.ProcessEvent(&e)) break;
-            }
-#endif
-            // console input
-            if ((e.type == SDL_TEXTINPUT) || (e.type == SDL_KEYDOWN)) {
-                if (Console::ProcessEvent(&e)) break;
-            }
-
-            switch (e.type) {
-            case SDL_WINDOWEVENT:
-                if (e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-
-                }
-                break;
-
-            case SDL_CONTROLLERDEVICEADDED:
-
-                break;
-
-            case SDL_CONTROLLERDEVICEREMOVED:
-
-                break;
-
-            case SDL_RENDER_TARGETS_RESET:/**< The render targets have been reset and their contents need to be updated */
-            case SDL_RENDER_DEVICE_RESET: /**< The device has been reset and all textures need to be recreated */
-
-                break;
-
-            case SDL_CONTROLLERAXISMOTION:
-            case SDL_CONTROLLERBUTTONDOWN:
-            case SDL_CONTROLLERBUTTONUP:
-                /*
-                if (!_current_scene->_events[Art::Scene::Event::OnControllerInput].empty()) {
-                    for (auto& ev : _current_scene->_events[Art::Scene::Event::OnControllerInput]) {
-                        if(ev->Alive)
-                        ev->Ev_OnControllerInput();
-                    }
-                }
-                */
-                break;
-
-            case SDL_MOUSEWHEEL:
-                /*
-                if (!_current_scene->_events[Art::Scene::Event::OnMouseInput].empty()) {
-                    for (auto& ev : _current_scene->_events[Art::Scene::Event::OnMouseInput]) {
-                        Mouse.WHELL = e.wheel.y;
-                        if (ev->Alive)
-                        ev->Ev_OnMouseInput();
-                    }
-                }
-                */
-                break;
-
-            case SDL_MOUSEBUTTONDOWN:
-            {
-                Ev_Input = true;
-                if (e.button.button == SDL_BUTTON_LEFT) {
-                    Mouse.LeftEvent = Core::MouseState::ButtonState::PRESSED;
-                }
-                if (e.button.button == SDL_BUTTON_RIGHT) {
-                    Mouse.RightEvent = Core::MouseState::ButtonState::PRESSED;
-                }
-                Ev_OnMouseInputDown = true;
-				// interface (gui) events
-                _instance._current_scene->GuiSystem.Events(&e);
-            }
-            break;
-            case SDL_MOUSEBUTTONUP: {
-                Ev_Input = true;
-                if (e.button.button == SDL_BUTTON_LEFT) {
-                    Mouse.LeftEvent = Core::MouseState::ButtonState::RELEASED;
-                }
-                if (e.button.button == SDL_BUTTON_RIGHT) {
-                    Mouse.RightEvent = Core::MouseState::ButtonState::RELEASED;
-                }
-                Ev_OnMouseInputUp = true;
-                // interface (gui) events
-                _instance._current_scene->GuiSystem.Events(&e);
-            }
-            break;
-            
-            case SDL_KEYDOWN:
-                if (_instance.ProcessCoreKeys(e.key.keysym.sym)) break;
-                
-                    Ev_Input = true;
-                    Ev_OnKeyboardInputDown = true;
-                break;
-            case SDL_KEYUP:
-                    Ev_Input = true;
-                    Ev_OnKeyboardInputUp = true;
-                break;
-            }
+        if(_instance.ProcessEvents())
+        { // exit call
+            return true;
         }
-        //Art::Core::GetInstance()->Run_sceneStep();
+
         if (_instance.game_loop) {
-            _instance._current_scene->SpawnAll();
-            if (_instance._current_scene->IsAnyInstances()) {
-                for (plf::colony<Instance*>::iterator it = _instance._current_scene->InstanceColony.begin(); it != _instance._current_scene->InstanceColony.end();) {
-	                if (Instance* c_instance = (*it); c_instance->Alive) {
-                        // step
-                        _instance.Executor->ExecuteScript(c_instance, Event::EvStep);
-                        const event_bit c_flag = c_instance->EventFlag;
-
-                        // in view
-                        if (c_instance->Alive) {
-                            //TODO: implement camera system
-                            Rect screen{ 0,0, Core::GetScreenWidth(), Core::GetScreenHeight() };
-                            SDL_FPoint pos{ c_instance->PosX, c_instance->PosY };
-                            const bool oldInView = c_instance->InView;
-                            c_instance->InView = screen.PointInRect(pos);
-                            if (c_instance->InView != oldInView) {
-                                if (EVENT_BIT_TEST(event_bit::HAVE_VIEW_CHANGE, c_flag)) {
-                                    if (oldInView == true) { // be inside, now exit view
-                                        _instance.Executor->ExecuteScript(c_instance, Event::EvOnViewLeave);
-                                    }
-                                    else {
-                                        _instance.Executor->ExecuteScript(c_instance, Event::EvOnViewEnter);
-                                    }
-                                }
-                            }
-                        }
-
-                        // collision
-                        if (EVENT_BIT_TEST(event_bit::HAVE_COLLISION, c_flag)) {
-                            for (Instance* instance : _instance._current_scene->InstanceColony) {
-                                if (Physics::CollisionTest(c_instance, instance)) {
-                                    _instance._current_scene->CurrentCollisionInstance = instance;
-                                    _instance._current_scene->CurrentCollisionInstanceId = instance->GetId();
-                                    _instance.Executor->ExecuteScript(c_instance, Event::EvOnCollision);
-                                    _instance._current_scene->CurrentCollisionInstance = nullptr;
-                                    _instance._current_scene->CurrentCollisionInstanceId = -1;
-                                }
-                            }
-                        }
-                        
-                        // input
-                        if (Ev_Input && c_instance->Alive) {
-                            if (EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT, c_flag)) {
-                                if (EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT_UP, c_flag) && Ev_OnMouseInputUp) {
-                                    _instance.Executor->ExecuteScript(c_instance, Event::EvOnMouseUp);
-                                }
-                                if (EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT_DOWN, c_flag) && Ev_OnMouseInputDown) {
-                                    _instance.Executor->ExecuteScript(c_instance, Event::EvOnMouseDown);
-                                }
-                                if (!Ev_ClickedDone && EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT_CLICK, c_flag) && Ev_OnMouseInputDown) {
-                                    if (c_instance->CheckMaskClick(Mouse.XYf)) {
-                                        _instance.Executor->ExecuteScript(c_instance, Event::EvClicked);
-                                        Ev_ClickedDone = true;
-                                    }
-                                }
-                            }
-
-                        }
-                        ++it;
-                    }
-                    else {
-                        _instance.Executor->ExecuteScript(c_instance, Event::EvOnDestroy);
-                        delete (*it);
-                        it = _instance._current_scene->DeleteInstance(it);
-                    }
-                } // step loop
-            } // is any instance
-        // execute all suspended code
-        CodeExecutor::SuspendedCodeExecute();
-        } // if game_loop
-
-		// render scene background
-        if (_instance._current_scene->BackGround.Texture != nullptr) {
-            Render::DrawTextureBox(_instance._current_scene->BackGround.Texture, nullptr, nullptr);
-        }else
-        {
-            Render::RenderClear(_instance._current_scene->BackGround.Color);
-        }
-        // draw all instances if in view (defined in step event)
-        if (_instance._current_scene->IsAnyInstances()) {
-            for (Instance* instance : _instance._current_scene->InstanceColony) {
-                if (instance->InView) {
-                    _instance.Executor->ExecuteScript(instance, Event::EvDraw);
-
-                }
-            }
-        }
-        
-        // post process
-        if(_instance.use_bloom)Render::ProcessImageWithGaussian();
-        // draw interface
-        _instance._current_scene->GuiSystem.Render();
-
-        if (_instance._show_fps) {
-            GPU_DeactivateShaderProgram();
-            const std::string text = "FPS: " + std::to_string(_instance.fps);
-            GPU_Rect info_rect = FC_GetBounds(_instance._global_font, 0, 0, FC_ALIGN_LEFT, FC_Scale{ 1.2f, 1.2f }, text.c_str());
-            constexpr float info_rect_move = 8.f;
-        	info_rect.x += info_rect_move;
-            info_rect.y += info_rect_move;
-            info_rect.w += info_rect_move;
-            info_rect.h += info_rect_move;
-        	Render::DrawRectFilled(info_rect, C_BLACK);
-            Render::DrawRect(info_rect, C_DGREEN);
-            Render::DrawTextAlign(text, _instance._global_font, { info_rect.x+4.f, info_rect.y }, C_DGREEN, FC_ALIGN_LEFT);
+            _instance.ProcessStep();
+            _instance.ProcessPhysics();
         }
 
-        // draw all instances with post process
-    	Render::RenderToTarget(_instance._screenTarget);
-
-// DEBUG DRAW
-#ifdef _DEBUG
-        _instance.CoreDebug.Draw();
-#endif // _DEBUG
-        //Art::Render::RenderClear();
-        Render::RenderClear();
-        
-        // draw console
-        Console::RenderConsole(_instance._screenTarget);
-        //Art::Core::GetInstance()->ShowScreen();
-        GPU_Flip(_instance._screenTarget);
+        _instance.ProcessRender();
     }
-
-
-    return false;
 }
 
 bool Core::LoadData()
@@ -635,20 +645,20 @@ bool Core::LoadData()
     BackGroundRenderer bgr = BackGroundRenderer();
     bgr.Run();
 
-    if (!_instance.Executor->LoadArtLib()) {
+    if (!Executor()->LoadArtLib()) {
         bgr.Stop();
         return false;
     }
     bgr.SetProgress(5);
     
     // load assets
-    if (!_instance.assetManager->LoadData(&bgr, 5, 60)) {
+    if (!_instance._asset_manager->LoadData(&bgr, 5, 60)) {
         bgr.Stop();
         return false;
     }
     bgr.SetProgress(60);
 
-    if (!_instance.Executor->LoadObjectDefinitions(&bgr, 60, 90)) {
+    if (!Executor()->LoadObjectDefinitions(&bgr, 60, 90)) {
         bgr.Stop();
         return false;
     }
@@ -686,39 +696,35 @@ bool Core::ChangeScene(const std::string& name)
     CodeExecutor::SuspendedCodeStop();
 
     Scene* new_scene = new Scene();
-    if(new_scene->Load(name))
+    if (new_scene->Load(name))
     {
         _current_scene = new_scene;
         if (_current_scene->Start()) {
             return true;
         }
-        else
-        {
-            delete new_scene;
-            Console::WriteLine("[Core::ChangeScene] Error while starting new scene.");
-        }
-    }else
-    {
         delete new_scene;
-        Console::WriteLine("[Core::ChangeScene] scene '" + name + "' not exists! Try to load primary scene");
-        Scene* primary_scene = new Scene();
-        if (primary_scene->Load(_primary_scene))
-        {
-            _current_scene = primary_scene;
-            if (_current_scene->Start()) {
-                return true;
-            }
-            else
-            {
-                delete primary_scene;
-                Console::WriteLine("[Core::ChangeScene] Error while starting primary scene.");
-            }
-        }else
-        {
-            delete primary_scene;
-            Console::WriteLine("[Core::ChangeScene] Error while load primary scene.");
-        }
+        Console::WriteLine("[Core::ChangeScene] Error while starting new scene.");
     }
+    else
+    {
+        Console::WriteLine("[Core::ChangeScene] scene '" + name + "' not exists! Try to load primary scene");
+    }
+
+    Scene* primary_scene = new Scene();
+    if (primary_scene->Load(_primary_scene))
+    {
+        _current_scene = primary_scene;
+        if (_current_scene->Start()) {
+            return true;
+        }
+        Console::WriteLine("[Core::ChangeScene] Error while starting primary scene.");
+    }
+    else
+    {
+        Console::WriteLine("[Core::ChangeScene] Error while load primary scene.");
+    }
+
+    delete primary_scene;
     return false;
 }
 #ifdef _DEBUG
@@ -751,7 +757,7 @@ bool Core::CoreDebug::ProcessEvent(SDL_Event* e)
             _show_debug_options = !_show_debug_options;
             return true;
         }
-        for (option& option : Options)
+        for (const option& option : Options)
         {
             if (e->key.keysym.sym == option.Key)
             {
@@ -819,7 +825,7 @@ void Core::CoreDebug::Draw()
                 }
 
                 if (_show_instance_info) {
-                    const std::string text = instance->Name + "#" + std::to_string(instance->GetId()) + "[" + std::to_string((int)instance->PosX) + "," + std::to_string((int)instance->PosY) + "]";
+                    const std::string text = instance->Name + "#" + std::to_string(instance->GetId()) + "[" + std::to_string(static_cast<int>(instance->PosX)) + "," + std::to_string(static_cast<int>(instance->PosY)) + "]";
                     GPU_Rect draw_surface = FC_GetBounds(_instance._global_font, 0.f, 0.f, FC_ALIGN_LEFT, { 1.f, 1.f }, text.c_str());
                     draw_surface.x = std::clamp(instance->PosX, 0.f, static_cast<float>(GetScreenWidth()) - draw_surface.w);
                     draw_surface.y = std::clamp(instance->PosY, 0.f, static_cast<float>(GetScreenHeight()) - draw_surface.h);
@@ -866,7 +872,7 @@ void Core::CoreDebug::Draw()
             "instance count[colony size]: " + std::to_string(_instance._current_scene->GetInstancesCount()) + '[' + std::to_string(_instance._current_scene->InstanceColony.size()) + ']' + '\n' +
             "delta time: " + std::to_string(_instance.DeltaTime) + '\n' +
             "Executor global stack size[capacity]: " + std::to_string(CodeExecutor::GetGlobalStackSize()) + '[' + std::to_string(CodeExecutor::GetGlobalStackSize()) + ']' + '\n' +
-            "Executor if-test stack size: " + std::to_string(Core::GetInstance()->Executor->DebugGetIfTestResultStackSize()) + ']' + '\n' +
+            "Executor if-test stack size: " + std::to_string(Core::Executor()->DebugGetIfTestResultStackSize()) + ']' + '\n' +
             "bloom draw: " + (_instance.use_bloom ? "enabled (" + std::to_string(_instance.use_bloom_level) + ")" : "disabled");
 
     	GPU_Rect info_rect = FC_GetBounds(_instance._global_font, 0.f, 0.f, FC_ALIGN_LEFT, FC_Scale{ 1.f, 1.f }, text.c_str());
@@ -886,7 +892,7 @@ void Core::CoreDebug::Draw()
 
     if(_show_spy_window)
     {
-        const std::vector<std::string> text = Func::Split(_instance.Executor->DebugGetTrackInfo(), '\n');
+        const std::vector<std::string> text = Func::Split(Executor()->DebugGetTrackInfo(), '\n');
         std::string sliced_text;
 
         for(int i= _spy_line_begin; i< _spy_line_end; i++)

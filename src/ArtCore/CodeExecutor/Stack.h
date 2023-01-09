@@ -10,14 +10,14 @@ private:
 	std::vector<T> _data;
 	size_t _current_capacity;
 public:
-	// Add variable to stack, does not call for constructor so object must be created first
+	// Add variable to stack
 	void Add(T value) {
 		if (_size == _current_capacity) {
 			_data.resize(_size + 8);
 			_current_capacity += 8;
 		}
 		if (_c_element >= _size) {
-			_data.push_back(value);
+			_data.emplace_back(value);
 			_c_element++;
 			_size++;
 		}
@@ -52,6 +52,15 @@ public:
 		_c_element = 0;
 		_data.clear();
 	}
+
+	// Delete last element on stack
+	void PopBack()
+	{
+		if (_c_element > 0) {
+			--_c_element;
+		}
+	}
+
 	AStack(size_t default_stack_size = 8) {
 		_size = 0;
 		_c_element = 0;

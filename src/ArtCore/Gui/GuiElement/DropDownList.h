@@ -17,9 +17,9 @@ public:
 	void  SetVariableFromStringEx(const std::string& name, const std::string& value) override;
 
 	int SelectedIndex = -1;
-	std::string GetSelectedValue();
+	std::string GetSelectedValue() {return _selected_value;}
 private:
-	std::string _selected_value = "";
+	std::string _selected_value;
 	bool _show_list = false;
 	std::vector<std::string> _values;
 	std::vector<bool> _child_state;

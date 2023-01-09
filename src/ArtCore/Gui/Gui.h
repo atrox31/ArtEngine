@@ -4,7 +4,7 @@
 
 #include "ArtCore/_Debug/Debug.h"
 #include "ArtCore/Structs/Rect.h"
-#include "ArtCore/Enums/enumstring.h"
+#include "ArtCore/Enums/EnumExtend.h"
 
 #include "SDL2/IncludeAll.h"
 #include "FC_Fontcache/SDL_FontCache.h"
@@ -32,7 +32,7 @@ public:
 	bool SpawnElementFromJsonData(GuiElementTemplate* parrent, const nlohmann::basic_json<>& data) const;
 	void Clear() const;
 	void Render() const;
-	void Events(SDL_Event* e) const;
+	bool Events() const;
 	void UpdateView() const;
 	GuiElementTemplate* GetElementById(const std::string& tag, GuiElementTemplate* search_root = nullptr);
 	[[nodiscard]] bool PointOnInterface(SDL_FPoint) const;
@@ -153,7 +153,7 @@ public:
 		virtual GuiElementTemplate* SetVisible(bool v) final;
 		virtual GuiElementTemplate* SetCallback(const EvCallback ev, const std::pair<const unsigned char*, Sint64> code) final { _callback_script[ev] = code; return this;}
 		virtual GuiElementTemplate* SetPosition(const int x, const int y) final { _x = x; _y = y;  return this;}
-		virtual GuiElementTemplate* SetSound(std::string sound) final;
+		virtual GuiElementTemplate* SetSound(const std::string& sound) final;
 		virtual GuiElementTemplate* SetDefaultFont(FC_Font* font) final { _default_font = font; return this;}
 		virtual GuiElementTemplate* SetPosition(const int x1, const int y1, const int x2, const int y2) final {
 			_x = x1;
@@ -165,7 +165,7 @@ public:
 		virtual GuiElementTemplate* SetPallet(Pallet* pallet) final { _pallet = *pallet; return this;}
 		virtual GuiElementTemplate* SetParent(GuiElementTemplate* parrent) final { _parent = parrent; return this;}
 		virtual GuiElementTemplate* SetStyle(Style s);
-		virtual GuiElementTemplate* SetText(std::string, FC_AlignEnum = FC_AlignEnum::FC_ALIGN_LEFT, FC_Scale = { 1.0f, 1.0f });
+		virtual GuiElementTemplate* SetText(const std::string&, FC_AlignEnum = FC_AlignEnum::FC_ALIGN_LEFT, FC_Scale = { 1.0f, 1.0f });
 
 		virtual void SetVariableFromString(const std::string& name, const std::string& value) final;
 		// for root element, else must be override
@@ -205,7 +205,7 @@ public:
 	static FC_Font* GlobalFont;
 private:
 	static void _render(GuiElementTemplate*);
-	static bool _events(GuiElementTemplate*, SDL_Event*);
+	static bool _events(GuiElementTemplate*);
 	static void _updateView(GuiElementTemplate*);
 	GuiElementTemplate* _root_element;
 };
