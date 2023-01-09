@@ -12,7 +12,7 @@ public:
 	static void LoadShaders();
 
 	// drawing
-	static void DrawTexture(GPU_Image* texture, const vec2f& postion, const vec2f& scale, float angle, float alpha);
+	static void DrawTexture(GPU_Image* texture, const vec2f& position, const vec2f& scale, float angle, float alpha);
 
 	/**
 	 * \brief Draw texture in box
@@ -24,9 +24,9 @@ public:
 
 	static void DrawLine(const SDL_FPoint& point_begin, const SDL_FPoint& point_end, const float& line_thickness, const SDL_Color& color);
 
-	static void DrawSprite(Sprite* sprite, const vec2f& postion, int frame);
-	static void DrawSprite_ex(Sprite* sprite, float pos_x, float pos_y, int frame, float scale_x, float scale_y, float center_x, float center_y, float angle, float alpha);
-	static void DrawSpriteBox(const Sprite* sprite, GPU_Rect box, int frame = 0, const float& angle = 0.0f, float alpha = 1.0f);
+	static void DrawSprite(const Sprite* sprite, const vec2f& position, int frame);
+	static void DrawSprite_ex(const Sprite* sprite, float pos_x, float pos_y, int frame, float scale_x, float scale_y, float center_x, float center_y, float angle, float alpha);
+	static void DrawSpriteBox(const Sprite* sprite, GPU_Rect box, int frame = 0, float alpha = 1.0f);
 
 	static void DrawRect(GPU_Rect rect, SDL_Color color);
 	static void DrawRect_wh(GPU_Rect rect, SDL_Color color);
@@ -35,8 +35,8 @@ public:
 	static void DrawRectRounded(GPU_Rect rect, float round_factor, SDL_Color color);
 	static void DrawRectRoundedFilled(GPU_Rect rect, float round_factor, SDL_Color color);
 
-	static void DrawCircle(const vec2f& postion, float radius, SDL_Color color);
-	static void DrawCircleFilled(const vec2f& postion, float radius, SDL_Color color);
+	static void DrawCircle(const vec2f& position, float radius, SDL_Color color);
+	static void DrawCircleFilled(const vec2f& position, float radius, SDL_Color color);
 
 	static void DrawTriangle(const vec2f& a, const vec2f& b, const vec2f& c, SDL_Color color);
 	static void DrawTriangleFilled(const vec2f& a, const vec2f& b, const vec2f& c, SDL_Color color);
@@ -44,11 +44,12 @@ public:
 	// text
 	static GPU_Rect DrawText(const std::string&, FC_Font*, const vec2f&, SDL_Color);
 	static GPU_Rect DrawTextAlign(const std::string&, FC_Font*, const vec2f&, SDL_Color, FC_AlignEnum);
-	static GPU_Rect DrawTextBox(const std::string& text, FC_Font* font, const GPU_Rect& box, SDL_Color color, FC_AlignEnum align);
+	static GPU_Rect DrawTextBox(const std::string& text, FC_Font* font, GPU_Rect box, SDL_Color color, FC_AlignEnum align);
 
 	// system
 	static void RenderToTarget(GPU_Target* target);
-	static void RenderClear(const SDL_Color& color = {0x00,0x00,0x00,0xFF});
+	static void RenderClear();
+	static void RenderClearColor(const SDL_Color& color);
 
 public:
 	// post process
@@ -68,6 +69,8 @@ private:
 	static Render* _instance;
 	// global screen
 	int width, height;
+	float _width_scale, _height_scale;
+	bool _width_height_equal_scale;
 	GPU_Target* _screenTexture_target = nullptr;
 	GPU_Image* _screenTexture = nullptr;
 
@@ -84,6 +87,5 @@ private:
 		// textures
 	GPU_Image* _shader_gaussian_texture = nullptr;
 	GPU_Target* _shader_gaussian_texture_target = nullptr;
-
 };
 
