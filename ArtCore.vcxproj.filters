@@ -318,6 +318,24 @@
     <ClInclude Include="src\ArtCore\Gui\GuiElement\Slider.h">
       <Filter>ArtCore\Gui\GuiElement</Filter>
     </ClInclude>
+    <ClInclude Include="src\plf\plf_colony-master\plf_colony.h">
+      <Filter>outsource\pfl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\plf\plf_hive-main\plf_hive.h">
+      <Filter>outsource\pfl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\plf\plf_indiesort-master\plf_indiesort.h">
+      <Filter>outsource\pfl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\plf\plf_list-master\plf_list.h">
+      <Filter>outsource\pfl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\plf\plf_queue-main\plf_queue.h">
+      <Filter>outsource\pfl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\plf\plf_stack-master\plf_stack.h">
+      <Filter>outsource\pfl</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ArtCore">
@@ -370,6 +388,9 @@
     </Filter>
     <Filter Include="ArtCore\Physics">
       <UniqueIdentifier>{1a498dea-69ec-42d8-8b8c-0c4fa0fa5bfa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="outsource\pfl">
+      <UniqueIdentifier>{9d35e0af-b8d5-4a7c-b9c0-c5bb31b367fe}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

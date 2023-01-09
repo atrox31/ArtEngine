@@ -20,8 +20,10 @@
 
 #ifndef PLF_COLONY_H
 #define PLF_COLONY_H
-#define _ENABLE_EXTENDED_ALIGNED_STORAGE // Because MSVC didn't implement aligned_storage correctly in the past and avoids changing the default behaviour in order to not break old software, we have to specify this to enable correct aligning behaviour in MSVC.
 
+#ifndef _ENABLE_EXTENDED_ALIGNED_STORAGE
+#define _ENABLE_EXTENDED_ALIGNED_STORAGE // Because MSVC didn't implement aligned_storage correctly in the past and avoids changing the default behaviour in order to not break old software, we have to specify this to enable correct aligning behaviour in MSVC.
+#endif
 
 // Compiler-specific defines:
 
@@ -4080,7 +4082,7 @@ public:
 		#if defined(PLF_TYPE_TRAITS_SUPPORT) && defined(PLF_ALLOCATOR_TRAITS_SUPPORT)
 			if PLF_CONSTEXPR (std::allocator_traits<allocator_type>::is_always_equal::value && std::is_trivial<group_pointer_type>::value && std::is_trivial<aligned_pointer_type>::value && std::is_trivial<skipfield_pointer_type>::value) // if all pointer types are trivial we can just copy using memcpy - avoids constructors/destructors etc and is faster
 			{
-				char temp[sizeof(colony)]{};
+				char temp[sizeof(colony)];
 				std::memcpy(&temp, static_cast<void *>(this), sizeof(colony));
 				std::memcpy(static_cast<void *>(this), static_cast<void *>(&source), sizeof(colony));
 				std::memcpy(static_cast<void *>(&source), &temp, sizeof(colony));

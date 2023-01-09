@@ -255,6 +255,12 @@
     <ClInclude Include="src\ArtCore\Gui\GuiElement\TabPanel.h" />
     <ClInclude Include="src\ArtCore\_Debug\Time.h" />
     <ClInclude Include="src\ArtCore\Structs\vec2f.h" />
+    <ClInclude Include="src\plf\plf_colony-master\plf_colony.h" />
+    <ClInclude Include="src\plf\plf_hive-main\plf_hive.h" />
+    <ClInclude Include="src\plf\plf_indiesort-master\plf_indiesort.h" />
+    <ClInclude Include="src\plf\plf_list-master\plf_list.h" />
+    <ClInclude Include="src\plf\plf_queue-main\plf_queue.h" />
+    <ClInclude Include="src\plf\plf_stack-master\plf_stack.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
