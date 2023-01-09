@@ -37,8 +37,8 @@ bool GuiElement::DropDownList::OnClick()
 	}
 	if(!_show_list)
 	{
-		SelectedIndex = _temp_selected_index;
-		if (SelectedIndex >= 0) {
+		_selected_index = _temp_selected_index;
+		if (_selected_index >= 0) {
 			_selected_value = _values[_temp_selected_index];
 		}
 		_child_state.clear();
@@ -63,6 +63,14 @@ void GuiElement::DropDownList::SetVariableFromStringEx(const std::string& name, 
 		return;
 	}
 	Console::WriteLine("[GuiElement::DropDownList::SetVariableFromStringEx]: '" + name + "' = '"+ value+"' not found");
+}
+
+void GuiElement::DropDownList::SetSelectedIndex(const int index)
+{
+	_selected_index = std::clamp(index, 0, static_cast<int>(_values.size()-1));
+	if (_selected_index >= 0) {
+		_selected_value = _values[_selected_index];
+	}
 }
 
 void GuiElement::DropDownList::Render()
