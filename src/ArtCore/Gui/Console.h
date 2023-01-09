@@ -34,6 +34,9 @@ public:
 	// process events and return if handle something
 	static bool ProcessEvent(const SDL_Event* sdl_event);
 
+	// Event on console button pressed
+	static void ConsoleHomeButtonPressed();
+
 	// save all content to file
 	static void SaveToFile();
 private:

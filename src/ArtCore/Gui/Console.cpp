@@ -117,6 +117,21 @@ void Console::Execute(const std::string& command)
 			Core::Exit();
 			return;
 		}
+#ifdef _DEBUG
+		if(arg[0] == "spy")
+		{
+			if(arg.size() == 2)
+			{
+				Core::Executor()->DebugSetInstanceToTrack(Core::GetCurrentScene()->GetInstanceById(Func::TryGetInt(arg[1])));
+				const std::vector<std::string> text = Func::Split(Core::Executor()->DebugGetTrackInfo(), '\n');
+				Core::GetInstance()->CoreDebug.SetSpyLines(text.size());
+			}else
+			{
+				WriteLine("Error: spy need instance id");
+			}
+			return;
+		}
+#endif
 	}
 	WriteLine("Command: '" + command + "' not found.");
 }
@@ -149,6 +164,19 @@ bool Console::ProcessEvent(const SDL_Event* sdl_event)
 {
 	if (_instance == nullptr) return false;
 	return _instance->InnerProcessInput(sdl_event);
+}
+
+void Console::ConsoleHomeButtonPressed()
+{
+	_instance->_visible = !_instance->_visible;
+	if (_instance->_visible)
+	{
+		Show();
+	}
+	else
+	{
+		Hide();
+	}
 }
 
 void Console::SaveToFile()
@@ -206,19 +234,6 @@ std::string Console::GetCurrentTime()
 bool Console::InnerProcessInput(const SDL_Event* sdl_event)
 {
 	if (_instance == nullptr) return false;
-	if (sdl_event->type == SDL_KEYDOWN) {
-		if (sdl_event->key.keysym.sym == SDLK_HOME) {
-			_visible = !_visible;
-			if (_visible)
-			{
-				Show(); return true;
-			}
-			else
-			{
-				Hide(); return true;
-			}
-		}
-	}
 	// not console interesting event
 	if (!_visible) return false;
 
