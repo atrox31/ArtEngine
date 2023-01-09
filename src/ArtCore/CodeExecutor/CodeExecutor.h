@@ -177,6 +177,7 @@ public:
 	static void SuspendedCodeAdd(double time, Instance* sender);
 	static void SuspendedCodeExecute();
 	static void SuspendedCodeDeleteInstance(const Instance* sender);
+
 private:
 	Inspector* _current_inspector = nullptr;
 
@@ -188,8 +189,8 @@ private:
 	AStack<bool> _if_test_result;
 	void	h_get_local_value(Inspector* code, Instance* instance);
 	bool	h_compare(int type, int operation);
-
-	//std::string h_operation(int operation, std::string value1, std::string value2);
+	
+	static void h_operation_global(Instance* instance, const int operation, ArtCode::variable_type type, const int index);
 	static int h_operation_int(int _operator, int val1, int val2);
 	static float h_operation_float(int _operator, float val1, float val2);
 	static bool h_operation_bool(int _operator, bool val1, bool val2);

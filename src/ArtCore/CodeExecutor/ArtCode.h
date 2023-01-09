@@ -30,7 +30,7 @@ public:
 	};
 
 	// operators
-	const std::string Operators[5] = {
+	inline static const std::string operators[5] = {
 	"+=",
 	"-=",
 	"*=",
@@ -38,7 +38,17 @@ public:
 	":="
 	};
 	// if statement operators
-	static const std::string operators2[];
+	inline static const std::string operators2[8] = {
+		//logic
+		"||",
+		"&&",
+		"<<",
+		">>",
+		">=",
+		"<=",
+		"!=",
+		"=="
+	};
 
 	ENUM_WITH_STRING_CONVERSION(variable_type,
 		(NUL)

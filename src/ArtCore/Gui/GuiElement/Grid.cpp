@@ -51,7 +51,7 @@ void GuiElement::Grid::Render() {
 
 				Render::DrawRectRoundedFilled(grid_box_dimensions, 2.f, _pallet.Background);
 				if (_grid_elements[v]->image != nullptr) {
-					Render::DrawSpriteBox(_grid_elements[v]->image, grid_box_dimensions, 0, 0.f, 1.f);
+					Render::DrawSpriteBox(_grid_elements[v]->image, grid_box_dimensions, 0, 1.f);
 					
 
 					if (*_grid_elements[v]->enabled == 0) {

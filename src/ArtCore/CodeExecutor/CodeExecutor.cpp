@@ -1,4 +1,10 @@
 // ReSharper disable CppUseAuto
+// ReSharper disable CppDefaultCaseNotHandledInSwitchStatement
+// ReSharper disable CppIncompleteSwitchStatement
+// ReSharper disable CppClangTidyHicppMultiwayPathsCovered
+// ReSharper disable CppInconsistentNaming
+// ReSharper disable CppClangTidyClangDiagnosticSwitch
+// ReSharper disable CppClangTidyBugproneBranchClone
 #include "CodeExecutor.h"
 
 #include <algorithm>
@@ -156,7 +162,7 @@ bool CodeExecutor::LoadObjectDefinitions(const BackGroundRenderer* bgr, const in
 		// second is string object name
 		const std::string o_name = code->GetString();
 		instance.Name = o_name;
-		instance.Template = new Instance((int)_instance_definitions.size());
+		instance.Template = new Instance(static_cast<int>(_instance_definitions.size()));
 
 		// variables
 		while (code->GetNextCommand() != COMMAND::END || code->IsEnd()) {
@@ -187,7 +193,7 @@ bool CodeExecutor::LoadObjectDefinitions(const BackGroundRenderer* bgr, const in
 				unsigned int f_size;
 				Convert::TwoByteCharToUint32(size_2_bit, &f_size);
 				const unsigned char* f_code = code->GetChunk(f_size);
-				if ((ArtCode::Command)f_code[f_size - 1] != COMMAND::END) {
+				if (static_cast<ArtCode::Command>(f_code[f_size - 1]) != COMMAND::END) {
 
 					Console::WriteLine("instance: '" + o_name + "' - expected 'END' but " + std::to_string(f_code[f_size - 1]) + " is given"); SDL_assert(false); return false;
 				}
@@ -289,14 +295,14 @@ bool CodeExecutor::LoadSceneTriggers()
 				Convert::TwoByteCharToUint32(size_2_bit, &f_size);
 				
 				const unsigned char* f_code = code->GetChunk(f_size);
-				if ((ArtCode::Command)f_code[f_size - 1] != COMMAND::END) {
+				if (static_cast<ArtCode::Command>(f_code[f_size - 1]) != COMMAND::END) {
 
 					Console::WriteLine("LoadSceneTriggers: '" + o_name + "' - expected 'END' but " + std::to_string(f_code[f_size - 1]) + " is given");
 					ASSERT(false, "x03"); return false;
 				}
 				// scene accept only def values event, every other is trigger
 				if (Event_fromString(e_name) == Event::DEF_VALUES) {
-					std::pair def_values_code = { f_code, (Sint64)f_size };
+					std::pair def_values_code = { f_code, static_cast<Sint64>(f_size) };
 					ExecuteCode(instance.Template, &def_values_code);
 				}else
 				{
@@ -670,6 +676,26 @@ void CodeExecutor::SuspendedCodeDeleteInstance(const Instance* sender)
 	}
 }
 
+void CodeExecutor::h_operation_global(Instance* instance, const int operation, const ArtCode::variable_type type, const int index)
+{
+	switch (type) {
+	case ArtCode::variable_type::INT:		instance->Variables_int[index] = h_operation_int(operation, instance->Variables_int[index], GlobalStack_int.Get()); break;
+	case ArtCode::variable_type::FLOAT:		instance->Variables_float[index] = h_operation_float(operation, instance->Variables_float[index], GlobalStack_float.Get()); break;
+	case ArtCode::variable_type::BOOL:		instance->Variables_bool[index] = h_operation_bool(operation, instance->Variables_bool[index], GlobalStack_bool.Get()); break;
+	case ArtCode::variable_type::INSTANCE:	instance->Variables_instance[index] = h_operation_instance(operation, instance->Variables_instance[index], GlobalStack_instance.Get()); break;
+	case ArtCode::variable_type::OBJECT:	instance->Variables_object[index] = h_operation_object(operation, instance->Variables_object[index], GlobalStack_int.Get()); break;
+	case ArtCode::variable_type::SPRITE:	instance->Variables_sprite[index] = h_operation_sprite(operation, instance->Variables_sprite[index], GlobalStack_int.Get()); break;
+	case ArtCode::variable_type::TEXTURE:	instance->Variables_texture[index] = h_operation_texture(operation, instance->Variables_texture[index], GlobalStack_int.Get()); break;
+	case ArtCode::variable_type::SOUND:		instance->Variables_sound[index] = h_operation_sound(operation, instance->Variables_sound[index], GlobalStack_int.Get()); break;
+	case ArtCode::variable_type::MUSIC:		instance->Variables_music[index] = h_operation_music(operation, instance->Variables_music[index], GlobalStack_int.Get()); break;
+	case ArtCode::variable_type::FONT:		instance->Variables_font[index] = h_operation_font(operation, instance->Variables_font[index], GlobalStack_int.Get()); break;
+	case ArtCode::variable_type::POINT:		instance->Variables_point[index] = h_operation_point(operation, instance->Variables_point[index], GlobalStack_point.Get()); break;
+	case ArtCode::variable_type::RECT:		instance->Variables_rect[index] = h_operation_rect(operation, instance->Variables_rect[index], GlobalStack_rect.Get()); break;
+	case ArtCode::variable_type::COLOR:		instance->Variables_color[index] = h_operation_color(operation, instance->Variables_color[index], GlobalStack_color.Get()); break;
+	case ArtCode::variable_type::STRING:	instance->Variables_string[index] = h_operation_string(operation, instance->Variables_string[index], GlobalStack_string.Get()); break;
+	}
+}
+
 void CodeExecutor::h_execute_script(Inspector* code, Instance* instance)
 {
 	/*
@@ -686,29 +712,12 @@ void CodeExecutor::h_execute_script(Inspector* code, Instance* instance)
 			const int operation = (int)code->GetBit();
 			// variable - type,index
 			// variable to set
-			const ArtCode::variable_type type = (ArtCode::variable_type)code->GetBit();
+			const ArtCode::variable_type type = static_cast<ArtCode::variable_type>(code->GetBit());
 			ASSERT(type != ArtCode::variable_type::variable_typeInvalid, "[command::SET] type = variable_type::Invalid")
 			const int index = (int)code->GetBit();
 
 			h_get_value(code, instance);
-			switch (type) {
-			case ArtCode::variable_type::INT:		instance->Variables_int[index] =	h_operation_int(operation, instance->Variables_int[index], GlobalStack_int.Get()); break;
-			case ArtCode::variable_type::FLOAT:		instance->Variables_float[index] =	h_operation_float(operation, instance->Variables_float[index], GlobalStack_float.Get()); break;
-			case ArtCode::variable_type::BOOL:		instance->Variables_bool[index] =	h_operation_bool(operation, instance->Variables_bool[index], GlobalStack_bool.Get()); break;
-			case ArtCode::variable_type::INSTANCE:	instance->Variables_instance[index]=h_operation_instance(operation, instance->Variables_instance[index], GlobalStack_instance.Get()); break;
-			case ArtCode::variable_type::OBJECT:	instance->Variables_object[index] =	h_operation_object(operation, instance->Variables_object[index], GlobalStack_int.Get()); break;
-			case ArtCode::variable_type::SPRITE:	instance->Variables_sprite[index] =	h_operation_sprite(operation, instance->Variables_sprite[index], GlobalStack_int.Get()); break;
-			case ArtCode::variable_type::TEXTURE:	instance->Variables_texture[index] =h_operation_texture(operation, instance->Variables_texture[index], GlobalStack_int.Get()); break;
-			case ArtCode::variable_type::SOUND:		instance->Variables_sound[index] =	h_operation_sound(operation, instance->Variables_sound[index], GlobalStack_int.Get()); break;
-			case ArtCode::variable_type::MUSIC:		instance->Variables_music[index] =	h_operation_music(operation, instance->Variables_music[index], GlobalStack_int.Get()); break;
-			case ArtCode::variable_type::FONT:		instance->Variables_font[index] =	h_operation_font(operation, instance->Variables_font[index], GlobalStack_int.Get()); break;
-			case ArtCode::variable_type::POINT:		instance->Variables_point[index] =	h_operation_point(operation, instance->Variables_point[index], GlobalStack_point.Get()); break;
-			case ArtCode::variable_type::RECT:		instance->Variables_rect[index] =	h_operation_rect(operation, instance->Variables_rect[index], GlobalStack_rect.Get()); break;
-			case ArtCode::variable_type::COLOR:		instance->Variables_color[index] =	h_operation_color(operation, instance->Variables_color[index], GlobalStack_color.Get()); break;
-			case ArtCode::variable_type::STRING:	instance->Variables_string[index] =	h_operation_string(operation, instance->Variables_string[index],	GlobalStack_string.Get()); break;
-			}
-			//instance->variables[type][index] = h_operation(operation, instance->variables[type][index], GlobalStack.Get());
-			//instance->variables[type][index] = GlobalStack.Get();
+			h_operation_global(instance, operation, type, index);
 		}break;
 
 		case COMMAND::OTHER: {
@@ -723,31 +732,14 @@ void CodeExecutor::h_execute_script(Inspector* code, Instance* instance)
 				Break();
 				// error - wrong type
 			}
-			const ArtCode::variable_type type = (ArtCode::variable_type)code->GetBit();
+			const ArtCode::variable_type type = static_cast<ArtCode::variable_type>(code->GetBit());
 			ASSERT(type != ArtCode::variable_type::variable_typeInvalid, "command::SET")
 			const int index = (int)code->GetBit();
 			// operator 
 			const int operation = (int)code->GetBit();
 			
 			h_get_value(code, instance);
-			//other->variables[variable_type][variable_index] = h_operation(operation, other->variables[variable_type][variable_index], GlobalStack.Get());
-			switch (type) {
-			case ArtCode::variable_type::INT:		other->Variables_int[index] = h_operation_int(operation, other->Variables_int[index], GlobalStack_int.Get()); break;
-			case ArtCode::variable_type::FLOAT:		other->Variables_float[index] = h_operation_float(operation, other->Variables_float[index], GlobalStack_float.Get()); break;
-			case ArtCode::variable_type::BOOL:		other->Variables_bool[index] = h_operation_bool(operation, other->Variables_bool[index], GlobalStack_bool.Get()); break;
-			case ArtCode::variable_type::INSTANCE:	other->Variables_instance[index] = h_operation_instance(operation, other->Variables_instance[index], GlobalStack_instance.Get()); break;
-			case ArtCode::variable_type::OBJECT:		other->Variables_object[index] = h_operation_object(operation, other->Variables_object[index], GlobalStack_int.Get()); break;
-			case ArtCode::variable_type::SPRITE:		other->Variables_sprite[index] = h_operation_sprite(operation, other->Variables_sprite[index], GlobalStack_int.Get()); break;
-			case ArtCode::variable_type::TEXTURE:	other->Variables_texture[index] = h_operation_texture(operation, other->Variables_texture[index], GlobalStack_int.Get()); break;
-			case ArtCode::variable_type::SOUND:		other->Variables_sound[index] = h_operation_sound(operation, other->Variables_sound[index], GlobalStack_int.Get()); break;
-			case ArtCode::variable_type::MUSIC:		other->Variables_music[index] = h_operation_music(operation, other->Variables_music[index], GlobalStack_int.Get()); break;
-			case ArtCode::variable_type::FONT:		other->Variables_font[index] = h_operation_font(operation, other->Variables_font[index], GlobalStack_int.Get()); break;
-			case ArtCode::variable_type::POINT:		other->Variables_point[index] = h_operation_point(operation, other->Variables_point[index], GlobalStack_point.Get()); break;
-			case ArtCode::variable_type::RECT:		other->Variables_rect[index] = h_operation_rect(operation, other->Variables_rect[index], GlobalStack_rect.Get()); break;
-			case ArtCode::variable_type::COLOR:		other->Variables_color[index] = h_operation_color(operation, other->Variables_color[index], GlobalStack_color.Get()); break;
-			case ArtCode::variable_type::STRING:		other->Variables_string[index] = h_operation_string(operation,	other->Variables_string[index], GlobalStack_string.Get()); break;
-			}
-
+			h_operation_global(other, operation, type, index);
 		} break;
 
 		case COMMAND::FUNCTION: {
@@ -1278,7 +1270,7 @@ bool CodeExecutor::h_compare(const int type, const int operation)
 
 void CodeExecutor::h_get_local_value(Inspector* code, Instance* instance)
 {
-	const ArtCode::variable_type type = (ArtCode::variable_type)code->GetBit();
+	const ArtCode::variable_type type = static_cast<ArtCode::variable_type>(code->GetBit());
 	ASSERT(type != ArtCode::variable_type::variable_typeInvalid, "variable_type::Invalid");
 	const int index = (int)code->GetBit();
 	//GlobalStack.Add(instance->variables[type][index]);
@@ -1370,23 +1362,9 @@ void CodeExecutor::h_execute_function(Inspector* code, Instance* instance)
 CodeExecutor::InstanceDefinition::EventData* CodeExecutor::GetEventData(const int id, const Event event)
 {
 	for (auto& e : _instance_definitions[id]._events) {
-
 		if (event == e.event) {
 			return &e;
 		}
-		else {
-			/* TODO: cos z tym jest nie tak
-			if (_Event > e.event) {
-				if (_Event == Event::DEF_VALUES) return nullptr;
-				Console::WriteLine("Event '" + Event_toString(_Event) + "' not found for instance '" + InstanceDefinitions[_id]._name + "'");
-				InstanceDefinitions[_id]._events.push_back({ _Event, 0, nullptr });
-				// sort events
-				std::sort(InstanceDefinitions[_id]._events.begin(), InstanceDefinitions[_id]._events.end());
-				return nullptr;
-			}
-			*/
-		}
-		
 	}
 	return nullptr;
 }
