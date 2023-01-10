@@ -1,0 +1,2 @@
+//Standard Behaviour instance_draw_self
+draw_sprite_self()
