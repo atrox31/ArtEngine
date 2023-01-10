@@ -1,10 +1,12 @@
 @echo off
 cls
 @echo prepare output dir
-set outputDir="Core"
+set outputDir="Core
 
-if exist %outputDir% rmdir /Q /S %outputDir%
+if exist "%outputDir% rmdir /Q /S "%outputDir%
 mkdir %outputDir%"
+mkdir %outputDir%\StandardBehaviourTemplates"
+mkdir %outputDir%\SceneTemplates"
 
 @echo searching for ACompiler.exe
 if exist "ACompiler.exe" goto :compiler_found
@@ -28,19 +30,53 @@ if exist "ArtLibGenerator.exe" goto :lib_found
 	exit
 	
 :lib_found
-@echo asd
 start ArtLibGenerator.exe
 copy AScript.lib  %outputDir%\AScript.lib"
 
-@echo prepare binares
-mkdir %outputDir%\bin_Release"
-mkdir %outputDir%\bin_Debug"
-	copy "x64\Release\ArtCore.exe"  %outputDir%\bin_Release\ArtCore.exe"
-	copy "x64\Release\*.dll"  %outputDir%\bin_Release"
+if not exist "x64\Release_windows\ArtCore.exe" goto :win_skip
+@echo prepare windows binares
+mkdir %outputDir%\windows_bin_Release"
+mkdir %outputDir%\windows_bin_Debug"
+	copy "x64\Release_windows\ArtCore.exe"  %outputDir%\windows_bin_Release\ArtCore.exe"
+	copy "x64\Release_windows\*.dll"  %outputDir%\windows_bin_Release"
 	
-	copy "x64\DebugEditor\ArtCore.exe"  %outputDir%\bin_Debug\ArtCore.exe"
-	copy "x64\DebugEditor\*.dll"  %outputDir%\bin_Debug"
-		
+	copy "x64\DebugEditor_windows\ArtCore.exe"  %outputDir%\windows_bin_Debug\ArtCore.exe"
+	copy "x64\DebugEditor_windows\*.dll"  %outputDir%\windows_bin_Debug"
+:win_skip	
+
+if not exist "x64\Release_linux\ArtCore.exe" goto :lin_skip
+@echo prepare linux binares
+mkdir %outputDir%\linux_bin_Release"
+mkdir %outputDir%\linux_bin_Debug"
+	copy "x64\Release_linux\ArtCore.exe"  %outputDir%\linux_bin_Release\ArtCore.exe"
+	copy "x64\Release_linux\*.dll"  %outputDir%\linux_bin_Release"
+	
+	copy "x64\DebugEditor_linux\ArtCore.exe"  %outputDir%\linux_bin_Debug\ArtCore.exe"
+	copy "x64\DebugEditor_linux\*.dll"  %outputDir%\linux_bin_Debug"
+:lin_skip	
+
+@echo prepare macos binares
+if not exist "x64\Release_macos\ArtCore.exe" goto :macos_skip
+mkdir %outputDir%\macos_bin_Release"
+mkdir %outputDir%\macos_bin_Debug"
+	copy "x64\Release_macos\ArtCore.exe"  %outputDir%\macos_bin_Release\ArtCore.exe"
+	copy "x64\Release_macos\*.dll"  %outputDir%\macos_bin_Release"
+	
+	copy "x64\DebugEditor_macos\ArtCore.exe"  %outputDir%\macos_bin_Debug\ArtCore.exe"
+	copy "x64\DebugEditor_macos\*.dll"  %outputDir%\macos_bin_Debug"
+:macos_skip	
+
+@echo prepare android binares
+if not exist "x64\Release_android\ArtCore.exe" goto :and_skip
+mkdir %outputDir%\android_bin_Release"
+mkdir %outputDir%\android_bin_Debug"
+	copy "x64\Release_android\ArtCore.exe"  %outputDir%\android_bin_Release\ArtCore.exe"
+	copy "x64\Release_android\*.dll"  %outputDir%\android_bin_Release"
+	
+	copy "x64\DebugEditor_android\ArtCore.exe"  %outputDir%\android_bin_Debug\ArtCore.exe"
+	copy "x64\DebugEditor_android\*.dll"  %outputDir%\android_bin_Debug"
+:and_skip	
+	
 @echo prepare shaders
 mkdir %outputDir%\shaders"
 	copy "pack\shaders\*.*"  %outputDir%\shaders"
@@ -48,6 +84,12 @@ mkdir %outputDir%\shaders"
 @echo prepare files
 mkdir %outputDir%\pack"
 	copy "pack\files\*.*"  %outputDir%\pack"
+
+@echo StandardBehaviourTemplates
+copy "StandardBehaviourTemplates\*.*"  %outputDir%\StandardBehaviourTemplates"
+
+@echo SceneTemplates
+copy "SceneTemplates\*.*"  %outputDir%\SceneTemplates"
 	
 @echo prepare FileList	
 cd %outputDir%"
