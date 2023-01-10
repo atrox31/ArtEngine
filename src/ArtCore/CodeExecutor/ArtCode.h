@@ -22,7 +22,7 @@ public:
 		OPERATOR,
 		// commands
 		TYPE, IF_BODY, IF_TEST, ELSE,
-		END,
+		END,LOOP,
 
 
 		// last enum to literate in loops
