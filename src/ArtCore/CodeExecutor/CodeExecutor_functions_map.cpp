@@ -117,5 +117,14 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["gui_set_slider_value_step"] = &CodeExecutor::gui_set_slider_value_step;
 	FunctionsMap["gui_set_check_box_value"] = &CodeExecutor::gui_set_check_box_value;
 	FunctionsMap["gui_set_drop_down_selected_index"] = &CodeExecutor::gui_set_drop_down_selected_index;
+	FunctionsMap["system_set_video_mode"] = &CodeExecutor::system_set_video_mode;
+	FunctionsMap["system_set_video_resolution"] = &CodeExecutor::system_set_video_resolution;
+	FunctionsMap["system_set_video_resolution_from_string"] = &CodeExecutor::system_set_video_resolution_from_string;
+	FunctionsMap["system_set_video_bloom_factor"] = &CodeExecutor::system_set_video_bloom_factor;
+	FunctionsMap["system_set_audio_master"] = &CodeExecutor::system_set_audio_master;
+	FunctionsMap["system_set_audio_music"] = &CodeExecutor::system_set_audio_music;
+	FunctionsMap["system_set_audio_sound"] = &CodeExecutor::system_set_audio_sound;
+	FunctionsMap["system_set_audio_music_level"] = &CodeExecutor::system_set_audio_music_level;
+	FunctionsMap["system_set_audio_sound_level"] = &CodeExecutor::system_set_audio_sound_level;
 }
 //end of file

@@ -111,3 +111,12 @@ null gui_set_slider_value_max( int value, string gui_tag);Set maximum value <int
 null gui_set_slider_value_step( int value, string gui_tag);Set step value <int> for slider with <string> tag;Tag must be unique. Values are between min and max and rounded to step
 null gui_set_check_box_value(bool value, string gui_tag);Set checked property of <bool> for check box with <string> tag;Tag must be unique. Values are true or false
 null gui_set_drop_down_selected_index(int index, string gui_tag);Set selected index <int> for drop down list with tag <string>;Selected index is checked if can be selected
+null system_set_video_mode(bool full_screen);Set full screen to <bool>;
+null system_set_video_resolution(int width, int height);Set window resolution to <int> x <int>;
+null system_set_video_resolution_from_string(string value);Set window resolution from <string> text;Text must be 0000x0000 (width x height)
+null system_set_video_bloom_factor(int mode);Set mode for bloom post process to <int>;0-off, 1-low, 2-medium, 3-high;
+null system_set_audio_master(bool mode);Set audio mode for master to <bool>; True means sounds can be played, have higher priority than other audio modes
+null system_set_audio_music(bool mode);Set audio mode for music to <bool>; True means sounds can be played
+null system_set_audio_sound(bool mode);Set audio mode for sound to <bool>; True means sounds can be played
+null system_set_audio_music_level(int level);Set audio level to <int> percent;Level can be from 0 to 100;
+null system_set_audio_sound_level(int level);Set audio level to <int> percent;Level can be from 0 to 100;

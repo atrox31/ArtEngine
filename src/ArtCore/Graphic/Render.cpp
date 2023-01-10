@@ -59,6 +59,7 @@ void Render::LoadShaders() {
 }
 Render::Render()
 {
+	_use_shader_gaussian = false;
 	_shader_gaussian = 0;
 	_shader_gaussian_var_quality = 8;
 	_shader_gaussian_var_directions = 8;
@@ -426,6 +427,7 @@ void Render::RenderToTarget(GPU_Target* target)
 
 void Render::ProcessImageWithGaussian()
 {
+	if (!_instance->_use_shader_gaussian) return;
 	// draw screen with gausan blur
 	GPU_ActivateShaderProgram(_instance->_shader_gaussian, &_instance->_shader_gaussian_block);
 	GPU_SetUniformi(_instance->_shader_gaussian_var_quality_location, _instance->_shader_gaussian_var_quality);

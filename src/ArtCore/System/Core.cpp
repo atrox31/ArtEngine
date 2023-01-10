@@ -46,7 +46,7 @@ void Core::audio::Apply() const
 {
     Mix_MasterVolume(
         ((_audio_master && _audio_sound) ? static_cast<int>(Func::LinearScale(
-            _audio_sound_level,
+            static_cast<float>(_audio_sound_level),
             0.f,
             100.f,
             0.f,
@@ -56,7 +56,7 @@ void Core::audio::Apply() const
 
     Mix_VolumeMusic(
         ((_audio_master && _audio_music) ? static_cast<int>(Func::LinearScale(
-        _audio_music_level,
+        static_cast<float>(_audio_music_level),
         0.f,
         100.f,
         0.f,
@@ -336,28 +336,6 @@ bool Core::ProcessCoreKeys(const Sint32 sym)
         Console::ConsoleHomeButtonPressed();
         return true;
     }
-	/*
-    if (sym == SDLK_F9) {
-        use_bloom = !use_bloom;
-        return true;
-    }
-    
-    if (sym == SDLK_F10) { // low
-        Render::SetGaussianProperties(4, 4, 0.0205f);
-        use_bloom_level = 1;
-        return true;
-    }
-    if (sym == SDLK_F11) { // medium
-        Render::SetGaussianProperties(8, 8, 0.0205f);
-        use_bloom_level = 2;
-        return true;
-    }
-    if (sym == SDLK_F8) { // high
-        Render::SetGaussianProperties(16, 16, 0.0205f);
-        use_bloom_level = 3;
-        return true;
-    }
-    */
     return false;
 }
 
@@ -539,7 +517,7 @@ void Core::ProcessSceneRender() const
 void Core::ProcessPostProcessRender() const
 {
 	// post process
-    if (use_bloom)Render::ProcessImageWithGaussian();
+    Render::ProcessImageWithGaussian();
 
 	// draw interface
     _current_scene->GuiSystem.Render();

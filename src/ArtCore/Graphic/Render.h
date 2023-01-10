@@ -61,7 +61,10 @@ public:
 	 * \param distance blur amount default is 0.02
 	 */
 	static void SetGaussianProperties(int quality, int directions, float distance);
-
+	static void SetGaussianEnabled(const bool mode)
+	{
+		_instance->_use_shader_gaussian = mode;
+	}
 private:
 	virtual ~Render();
 	Render();
@@ -76,6 +79,7 @@ private:
 
 	// bloom
 		// shaders
+	bool _use_shader_gaussian;
 	Uint32 _shader_gaussian;
 	GPU_ShaderBlock _shader_gaussian_block{};
 	int _shader_gaussian_var_quality;

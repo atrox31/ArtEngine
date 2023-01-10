@@ -334,6 +334,15 @@ private:
 	Script(gui_set_slider_value_step);
 	Script(gui_set_check_box_value);
 	Script(gui_set_drop_down_selected_index);
+	Script(system_set_video_mode);
+	Script(system_set_video_resolution);
+	Script(system_set_video_resolution_from_string);
+	Script(system_set_video_bloom_factor);
+	Script(system_set_audio_master);
+	Script(system_set_audio_music);
+	Script(system_set_audio_sound);
+	Script(system_set_audio_music_level);
+	Script(system_set_audio_sound_level);
 #undef Script
 };
 //end of file

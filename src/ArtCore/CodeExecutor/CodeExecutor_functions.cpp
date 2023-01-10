@@ -1133,3 +1133,91 @@ void CodeExecutor::gui_set_drop_down_selected_index(Instance*) {
 		ASSERT(true, "error dynamic_cast<GuiElement::DropDownList*>");
 	}
 }
+
+//null system_set_video_mode(bool full_screen);Set full screen to <bool>;
+void CodeExecutor::system_set_video_mode(Instance*) {
+	const bool mode = StackIn_b;
+	Core::Graphic.SetFullScreen(mode);
+	Core::Graphic.Apply();
+}
+
+//null system_set_video_resolution(int width, int height);Set window resolution to <int> x <int>;
+void CodeExecutor::system_set_video_resolution(Instance*) {
+	const int height = StackIn_i;
+	const int width = StackIn_i;
+	if (width == 0 || height == 0)
+	{
+		// error
+		ASSERT(true, "error argument can not convert to int");
+	}
+	Core::Graphic.SetScreenResolution(width, height);
+	Core::Graphic.Apply();
+}
+
+//null system_set_video_resolution_from_string(string value);Set window resolution from <string> text;Text must be 0000x0000 (width x height)
+void CodeExecutor::system_set_video_resolution_from_string(Instance*) {
+	const std::string video_resolution = StackIn_s;
+	const std::vector<std::string> video_resolution_s = Func::Split(video_resolution, 'x');
+	if(video_resolution_s.size() != 2)
+	{
+		// error
+		ASSERT(true, "error argument '"+ video_resolution+"' can not split");
+	}
+	const int width = Func::TryGetInt(video_resolution_s[0]);
+	const int height = Func::TryGetInt(video_resolution_s[1]);
+	if(width == 0 || height == 0)
+	{
+		// error
+		ASSERT(true, "error argument '" + video_resolution + "' can not convert to int");
+	}
+	Core::Graphic.SetScreenResolution(width, height);
+	Core::Graphic.Apply();
+}
+
+//null system_set_video_bloom_factor(int mode);Set mode for bloom post process to <int>;0-off, 1-low, 2-medium, 3-high;
+void CodeExecutor::system_set_video_bloom_factor(Instance*) {
+	switch(std::clamp(StackIn_i, 0, 3))
+	{
+	case 0:
+		Render::SetGaussianEnabled(false);
+		break;
+	case 1:
+		Render::SetGaussianEnabled(true);
+		Render::SetGaussianProperties(4, 4, 0.0205f);
+		break;
+	case 2:
+		Render::SetGaussianEnabled(true);
+		Render::SetGaussianProperties(8, 8, 0.0205f);
+		break;
+	case 3:
+		Render::SetGaussianEnabled(true);
+		Render::SetGaussianProperties(16, 16, 0.0205f);
+		break;
+	default: break;
+	}
+}
+
+//null system_set_audio_master(bool mode);Set audio mode for master to <bool>; True means sounds can be played, have higher priority than other audio modes
+void CodeExecutor::system_set_audio_master(Instance*) {
+	Core::Audio.SetMaster(StackIn_b);
+}
+
+//null system_set_audio_music(bool mode);Set audio mode for music to <bool>; True means sounds can be played
+void CodeExecutor::system_set_audio_music(Instance*) {
+	Core::Audio.SetMusic(StackIn_b);
+}
+
+//null system_set_audio_sound(bool mode);Set audio mode for sound to <bool>; True means sounds can be played
+void CodeExecutor::system_set_audio_sound(Instance*) {
+	Core::Audio.SetSound(StackIn_b);
+}
+
+//null system_set_audio_music_level(int level);Set audio level to <int> percent;Level can be from 0 to 100;
+void CodeExecutor::system_set_audio_music_level(Instance*) {
+	Core::Audio.SetSoundLevel(StackIn_i);
+}
+
+//null system_set_audio_sound_level(int level);Set audio level to <int> percent;Level can be from 0 to 100;
+void CodeExecutor::system_set_audio_sound_level(Instance*) {
+	Core::Audio.SetMusicLevel(StackIn_i);
+}

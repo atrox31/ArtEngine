@@ -66,7 +66,7 @@ private:
 	int _frames;
 	bool _show_fps;
 
-public:
+private:
 	// systems of handle game audio/video
 	class graphic {
 	public:
@@ -114,42 +114,46 @@ public:
 		int _window_frame_rate;
 		bool _window_v_sync;
 		Rect _screen_rect;
-	} inline static Graphic;
+	};
+public:
+	inline static graphic Graphic;
+private:
 	class audio {
 	public:
 		audio() {
-			_audio_music_level = 0.0f;
-			_audio_sound_level = 0.0f;
+			_audio_music_level = 0;
+			_audio_sound_level = 0;
 			_audio_master = true;
 			_audio_music = true;
 			_audio_sound = true;
 		}
 		// setters
-		void SetSoundLevel(const float level) {
-			_audio_sound_level = std::clamp(level, 0.f, 100.f);
+		void SetSoundLevel(const int level) {
+			_audio_sound_level = std::clamp(level, 0, 100);
 			Apply();
 		}
-		void SetMusicLevel(const float level) {
-			_audio_music_level = std::clamp(level, 0.f, 100.f);
+		void SetMusicLevel(const int level) {
+			_audio_music_level = std::clamp(level, 0, 100);
 			Apply();
 		}
-		void SetMaster(const bool& enabled) { _audio_master = enabled; Apply();	}
-		void SetSound(const bool& enabled) { _audio_sound = enabled; Apply();	}
-		void SetMusic(const bool& enabled) { _audio_music = enabled; Apply();	}
+		void SetMaster(const bool& enabled) { _audio_master = enabled; Apply(); }
+		void SetSound(const bool& enabled) { _audio_sound = enabled; Apply(); }
+		void SetMusic(const bool& enabled) { _audio_music = enabled; Apply(); }
 		// getters
-		[[nodiscard]] float GetMusicLevel() const { return (_audio_master && _audio_music) ? _audio_music_level : 0.f; }
-		[[nodiscard]] float GetSoundLevel() const { return (_audio_master && _audio_sound) ? _audio_sound_level : 0.f; }
+		[[nodiscard]] int GetMusicLevel() const { return (_audio_master && _audio_music) ? _audio_music_level : 0; }
+		[[nodiscard]] int GetSoundLevel() const { return (_audio_master && _audio_sound) ? _audio_sound_level : 0; }
 
 		void Apply() const;
 	private:
-		float _audio_music_level;
-		float _audio_sound_level;
+		int _audio_music_level;
+		int _audio_sound_level;
 
 		bool _audio_master;
 		bool _audio_music;
 		bool _audio_sound;
-	} inline static  Audio;
-	
+	};
+public:
+	inline static audio Audio;
 	struct MouseState {
 		enum class ButtonState {
 			PRESSED, RELEASED, NONE
