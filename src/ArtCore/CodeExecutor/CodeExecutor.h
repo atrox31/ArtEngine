@@ -324,6 +324,16 @@ private:
 	Script(scene_get_width);
 	Script(scene_get_height);
 	Script(collision_bounce);
+	Script(gui_get_slider_value);
+	Script(gui_get_check_box_value);
+	Script(gui_get_drop_down_selected_index);
+	Script(gui_get_drop_down_selected_value);
+	Script(gui_set_slider_value);
+	Script(gui_set_slider_value_min);
+	Script(gui_set_slider_value_max);
+	Script(gui_set_slider_value_step);
+	Script(gui_set_check_box_value);
+	Script(gui_set_drop_down_selected_index);
 #undef Script
 };
 //end of file

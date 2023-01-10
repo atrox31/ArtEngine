@@ -107,5 +107,15 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["scene_get_width"] = &CodeExecutor::scene_get_width;
 	FunctionsMap["scene_get_height"] = &CodeExecutor::scene_get_height;
 	FunctionsMap["collision_bounce"] = &CodeExecutor::collision_bounce;
+	FunctionsMap["gui_get_slider_value"] = &CodeExecutor::gui_get_slider_value;
+	FunctionsMap["gui_get_check_box_value"] = &CodeExecutor::gui_get_check_box_value;
+	FunctionsMap["gui_get_drop_down_selected_index"] = &CodeExecutor::gui_get_drop_down_selected_index;
+	FunctionsMap["gui_get_drop_down_selected_value"] = &CodeExecutor::gui_get_drop_down_selected_value;
+	FunctionsMap["gui_set_slider_value"] = &CodeExecutor::gui_set_slider_value;
+	FunctionsMap["gui_set_slider_value_min"] = &CodeExecutor::gui_set_slider_value_min;
+	FunctionsMap["gui_set_slider_value_max"] = &CodeExecutor::gui_set_slider_value_max;
+	FunctionsMap["gui_set_slider_value_step"] = &CodeExecutor::gui_set_slider_value_step;
+	FunctionsMap["gui_set_check_box_value"] = &CodeExecutor::gui_set_check_box_value;
+	FunctionsMap["gui_set_drop_down_selected_index"] = &CodeExecutor::gui_set_drop_down_selected_index;
 }
 //end of file

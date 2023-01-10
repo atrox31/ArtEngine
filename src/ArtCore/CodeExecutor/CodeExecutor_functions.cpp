@@ -3,11 +3,15 @@
 #include "CodeExecutor.h"
 #include "ArtCore/Functions/Convert.h"
 #include "ArtCore/Graphic/Render.h"
+#include "ArtCore/Gui/GuiElement/CheckButton.h"
+#include "ArtCore/Gui/GuiElement/DropDownList.h"
+#include "ArtCore/Gui/GuiElement/Slider.h"
 #include "ArtCore/Physics/Physics.h"
 #include "ArtCore/Scene/Instance.h"
 #include "ArtCore/System/Core.h"
 #include "ArtCore/System/AssetManager.h"
 #include "ArtCore/Scene/Scene.h"
+#include "ArtCore/_Debug/Debug.h"
 
 #define StackIn_b CodeExecutor::GlobalStack_bool.Get()
 #define StackIn_p CodeExecutor::GlobalStack_point.Get()
@@ -913,4 +917,219 @@ void CodeExecutor::collision_bounce(Instance* sender) {
 	Instance* target = Core::GetCurrentScene()->CurrentCollisionInstance;
 	// all error checks is in Physics
 	Physics::BounceInstance(sender, target);
+}
+
+//int gui_get_slider_value(string gui_tag);Get exact value from slider with <string> tag;Tag must be unique. Values are between min and max and rounded to step
+void CodeExecutor::gui_get_slider_value(Instance*) {
+	const std::string gui_tag = StackIn_s;
+	try {
+		const GuiElement::Slider* element = dynamic_cast<GuiElement::Slider*>(Core::GetCurrentScene()->GuiSystem.GetElementById(gui_tag));
+		if (element == nullptr)
+		{
+			// error
+			ASSERT(true, "element not found id='" + gui_tag + "'");
+			Break();
+			return;
+		}
+		StackOut_i(element->GetValue());
+	} catch (...)
+	{
+		// error cast
+		ASSERT(true, "error dynamic_cast<GuiElement::Slider*>");
+	}
+}
+
+//bool gui_get_check_box_value(string gui_tag);Get checked value from check box with <string> tag;Tag must be unique. Values are true or false
+void CodeExecutor::gui_get_check_box_value(Instance*) {
+	const std::string gui_tag = StackIn_s;
+	try {
+		const GuiElement::CheckButton* element = dynamic_cast<GuiElement::CheckButton*>(Core::GetCurrentScene()->GuiSystem.GetElementById(gui_tag));
+		if (element == nullptr)
+		{
+			// error
+			ASSERT(true, "element not found id='" + gui_tag + "'");
+			Break();
+			return;
+		}
+		StackOut_b(element->Checked());
+	}
+	catch (...)
+	{
+		// error cast
+		ASSERT(true, "error dynamic_cast<GuiElement::CheckButton*>");
+	}
+}
+
+//int gui_get_drop_down_selected_index(string gui_tag);Get selected index of drop down gui element with tag <string>;Index is 0-based
+void CodeExecutor::gui_get_drop_down_selected_index(Instance*) {
+	const std::string gui_tag = StackIn_s;
+	try {
+		const GuiElement::DropDownList* element = dynamic_cast<GuiElement::DropDownList*>(Core::GetCurrentScene()->GuiSystem.GetElementById(gui_tag));
+		if (element == nullptr)
+		{
+			// error
+			ASSERT(true, "element not found id='" + gui_tag + "'");
+			Break();
+			return;
+		}
+		StackOut_i(element->GetSelectedIndex());
+	}
+	catch (...)
+	{
+		// error cast
+		ASSERT(true, "error dynamic_cast<GuiElement::DropDownList*>");
+	}
+}
+
+//int gui_get_drop_down_selected_value(string gui_tag);Get selected value of drop down gui element with tag <string>;Value may be empty if nothing is selected
+void CodeExecutor::gui_get_drop_down_selected_value(Instance*) {
+	const std::string gui_tag = StackIn_s;
+	try {
+		const GuiElement::DropDownList* element = dynamic_cast<GuiElement::DropDownList*>(Core::GetCurrentScene()->GuiSystem.GetElementById(gui_tag));
+		if (element == nullptr)
+		{
+			// error
+			ASSERT(true, "element not found id='" + gui_tag + "'");
+			Break();
+			return;
+		}
+		StackOut_s(element->GetSelectedValue());
+	}
+	catch (...)
+	{
+		// error cast
+		ASSERT(true, "error dynamic_cast<GuiElement::DropDownList*>");
+	}
+}
+
+//null gui_set_slider_value( int value, string gui_tag);Set exact value <int> for slider with <string> tag;Tag must be unique. Values are between min and max and rounded to step
+void CodeExecutor::gui_set_slider_value(Instance*) {
+	const std::string gui_tag = StackIn_s;
+	const int value = StackIn_i;
+	try {
+		GuiElement::Slider* element = dynamic_cast<GuiElement::Slider*>(Core::GetCurrentScene()->GuiSystem.GetElementById(gui_tag));
+		if (element == nullptr)
+		{
+			// error
+			ASSERT(true, "element not found id='" + gui_tag + "'");
+			Break();
+			return;
+		}
+		element->SetValue(value);
+	}
+	catch (...)
+	{
+		// error cast
+		ASSERT(true, "error dynamic_cast<GuiElement::Slider*>");
+	}
+}
+
+//null gui_set_slider_value_min( int value, string gui_tag);Set minimum value <int> for slider with <string> tag;Tag must be unique. Values are between min and max and rounded to step
+void CodeExecutor::gui_set_slider_value_min(Instance*) {
+	const std::string gui_tag = StackIn_s;
+	const int value = StackIn_i;
+	try {
+		GuiElement::Slider* element = dynamic_cast<GuiElement::Slider*>(Core::GetCurrentScene()->GuiSystem.GetElementById(gui_tag));
+		if (element == nullptr)
+		{
+			// error
+			ASSERT(true, "element not found id='" + gui_tag + "'");
+			Break();
+			return;
+		}
+		element->SetValueMin(value);
+	}
+	catch (...)
+	{
+		// error cast
+		ASSERT(true, "error dynamic_cast<GuiElement::Slider*>");
+	}
+}
+
+//null gui_set_slider_value_max( int value, string gui_tag);Set maximum value <int> for slider with <string> tag;Tag must be unique. Values are between min and max and rounded to step
+void CodeExecutor::gui_set_slider_value_max(Instance*) {
+	const std::string gui_tag = StackIn_s;
+	const int value = StackIn_i;
+	try {
+		GuiElement::Slider* element = dynamic_cast<GuiElement::Slider*>(Core::GetCurrentScene()->GuiSystem.GetElementById(gui_tag));
+		if (element == nullptr)
+		{
+			// error
+			ASSERT(true, "element not found id='" + gui_tag + "'");
+			Break();
+			return;
+		}
+		element->SetValueMax(value);
+	}
+	catch (...)
+	{
+		// error cast
+		ASSERT(true, "error dynamic_cast<GuiElement::Slider*>");
+	}
+}
+
+//null gui_set_slider_value_step( int value, string gui_tag);Set step value <int> for slider with <string> tag;Tag must be unique. Values are between min and max and rounded to step
+void CodeExecutor::gui_set_slider_value_step(Instance*) {
+	const std::string gui_tag = StackIn_s;
+	const int value = StackIn_i;
+	try {
+		GuiElement::Slider* element = dynamic_cast<GuiElement::Slider*>(Core::GetCurrentScene()->GuiSystem.GetElementById(gui_tag));
+		if (element == nullptr)
+		{
+			// error
+			ASSERT(true, "element not found id='" + gui_tag + "'");
+			Break();
+			return;
+		}
+		element->SetValueStep(value);
+	}
+	catch (...)
+	{
+		// error cast
+		ASSERT(true, "error dynamic_cast<GuiElement::Slider*>");
+	}
+}
+
+//null gui_set_check_box_value(bool value, string gui_tag);Set checked property of <bool> for check box with <string> tag;Tag must be unique. Values are true or false
+void CodeExecutor::gui_set_check_box_value(Instance*) {
+	const std::string gui_tag = StackIn_s;
+	const bool value = StackIn_b;
+	try {
+		GuiElement::CheckButton* element = dynamic_cast<GuiElement::CheckButton*>(Core::GetCurrentScene()->GuiSystem.GetElementById(gui_tag));
+		if (element == nullptr)
+		{
+			// error
+			ASSERT(true, "element not found id='" + gui_tag + "'");
+			Break();
+			return;
+		}
+		element->SetState(value);
+	}
+	catch (...)
+	{
+		// error cast
+		ASSERT(true, "error dynamic_cast<GuiElement::CheckButton*>");
+	}
+}
+
+//null gui_set_drop_down_selected_index(int index, string gui_tag);Set selected index <int> for drop down list with tag <string>;Selected index is checked if can be selected
+void CodeExecutor::gui_set_drop_down_selected_index(Instance*) {
+	const std::string gui_tag = StackIn_s;
+	const int value = StackIn_i;
+	try {
+		GuiElement::DropDownList* element = dynamic_cast<GuiElement::DropDownList*>(Core::GetCurrentScene()->GuiSystem.GetElementById(gui_tag));
+		if (element == nullptr)
+		{
+			// error
+			ASSERT(true, "element not found id='" + gui_tag + "'");
+			Break();
+			return;
+		}
+		element->SetSelectedIndex(value);
+	}
+	catch (...)
+	{
+		// error cast
+		ASSERT(true, "error dynamic_cast<GuiElement::DropDownList*>");
+	}
 }

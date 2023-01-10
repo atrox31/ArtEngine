@@ -1,5 +1,10 @@
 #pragma once
-#include "../src/plf/plf_stack-master/plf_stack.h"
+#ifdef tests
+#include "../../src/plf/plf_stack-master/plf_stack.h"
+#else
+#include "plf/plf_stack-master/plf_stack.h"
+#endif
+
 template <typename T>
 struct AStack final
 {
