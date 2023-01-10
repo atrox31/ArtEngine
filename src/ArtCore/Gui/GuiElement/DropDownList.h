@@ -16,13 +16,13 @@ public:
 
 	void  SetVariableFromStringEx(const std::string& name, const std::string& value) override;
 
-	std::string GetSelectedValue() {return _selected_value;}
+	std::string GetSelectedValue() const {return _selected_value;}
 
-	int GetSelectedIndex() const {return _selected_index;}
+	[[nodiscard]] int GetSelectedIndex() const {return _selected_index;}
 	void SetSelectedIndex(int index);
 private:
 	int _selected_index = -1;
-	std::string _selected_value;
+	std::string _selected_value = "";
 	bool _show_list = false;
 	std::vector<std::string> _values;
 	std::vector<bool> _child_state;
