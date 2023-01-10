@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include <random>
+#define tests
 #include "../../src/ArtCore/CodeExecutor/Stack.h"
 
 class StackTest : public ::testing::Test

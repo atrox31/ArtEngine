@@ -124,7 +124,7 @@ void Console::Execute(const std::string& command)
 			{
 				Core::Executor()->DebugSetInstanceToTrack(Core::GetCurrentScene()->GetInstanceById(Func::TryGetInt(arg[1])));
 				const std::vector<std::string> text = Func::Split(Core::Executor()->DebugGetTrackInfo(), '\n');
-				Core::GetInstance()->CoreDebug.SetSpyLines(text.size());
+				Core::GetInstance()->CoreDebug.SetSpyLines(static_cast<int>(text.size()));
 			}else
 			{
 				WriteLine("Error: spy need instance id");
@@ -251,7 +251,7 @@ bool Console::InnerProcessInput(const SDL_Event* sdl_event)
 		}
 		case SDLK_DELETE:
 		{
-			if ((_current_input.length() > 0) && (_current_cursor_pos < (int)_current_input.length() ))
+			if ((_current_input.length() > 0) && (_current_cursor_pos < static_cast<int>(_current_input.length()) ))
 			{
 				_current_input.erase(_current_cursor_pos, 1);
 				
@@ -379,7 +379,7 @@ void Console::InnerRender(GPU_Target* surface)
 		current_height -= FC_GetBounds(_font, 0.f, 0.f, FC_ALIGN_LEFT, { 1.f, 1.f }, "A").h;
 	}
 	// rest of console
-	const int star_line = (int)_console_lines.size()-1;
+	const int star_line = static_cast<int>(_console_lines.size())-1;
 	const int end_line = std::max(0, star_line - _console_lines_to_show + 1);
 	for(int i = star_line; i > end_line; i--)
 	{

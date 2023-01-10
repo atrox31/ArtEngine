@@ -101,3 +101,13 @@ bool instance_alive(instance instance);Get current status of <instance>
 int scene_get_width();Get scene width;
 int scene_get_height();Get scene height;
 null collision_bounce();Change direction of this object, bounce of other.;This trigger works only in OnCollision event!
+int gui_get_slider_value(string gui_tag);Get exact value from slider with <string> tag;Tag must be unique. Values are between min and max and rounded to step
+bool gui_get_check_box_value(string gui_tag);Get checked value from check box with <string> tag;Tag must be unique. Values are true or false
+int gui_get_drop_down_selected_index(string gui_tag);Get selected index of drop down gui element with tag <string>;Index is 0-based
+int gui_get_drop_down_selected_value(string gui_tag);Get selected value of drop down gui element with tag <string>;Value may be empty if nothing is selected
+null gui_set_slider_value( int value, string gui_tag);Set exact value <int> for slider with <string> tag;Tag must be unique. Values are between min and max and rounded to step
+null gui_set_slider_value_min( int value, string gui_tag);Set minimum value <int> for slider with <string> tag;Tag must be unique. Values are between min and max and rounded to step
+null gui_set_slider_value_max( int value, string gui_tag);Set maximum value <int> for slider with <string> tag;Tag must be unique. Values are between min and max and rounded to step
+null gui_set_slider_value_step( int value, string gui_tag);Set step value <int> for slider with <string> tag;Tag must be unique. Values are between min and max and rounded to step
+null gui_set_check_box_value(bool value, string gui_tag);Set checked property of <bool> for check box with <string> tag;Tag must be unique. Values are true or false
+null gui_set_drop_down_selected_index(int index, string gui_tag);Set selected index <int> for drop down list with tag <string>;Selected index is checked if can be selected
