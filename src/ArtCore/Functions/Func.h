@@ -20,6 +20,8 @@ public:
 
 	static vec2f GetDirectionVector(const float& direction);
 	static float GetVectorFromDirection(const vec2f& vector);
+
+	static std::vector<std::string> VectorFromCharArray(const char* arr[], int size);
 	
 	//get file name with or without extension
 	static std::string GetFileName(const std::string& path, const char separator = '/', bool with_extension = false);
