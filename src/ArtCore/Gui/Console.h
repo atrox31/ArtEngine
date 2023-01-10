@@ -40,9 +40,9 @@ public:
 	// save all content to file
 	static void SaveToFile();
 private:
-	static Console* _instance;
-	inline static std::string _output_file = "console_output";
-	bool _write_output_to_file = false;
+	inline static Console* _instance = nullptr;
+	inline static std::string _output_file;
+	bool _write_output_to_file;
 	// show on screen flag
 	bool _visible;
 	// console font
@@ -51,7 +51,7 @@ private:
 	// user input history
 	std::vector<std::string> _string_input_history;
 	// starting position of history
-	int _string_input_history_pos = 1;
+	int _string_input_history_pos;
 
 	// string list of all lines
 	inline static std::vector<std::string> _console_lines;
@@ -59,15 +59,15 @@ private:
 	std::string _current_input;
 
 	// position of cursor
-	int _current_cursor_pos = 0;
+	int _current_cursor_pos;
 	// graphic
 	const char _console_cursor_char = '|';
-	bool _show_cursor = false;
-	double _cursor_interval = 0.0;
+	bool _show_cursor;
+	double _cursor_interval;
 	const int _console_lines_to_show = 12;
 	float _console_lines_height;
 
-	Console() = default;
+	Console();
 	static std::string GetCurrentDate();
 	static std::string GetCurrentTime();
 	bool InnerProcessInput(const SDL_Event* sdl_event);

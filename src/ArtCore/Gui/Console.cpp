@@ -10,12 +10,6 @@
 
 #include "ArtCore/CodeExecutor/CodeExecutor.h"
 #include "ArtCore/Functions/Convert.h"
-
-Console* Console::_instance = nullptr;
-
-
-
-
 void Console::Create() {
 	if (_instance != nullptr) return;
 	_instance = new Console();
@@ -46,7 +40,8 @@ Console::~Console()
 void Console::SetOutputFile(const std::string& str)
 {
 	if (_instance == nullptr) return;
-	_instance->_output_file = str;
+	Console::WriteLine("Console output set to: " + str);
+	_output_file = str;
 	_instance->_write_output_to_file = true;
 }
 
@@ -168,6 +163,7 @@ bool Console::ProcessEvent(const SDL_Event* sdl_event)
 
 void Console::ConsoleHomeButtonPressed()
 {
+	if (_instance == nullptr) return;
 	_instance->_visible = !_instance->_visible;
 	if (_instance->_visible)
 	{
@@ -204,6 +200,13 @@ void Console::SaveToFile()
 		SDL_RWclose(file);
 	}
 }
+
+Console::Console(): _write_output_to_file(false), _visible(false), _font(nullptr), _string_input_history_pos(1),
+                    _current_cursor_pos(0),
+                    _show_cursor(false),
+                    _cursor_interval(0.0),
+                    _console_lines_height(0.0f)
+{}
 
 std::string Console::GetCurrentDate()
 {
