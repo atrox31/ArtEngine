@@ -1,5 +1,5 @@
 #pragma once
-#include "ArtCore/Gui/Gui.h"
+#include "ArtCore/Functions/Func.h"
 #include "ArtCore/Gui/Gui.h"
 
 namespace GuiElement {
@@ -24,7 +24,7 @@ private:
 	int _selected_index = -1;
 	std::string _selected_value = "";
 	bool _show_list = false;
-	std::vector<std::string> _values;
+	Func::str_vec _values;
 	std::vector<bool> _child_state;
 	int _temp_selected_index = -1;
 };

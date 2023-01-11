@@ -90,9 +90,9 @@ float Func::GetVectorFromDirection(const vec2f& vector)
 	return std::atan2f(vector.y, vector.x);
 }
 
-std::vector<std::string> Func::VectorFromCharArray(const char* arr[], int size)
+Func::str_vec Func::VectorFromCharArray(char* arr[], int size)
 {
-	std::vector<std::string> _return;
+	Func::str_vec _return;
 	for(int i=0; i< size; i++)
 	{
 		_return.emplace_back(arr[i]);
@@ -104,7 +104,7 @@ std::vector<std::string> Func::VectorFromCharArray(const char* arr[], int size)
 std::string Func::GetFileName(const std::string& path, const char separator, bool with_extension)
 {
 	if (path.length() == 0) return "";
-	std::vector<std::string> path_separated = Func::Split(path, separator);
+	Func::str_vec path_separated = Func::Split(path, separator);
 	if (with_extension)
 	{
 		return path_separated.back();
@@ -149,7 +149,7 @@ std::string Func::GetHexTable(const unsigned char* data, int size, int group)
 	return stringstream.str();
 }
 
-std::size_t Func::replace_all(std::string& inout, std::string what, std::string with)
+std::size_t Func::ReplaceAll(std::string& inout, std::string what, std::string with)
 {
 	std::size_t count{};
 	for (std::string::size_type pos{};
@@ -166,9 +166,9 @@ bool Func::FileExists(const std::string& file_name)
 	return (stat(file_name.c_str(), &buffer) == 0);
 }
 
-std::vector<std::string> Func::Explode(const std::string& string, const char separator)
+Func::str_vec Func::Explode(const std::string& string, const char separator)
 {
-	std::vector<std::string> tokens;
+	Func::str_vec tokens;
 	size_t prev = 0, pos = 0;
 	do
 	{
@@ -181,9 +181,9 @@ std::vector<std::string> Func::Explode(const std::string& string, const char sep
 	return tokens;
 }
 
-std::vector<std::string> Func::Split(const std::string& string, const char separator)
+Func::str_vec Func::Split(const std::string& string, const char separator)
 {
-	std::vector<std::string> internal;
+	Func::str_vec internal;
 	std::stringstream ss(string);
 	std::string tok;
 
@@ -195,15 +195,15 @@ std::vector<std::string> Func::Split(const std::string& string, const char separ
 	return internal;
 }
 
-std::vector<std::string> Func::GetFileText(const std::string& file, int* size, const bool replace_slashes)
+Func::str_vec Func::ArchiveGetFileText(const std::string& file, int* size, const bool replace_slashes)
 {
-	std::vector<std::string> _return = std::vector<std::string>();
+	Func::str_vec _return = Func::str_vec();
 	if(size != nullptr)
 		*size = 0;
-	std::string buffer(GetFileBuf(file, nullptr));
+	std::string buffer(ArchiveGetFileBuffer(file, nullptr));
 	if (buffer.length() == 0) return _return;
 
-	std::vector<std::string> data = Func::Explode(buffer, '\n');
+	Func::str_vec data = Func::Explode(buffer, '\n');
 	if (data.empty()) return _return;
 
 	// clean from \r on ends
@@ -211,7 +211,7 @@ std::vector<std::string> Func::GetFileText(const std::string& file, int* size, c
 		if (line[line.length() - 1] == '\r')
 			line = line.substr(0, line.length() - 1);
 		if(replace_slashes)
-			Func::replace_all(line, "\\", "/");
+			Func::ReplaceAll(line, "\\", "/");
 		_return.push_back(line);
 	}
 	if (size != nullptr)
@@ -219,7 +219,7 @@ std::vector<std::string> Func::GetFileText(const std::string& file, int* size, c
 	return _return;
 }
 
-char* Func::GetFileBuf(const std::string& file, Sint64* len)
+char* Func::ArchiveGetFileBuffer(const std::string& file, Sint64* len)
 {
 	if (PHYSFS_exists(file.c_str()))
 	{
@@ -239,7 +239,7 @@ char* Func::GetFileBuf(const std::string& file, Sint64* len)
 	return nullptr;
 }
 
-unsigned char* Func::GetFileBytes(const std::string& file, Sint64* len)
+unsigned char* Func::ArchiveGetFileBytes(const std::string& file, Sint64* len)
 {
 	if (PHYSFS_exists(file.c_str()))
 	{
@@ -258,7 +258,7 @@ unsigned char* Func::GetFileBytes(const std::string& file, Sint64* len)
 	Console::WriteLine("File not exists in archive: '" + file + "'!");
 	return nullptr;
 }
-SDL_RWops* Func::GetFileRWops(const std::string& file, Sint64* len)
+SDL_RWops* Func::ArchiveGetFileRWops(const std::string& file, Sint64* len)
 {
 	if (PHYSFS_exists(file.c_str()))
 	{
@@ -318,10 +318,10 @@ SDL_GLattr Func::GetSdlAttrFromString(const std::string& arg, bool* error)
 	}
 }
 
-Uint32 Func::load_shader(GPU_ShaderEnum shader_type, const char* filename)
+Uint32 Func::LoadShader(GPU_ShaderEnum shader_type, const char* filename)
 {
 	Sint64 siz = 0;
-	char* source = Func::GetFileBuf(std::string(filename), &siz);
+	char* source = Func::ArchiveGetFileBuffer(std::string(filename), &siz);
 
 	if (siz == 0) return -1;
 
@@ -332,14 +332,14 @@ Uint32 Func::load_shader(GPU_ShaderEnum shader_type, const char* filename)
 
 }
 
-GPU_ShaderBlock Func::load_shader_program(Uint32* p, const char* vertex_shader_file, const char* fragment_shader_file)
+GPU_ShaderBlock Func::LoadShaderProgram(Uint32* p, const char* vertex_shader_file, const char* fragment_shader_file)
 {
-	const Uint32 v = load_shader(GPU_VERTEX_SHADER, vertex_shader_file);
+	const Uint32 v = LoadShader(GPU_VERTEX_SHADER, vertex_shader_file);
 
 	if (!v)
 		GPU_LogError("Failed to load vertex shader (%s): %s\n", vertex_shader_file, GPU_GetShaderMessage());
 
-	const Uint32 f = load_shader(GPU_FRAGMENT_SHADER, fragment_shader_file);
+	const Uint32 f = LoadShader(GPU_FRAGMENT_SHADER, fragment_shader_file);
 
 	if (!f)
 		GPU_LogError("Failed to load fragment shader (%s): %s\n", fragment_shader_file, GPU_GetShaderMessage());
@@ -368,7 +368,7 @@ Func::DataValues::DataValues(const char* data, const Sint64 size)
 		Console::WriteLine("DataValues: size is 0");
 		return;
 	}
-	std::vector<std::string> values = std::vector<std::string>();
+	Func::str_vec values = Func::str_vec();
 	std::string tmp_value;
 	Sint64 pos = -1;
 	while (pos++ < size) {
@@ -395,7 +395,7 @@ Func::DataValues::DataValues(const char* data, const Sint64 size)
 				Console::WriteLine("DataValues: section '" + c_section + "' is exists!");
 			}
 			else {
-				_data.insert({ c_section, std::vector<std::string>() });
+				_data.insert({ c_section, Func::str_vec() });
 			}
 			continue;
 		}
@@ -422,7 +422,7 @@ std::string Func::DataValues::GetData(const std::string& section, const std::str
 	}
 
 	for (std::string& v : _data[section]) {
-		std::vector<std::string> data = Func::Split(v, '=');
+		Func::str_vec data = Func::Split(v, '=');
 		if (data[0] != field) continue;
 		if (data.size() == 1) {
 			// not have value at all
@@ -434,11 +434,11 @@ std::string Func::DataValues::GetData(const std::string& section, const std::str
 	return "";
 }
 
-std::vector<std::string> Func::DataValues::GetSection(const std::string& section)
+Func::str_vec Func::DataValues::GetSection(const std::string& section)
 {
 	if (!_data.contains(section)) {
 		Console::WriteLine("DataValues: section '" + section + "' not found!");
-		std::vector<std::string> _return = std::vector<std::string>();
+		Func::str_vec _return = Func::str_vec();
 		return _return;
 	}
 	return _data[section];

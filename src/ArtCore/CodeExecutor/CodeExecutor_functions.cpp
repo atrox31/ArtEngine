@@ -1157,7 +1157,7 @@ void CodeExecutor::system_set_video_resolution(Instance*) {
 //null system_set_video_resolution_from_string(string value);Set window resolution from <string> text;Text must be 0000x0000 (width x height)
 void CodeExecutor::system_set_video_resolution_from_string(Instance*) {
 	const std::string video_resolution = StackIn_s;
-	const std::vector<std::string> video_resolution_s = Func::Split(video_resolution, 'x');
+	const Func::str_vec video_resolution_s = Func::Split(video_resolution, 'x');
 	if(video_resolution_s.size() != 2)
 	{
 		// error

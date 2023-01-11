@@ -1,6 +1,7 @@
 #pragma once
 #include <unordered_map>
 
+#include "ArtCore/Functions/Func.h"
 #include "ArtCore/Graphic/Sprite.h"
 #include "FC_Fontcache/SDL_FontCache.h"
 
@@ -35,11 +36,11 @@ public:
 	int GetFontId(const std::string& name) const;
 
 #ifdef _DEBUG
-	std::vector<std::string> Debug_List_sprite_name;
-	std::vector<std::string> Debug_List_texture_name;
-	std::vector<std::string> Debug_List_music_name;
-	std::vector<std::string> Debug_List_sound_name;
-	std::vector<std::string> Debug_List_font_name;
+	Func::str_vec Debug_List_sprite_name;
+	Func::str_vec Debug_List_texture_name;
+	Func::str_vec Debug_List_music_name;
+	Func::str_vec Debug_List_sound_name;
+	Func::str_vec Debug_List_font_name;
 #endif
 
 private:

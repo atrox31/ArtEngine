@@ -66,7 +66,7 @@ int BackGroundRenderer::ThreadDrawingFunction(void* data)
 
     // graphic
     SDL_Texture* bc_img = nullptr;
-    if (SDL_RWops* tmp_img = Func::GetFileRWops("bg_img.png", nullptr); tmp_img != nullptr) {
+    if (SDL_RWops* tmp_img = Func::ArchiveGetFileRWops("bg_img.png", nullptr); tmp_img != nullptr) {
         bc_img = IMG_LoadTexture_RW(renderer, tmp_img, 1);
     }
 

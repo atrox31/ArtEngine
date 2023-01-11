@@ -8,11 +8,13 @@
 #include "ArtCore/Scene/Scene.h"
 #include <ArtCore/predefined_headers/consola.h>
 
+#include "ArtCore/main.h"
 #include "ArtCore/CodeExecutor/CodeExecutor.h"
 #include "ArtCore/Functions/Convert.h"
 void Console::Create() {
 	if (_instance != nullptr) return;
 	_instance = new Console();
+	Console::WriteLine("ArtCore v" + std::to_string(VERSION_MAIN) + '.' + std::to_string(VERSION_MINOR));
 }
 
 void Console::Init() {
@@ -63,14 +65,14 @@ void Console::Execute(const std::string& command)
 {
 	if (_instance == nullptr) return;
 	if (command.empty()) return;
-	const std::vector<std::string> arg = Func::Explode(command, ' ');
+	const Func::str_vec arg = Func::Explode(command, ' ');
 	if (arg.empty()) return;
 	if(Core::Executor()->FunctionsMap.contains(arg[0]))
 	{
 		if(arg.size() > 1)
 		{
 			for (int i = 1; i < arg.size(); i++) {
-				std::vector<std::string> argument = Func::Split(arg[i], '|');
+				Func::str_vec argument = Func::Split(arg[i], '|');
 				if(argument.size() != 2)
 				{
 					WriteLine("Error: argument must be in TYPE|value style");
@@ -118,7 +120,7 @@ void Console::Execute(const std::string& command)
 			if(arg.size() == 2)
 			{
 				Core::Executor()->DebugSetInstanceToTrack(Core::GetCurrentScene()->GetInstanceById(Func::TryGetInt(arg[1])));
-				const std::vector<std::string> text = Func::Split(Core::Executor()->DebugGetTrackInfo(), '\n');
+				const Func::str_vec text = Func::Split(Core::Executor()->DebugGetTrackInfo(), '\n');
 				Core::GetInstance()->CoreDebug.SetSpyLines(static_cast<int>(text.size()));
 			}else
 			{

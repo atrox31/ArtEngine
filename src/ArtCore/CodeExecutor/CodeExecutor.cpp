@@ -43,12 +43,12 @@ CodeExecutor::CodeExecutor()
 bool CodeExecutor::LoadArtLib()
 {
 	MapFunctions();
-	const char* buffer = Func::GetFileBuf("files/AScript.lib", nullptr);
+	const char* buffer = Func::ArchiveGetFileBuffer("files/AScript.lib", nullptr);
 	if (buffer == nullptr) {
 		return false;
 	}
 	const std::string data(buffer);
-	std::vector<std::string> lines = Func::Explode(data, '\n');
+	Func::str_vec lines = Func::Explode(data, '\n');
 	
 	if (lines.empty()) {
 		return false;
@@ -114,7 +114,7 @@ bool CodeExecutor::LoadArtLib()
 Inspector* CodeExecutor::CreateInspector(const std::string& code_file) const
 {
 	Sint64 c = 0;
-	const unsigned char* code_buffer = Func::GetFileBytes(code_file, &c);
+	const unsigned char* code_buffer = Func::ArchiveGetFileBytes(code_file, &c);
 	if (code_buffer == nullptr) return nullptr;
 #ifndef _DEBUG
 	Inspector* inspector = new Inspector(code_buffer, c);
@@ -306,7 +306,7 @@ bool CodeExecutor::LoadSceneTriggers()
 					ExecuteCode(instance.Template, &def_values_code);
 				}else
 				{
-					if(const std::vector<std::string> trigger_type = Func::Split(e_name, '&'); trigger_type.size() != 2)
+					if(const Func::str_vec trigger_type = Func::Split(e_name, '&'); trigger_type.size() != 2)
 					{
 						//error
 						Console::WriteLine("LoadSceneTriggers: '" + o_name + "' - expected 'trigger_type.size() == 2' but " + std::to_string(trigger_type.size()) + " is given");
@@ -320,7 +320,7 @@ bool CodeExecutor::LoadSceneTriggers()
 						}else
 						{
 							// gui element action
-							if (const std::vector<std::string> gui_element_type = Func::Split(trigger_type[0], '#'); gui_element_type.size() != 2)
+							if (const Func::str_vec gui_element_type = Func::Split(trigger_type[0], '#'); gui_element_type.size() != 2)
 							{//error
 								Console::WriteLine("LoadSceneTriggers: '" + o_name + "' - expected 'gui_element_type.size() == 2' but " + std::to_string(gui_element_type.size()) + " is given");
 								ASSERT(false, "x05"); return false;

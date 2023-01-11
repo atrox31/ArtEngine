@@ -380,7 +380,7 @@ Gui::GuiElementTemplate* Gui::Element(const std::string& tag) const
 {
 	if (tag.length() == 0) { Console::WriteLine("gui element: tag size");  return nullptr; }
 
-	const std::vector<std::string> path = Func::Split(tag, '/');
+	const Func::str_vec path = Func::Split(tag, '/');
 	const size_t path_size = path.size();
 
 	if (path_size == 0) { Console::WriteLine("gui element: path error");  return nullptr; }

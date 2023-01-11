@@ -54,7 +54,7 @@ Scene::~Scene()
 bool Scene::Load(const std::string& name)
 {
 	Sint64 len(0);
-	const char* buffer = Func::GetFileBuf("scene/" + name + "/" + name + ".asd", &len);
+	const char* buffer = Func::ArchiveGetFileBuffer("scene/" + name + "/" + name + ".asd", &len);
 	Func::DataValues dv(buffer, len);
 	if (!dv.IsOk()) {
 		return false;
@@ -96,7 +96,7 @@ bool Scene::Load(const std::string& name)
 
 	// instances
 	for (std::string& instance : dv.GetSection(std::string("instance"))) {
-		std::vector<std::string> data = Func::Split(instance, '|');
+		Func::str_vec data = Func::Split(instance, '|');
 		if (data.size() != 3) {
 			Console::WriteLine("Instance error: '" + instance + "'");
 			continue;
@@ -104,7 +104,7 @@ bool Scene::Load(const std::string& name)
 		_begin_instances.emplace_back( data[0], Func::TryGetInt(data[1]), Func::TryGetInt(data[2]) );
 	}
 
-	const char* gui_schema_json_buffer = Func::GetFileBuf("scene/" + _name + "/GuiSchema.json", nullptr);
+	const char* gui_schema_json_buffer = Func::ArchiveGetFileBuffer("scene/" + _name + "/GuiSchema.json", nullptr);
 	if (gui_schema_json_buffer == nullptr)
 	{
 		return true;

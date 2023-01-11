@@ -57,35 +57,35 @@ bool AssetManager::LoadData(BackGroundRenderer* bgr, const int p_min, const int 
 {
 	
 	Sint64 buffer_size(0);
-	const std::string buffer = std::string(Func::GetFileBuf("filelist.txt", &buffer_size));
+	const std::string buffer = std::string(Func::ArchiveGetFileBuffer("filelist.txt", &buffer_size));
 	if (buffer_size == 0) return true;
 
-	std::vector<std::string> data = Func::Explode(buffer, '\n');
+	Func::str_vec data = Func::Explode(buffer, '\n');
 	if (data.empty()) return false;
 	
 	for (std::string& line : data) {
 		if(line[line.length()-1] == '\r')
 			line = line.substr(0, line.length() - 1);
-		Func::replace_all(line, "\\", "/");
+		Func::ReplaceAll(line, "\\", "/");
 	}
 	// current asset
 	int c_pos = 0;
 	for (std::string& line : data) {
 		c_pos++;
 
-		std::vector<std::string> temp = Func::Split(line, ';');
+		Func::str_vec temp = Func::Split(line, ';');
 		if (temp.size() != 2) continue;
 
 		const std::string file = temp[0];
 
-		std::vector<std::string> path = Func::Split(temp[0], '/');
+		Func::str_vec path = Func::Split(temp[0], '/');
 		if (path.empty()) continue;
 
 		const std::string normal_name = temp[1];
 		
 		if (path[0] == "Textures") {
 			
-			GPU_Image* tmp = GPU_LoadImage_RW(Func::GetFileRWops(file, nullptr), true);
+			GPU_Image* tmp = GPU_LoadImage_RW(Func::ArchiveGetFileRWops(file, nullptr), true);
 			GPU_GenerateMipmaps(tmp);
 			if (tmp == nullptr) return false;
 			List_texture_name.insert({ normal_name, tmp });
@@ -95,18 +95,18 @@ bool AssetManager::LoadData(BackGroundRenderer* bgr, const int p_min, const int 
 			List_sprite_name.insert({ normal_name, tmp });
 		}else if(path[0] == "Music") {
 			
-			Mix_Music* tmp = Mix_LoadMUS_RW(Func::GetFileRWops(file, nullptr), 1);
+			Mix_Music* tmp = Mix_LoadMUS_RW(Func::ArchiveGetFileRWops(file, nullptr), 1);
 			if (tmp == nullptr) return false;
 			List_music_name.insert({ normal_name, tmp });
 		}else if(path[0] == "Sounds") {
 			
-			Mix_Chunk* tmp = Mix_LoadWAV_RW(Func::GetFileRWops(file, nullptr), 1);
+			Mix_Chunk* tmp = Mix_LoadWAV_RW(Func::ArchiveGetFileRWops(file, nullptr), 1);
 			if (tmp == nullptr) return false;
 			List_sound_name.insert({ normal_name, tmp });
 		}else if(path[0] == "Fonts") {
 			
 			FC_Font* tmp = FC_CreateFont();
-			FC_LoadFont_RW(tmp, Func::GetFileRWops(file, nullptr), 1, 12, { 255,255,255 }, TTF_STYLE_NORMAL);
+			FC_LoadFont_RW(tmp, Func::ArchiveGetFileRWops(file, nullptr), 1, 12, { 255,255,255 }, TTF_STYLE_NORMAL);
 			if (tmp == nullptr) return false;
 			List_font_name.insert({ normal_name, tmp });
 		}

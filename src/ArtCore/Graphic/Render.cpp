@@ -51,7 +51,7 @@ void Render::DestroyRender()
 
 void Render::LoadShaders() {
 	_instance->_shader_gaussian = 0;
-	_instance->_shader_gaussian_block = Func::load_shader_program(&_instance->_shader_gaussian, "files/common.vert", "files/bloom.frag");
+	_instance->_shader_gaussian_block = Func::LoadShaderProgram(&_instance->_shader_gaussian, "files/common.vert", "files/bloom.frag");
 	_instance->_shader_gaussian_var_quality_location = GPU_GetUniformLocation(_instance->_shader_gaussian, "Quality");
 	_instance->_shader_gaussian_var_directions_location = GPU_GetUniformLocation(_instance->_shader_gaussian, "Directions");
 	_instance->_shader_gaussian_var_distance_location = GPU_GetUniformLocation(_instance->_shader_gaussian, "Distance");

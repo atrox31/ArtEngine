@@ -40,7 +40,7 @@ void Sprite::Delete(Sprite* target)
 
 Sprite* Sprite::Load(const std::string& file)
 {
-	const char* sprite_buffer = Func::GetFileBuf(file, nullptr);
+	const char* sprite_buffer = Func::ArchiveGetFileBuffer(file, nullptr);
 	const json data = json::parse(sprite_buffer);
 	if (!data.is_object()) return nullptr;
 
@@ -59,7 +59,7 @@ Sprite* Sprite::Load(const std::string& file)
 		new_sprite->m_texture.resize(new_sprite->m_texture_size);
 		for (int i = 0; i < new_sprite->m_texture_size; i++) {
 			const std::string tex_name = "Sprites/" + sprite_name + "/" + std::to_string(i) + ".png";
-			new_sprite->m_texture[i] = GPU_LoadImage_RW(Func::GetFileRWops(tex_name, nullptr), true);
+			new_sprite->m_texture[i] = GPU_LoadImage_RW(Func::ArchiveGetFileRWops(tex_name, nullptr), true);
 			GPU_GenerateMipmaps(new_sprite->m_texture[i]);
 			if(new_sprite->m_texture[i] == nullptr){
 				Console::WriteLine("Sprite::Load - " + sprite_name + " texture '" + tex_name + "' not found");
