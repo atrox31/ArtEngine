@@ -178,28 +178,6 @@
     <ClCompile Include="src\ArtCore\Main.cpp" />
     <ClCompile Include="src\ArtCore\_Debug\Memory.cpp" />
     <ClCompile Include="src\ArtCore\Gui\GuiElement\Panel.cpp" />
-    <ClCompile Include="src\physfs-3.0.2\src\physfs.c" />
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_archiver_7z.c" />
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_archiver_dir.c" />
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_archiver_grp.c" />
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_archiver_hog.c" />
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_archiver_iso9660.c" />
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_archiver_mvl.c" />
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_archiver_qpak.c" />
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_archiver_slb.c" />
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_archiver_unpacked.c" />
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_archiver_vdf.c" />
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_archiver_wad.c" />
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_archiver_zip.c" />
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_byteorder.c" />
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_platform_haiku.cpp" />
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_platform_os2.c" />
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_platform_posix.c" />
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_platform_qnx.c" />
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_platform_unix.c" />
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_platform_windows.c" />
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_platform_winrt.cpp" />
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_unicode.c" />
     <ClCompile Include="src\ArtCore\Gui\GuiElement\ProgressBar.cpp" />
     <ClCompile Include="src\ArtCore\Structs\Rect.cpp" />
     <ClCompile Include="src\ArtCore\Graphic\Render.cpp" />
@@ -210,6 +188,29 @@
     <ClCompile Include="src\ArtCore\Gui\GuiElement\TabPanel.cpp" />
     <ClCompile Include="src\ArtCore\_Debug\Time.cpp" />
     <ClCompile Include="src\ArtCore\Structs\vec2f.cpp" />
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs.c" />
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_archiver_7z.c" />
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_archiver_dir.c" />
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_archiver_grp.c" />
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_archiver_hog.c" />
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_archiver_iso9660.c" />
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_archiver_mvl.c" />
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_archiver_qpak.c" />
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_archiver_slb.c" />
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_archiver_unpacked.c" />
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_archiver_vdf.c" />
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_archiver_wad.c" />
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_archiver_zip.c" />
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_byteorder.c" />
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_platform_android.c" />
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_platform_haiku.cpp" />
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_platform_os2.c" />
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_platform_posix.c" />
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_platform_qnx.c" />
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_platform_unix.c" />
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_platform_windows.c" />
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_platform_winrt.cpp" />
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_unicode.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ArtCore\CodeExecutor\ArtCode.h" />
@@ -243,12 +244,6 @@
     <ClInclude Include="src\ArtCore\_Debug\Memory.h" />
     <ClInclude Include="src\nlohmann\json.hpp" />
     <ClInclude Include="src\ArtCore\Gui\GuiElement\Panel.h" />
-    <ClInclude Include="src\physfs-3.0.2\src\physfs.h" />
-    <ClInclude Include="src\physfs-3.0.2\src\physfs_casefolding.h" />
-    <ClInclude Include="src\physfs-3.0.2\src\physfs_internal.h" />
-    <ClInclude Include="src\physfs-3.0.2\src\physfs_lzmasdk.h" />
-    <ClInclude Include="src\physfs-3.0.2\src\physfs_miniz.h" />
-    <ClInclude Include="src\physfs-3.0.2\src\physfs_platforms.h" />
     <ClInclude Include="src\ArtCore\Gui\GuiElement\ProgressBar.h" />
     <ClInclude Include="src\ArtCore\Structs\Rect.h" />
     <ClInclude Include="src\ArtCore\Graphic\Render.h" />
@@ -260,12 +255,22 @@
     <ClInclude Include="src\ArtCore\Gui\GuiElement\TabPanel.h" />
     <ClInclude Include="src\ArtCore\_Debug\Time.h" />
     <ClInclude Include="src\ArtCore\Structs\vec2f.h" />
+    <ClInclude Include="src\physfs-release-3.2.0\src\physfs.h" />
+    <ClInclude Include="src\physfs-release-3.2.0\src\physfs_casefolding.h" />
+    <ClInclude Include="src\physfs-release-3.2.0\src\physfs_internal.h" />
+    <ClInclude Include="src\physfs-release-3.2.0\src\physfs_lzmasdk.h" />
+    <ClInclude Include="src\physfs-release-3.2.0\src\physfs_miniz.h" />
+    <ClInclude Include="src\physfs-release-3.2.0\src\physfs_platforms.h" />
     <ClInclude Include="src\plf\plf_colony-master\plf_colony.h" />
     <ClInclude Include="src\plf\plf_hive-main\plf_hive.h" />
     <ClInclude Include="src\plf\plf_indiesort-master\plf_indiesort.h" />
     <ClInclude Include="src\plf\plf_list-master\plf_list.h" />
     <ClInclude Include="src\plf\plf_queue-main\plf_queue.h" />
     <ClInclude Include="src\plf\plf_stack-master\plf_stack.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\physfs-release-3.2.0\src\Makefile.os2" />
+    <None Include="src\physfs-release-3.2.0\src\physfs_platform_apple.m" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

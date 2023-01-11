@@ -4,72 +4,6 @@
     <ClCompile Include="src\ArtCore\Main.cpp">
       <Filter>ArtCore</Filter>
     </ClCompile>
-    <ClCompile Include="src\physfs-3.0.2\src\physfs.c">
-      <Filter>outsource\physfs-3.0.2</Filter>
-    </ClCompile>
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_archiver_7z.c">
-      <Filter>outsource\physfs-3.0.2</Filter>
-    </ClCompile>
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_archiver_dir.c">
-      <Filter>outsource\physfs-3.0.2</Filter>
-    </ClCompile>
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_archiver_grp.c">
-      <Filter>outsource\physfs-3.0.2</Filter>
-    </ClCompile>
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_archiver_hog.c">
-      <Filter>outsource\physfs-3.0.2</Filter>
-    </ClCompile>
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_archiver_iso9660.c">
-      <Filter>outsource\physfs-3.0.2</Filter>
-    </ClCompile>
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_archiver_mvl.c">
-      <Filter>outsource\physfs-3.0.2</Filter>
-    </ClCompile>
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_archiver_qpak.c">
-      <Filter>outsource\physfs-3.0.2</Filter>
-    </ClCompile>
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_archiver_slb.c">
-      <Filter>outsource\physfs-3.0.2</Filter>
-    </ClCompile>
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_archiver_unpacked.c">
-      <Filter>outsource\physfs-3.0.2</Filter>
-    </ClCompile>
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_archiver_vdf.c">
-      <Filter>outsource\physfs-3.0.2</Filter>
-    </ClCompile>
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_archiver_wad.c">
-      <Filter>outsource\physfs-3.0.2</Filter>
-    </ClCompile>
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_archiver_zip.c">
-      <Filter>outsource\physfs-3.0.2</Filter>
-    </ClCompile>
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_byteorder.c">
-      <Filter>outsource\physfs-3.0.2</Filter>
-    </ClCompile>
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_platform_haiku.cpp">
-      <Filter>outsource\physfs-3.0.2</Filter>
-    </ClCompile>
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_platform_os2.c">
-      <Filter>outsource\physfs-3.0.2</Filter>
-    </ClCompile>
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_platform_posix.c">
-      <Filter>outsource\physfs-3.0.2</Filter>
-    </ClCompile>
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_platform_qnx.c">
-      <Filter>outsource\physfs-3.0.2</Filter>
-    </ClCompile>
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_platform_unix.c">
-      <Filter>outsource\physfs-3.0.2</Filter>
-    </ClCompile>
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_platform_windows.c">
-      <Filter>outsource\physfs-3.0.2</Filter>
-    </ClCompile>
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_platform_winrt.cpp">
-      <Filter>outsource\physfs-3.0.2</Filter>
-    </ClCompile>
-    <ClCompile Include="src\physfs-3.0.2\src\physfs_unicode.c">
-      <Filter>outsource\physfs-3.0.2</Filter>
-    </ClCompile>
     <ClCompile Include="src\FC_Fontcache\SDL_FontCache.c">
       <Filter>outsource\SDL_FontCache</Filter>
     </ClCompile>
@@ -172,28 +106,79 @@
     <ClCompile Include="src\ArtCore\Gui\GuiElement\Slider.cpp">
       <Filter>ArtCore\Gui\GuiElement</Filter>
     </ClCompile>
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_archiver_iso9660.c">
+      <Filter>outsource\physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_archiver_mvl.c">
+      <Filter>outsource\physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_archiver_qpak.c">
+      <Filter>outsource\physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_archiver_slb.c">
+      <Filter>outsource\physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_archiver_unpacked.c">
+      <Filter>outsource\physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_archiver_vdf.c">
+      <Filter>outsource\physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_archiver_wad.c">
+      <Filter>outsource\physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_archiver_zip.c">
+      <Filter>outsource\physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_byteorder.c">
+      <Filter>outsource\physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_platform_android.c">
+      <Filter>outsource\physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_platform_haiku.cpp">
+      <Filter>outsource\physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_platform_os2.c">
+      <Filter>outsource\physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_platform_posix.c">
+      <Filter>outsource\physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_platform_qnx.c">
+      <Filter>outsource\physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_platform_unix.c">
+      <Filter>outsource\physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_platform_windows.c">
+      <Filter>outsource\physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_platform_winrt.cpp">
+      <Filter>outsource\physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_unicode.c">
+      <Filter>outsource\physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs.c">
+      <Filter>outsource\physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_archiver_7z.c">
+      <Filter>outsource\physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_archiver_dir.c">
+      <Filter>outsource\physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_archiver_grp.c">
+      <Filter>outsource\physfs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physfs-release-3.2.0\src\physfs_archiver_hog.c">
+      <Filter>outsource\physfs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ArtCore\main.h">
       <Filter>ArtCore</Filter>
-    </ClInclude>
-    <ClInclude Include="src\physfs-3.0.2\src\physfs.h">
-      <Filter>outsource\physfs-3.0.2</Filter>
-    </ClInclude>
-    <ClInclude Include="src\physfs-3.0.2\src\physfs_casefolding.h">
-      <Filter>outsource\physfs-3.0.2</Filter>
-    </ClInclude>
-    <ClInclude Include="src\physfs-3.0.2\src\physfs_internal.h">
-      <Filter>outsource\physfs-3.0.2</Filter>
-    </ClInclude>
-    <ClInclude Include="src\physfs-3.0.2\src\physfs_lzmasdk.h">
-      <Filter>outsource\physfs-3.0.2</Filter>
-    </ClInclude>
-    <ClInclude Include="src\physfs-3.0.2\src\physfs_miniz.h">
-      <Filter>outsource\physfs-3.0.2</Filter>
-    </ClInclude>
-    <ClInclude Include="src\physfs-3.0.2\src\physfs_platforms.h">
-      <Filter>outsource\physfs-3.0.2</Filter>
     </ClInclude>
     <ClInclude Include="src\FC_Fontcache\SDL_FontCache.h">
       <Filter>outsource\SDL_FontCache</Filter>
@@ -336,6 +321,24 @@
     <ClInclude Include="src\plf\plf_stack-master\plf_stack.h">
       <Filter>outsource\pfl</Filter>
     </ClInclude>
+    <ClInclude Include="src\physfs-release-3.2.0\src\physfs_casefolding.h">
+      <Filter>outsource\physfs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\physfs-release-3.2.0\src\physfs_internal.h">
+      <Filter>outsource\physfs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\physfs-release-3.2.0\src\physfs_lzmasdk.h">
+      <Filter>outsource\physfs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\physfs-release-3.2.0\src\physfs_miniz.h">
+      <Filter>outsource\physfs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\physfs-release-3.2.0\src\physfs_platforms.h">
+      <Filter>outsource\physfs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\physfs-release-3.2.0\src\physfs.h">
+      <Filter>outsource\physfs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ArtCore">
@@ -377,9 +380,6 @@
     <Filter Include="outsource">
       <UniqueIdentifier>{4c89e386-b06b-4585-b5e9-0596581db52b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="outsource\physfs-3.0.2">
-      <UniqueIdentifier>{c1319b2a-9c44-4a6c-b9be-a31f664c4384}</UniqueIdentifier>
-    </Filter>
     <Filter Include="outsource\SDL_FontCache">
       <UniqueIdentifier>{60d6d3f0-0943-4d3f-b9f8-3f9f8c1274bf}</UniqueIdentifier>
     </Filter>
@@ -392,5 +392,16 @@
     <Filter Include="outsource\pfl">
       <UniqueIdentifier>{9d35e0af-b8d5-4a7c-b9c0-c5bb31b367fe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="outsource\physfs">
+      <UniqueIdentifier>{c1319b2a-9c44-4a6c-b9be-a31f664c4384}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\physfs-release-3.2.0\src\physfs_platform_apple.m">
+      <Filter>outsource\physfs</Filter>
+    </None>
+    <None Include="src\physfs-release-3.2.0\src\Makefile.os2">
+      <Filter>outsource\physfs</Filter>
+    </None>
   </ItemGroup>
 </Project>
