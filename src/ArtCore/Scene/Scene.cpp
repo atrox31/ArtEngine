@@ -8,7 +8,7 @@
 #include "ArtCore/System/AssetManager.h"
 
 #include "nlohmann/json.hpp"
-#include "physfs-3.0.2/src/physfs.h"
+#include "physfs-release-3.2.0/src/physfs.h"
 using nlohmann::json;
 
 Scene::Scene()

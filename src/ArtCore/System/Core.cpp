@@ -14,7 +14,7 @@
 #include "ArtCore/predefined_headers/SplashScreen.h"
 #include "ArtCore/Graphic/ColorDefinitions.h"
 
-#include "physfs-3.0.2/src/physfs.h"
+#include "physfs-release-3.2.0/src/physfs.h"
 
 #ifdef _DEBUG
 // time measurment of core events
@@ -743,7 +743,10 @@ std::string Core::SD_GetString(const std::string& field, std::string _default)
 void Core::SD_SetValue(const std::string& field, const std::string& value)
 {
     if (_instance.SettingsData.contains(field)) {
-        _instance.SettingsData[field] = value;
+        if (_instance.SettingsData[field] != value) {
+           
+            _instance.SettingsData[field] = value;
+        }
     }
     else {
         _instance.SettingsData.emplace(field, value);

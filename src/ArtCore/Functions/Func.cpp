@@ -8,7 +8,7 @@
 
 #include "ArtCore/Structs/Rect.h"
 #include "ArtCore/_Debug/Debug.h"
-#include "physfs-3.0.2/src/physfs.h"
+#include "physfs-release-3.2.0/src/physfs.h"
 #include "ArtCore/Functions/SDL_FPoint_extend.h"
 #include "ArtCore/Gui/Console.h"
 
