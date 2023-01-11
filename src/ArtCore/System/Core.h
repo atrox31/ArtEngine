@@ -20,7 +20,7 @@ class Core final
 	~Core();
 public:
 	// Core step execute
-	static bool Init(int argc, char* args[]);
+	static bool Init(const Func::str_vec& args);
 	static bool Run();
 	static bool LoadData();
 	static void Exit();
@@ -181,14 +181,24 @@ private:
 	// settings data -> global settings
 	std::map<std::string, std::string> SettingsData;
 public:
+	// Get value from Settings Data in int format
 	static int SD_GetInt(const std::string& field, int _default);
+	// Get value from Settings Data in float format
 	static float SD_GetFloat(const std::string& field, float _default);
+	// Get value from Settings Data in string format
 	static std::string SD_GetString(const std::string& field, std::string _default);
+	// Set value, replace if exists
+	static void SD_SetValue(const std::string& field, const std::string& value);
 
 private:
-	// inner list
+	using program_argument = std::pair<const char*, const char*>;
+	void PopulateArguments(const Func::str_vec&);
+	program_argument GetProgramArgument(const std::string& argument);
+	std::vector<program_argument> _program_arguments;
+
+	static bool LoadSetupFile(const std::string&);
+
 	FC_Font* _global_font;
-	std::vector<std::string> _program_arguments;
 	AssetManager* _asset_manager;
 
 	Scene* _current_scene;
@@ -222,7 +232,7 @@ private:
 
 		bool _show_performance = false;
 	public:
-		bool _show_performance_times = false;
+		bool   _show_performance_times = false;
 		double _performance_counter_all_rt{};
 		double _performance_counter_step_rt{};
 		double _performance_counter_psychics_rt{};
@@ -264,4 +274,5 @@ public:
 	CoreDebug CoreDebug;
 #endif
 };
+
 

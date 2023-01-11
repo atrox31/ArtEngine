@@ -79,250 +79,381 @@ Core::Core()
     _frames = 0;
     _current_scene = nullptr;
     _show_fps = false; 
-    _asset_manager = new AssetManager();
-    _executor = new CodeExecutor();
+    _asset_manager = nullptr;
+    _executor = nullptr;
 }
 
 Core::~Core()
 {
-    _executor->Delete();
+    if(_executor != nullptr)
+		_executor->Delete();
     delete _executor;
 
-    _asset_manager->ClearData();
+    if(_asset_manager != nullptr)
+		_asset_manager->ClearData();
     delete _asset_manager;
-    const bool gpu_has_init = (_screenTarget != nullptr);
+
+    if (_current_scene != nullptr)
+    	_current_scene->Exit();
+	delete _current_scene;
+
     Render::DestroyRender();
-    GPU_FreeTarget(_screenTarget);
+
+    if(_screenTarget != nullptr)
+		GPU_FreeTarget(_screenTarget);
+    //delete _screenTarget; heap error ?
 
     SettingsData.clear();
-    if (_current_scene != nullptr)
-    {
-        _current_scene->Exit();
-        delete _current_scene;
-    }
-
-    //Console::SaveToFile();
     Console::Exit();
 
     if (_global_font != nullptr)
         FC_FreeFont(_global_font);
 
-    if (gpu_has_init) {
+    if (_window) {
         GPU_Quit();
     }
     IMG_Quit();
     TTF_Quit();
     Mix_CloseAudio();
     SDLNet_Quit();
-    SDL_Quit();
 
+    SDL_QuitSubSystem(SDL_INIT_TIMER);
+    SDL_QuitSubSystem(SDL_INIT_AUDIO);
+    SDL_QuitSubSystem(SDL_INIT_VIDEO);
+    SDL_QuitSubSystem(SDL_INIT_GAMECONTROLLER);
+    SDL_QuitSubSystem(SDL_INIT_HAPTIC);
+    SDL_QuitSubSystem(SDL_INIT_EVENTS);
+
+    SDL_Quit();
 }
-bool Core::Init(int argc, char* args[])
+
+// try to initialize critic game system
+// break loading when error
+#define TRY_TO_INIT_CRITIC(init, failure_msg, component)    \
+ if (!(init)) {                                             \
+     Console::WriteLine(std::string( (component) )+": error.");            \
+     Console::WriteLine((failure_msg));                     \
+     return false;                                          \
+ } Console::WriteLine(std::string( (component) )+": success.");            \
+
+// Converts arguments list to pairs, this allow to have nullptr if
+// something is not populate.
+void Core::PopulateArguments(const Func::str_vec& args)
+{
+    if (args.size() == 1) return;
+    for (size_t i = 1; i < args.size();)
+    {
+        // is command?
+        if(args[i][0] == '-')
+        {
+            // have next string?
+	        if(i+1 < args.size())
+	        {
+                // next string is argument?
+                if (args[i + 1][0] != '-')
+                {
+                    // insert command + argument
+                    _program_arguments.emplace_back(args[i].c_str(), args[i + 1].c_str());
+                    i += 2;
+                    continue;
+                }
+                // next string is another command
+                else
+                {
+                    // insert only command
+                    _program_arguments.emplace_back(args[i].c_str(), nullptr);
+                    i += 1;
+                    continue;
+                }
+	        }
+            // must be only command
+            else
+            {
+                _program_arguments.emplace_back(args[i].c_str(), nullptr);
+                i += 1;
+                continue;
+            }
+        }
+        // else not valid command
+    }
+}
+
+Core::program_argument Core::GetProgramArgument(const std::string& argument)
+{
+	for (program_argument& program_argument : _program_arguments)
+	{
+		if(program_argument.first == argument)
+		{
+            return program_argument;
+		}
+	}
+    return { nullptr, nullptr };
+}
+
+bool Core::LoadSetupFile(const std::string& setup_file)
+{
+    if(PHYSFS_exists(setup_file.c_str()) == 0)
+    {
+	    return false;
+    }
+    for (const std::string& data : Func::ArchiveGetFileText(setup_file, nullptr, false)) {
+        if (data.substr(0, 2) == "//") continue;
+
+        Func::str_vec line = Func::Split(data, '=');
+        if (line.empty()) continue;
+        if (line.size() != 2) {
+            Console::WriteLine("Cannot read property '" + data + "'");
+            continue;
+        }
+        // open gl command
+        if (line[0].substr(0, 2) == "SDL_GL_") {
+            bool error = false;
+            const SDL_GLattr attr = Func::GetSdlAttrFromString(line[0], &error);
+            if (error) {
+                Console::WriteLine("unknown property '" + data + "'");
+            }
+            else {
+                if (SDL_GL_SetAttribute(attr, Func::TryGetInt(line[1])) != 0) {
+                    Console::WriteLine({ "sdl_error: -SDL_GL_SetAttribute-", SDL_GetError() });
+                }
+            }
+            continue;
+        }
+        // sdl command
+        if (line[0].substr(0, 2) == "SDL_") {
+            if (SDL_SetHint(line[0].c_str(), line[1].c_str()) == SDL_FALSE) {
+                Console::WriteLine({ "sdl_error: -SDL_SetHint-", SDL_GetError() });
+            }
+            continue;
+        }
+        // other data
+        {
+            _instance.SD_SetValue(line[0], line[1]);
+        }
+    }
+    return true;
+}
+
+bool Core::Init(const Func::str_vec& args)
 {
 #ifdef _DEBUG
+    // debug timer to time all events in game
     Time timer;
     timer.StartTest();
 #endif
-    // flags
+
+	// default assets path and name
 #ifdef _DEBUG
-	#ifdef DEBUG_EDITOR
-	    const char* fl_game_dat_file = "game.dat";
-	    const char* fl_assets_file = "assets.pak";
-	#else
-		const char* fl_game_dat_file = "test\\game.dat";
-		const char* fl_assets_file = "test\\assets.pak";
-	#endif
+	const char* fl_game_dat_file = "test\\game.dat";
+	const char* fl_assets_file = "test\\assets.pak";
+	const char* fl_platform_file = "test\\Platform.dat";
 #else //release
     const char* fl_game_dat_file = "game.dat";
     const char* fl_assets_file = "assets.pak";
-#endif// _DEBUG
-    // inicialize console to standard output
+    const char* fl_platform_file = "Platform.dat";
+#endif
+
+    // get command line arguments
+    _instance.PopulateArguments(args);
+    // first output then exit application
+    if(const program_argument argument = _instance.GetProgramArgument("-version"); argument.first != nullptr)
+    {
+        SDL_Log("%d.%d.%d",VERSION_MAIN,VERSION_MINOR,VERSION_PATH);
+        return false;
+    }
+
+    // initialize console to standard output
     Console::Create();
-    // args
-    for (int i = 1; i < argc; i++) {
-        std::string argument(args[i]);
-        if (argument == "-game_dat") {
-            if (i + 1 < argc) {
-                fl_game_dat_file = args[i+1];
-                Console::WriteLine( "FL_game_dat_file set to: '" + std::string(fl_game_dat_file) + "'");
-                ++i;
-            }
-            else {
-                Console::WriteLine("FL_game_dat_file error, wrong arg");
-            }
-        }
-        if (argument == "-assets") {
-            if (i + 1 < argc) {
-                fl_assets_file = args[i + 1];
-                Console::WriteLine("FL_assets_file set to: '" + std::string(fl_assets_file) + "'");
-                ++i;
-            }
-            else {
-                Console::WriteLine("FL_assets_file error, wrong arg");
-            }
-        }
 
-        if (argument == "-version") {
-            std::cout << std::to_string(VERSION_MAIN) + '.' + std::to_string(VERSION_MINOR)+ '.' + std::to_string(VERSION_PATH) << std::endl;
-        }
-        if (argument == "-debug") {
-            std::cout << "debug mode" << std::endl;
-            Console::SetOutputFile("console.log");
-        }
-    }
-    
-    Console::WriteLine("ArtCore v" + std::to_string(VERSION_MAIN) + '.' + std::to_string(VERSION_MINOR));
-    if (SDL_Init(SDL_INIT_EVERYTHING) == -1) {
-        Console::WriteLine({ "sdl_error: ", SDL_GetError() });
-        return false;
-    }Console::WriteLine("SDL_Init");
-
-    if (!PHYSFS_init(args[0])) {
-        Console::WriteLine({ "For some reason cant init archive reader libray... game not be able to run, sorry. Reason: " , PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()) });
-        return false;
-    }Console::WriteLine("PHYSFS_init");
-    // primary game data
-    if (!PHYSFS_mount(fl_game_dat_file, nullptr, 0))
+    if(const program_argument argument = _instance.GetProgramArgument("-platform"); argument.second != nullptr)
     {
-        std::string err(PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-        Console::WriteLine( "Error when reading 'game.dat'. Reason: " + err + "\n" + fl_game_dat_file);
-        return false;
-    }Console::WriteLine("PHYSFS_mount game.dat");
-    // read data from setup.ini
-    {
-        std::string string_data = std::string(Func::GetFileBuf("setup.ini", nullptr));
-
-        for (std::string data : Func::Split(string_data, '\n')) {
-            if (data.substr(0, 2) == "//") continue;
-            std::vector<std::string> line = Func::Split(data, '=');
-            if (!line.empty()) {
-                if (line.size() == 2) {
-                    if (line[0].substr(0, 2) == "SDL_GL_") {
-                        bool error = false;
-                        const SDL_GLattr attr = Func::GetSdlAttrFromString(line[0], &error);
-                        if (!error) {
-                            if (SDL_GL_SetAttribute(attr, Func::TryGetInt(line[1])) != 0) {
-                                Console::WriteLine({ "sdl_error: -SDL_GL_SetAttribute-", SDL_GetError() });
-                            }
-                        }
-                        else {
-                            Console::WriteLine("unknown property '" + data + "'");
-                        }
-                    }
-                    else if (line[0].substr(0, 2) == "SDL_") {
-                        if (SDL_SetHint(line[0].c_str(), line[1].c_str()) == SDL_FALSE) {
-                            Console::WriteLine({ "sdl_error: -SDL_SetHint-", SDL_GetError() });
-                        }
-                    }
-                    else {
-                        _instance.SettingsData.insert(std::make_pair(line[0], line[1]));
-                    }
-                }
-                else {
-                    Console::WriteLine("Cannot read property '" + data + "'");
-                }
-            }
-        }
+        fl_platform_file = argument.second;
+        Console::WriteLine("Fl_platform_file set to: '" + std::string(fl_platform_file) + "'");
     }
-    Console::WriteLine("reading setup.ini");
+    if(const program_argument argument = _instance.GetProgramArgument("-game_dat"); argument.second != nullptr)
+    {
+        fl_game_dat_file = argument.second;
+        Console::WriteLine("FL_game_dat_file set to: '" + std::string(fl_game_dat_file) + "'");
+    }
+    if(const program_argument argument = _instance.GetProgramArgument("-assets"); argument.second != nullptr)
+    {
+        fl_assets_file = argument.second;
+        Console::WriteLine("FL_assets_file set to: '" + std::string(fl_assets_file) + "'");
+    }
+    if(const program_argument argument = _instance.GetProgramArgument("-debug"); argument.first != nullptr)
+    {
+        Console::SetOutputFile(
+            argument.second == nullptr ? "console.log"
+            : argument.second
+        );
+    }
+
+    TRY_TO_INIT_CRITIC(
+        SDL_InitSubSystem(SDL_INIT_VIDEO) == 0,
+        std::string(SDL_GetError()),
+        "SDL_Init SDL_INIT_VIDEO"
+    )
+
+	TRY_TO_INIT_CRITIC(
+        PHYSFS_init(args[0].c_str()) != 0,
+		std::string(PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode())),
+		"PHYSFS_init"
+	)
+
+    // platform configuration
+	TRY_TO_INIT_CRITIC(
+        PHYSFS_mount(fl_platform_file, nullptr, 0) != 0,
+		std::string(PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode())),
+		"PHYSFS_mount '"+std::string(fl_platform_file)+"'"
+	)
 #ifdef _DEBUG
-    GPU_SetDebugLevel(GPU_DEBUG_LEVEL_MAX);
+        GPU_SetDebugLevel(GPU_DEBUG_LEVEL_MAX);
+#else
+        GPU_SetDebugLevel(GPU_DEBUG_LEVEL_0);
 #endif // _DEBUG
 
     _instance._screenTarget = GPU_Init(255, 255, GPU_INIT_DISABLE_VSYNC);
-    if (_instance._screenTarget == nullptr) {
-        Console::WriteLine("GPU_Init: " + std::string(SDL_GetError()));
-        return false;
-    }Console::WriteLine("GPU_Init");
-
-    SDL_SetWindowBordered(SDL_GetWindowFromID(_instance._screenTarget->context->windowID), SDL_FALSE);
-    SDL_SetHint(SDL_HINT_RENDER_LINE_METHOD, "3");
-
-    // splash screen for core loading
-    GPU_Clear(_instance._screenTarget);
-    GPU_Image* splash = GPU_CopyImageFromSurface(SDL_LoadBMP_RW(SDL_RWFromConstMem(eula, 8190), 1));
-    if (splash == nullptr)
+    TRY_TO_INIT_CRITIC(
+        _instance._screenTarget != nullptr,
+        std::string(SDL_GetError()),
+        "GPU_Init"
+    )
+	_instance._window = SDL_GetWindowFromID(_instance._screenTarget->context->windowID);
     {
-        Console::WriteLine("loading splash image:" + std::string(SDL_GetError()));
-    }
-    else
-    {
-        GPU_BlitRect(splash, nullptr, _instance._screenTarget, nullptr);
-        GPU_Flip(_instance._screenTarget);
+        // splash screen for core loading
+		SDL_SetWindowBordered(_instance._window, SDL_FALSE);
         GPU_Clear(_instance._screenTarget);
+        GPU_Image* splash = GPU_CopyImageFromSurface(SDL_LoadBMP_RW(SDL_RWFromConstMem(eula, 8190), 1));
+        if (splash == nullptr)
+        {
+            Console::WriteLine("loading splash image:" + std::string(SDL_GetError()));
+        }
+        else
+        {
+            GPU_BlitRect(splash, nullptr, _instance._screenTarget, nullptr);
+            GPU_Flip(_instance._screenTarget);
+            GPU_Clear(_instance._screenTarget);
+        }
+        GPU_FreeImage(splash);
+        splash = nullptr;
     }
-    GPU_FreeImage(splash);
-    splash = nullptr;
-    Console::WriteLine("Splash screen");
 
-    if (!PHYSFS_mount(fl_assets_file, nullptr, 0))
-    {
-        Console::WriteLine( "Error when reading 'assets.pak'. Reason: " + std::string(PHYSFS_getLastError()) );
-        return false;
-    }Console::WriteLine("PHYSFS_mount assets.pak");
+    // SDL timer
+    TRY_TO_INIT_CRITIC(
+        SDL_InitSubSystem(SDL_INIT_TIMER) == 0,
+        std::string(SDL_GetError()),
+        "SDL_Init SDL_INIT_TIMER"
+    )
 
-    if (constexpr int img_flags = IMG_INIT_PNG | IMG_INIT_JPG; !(IMG_Init(img_flags) & img_flags))
-    {
-        Console::WriteLine("IMG_Init:" + std::string(SDL_GetError()));
-        return false;
-    } Console::WriteLine("IMG_Init");
+    // SDL audio
+    TRY_TO_INIT_CRITIC(
+        SDL_InitSubSystem(SDL_INIT_AUDIO) == 0,
+        std::string(SDL_GetError()),
+        "SDL_Init SDL_INIT_AUDIO"
+    )
 
-    // hd - 44100 
-    if (Mix_Init(MIX_InitFlags::MIX_INIT_MP3 | MIX_InitFlags::MIX_INIT_OGG) == 0) {
-        Console::WriteLine("Mix_Init:" + std::string(SDL_GetError()));
-        return false;
-    } Console::WriteLine("Mix_Init");
+    // SDL haptic - on mobile
+	if (SD_GetInt("GameUsingHaptic", 0) == 1) {
+		TRY_TO_INIT_CRITIC(
+			SDL_InitSubSystem(SDL_INIT_HAPTIC) == 0,
+			std::string(SDL_GetError()),
+			"SDL_Init SDL_INIT_HAPTIC"
+		)
+	}
 
-    if (Mix_OpenAudio(Core::SD_GetInt("AUDIO_FREQ", 44100), AUDIO_S32LSB, 2, Core::SD_GetInt("AUDIO_CHUNKSIZE", 4096)) < 0)
-    {
-        Console::WriteLine("Mix_OpenAudio:" + std::string(SDL_GetError()));
-        return false;
-    }Console::WriteLine("Mix_OpenAudio");
+    // SDL controller
+	if (SD_GetInt("GameUsingController", 0) == 1) {
+		TRY_TO_INIT_CRITIC(
+			SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER) == 0,
+			std::string(SDL_GetError()),
+			"SDL_Init SDL_INIT_GAMECONTROLLER"
+		)
+		TRY_TO_INIT_CRITIC(
+            SDL_GameControllerAddMappingsFromRW( Func::ArchiveGetFileRWops("files/gamecontrollerdb.txt", nullptr), 1) > -1,
+			std::string(SDL_GetError()),
+			"SDL_GameControllerAddMappings"
+		)
+	}
 
-    if (TTF_Init() == -1) {
-        Console::WriteLine("TTF_Init:" + std::string(SDL_GetError()));
-        return false;
-    }Console::WriteLine("TTF_Init");
+    // IMG_Init
+	TRY_TO_INIT_CRITIC(
+        IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG,
+        std::string(SDL_GetError()),
+		"IMG_Init"
+	)
 
-    if (SDLNet_Init() == -1) {
-        Console::WriteLine("SDLNet_Init:" + std::string(SDL_GetError()));
-        return false;
-    }Console::WriteLine("SDLNet_Init");
+    // Mix_Init
+	TRY_TO_INIT_CRITIC(
+        Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG) & (MIX_INIT_MP3 | MIX_INIT_OGG),
+        std::string(SDL_GetError()),
+		"Mix_Init"
+	)
 
-    {
-        Sint64 len = 0;
-        const char* buf = Func::GetFileBuf("files/gamecontrollerdb.txt", &len);
-        if (buf != nullptr)
-            SDL_GameControllerAddMappingsFromRW(SDL_RWFromConstMem(buf, static_cast<int>(len)), 1);
-    }Console::WriteLine("gamecontrollerdb.txt load");
-    {
-        Sint64 len = 0;
-        const char* buf = Func::GetFileBuf("files/TitilliumWeb-Light.ttf", &len);
-        _instance._global_font = FC_CreateFont();
-        if (buf != nullptr)
-            FC_LoadFont_RW(_instance._global_font, SDL_RWFromConstMem(buf, static_cast<int>(len)), 1, 24, C_BLACK, TTF_STYLE_NORMAL);
-    }Console::WriteLine("TitilliumWeb-Light.ttf load");
+    // Mix_OpenAudio all sounds must be 32-bit integer samples and 44100 hz
+	TRY_TO_INIT_CRITIC(
+        Mix_OpenAudio(
+            Core::SD_GetInt("AUDIO_FREQ",44100),
+            AUDIO_S32LSB,
+            2, 
+            Core::SD_GetInt("AUDIO_CHUNKSIZE", 4096)
+            ) == 0,
+        std::string(SDL_GetError()),
+		"Mix_OpenAudio"
+    )
+
+	// Mix_Init
+	TRY_TO_INIT_CRITIC(
+        TTF_Init() == 0,
+		std::string(SDL_GetError()),
+		"TTF_Init"
+	)
+
+	// SDLNet_Init
+	TRY_TO_INIT_CRITIC(
+        SDLNet_Init() == 0,
+		std::string(SDL_GetError()),
+		"SDLNet_Init"
+	)
+
+    // primary game data
+    TRY_TO_INIT_CRITIC(
+        PHYSFS_mount(fl_game_dat_file, nullptr, 0) != 0,
+        std::string(PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode())),
+        "PHYSFS_mount '" + std::string(fl_game_dat_file) + "'"
+    )
+
+	// assets
+	TRY_TO_INIT_CRITIC(
+		PHYSFS_mount(fl_assets_file, nullptr, 0) != 0,
+		std::string(PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode())),
+		"PHYSFS_mount '" + std::string(fl_assets_file) + "'"
+	)
+
+    // default font
+	_instance._global_font = FC_CreateFont();
+	TRY_TO_INIT_CRITIC(
+		FC_LoadFont_RW(_instance._global_font, Func::ArchiveGetFileRWops("files/TitilliumWeb-Light.ttf", nullptr), 1, 24, C_BLACK, TTF_STYLE_NORMAL) == 1,
+		std::string(SDL_GetError()),
+		"SDL_GameControllerAddMappings"
+	)
+    FC_SetDefaultColor(_instance._global_font, C_BLACK);
 
     srand(static_cast<unsigned int>(time(nullptr)));
     Console::Init();
 
-    _instance.DeltaTime = 0.0;
-    _instance.NOW = SDL_GetTicks64();
-    _instance.LAST = 0;
-    _instance._frames = 0;
-    FC_SetDefaultColor(_instance._global_font, C_BLACK);
-    //Render::CreateRender(SD_GetInt("DefaultResolution_x", 1920), SD_GetInt("DefaultResolution_y", 1080));
+    _instance._asset_manager = new AssetManager();
+    _instance._executor = new CodeExecutor();
+
 	Graphic.SetScreenResolution(SD_GetInt("DefaultResolution_x", 1920), SD_GetInt("DefaultResolution_y", 1080));
     Graphic.SetFrameRate(SD_GetInt("DefaultFramerate", 60));
     Graphic.SetFullScreen(SD_GetInt("FullScreen", 0) == 1);
-    //Graphic.Apply();
+
+    Console::WriteLine("rdy");
 
 #ifdef _DEBUG
     timer.EndTest();
     timer.PrintTest("Core::Init()");
 #endif
-
-    Console::WriteLine("rdy");
     return true;
 }
 
@@ -605,6 +736,16 @@ std::string Core::SD_GetString(const std::string& field, std::string _default)
     return _default;
 }
 
+void Core::SD_SetValue(const std::string& field, const std::string& value)
+{
+    if (_instance.SettingsData.contains(field)) {
+        _instance.SettingsData[field] = value;
+    }
+    else {
+        _instance.SettingsData.emplace(field, value);
+    }
+}
+
 Uint32 Core::FpsCounterCallback(Uint32 interval, void*)
 {
     Core::GetInstance()->fps = Core::GetInstance()->_frames;
@@ -714,38 +855,45 @@ bool Core::Run()
 bool Core::LoadData()
 {
 #ifdef _DEBUG
-    Time timer;
-    timer.StartTest();
+	Time timer;
+	timer.StartTest();
 #endif
-    SDL_SetWindowBordered(SDL_GetWindowFromID(_instance._screenTarget->context->windowID), SDL_TRUE);
-    Graphic.Apply();
-    GPU_Clear(GetScreenTarget());
-    GPU_Flip(GetScreenTarget());
+	SDL_SetWindowBordered(_instance._window, SDL_TRUE);
+	Graphic.Apply();
+	GPU_Clear(GetScreenTarget());
+	GPU_Flip(GetScreenTarget());
 
-    BackGroundRenderer bgr = BackGroundRenderer();
-    bgr.Run();
-
-    if (!Executor()->LoadArtLib()) {
-        bgr.Stop();
-        return false;
-    }
-    bgr.SetProgress(5);
+	BackGroundRenderer bgr = BackGroundRenderer();
+	bgr.Run();
     
-    // load assets
-    if (!_instance._asset_manager->LoadData(&bgr, 5, 60)) {
-        bgr.Stop();
-        return false;
-    }
-    bgr.SetProgress(60);
+	if (!Executor()->LoadArtLib()) {
+		bgr.Stop();
+		return false;
+	}
+	bgr.SetProgress(5);
+    
+	// load assets
+	if (!_instance._asset_manager->LoadData(&bgr, 5, 60)) {
+		bgr.Stop();
+		return false;
+	}
+	bgr.SetProgress(60);
 
-    if (!Executor()->LoadObjectDefinitions(&bgr, 60, 90)) {
-        bgr.Stop();
-        return false;
-    }
-    bgr.SetProgress(90);
+	if (!Executor()->LoadObjectDefinitions(&bgr, 60, 90)) {
+		bgr.Stop();
+		return false;
+	}
+	bgr.SetProgress(90);
 
-    // set starting scene
-    _instance._primary_scene = Func::GetFileText("scene/StartingScene.txt", nullptr, false)[0];
+	// set starting scene
+    {
+        const Func::str_vec starting_scene = Func::ArchiveGetFileText("scene/StartingScene.txt", nullptr, false);
+        if (starting_scene.empty()) {
+            bgr.Stop();
+            return false;
+        }
+        _instance._primary_scene = starting_scene[0];
+    }
 
     // if error try set first scene
     if (!_instance.ChangeScene(_instance._primary_scene)) {
@@ -998,7 +1146,7 @@ void Core::CoreDebug::Draw() const
 
     if(_show_spy_window)
     {
-        const std::vector<std::string> text = Func::Split(Executor()->DebugGetTrackInfo(), '\n');
+        const Func::str_vec text = Func::Split(Executor()->DebugGetTrackInfo(), '\n');
         std::string sliced_text;
 
         for(int i= _spy_line_begin; i< _spy_line_end; i++)
@@ -1108,7 +1256,7 @@ void Core::CoreDebug::Draw() const
 
         //FC_DrawColor(_instance._global_font, _instance._screenTarget, info_rect.x + 4.f, info_rect.y + 4.f, C_DGREEN, text_left.c_str());
         float current_height = info_rect.y;
-        std::vector<std::string> spliced_text = Func::Split(text_left, '\n');
+        Func::str_vec spliced_text = Func::Split(text_left, '\n');
         int i = 0;
     	for (std::string& text : spliced_text)
         {

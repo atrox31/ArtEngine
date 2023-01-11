@@ -28,8 +28,8 @@ extern "C"
 	__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 }
 
-int protected_main(int argc, char* args[]) {
-	if(!Core::Init(argc, args))
+int protected_main(const Func::str_vec& args) {
+	if(!Core::Init(args))
 	{
 		Console::WriteLine("Core init fail.");
 		Console::SaveToFile();
@@ -49,10 +49,10 @@ int protected_main(int argc, char* args[]) {
 	}
 	return EXIT_SUCCESS;
 }
-int SDL_main(int argc, char* argv[]) {
+int SDL_main(const int argc, char* argv[]) {
 	try
 	{
-		return protected_main(argc, argv);
+		return protected_main(Func::VectorFromCharArray(argv, argc));
 	}
 	catch (const std::exception& e)
 	{
