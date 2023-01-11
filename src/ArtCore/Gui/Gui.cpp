@@ -191,18 +191,36 @@ void Gui::Render() const
 }
 void Gui::_render(Gui::GuiElementTemplate* e)
 {
-	e->_focus = e->_dimensions.PointInRectWh(Core::Mouse.XYf);
+	const bool point_on_element = e->_dimensions.PointInRectWh(Core::Mouse.XYf);
+	e->_mouse_hover = point_on_element;
+	if(e->_mouse_hover)
+	{
+		e->_hover_time += Core::DeltaTime;
+	}else
+	{
+		e->_hover_time = 0.0;
+	}
+
+	if (Core::Mouse.LeftEvent == Core::MouseState::ButtonState::PRESSED) {
+		e->_focus = point_on_element;
+	}
+
+	if (e->_focus)
+	{
+		e->_focus = point_on_element;
+	}
+
 	e->Render();
 	if (!e->_elements.empty()) {
 		for (std::vector<GuiElementTemplate*>::reverse_iterator i = e->_elements.rbegin();
-			i != e->_elements.rend(); ++i) 
-		//for (int i = 0; i < e->_elements.size(); ++i)
+			i != e->_elements.rend(); ++i)
+			//for (int i = 0; i < e->_elements.size(); ++i)
 		{
 			if ((*i)->_visible) {
 				_render((*i));
 			}
 		}
-		
+
 	}
 }
 
@@ -240,7 +258,7 @@ bool Gui::_events(GuiElementTemplate* e)
 	}
 	if (e->_enabled && e->_visible) {
 		if (e->_focus) {
-			if (Core::Mouse.LeftEvent == Core::MouseState::ButtonState::PRESSED) {
+			if (Core::Mouse.LeftEvent == Core::MouseState::ButtonState::RELEASED) {
 				if (e->OnClick()) {
 					if (e->_sound_onClick != nullptr) {
 						// play audio(e->_sound_onClick);
@@ -418,32 +436,32 @@ void Gui::GuiElementTemplate::ApplyStyle()
 		{
 			this->_x = this->_create_x + _parent->GetX();
 			this->_y = this->_create_y + _parent->GetY();
-			this->_dimensions.X = (float)this->_create_x + _parent->GetX();
-			this->_dimensions.Y = (float)this->_y;
+			this->_dimensions.X = static_cast<float>(this->_create_x) + _parent->GetX();
+			this->_dimensions.Y = static_cast<float>(this->_y);
 		}
 		break;
 		case Gui::Style::ALIGN_RIGHT:
 		{
 			this->_x = this->_create_x + _parent->GetX();
 			this->_y = this->_create_y + _parent->GetY();
-			this->_dimensions.X = (float)_parent->GetX() + _parent->GetDimensions().W - this->_dimensions.W - this->_create_x;
-			this->_dimensions.Y = (float)(this->_y);
+			this->_dimensions.X = static_cast<float>(_parent->GetX()) + _parent->GetDimensions().W - this->_dimensions.W - this->_create_x;
+			this->_dimensions.Y = static_cast<float>(this->_y);
 		}
 		break;
 		case Gui::Style::ALIGN_CENTER:
 		{
 			this->_x = this->_create_x + _parent->GetX();
 			this->_y = this->_create_y + _parent->GetY();
-			this->_dimensions.X = (float)_parent->GetX() + _parent->GetDimensions().W * 0.5f - this->_dimensions.W * 0.5f;
-			this->_dimensions.Y = (float)(this->_y);
+			this->_dimensions.X = static_cast<float>(_parent->GetX()) + _parent->GetDimensions().W * 0.5f - this->_dimensions.W * 0.5f;
+			this->_dimensions.Y = static_cast<float>(this->_y);
 		}
 		break;
 		case Gui::Style::FILL_CENTER:
 		{
 			this->_x = this->_create_x + _parent->GetX();
 			this->_y = this->_create_y + _parent->GetY();
-			this->_dimensions.X = (float)(this->_x);
-			this->_dimensions.Y = (float)(this->_y);
+			this->_dimensions.X = static_cast<float>(this->_x);
+			this->_dimensions.Y = static_cast<float>(this->_y);
 			this->_dimensions.W = _parent->GetDimensions().W - _create_x * 2;
 		}
 		break;
@@ -451,16 +469,16 @@ void Gui::GuiElementTemplate::ApplyStyle()
 		{
 			this->_x = this->_create_x + _parent->GetX();
 			this->_y = this->_create_y + _parent->GetY();
-			this->_dimensions.X = (float)(this->_x);
-			this->_dimensions.Y = (float)(this->_y);
+			this->_dimensions.X = static_cast<float>(this->_x);
+			this->_dimensions.Y = static_cast<float>(this->_y);
 		}
 		break;
 		case Gui::Style::ABSOLUTE:
 		{
 			this->_x = _create_x;
 			this->_y = _create_y;
-			this->_dimensions.X = (float)(this->_x);
-			this->_dimensions.Y = (float)(this->_y);
+			this->_dimensions.X = static_cast<float>(this->_x);
+			this->_dimensions.Y = static_cast<float>(this->_y);
 		}
 		break;
 		default:
@@ -549,9 +567,9 @@ Gui::Pallet::Pallet(const SDL_Color background, const SDL_Color frame, const SDL
 {
 	this->Background = background;
 	this->BackgroundDisable = {
-		(Uint8)(background.r * 0.2),
-		(Uint8)(background.g * 0.2),
-		(Uint8)(background.b * 0.2),
+		static_cast<Uint8>(background.r * 0.2),
+		static_cast<Uint8>(background.g * 0.2),
+		static_cast<Uint8>(background.b * 0.2),
 		background.a
 	};
 	this->Frame = frame;
@@ -564,9 +582,9 @@ Gui::Pallet::Pallet(const std::string& hash_background, const  std::string& hash
 
 	this->Background = Convert::Hex2Color(hash_background);
 	this->BackgroundDisable = {
-		(Uint8)(Background.r * 0.2),
-		(Uint8)(Background.g * 0.2),
-		(Uint8)(Background.b * 0.2),
+		static_cast<Uint8>(Background.r * 0.2),
+		static_cast<Uint8>(Background.g * 0.2),
+		static_cast<Uint8>(Background.b * 0.2),
 		Background.a
 	};
 	this->Frame = Convert::Hex2Color(hash_frame);

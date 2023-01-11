@@ -33,9 +33,9 @@ void GuiElement::Button::Render()
 {
 	const float line_thickness = GPU_SetLineThickness(2.0f);
 	if (_enabled) {
-		if (_focus) {
+		if (_mouse_hover) {
 			Render::DrawRectRoundedFilled(_dimensions.ToGPU_Rect(), 2.0f, _pallet.Active);
-			if (Core::Mouse.LeftPressed) {
+			if (_focus) {
 				GPU_SetShapeBlending(true);
 				Render::DrawRectRoundedFilled(_dimensions.ToGPU_Rect(), 2.0f, { 0,0,0,100 });
 				const GPU_Rect frame_border = (_dimensions / 2).ToGPU_Rect();
@@ -52,17 +52,15 @@ void GuiElement::Button::Render()
 	}
 	Render::DrawRectRounded(_dimensions.ToGPU_Rect(), 2.0f, _pallet.Frame);
 	if (_focus) {
-		if (Core::Mouse.LeftPressed) {
-			GPU_SetShapeBlending(true);
-			GPU_SetLineThickness(4.0f);
-			Render::DrawRectRoundedFilled(_dimensions.ToGPU_Rect(), 2.0f, { 0,0,0,100 });
-			GPU_SetLineThickness(2.0f);
-			GPU_SetShapeBlending(false);
-		}
+		GPU_SetShapeBlending(true);
+		GPU_SetLineThickness(4.0f);
+		Render::DrawRectRoundedFilled(_dimensions.ToGPU_Rect(), 2.0f, { 0,0,0,100 });
+		GPU_SetLineThickness(2.0f);
+		GPU_SetShapeBlending(false);
 	}
 	const GPU_Rect temp_dimensions = {
 				_dimensions.X ,
-				_dimensions.Y + (_focus ? 1.0f : 0.0f),
+				_dimensions.Y + (_mouse_hover ? 1.0f : 0.0f),
 				_dimensions.W ,
 				_dimensions.H };
 	

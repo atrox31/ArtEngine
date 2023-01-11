@@ -107,26 +107,26 @@ void GuiElement::Slider::Render()
 		slider_width,
 		36.f
 	};
-	const bool slider_point_focus = ( ( slider_point.PointInRectWh(Core::Mouse.XYf) || _slider_move) || slider_bar.PointInRectWh(Core::Mouse.XYf));
+	const bool slider_point_mouse_hover = ( ( slider_point.PointInRectWh(Core::Mouse.XYf) || _slider_move) || slider_bar.PointInRectWh(Core::Mouse.XYf));
 	SDL_Color slider_point_color = _pallet.Active;
-	if (Core::Mouse.LeftPressed && slider_point_focus)
+	if (Core::Mouse.LeftPressed && slider_point_mouse_hover)
 	{
 		slider_point_color.a = 200;
 		GPU_SetShapeBlending(true);
 	}
-	if (Core::Mouse.LeftEvent == Core::MouseState::ButtonState::PRESSED && slider_point_focus)
+	if (Core::Mouse.LeftEvent == Core::MouseState::ButtonState::PRESSED && slider_point_mouse_hover)
 	{
 		_slider_move = true;
 	}
 
 	Render::DrawRectRoundedFilled(slider_bar.ToGPU_Rect(), 16.0f,
-		(_enabled && slider_point_focus ? (
+		(_enabled && slider_point_mouse_hover ? (
 			Core::Mouse.LeftPressed ? slider_point_color : _pallet.Background )
 			: _pallet.BackgroundDisable));
 	Render::DrawRectRounded(slider_bar.ToGPU_Rect(), 16.0f, _pallet.Frame);
 
 	GPU_SetLineThickness(4.0f);
-	Render::DrawRectRoundedFilled(slider_point.ToGPU_Rect(), 16.0f, (slider_point_focus ? slider_point_color : _pallet.Background ));
+	Render::DrawRectRoundedFilled(slider_point.ToGPU_Rect(), 16.0f, (slider_point_mouse_hover ? slider_point_color : _pallet.Background ));
 	Render::DrawRectRounded(slider_point.ToGPU_Rect(), 16.0f, _pallet.Frame);
 	GPU_SetLineThickness(2.0f);
 	GPU_SetShapeBlending(false);

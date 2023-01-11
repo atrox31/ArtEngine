@@ -77,7 +77,7 @@ void GuiElement::DropDownList::Render()
 {
 	const float line_thickness = GPU_SetLineThickness(2.0f);
 	if (_enabled) {
-		if (_focus || _show_list) {
+		if (_mouse_hover || _show_list) {
 			Render::DrawRectRoundedFilled(_dimensions.ToGPU_Rect(), 2.0f, _pallet.Active);
 			if (Core::Mouse.LeftPressed) {
 				GPU_SetShapeBlending(true);
@@ -95,7 +95,7 @@ void GuiElement::DropDownList::Render()
 		Render::DrawRectRoundedFilled(_dimensions.ToGPU_Rect(), 2.0f, _pallet.BackgroundDisable);
 	}
 	Render::DrawRectRounded(_dimensions.ToGPU_Rect(), 2.0f, _pallet.Frame);
-	if (_focus) {
+	if (_mouse_hover && _enabled) {
 		if (Core::Mouse.LeftPressed) {
 			GPU_SetShapeBlending(true);
 			GPU_SetLineThickness(4.0f);
@@ -106,7 +106,7 @@ void GuiElement::DropDownList::Render()
 	}
 	const GPU_Rect temp_dimensions = {
 				_dimensions.X ,
-				_dimensions.Y + (_focus ? 1.0f : 0.0f),
+				_dimensions.Y + (_mouse_hover ? 1.0f : 0.0f),
 				_dimensions.W ,
 				_dimensions.H };
 	
@@ -120,14 +120,15 @@ void GuiElement::DropDownList::Render()
 		for (const auto& value : _values)
 		{
 			tmp_i++;
-			const bool element_focus = alter_dimensions.PointInRectWh(Core::Mouse.XYf);
-			if(element_focus)
+			const bool element_mouse_hover = alter_dimensions.PointInRectWh(Core::Mouse.XYf);
+			if(element_mouse_hover)
 			{
 				_temp_selected_index = tmp_i;
+				_mouse_hover = true;
 				_focus = true;
 			}
 			Render::DrawRectRoundedFilled(alter_dimensions.ToGPU_Rect(), 2.0f,
-				(element_focus ?
+				(element_mouse_hover ?
 					_pallet.Active : _pallet.Background)
 			);
 			Render::DrawRectRounded(alter_dimensions.ToGPU_Rect(), 2.0f, _pallet.Frame);

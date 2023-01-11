@@ -39,7 +39,7 @@ void GuiElement::CheckButton::Render()
 {
 	const float line_thickness = GPU_SetLineThickness(2.0f);
 	if (_enabled) {
-		if (_focus) {
+		if (_mouse_hover) {
 			Render::DrawRectRoundedFilled(_dimensions.ToGPU_Rect(), 2.0f, _pallet.Active);
 			if (Core::Mouse.LeftPressed) {
 				GPU_SetShapeBlending(true);
@@ -57,7 +57,7 @@ void GuiElement::CheckButton::Render()
 		Render::DrawRectRoundedFilled(_dimensions.ToGPU_Rect(), 2.0f, _pallet.BackgroundDisable);
 	}
 	Render::DrawRectRounded(_dimensions.ToGPU_Rect(), 2.0f, _pallet.Frame);
-	if (_focus) {
+	if (_mouse_hover) {
 		if (Core::Mouse.LeftPressed) {
 			GPU_SetShapeBlending(true);
 			GPU_SetLineThickness(4.0f);
@@ -68,7 +68,7 @@ void GuiElement::CheckButton::Render()
 	}
 	const GPU_Rect temp_dimensions = {
 				_dimensions.X ,
-				_dimensions.Y + (_focus ? 1.0f : 0.0f),
+				_dimensions.Y + (_mouse_hover ? 1.0f : 0.0f),
 				_dimensions.W ,
 				_dimensions.H };
 	constexpr float box_dimensions = 24.f;
@@ -78,28 +78,28 @@ void GuiElement::CheckButton::Render()
 		box_dimensions,box_dimensions
 	};
 
-	Render::DrawRectRounded(check_box_rect.ToGPU_Rect(), 2.0f, _focus ? _pallet.Frame : _pallet.Active);
+	Render::DrawRectRounded(check_box_rect.ToGPU_Rect(), 2.0f, _mouse_hover ? _pallet.Frame : _pallet.Active);
 	check_box_rect /= 1.f;
-	Render::DrawRectRounded(check_box_rect.ToGPU_Rect(), 2.0f, _focus ? _pallet.Active : _pallet.Frame);
+	Render::DrawRectRounded(check_box_rect.ToGPU_Rect(), 2.0f, _mouse_hover ? _pallet.Active : _pallet.Frame);
 	if(_checked)
 	{
 		// outer
 		Render::DrawLine(
 			check_box_rect.A_wh(), check_box_rect.C_wh(),
-			6.f, _focus ? _pallet.Active : _pallet.Frame
+			6.f, _mouse_hover ? _pallet.Active : _pallet.Frame
 		);
 		Render::DrawLine(
 			check_box_rect.B_wh(), check_box_rect.D_wh(),
-			6.f, _focus ? _pallet.Active : _pallet.Frame
+			6.f, _mouse_hover ? _pallet.Active : _pallet.Frame
 		);
 		// inner
 		Render::DrawLine(
 			check_box_rect.A_wh(), check_box_rect.C_wh(),
-			3.f, _focus ? _pallet.Frame : _pallet.Active
+			3.f, _mouse_hover ? _pallet.Frame : _pallet.Active
 		);
 		Render::DrawLine(
 			check_box_rect.B_wh(), check_box_rect.D_wh(),
-			3.f, _focus ?_pallet.Frame : _pallet.Active 
+			3.f, _mouse_hover ?_pallet.Frame : _pallet.Active 
 		);
 
 	}

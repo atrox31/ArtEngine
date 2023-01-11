@@ -28,11 +28,11 @@ public:
 public:
 	class GuiElementTemplate;
 	static void SortAllElements(GuiElementTemplate*);
-	bool LoadFromJson(const json& data) const;
+	[[nodiscard]] bool LoadFromJson(const json& data) const;
 	bool SpawnElementFromJsonData(GuiElementTemplate* parrent, const nlohmann::basic_json<>& data) const;
 	void Clear() const;
 	void Render() const;
-	bool Events() const;
+	[[nodiscard]] bool Events() const;
 	void UpdateView() const;
 	GuiElementTemplate* GetElementById(const std::string& tag, GuiElementTemplate* search_root = nullptr);
 	[[nodiscard]] bool PointOnInterface(SDL_FPoint) const;
@@ -117,7 +117,8 @@ public:
 			_focus = false;
 			_visible = true;
 			_enable_transparent = true;
-			_hover_time = .0f;
+			_mouse_hover = false;
+			_hover_time = 0.0;
 			_dimensions = { 0,0,0,0 };
 			_text_area = { 0,0,0,0 };
 			_text_scale = { 0,0 };
@@ -158,9 +159,9 @@ public:
 		virtual GuiElementTemplate* SetPosition(const int x1, const int y1, const int x2, const int y2) final {
 			_x = x1;
 			_y = y1;
-			_dimensions = { (float)(x1),(float)(y1),(float)(x2),(float)(y2) };
+			_dimensions = { static_cast<float>(x1),static_cast<float>(y1),static_cast<float>(x2),static_cast<float>(y2) };
 			ApplyStyle();
-		return this;};
+		return this;}
 		virtual GuiElementTemplate* SetTag(const std::string& tag) final { _tag = tag; return this;}
 		virtual GuiElementTemplate* SetPallet(Pallet* pallet) final { _pallet = *pallet; return this;}
 		virtual GuiElementTemplate* SetParent(GuiElementTemplate* parrent) final { _parent = parrent; return this;}
@@ -195,7 +196,8 @@ public:
 		Pallet _pallet;
 		std::map< EvCallback, std::pair<const unsigned char*, Sint64>> _callback_script;
 		Mix_Chunk* _sound_onClick;
-		float _hover_time;
+		bool _mouse_hover;
+		double _hover_time;
 		std::vector<GuiElementTemplate*> _elements;
 		FC_Font* _default_font;
 	private:
