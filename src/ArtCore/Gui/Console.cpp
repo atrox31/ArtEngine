@@ -57,7 +57,11 @@ void Console::WriteLine(const std::string& text)
 	if (_instance == nullptr) return;
 	_console_lines.emplace_back( "[" + GetCurrentTime() +"] " + text + '\n');
 #ifdef _DEBUG
+#ifdef DEBUG_EDITOR
+	std::cout << "INFO: " + text << std::endl;
+#else
 	SDL_Log("%s", text.c_str());
+#endif
 #endif
 }
 
