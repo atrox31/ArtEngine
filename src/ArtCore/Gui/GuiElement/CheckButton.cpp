@@ -10,8 +10,8 @@ GuiElement::CheckButton::CheckButton()
 
 bool GuiElement::CheckButton::OnClick()
 {
-	GuiElementTemplate::OnClick();
 	_checked = !_checked;
+	GuiElementTemplate::OnClick();
 	return true;
 }
 GuiElement::CheckButton* GuiElement::CheckButton::SetText(const std::string& text)

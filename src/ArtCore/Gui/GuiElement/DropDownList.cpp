@@ -42,11 +42,11 @@ bool GuiElement::DropDownList::OnClick()
 			_selected_value = _values[_temp_selected_index];
 		}
 		_child_state.clear();
+		GuiElementTemplate::OnClick();
 	}else
 	{
 		std::reverse(_child_state.begin(), _child_state.end());
 	}
-	GuiElementTemplate::OnClick();
 	return true;
 }
 

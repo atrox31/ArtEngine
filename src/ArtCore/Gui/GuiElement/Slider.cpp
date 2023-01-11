@@ -13,7 +13,9 @@ GuiElement::Slider::Slider()
 
 bool GuiElement::Slider::OnClick()
 {
-	GuiElementTemplate::OnClick();
+	if (_slider_move && Core::Mouse.LeftEvent == Core::MouseState::ButtonState::RELEASED) {
+		GuiElementTemplate::OnClick();
+	}
 	return _slider_move;
 }
 
