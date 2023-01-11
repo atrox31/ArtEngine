@@ -193,7 +193,7 @@ private:
 	program_argument GetProgramArgument(const std::string& argument);
 	std::vector<program_argument> _program_arguments;
 
-	static bool LoadSetupFile(const std::string&);
+	static bool LoadSetupFile(const char*, const std::string&);
 
 	FC_Font* _global_font;
 	AssetManager* _asset_manager;

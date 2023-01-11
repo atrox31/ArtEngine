@@ -131,12 +131,20 @@ Core::~Core()
 
 // try to initialize critic game system
 // break loading when error
-#define TRY_TO_INIT_CRITIC(init, failure_msg, component)    \
- if (!(init)) {                                             \
-     Console::WriteLine(std::string( (component) )+": error.");            \
-     Console::WriteLine((failure_msg));                     \
-     return false;                                          \
- } Console::WriteLine(std::string( (component) )+": success.");            \
+#define TRY_TO_INIT_CRITIC(init, failure_msg, component)        \
+ if (!(init)) {                                                 \
+     Console::WriteLine(std::string( (component) )+": error."); \
+     Console::WriteLine((failure_msg));                         \
+     return false;                                              \
+ } Console::WriteLine(std::string( (component) )+": success."); \
+
+// try to initialize game system
+// continue after error
+#define TRY_TO_INIT(init, failure_msg, component)                \
+ if (!(init)) {                                                  \
+     Console::WriteLine(std::string( (component) )+": warning.");\
+     Console::WriteLine((failure_msg));                          \
+ } Console::WriteLine(std::string( (component) )+": success.");  \
 
 // Converts arguments list to pairs, this allow to have nullptr if
 // something is not populate.
@@ -192,10 +200,17 @@ Core::program_argument Core::GetProgramArgument(const std::string& argument)
     return { nullptr, nullptr };
 }
 
-bool Core::LoadSetupFile(const std::string& setup_file)
+bool Core::LoadSetupFile(const char* platform, const std::string& setup_file)
 {
+    if(PHYSFS_mount(platform, nullptr, 0) == 0)
+    {
+        Console::WriteLine(std::string(PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode())));
+        return false;
+    }
     if(PHYSFS_exists(setup_file.c_str()) == 0)
     {
+        Console::WriteLine("File '"+setup_file+"' not found!");
+        PHYSFS_unmount(platform);
 	    return false;
     }
     for (const std::string& data : Func::ArchiveGetFileText(setup_file, nullptr, false)) {
@@ -230,9 +245,11 @@ bool Core::LoadSetupFile(const std::string& setup_file)
         }
         // other data
         {
-            _instance.SD_SetValue(line[0], line[1]);
+            SD_SetValue(line[0], line[1]);
         }
     }
+
+    PHYSFS_unmount(platform);
     return true;
 }
 
@@ -289,25 +306,34 @@ bool Core::Init(const Func::str_vec& args)
             : argument.second
         );
     }
-
+    // sdl subsystem
     TRY_TO_INIT_CRITIC(
         SDL_InitSubSystem(SDL_INIT_VIDEO) == 0,
         std::string(SDL_GetError()),
         "SDL_Init SDL_INIT_VIDEO"
     )
 
-	TRY_TO_INIT_CRITIC(
-        PHYSFS_init(args[0].c_str()) != 0,
-		std::string(PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode())),
-		"PHYSFS_init"
-	)
+        TRY_TO_INIT_CRITIC(
+            PHYSFS_init(args[0].c_str()) != 0,
+            std::string(PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode())),
+            "PHYSFS_init"
+        )
 
-    // platform configuration
-	TRY_TO_INIT_CRITIC(
-        PHYSFS_mount(fl_platform_file, nullptr, 0) != 0,
-		std::string(PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode())),
-		"PHYSFS_mount '"+std::string(fl_platform_file)+"'"
-	)
+        // platform configuration data
+        TRY_TO_INIT(
+            LoadSetupFile(fl_platform_file, "setup.ini"),
+            "File not found, Using default settings",
+            "Platform settings load"
+        )
+
+        // platform configuration data, can not exists
+        TRY_TO_INIT(
+            LoadSetupFile(fl_platform_file, "setup_user.ini"),
+            "File not found, Using default settings",
+            "Platform settings load"
+        )
+        
+
 #ifdef _DEBUG
         GPU_SetDebugLevel(GPU_DEBUG_LEVEL_MAX);
 #else
@@ -436,7 +462,7 @@ bool Core::Init(const Func::str_vec& args)
 	TRY_TO_INIT_CRITIC(
 		FC_LoadFont_RW(_instance._global_font, Func::ArchiveGetFileRWops("files/TitilliumWeb-Light.ttf", nullptr), 1, 24, C_BLACK, TTF_STYLE_NORMAL) == 1,
 		std::string(SDL_GetError()),
-		"SDL_GameControllerAddMappings"
+		"FC_LoadFont_RW: TitilliumWeb-Light.ttf"
 	)
     FC_SetDefaultColor(_instance._global_font, C_BLACK);
 
@@ -744,7 +770,7 @@ void Core::SD_SetValue(const std::string& field, const std::string& value)
 {
     if (_instance.SettingsData.contains(field)) {
         if (_instance.SettingsData[field] != value) {
-           
+           //PHYSFS_Archiver
             _instance.SettingsData[field] = value;
         }
     }
