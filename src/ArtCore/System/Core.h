@@ -165,17 +165,14 @@ public:
 		// current state of buttons
 		bool LeftPressed = false;
 		bool RightPressed = false;
-		// Current mouse coordinate X
-		int X = 0;
-		// Current mouse coordinate X
-		int Y = 0;
+		
 		// Current mouse coordinate int (x,y)
 		SDL_Point XY = { 0,0 };
 		// Current mouse coordinate float (x,y)
 		SDL_FPoint XYf = { 0.f,0.f };
 		// Current mouse wheel position
 		int Wheel = 0;
-		void Reset();
+		static void Reset();
 	} inline static  Mouse;
 private:
 	// settings data -> global settings

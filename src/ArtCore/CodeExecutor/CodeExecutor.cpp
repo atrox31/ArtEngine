@@ -772,6 +772,7 @@ int CodeExecutor::h_if_test(Inspector* code, Instance* instance) {
 	int operator_index = -1;
 	// get value to compare
 	while (!code->IsEnd()) {
+		if (code->Break) return 0;
 		switch (code->GetNextCommand()) {
 		case COMMAND::LOCAL_VARIABLE:
 		{

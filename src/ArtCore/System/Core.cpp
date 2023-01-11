@@ -38,8 +38,10 @@ void Core::graphic::Apply()
     Render::CreateRender(_window_width, _window_height);
     _screen_rect.X = 0.f;
     _screen_rect.Y = 0.f;
-    _screen_rect.W = static_cast<float>(_window_width);
-    _screen_rect.H = static_cast<float>(_window_height);
+    _screen_rect.W = static_cast<float>(Core::SD_GetInt("DefaultResolutionX", 1920));
+    _screen_rect.H = static_cast<float>(Core::SD_GetInt("DefaultResolutionY", 1080));
+    //_screen_rect.W = static_cast<float>(_window_width);
+    //_screen_rect.H = static_cast<float>(_window_height);
 }
 
 void Core::audio::Apply() const
@@ -701,9 +703,11 @@ SDL_Window* Core::GetWindowHandle()
 
 void Core::MouseState::Reset()
 {
-    const Uint32 button_state = SDL_GetMouseState(&X, &Y);
-    Mouse.XY = { X, Y };
-    Mouse.XYf = { static_cast<float>(X),static_cast<float>(Y) };
+    int x{}, y{};
+    const Uint32 button_state = SDL_GetMouseState(&x, &y);
+    // TODO test this
+    Mouse.XYf = Render::ScalePoint({ static_cast<float>(x) ,static_cast<float>(y) });
+    Mouse.XY = { static_cast<int>(Mouse.XYf.x) ,static_cast<int>(Mouse.XYf.y) };
 
     Mouse.LeftPressed = (button_state == SDL_BUTTON(SDL_BUTTON_LEFT));
     Mouse.RightPressed = (button_state == SDL_BUTTON(SDL_BUTTON_RIGHT));
@@ -835,6 +839,12 @@ bool Core::Run()
     	debug_test_counter_start(performance_counter_gpu_flip)
         // render console, debug panels etc
         _instance.ProcessSystemRender();
+
+        GPU_Circle(Core::GetScreenTarget(), Core::Mouse.XYf.x, Core::Mouse.XYf.y, 32, C_RED);
+        int x = 0;
+        int y = 0;
+        SDL_GetMouseState(&x, &y);
+        GPU_Circle(Core::GetScreenTarget(), (float)x, (float)y, 32, C_WHITE);
 
         // get all to screen
         GPU_Flip(_instance._screenTarget);

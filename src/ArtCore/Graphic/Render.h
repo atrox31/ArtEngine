@@ -10,6 +10,7 @@ public:
 	static void CreateRender(int width, int height);
 	static void DestroyRender();
 	static void LoadShaders();
+	static SDL_FPoint ScalePoint(const SDL_FPoint& point);
 
 	// drawing
 	static void DrawTexture(GPU_Image* texture, const vec2f& position, const vec2f& scale, float angle, float alpha);
@@ -71,9 +72,10 @@ private:
 
 	static Render* _instance;
 	// global screen
-	int width, height;
+	int _width, _height;
+	float _default_width, _default_height;
 	float _width_scale, _height_scale;
-	bool _width_height_equal_scale;
+	bool _width_height_equal_scale{};
 	GPU_Target* _screenTexture_target = nullptr;
 	GPU_Image* _screenTexture = nullptr;
 

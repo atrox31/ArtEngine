@@ -62,18 +62,18 @@ void GuiElement::Slider::Render()
 			_slider_move = false;
 		}else
 		{
-			if(Core::Mouse.X < static_cast<int>(_dimensions.X + 16.f))
+			if(Core::Mouse.XYf.x < _dimensions.X + 16.f)
 			{
 				_value = _value_min;
 			}else
-			if(Core::Mouse.X > static_cast<int>(_dimensions.X + _dimensions.W - 16.f))
+			if(Core::Mouse.XYf.x > _dimensions.X + _dimensions.W - 16.f)
 			{
 				_value = _value_max;
 			}else
 			{
 				_value = std::clamp(
 					(static_cast<int>(Func::LinearScale(
-						static_cast<float>(Core::Mouse.X),
+						Core::Mouse.XYf.x,
 						_dimensions.X + 16.f,
 						(_dimensions.X + _dimensions.W - 16.f - slider_width),
 						static_cast<float>(_value_min), static_cast<float>(_value_max)
