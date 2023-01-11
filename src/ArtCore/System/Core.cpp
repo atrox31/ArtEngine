@@ -840,12 +840,6 @@ bool Core::Run()
         // render console, debug panels etc
         _instance.ProcessSystemRender();
 
-        GPU_Circle(Core::GetScreenTarget(), Core::Mouse.XYf.x, Core::Mouse.XYf.y, 32, C_RED);
-        int x = 0;
-        int y = 0;
-        SDL_GetMouseState(&x, &y);
-        GPU_Circle(Core::GetScreenTarget(), (float)x, (float)y, 32, C_WHITE);
-
         // get all to screen
         GPU_Flip(_instance._screenTarget);
         debug_test_counter_end(performance_counter_gpu_flip)
