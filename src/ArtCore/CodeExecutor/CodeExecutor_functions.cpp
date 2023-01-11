@@ -747,12 +747,6 @@ void CodeExecutor::convert_int_to_string(Instance*) {
 void CodeExecutor::convert_float_to_string(Instance*) {
 	StackOut_s(std::to_string(StackIn_f));
 }
-//string string_add(string str1, string str2);Create new string from <string> and <string>
-void CodeExecutor::string_add(Instance*) {
-	const std::string string2 = StackIn_s;
-	const std::string string1 = StackIn_s;
-	StackOut_s(string1 + string2);
-}
 //null sprite_set_scale(point scale);Set scale for self sprite <point>;Scale is from point (width, height)
 void CodeExecutor::sprite_set_scale(Instance* sender) {
 	const SDL_FPoint scale = StackIn_p;
@@ -1220,4 +1214,44 @@ void CodeExecutor::system_set_audio_music_level(Instance*) {
 //null system_set_audio_sound_level(int level);Set audio level to <int> percent;Level can be from 0 to 100;
 void CodeExecutor::system_set_audio_sound_level(Instance*) {
 	Core::Audio.SetMusicLevel(StackIn_i);
+}
+
+//int system_settings_data_get_int(string setting);Get value of settings data name <string>;On error return -1
+void CodeExecutor::system_settings_data_get_int(Instance*) {
+	const std::string setting = StackIn_s;
+	StackOut_i(Core::SD_GetInt(setting, -1));
+}
+
+//string system_settings_data_get_string(string setting);Get value of settings data name <string>;On error return empty string ""
+void CodeExecutor::system_settings_data_get_string(Instance*) {
+	const std::string setting = StackIn_s;
+	StackOut_s(Core::SD_GetString(setting, ""));
+}
+
+//int string_get_length(string text);Get length of target <string> text;
+void CodeExecutor::string_get_length(Instance*) {
+	const std::string string = StackIn_s;
+	StackOut_i(static_cast<int>(string.length()));
+}
+
+//string string_join(string str1, string str2);Create new string from <string> and <string>;
+void CodeExecutor::string_join(Instance*) {
+	const std::string string2 = StackIn_s;
+	const std::string string1 = StackIn_s;
+	StackOut_s(string1 + string2);
+}
+
+//string string_replace(string target, string search, string replace);Target text: <string>.\nSearch <string> and replace with <string>;
+void CodeExecutor::string_replace(Instance*) {
+	
+	const std::string replace = StackIn_s;
+	const std::string search = StackIn_s;
+	std::string target = StackIn_s;
+	Func::ReplaceAll(target, search, replace);
+	StackOut_s(target);
+}
+
+//bool convert_int_to_bool(int input);Convert <int> to bool. Only 1 is true, rest is false;
+void CodeExecutor::convert_int_to_bool(Instance*) {
+	StackOut_b(StackIn_i == 1);
 }

@@ -893,6 +893,7 @@ bool Core::LoadData()
 #endif
 	SDL_SetWindowBordered(_instance._window, SDL_TRUE);
 	Graphic.Apply();
+    Audio.Apply();
 	GPU_Clear(GetScreenTarget());
 	GPU_Flip(GetScreenTarget());
 

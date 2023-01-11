@@ -305,7 +305,6 @@ private:
 	Script(draw_text);
 	Script(convert_int_to_string);
 	Script(convert_float_to_string);
-	Script(string_add);
 	Script(sprite_set_scale);
 	Script(draw_text_in_frame);
 	Script(gui_change_visibility);
@@ -343,6 +342,12 @@ private:
 	Script(system_set_audio_sound);
 	Script(system_set_audio_music_level);
 	Script(system_set_audio_sound_level);
+	Script(system_settings_data_get_int);
+	Script(system_settings_data_get_string);
+	Script(string_get_length);
+	Script(string_join);
+	Script(string_replace);
+	Script(convert_int_to_bool);
 #undef Script
 };
 //end of file

@@ -88,7 +88,6 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["draw_text"] = &CodeExecutor::draw_text;
 	FunctionsMap["convert_int_to_string"] = &CodeExecutor::convert_int_to_string;
 	FunctionsMap["convert_float_to_string"] = &CodeExecutor::convert_float_to_string;
-	FunctionsMap["string_add"] = &CodeExecutor::string_add;
 	FunctionsMap["sprite_set_scale"] = &CodeExecutor::sprite_set_scale;
 	FunctionsMap["draw_text_in_frame"] = &CodeExecutor::draw_text_in_frame;
 	FunctionsMap["gui_change_visibility"] = &CodeExecutor::gui_change_visibility;
@@ -126,5 +125,11 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["system_set_audio_sound"] = &CodeExecutor::system_set_audio_sound;
 	FunctionsMap["system_set_audio_music_level"] = &CodeExecutor::system_set_audio_music_level;
 	FunctionsMap["system_set_audio_sound_level"] = &CodeExecutor::system_set_audio_sound_level;
+	FunctionsMap["system_settings_data_get_int"] = &CodeExecutor::system_settings_data_get_int;
+	FunctionsMap["system_settings_data_get_string"] = &CodeExecutor::system_settings_data_get_string;
+	FunctionsMap["string_get_length"] = &CodeExecutor::string_get_length;
+	FunctionsMap["string_join"] = &CodeExecutor::string_join;
+	FunctionsMap["string_replace"] = &CodeExecutor::string_replace;
+	FunctionsMap["convert_int_to_bool"] = &CodeExecutor::convert_int_to_bool;
 }
 //end of file

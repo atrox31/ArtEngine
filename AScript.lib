@@ -82,7 +82,6 @@ null code_break(); Break from current function; Everything will be lost...
 null draw_text(font font, int x, int y, string text, color color);Use <font> and draw <string> on screen on (<int>,<int>) with <color> color;If font is null, default font is used;
 string convert_int_to_string(int input);Convert <int> to string;
 string convert_float_to_string(int input);Convert <int> to string;
-string string_add(string str1, string str2);Create new string from <string> and <string>
 null sprite_set_scale(point scale);Set scale for self sprite <point>;Scale is from point (width, height)
 null draw_text_in_frame(font font, string text, float x, float y, color text_color, color frame_color, color background_color);Using <font> draw <text> in frame at (<float>,<float>) with <color>. Frame color is <color> and background <color>;
 null gui_change_visibility(string guiTag, bool visible);Change visibility variable for <string> to <bool>;Give path to element panel1/button1 by tags. Root is in default first tag do not include it
@@ -120,3 +119,9 @@ null system_set_audio_music(bool mode);Set audio mode for music to <bool>; True 
 null system_set_audio_sound(bool mode);Set audio mode for sound to <bool>; True means sounds can be played
 null system_set_audio_music_level(int level);Set audio level to <int> percent;Level can be from 0 to 100;
 null system_set_audio_sound_level(int level);Set audio level to <int> percent;Level can be from 0 to 100;
+int system_settings_data_get_int(string setting);Get value of settings data name <string>;On error return -1
+string system_settings_data_get_string(string setting);Get value of settings data name <string>;On error return empty string ""
+int string_get_length(string text);Get length of target <string> text;
+string string_join(string str1, string str2);Create new string from <string> and <string>;
+string string_replace(string target, string search, string replace);Target text: <string>.\nSearch <string> and replace with <string>;
+bool convert_int_to_bool(int input);Convert <int> to bool. Only 1 is true, rest is false;
