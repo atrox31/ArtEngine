@@ -49,8 +49,8 @@ void Core::graphic::Apply()
     Render::CreateRender(_window_width, _window_height);
     _screen_rect.X = 0.f;
     _screen_rect.Y = 0.f;
-    _screen_rect.W = static_cast<float>(SettingsData::GetInt("DefaultResolutionX", 1920));
-    _screen_rect.H = static_cast<float>(SettingsData::GetInt("DefaultResolutionY", 1080));
+    _screen_rect.W = static_cast<float>(SettingsData::GetInt("DefaultWindowResolutionX", 1920));
+    _screen_rect.H = static_cast<float>(SettingsData::GetInt("DefaultWindowResolutionY", 1080));
 
     SettingsData::SetValue("ACWindowMode", _window_fullscreen ? "1" : "0");
     SettingsData::SetValue("ACWindowResolutionX", std::to_string(_window_width));

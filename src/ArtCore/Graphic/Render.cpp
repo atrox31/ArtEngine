@@ -15,8 +15,8 @@ void Render::CreateRender(const int width, const int height)
 
 	_instance->_width = width;
 	_instance->_height = height;
-	_instance->_default_width = static_cast<float>(SettingsData::GetInt("DefaultResolutionX", 1920));
-	_instance->_default_height = static_cast<float>(SettingsData::GetInt("DefaultResolutionY", 1080));
+	_instance->_default_width = static_cast<float>(SettingsData::GetInt("DefaultWindowResolutionX", 1920));
+	_instance->_default_height = static_cast<float>(SettingsData::GetInt("DefaultWindowResolutionY", 1080));
 
 	_instance->_screenTexture = GPU_CreateImage(static_cast<Uint16>(width), static_cast<Uint16>(height), GPU_FormatEnum::GPU_FORMAT_RGBA);
 	_instance->_screenTexture_target = GPU_LoadTarget(_instance->_screenTexture);
