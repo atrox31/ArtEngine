@@ -86,7 +86,12 @@ mkdir %outputDir%\pack"
 	copy "pack\files\*.*"  %outputDir%\pack"
 
 @echo StandardBehaviourTemplates
-copy "StandardBehaviourTemplates\*.*"  %outputDir%\StandardBehaviourTemplates"
+mkdir %outputDir%\StandardBehaviourTemplates"
+	copy "StandardBehaviourTemplates\*.*"  %outputDir%\StandardBehaviourTemplates"
+
+@echo Default settings
+mkdir %outputDir%\DefaultSettings"
+	copy "DefaultSettings\*.ini"  %outputDir%\DefaultSettings"
 
 @echo SceneTemplates
 copy "SceneTemplates\*.*"  %outputDir%\SceneTemplates"
