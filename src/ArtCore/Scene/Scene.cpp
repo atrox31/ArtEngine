@@ -59,23 +59,23 @@ bool Scene::Load(const std::string& name)
 	if (!dv.IsOk()) {
 		return false;
 	}
-	_width = Func::TryGetInt(dv.GetData(std::string("setup"), std::string("Width")));
-	_height = Func::TryGetInt(dv.GetData(std::string("setup"), std::string("Height")));
-	_begin_trigger = dv.GetData(std::string("setup"), std::string("SceneStartingTrigger"));
+	_width = Func::TryGetInt(dv.GetData("setup", "Width"));
+	_height = Func::TryGetInt(dv.GetData("setup", "Height"));
+	_begin_trigger = dv.GetData("setup", "SceneStartingTrigger");
 	_name = name;
 
 	// get scene background type
-	if (dv.GetData(std::string("setup"), std::string("BackGroundType")) == "DrawColor") {
+	if (dv.GetData("setup", "BackGroundType") == "DrawColor") {
 		BackGround.Type = Scene::BackGround::BType::DrawColor;
-		BackGround.Color = Convert::Hex2Color(dv.GetData(std::string("setup"), std::string("BackGroundColor")));
+		BackGround.Color = Convert::Hex2Color(dv.GetData("setup","BackGroundColor"));
 		BackGround.Texture = nullptr;
 	}
-	else if (dv.GetData(std::string("setup"), "BackGroundType") == "DrawTexture") {
+	else if (dv.GetData("setup", "BackGroundType") == "DrawTexture") {
 		BackGround.Type = Scene::BackGround::BType::DrawTexture;
-		BackGround.TypeWrap = Scene::BackGround::BTypeWrap_fromString(dv.GetData(std::string("setup"), std::string("BackGroundWrapMode")));
-		BackGround.Texture = Core::GetAssetManager()->GetTexture(dv.GetData("setup", std::string("BackGroundTexture")));
+		BackGround.TypeWrap = Scene::BackGround::BTypeWrap_fromString(dv.GetData("setup", "BackGroundWrapMode"));
+		BackGround.Texture = Core::GetAssetManager()->GetTexture(dv.GetData("setup", "BackGroundTexture"));
 		if (BackGround.Texture == nullptr) {
-			Console::WriteLine("Background texture not exists '" + dv.GetData(std::string("setup"), std::string("BackGroundTexture")) + "'");
+			Console::WriteLine("Background texture not exists '" + dv.GetData("setup","BackGroundTexture") + "'");
 			BackGround.SetDefault();
 		}
 	}
@@ -85,17 +85,17 @@ bool Scene::Load(const std::string& name)
 	}
 
 	// regions
-	for (std::string region : dv.GetSection(std::string("regions"))) {
+	for (std::string region : dv.GetSection("regions")) {
 
 	}
 
 	// triggers
-	for (std::string trigger : dv.GetSection(std::string("triggers"))) {
+	for (std::string trigger : dv.GetSection("triggers")) {
 
 	}
 
 	// instances
-	for (std::string& instance : dv.GetSection(std::string("instance"))) {
+	for (std::string& instance : dv.GetSection("instance")) {
 		Func::str_vec data = Func::Split(instance, '|');
 		if (data.size() != 3) {
 			Console::WriteLine("Instance error: '" + instance + "'");
