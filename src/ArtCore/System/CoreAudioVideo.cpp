@@ -7,7 +7,6 @@ Core::graphic::graphic() {
     _window_fullscreen = false;
     _window_frame_rate = 0;
     _window_v_sync = false;
-    _screen_rect = {};
 }
 void Core::graphic::SetScreenResolution(const int w, const int h) {
     _window_width = w;
@@ -30,11 +29,7 @@ void Core::graphic::SetVSync(const bool v_sync) {
 {
     return _window_height;
 }
-Rect* Core::graphic::GetScreenSpace()
-{
-    return &_screen_rect;
-}
-void Core::graphic::Apply()
+void Core::graphic::Apply() const
 {
     GPU_SetFullscreen(_window_fullscreen, false);
     GPU_SetWindowResolution(static_cast<Uint16>(_window_width), static_cast<Uint16>(_window_height));
@@ -47,10 +42,6 @@ void Core::graphic::Apply()
         SDL_GL_SetSwapInterval(1);
     }
     Render::CreateRender(_window_width, _window_height);
-    _screen_rect.X = 0.f;
-    _screen_rect.Y = 0.f;
-    _screen_rect.W = static_cast<float>(SettingsData::GetInt("DefaultWindowResolutionX", 1920));
-    _screen_rect.H = static_cast<float>(SettingsData::GetInt("DefaultWindowResolutionY", 1080));
 
     SettingsData::SetValue("ACWindowMode", _window_fullscreen ? "1" : "0");
     SettingsData::SetValue("ACWindowResolutionX", std::to_string(_window_width));

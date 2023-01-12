@@ -80,16 +80,14 @@ private:
 		// getters
 		[[nodiscard]] int GetWindowWidth() const;
 		[[nodiscard]] int GetWindowHeight() const;
-		Rect* GetScreenSpace();
 		// apply
-		void Apply();
+		void Apply() const;
 	private:
 		int _window_width;
 		int _window_height;
 		bool _window_fullscreen;
 		int _window_frame_rate;
 		bool _window_v_sync;
-		Rect _screen_rect;
 	};
 public:
 	inline static graphic Graphic;

@@ -204,7 +204,7 @@ public:
 		void _deleteElement();
 	};
 public:
-	static FC_Font* GlobalFont;
+	inline static FC_Font* GlobalFont;
 private:
 	static void _render(GuiElementTemplate*);
 	static bool _events(GuiElementTemplate*);

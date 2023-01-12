@@ -25,6 +25,7 @@ Scene::Scene()
 	BackGround.TypeWrap = (BackGround::BTypeWrap)0;
 	CurrentCollisionInstanceId = -1;
 	CurrentCollisionInstance = nullptr;
+	_view_rect = {};
 	//GuiSystem = Gui();
 }
 
@@ -63,9 +64,14 @@ bool Scene::Load(const std::string& name)
 	}
 	_width = Func::TryGetInt(dv.GetData("setup", "ViewWidth"));
 	_height = Func::TryGetInt(dv.GetData("setup", "ViewHeight"));
-	_enable_camera = Convert::Str2Bool(dv.GetData("setup", "EnableCamera"));
 	_begin_trigger = dv.GetData("setup", "SceneStartingTrigger");
 	_name = name;
+	_enable_camera = Convert::Str2Bool(dv.GetData("setup", "EnableCamera"));
+	//TODO if camera system be implemented
+	//_starting_x = Func::TryGetInt(dv.GetData("setup", "StartX"));
+	//_starting_y = Func::TryGetInt(dv.GetData("setup", "StartY"));
+	//_view_rect = { _starting_x, _starting_y, _width, _height };
+	_view_rect = { 0, 0, _width, _height };
 
 	// get scene background type
 	if (dv.GetData("setup", "BackGroundType") == "DrawColor") {
@@ -156,6 +162,12 @@ Instance* Scene::CreateInstance(const std::string& name, const float x, const fl
 	_is_any_new_instances = true;
 	return ins;
 }
+
+bool Scene::InView(const SDL_FPoint& p) const
+{
+	return _view_rect.PointInRectWh(p);
+}
+
 void Scene::SpawnAll()
 {
 	/*

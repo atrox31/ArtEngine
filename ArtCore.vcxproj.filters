@@ -348,6 +348,9 @@
     <ClInclude Include="src\ArtCore\System\Core.h">
       <Filter>ArtCore\System\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\ArtCore\ShortTypenames.h">
+      <Filter>ArtCore</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ArtCore">

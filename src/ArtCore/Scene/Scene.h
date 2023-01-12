@@ -32,9 +32,12 @@ public:
 		return _height;
 	}
 
+	bool InView(const SDL_FPoint& p) const;
+
 private:
 	bool _is_any_new_instances;
 	bool _enable_camera;
+	Rect _view_rect;
 
 public:
 	void SpawnAll();

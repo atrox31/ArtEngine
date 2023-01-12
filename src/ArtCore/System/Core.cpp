@@ -252,7 +252,7 @@ bool Core::Init(const str_vec& args)
         )
 
         // SDL haptic - on mobile
-        if (SettingsData::GetInt("GameUsingHaptic", 0) == 1) {
+        if (SettingsData::GetInt("ACGameUsingHaptic", 0) == 1) {
             TRY_TO_INIT_CRITIC(
                 SDL_InitSubSystem(SDL_INIT_HAPTIC) == 0,
                 std::string(SDL_GetError()),
@@ -261,7 +261,7 @@ bool Core::Init(const str_vec& args)
         }
 
     // SDL controller
-    if (SettingsData::GetInt("GameUsingController", 0) == 1) {
+    if (SettingsData::GetInt("ACGameUsingController", 0) == 1) {
         TRY_TO_INIT_CRITIC(
             SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER) == 0,
             std::string(SDL_GetError()),
@@ -291,10 +291,10 @@ bool Core::Init(const str_vec& args)
         // Mix_OpenAudio all sounds must be 32-bit integer samples and 44100 hz
         TRY_TO_INIT_CRITIC(
             Mix_OpenAudio(
-                SettingsData::GetInt("AUDIO_FREQ", 44100),
+                SettingsData::GetInt("ACAudioFreq", 44100),
                 AUDIO_S32LSB,
                 2,
-                SettingsData::GetInt("AUDIO_CHUNKSIZE", 4096)
+                SettingsData::GetInt("ACAudioChunkSize", 4096)
             ) == 0,
             std::string(SDL_GetError()),
             "Mix_OpenAudio"
@@ -368,7 +368,7 @@ bool Core::LoadData()
         SettingsData::GetInt("ACWindowResolutionX", 1920),  
         SettingsData::GetInt("ACWindowResolutionY",1080) 
     );
-    Graphic.SetFrameRate(SettingsData::GetInt("ACFramerate", 60));
+    Graphic.SetFrameRate(SettingsData::GetInt("ACFrameRate", 60));
     Graphic.SetFullScreen(SettingsData::GetInt("ACWindowMode", 0) == 1);
     Graphic.Apply();
 
@@ -674,7 +674,6 @@ void Core::MouseState::Reset()
 {
     int x{}, y{};
     const Uint32 button_state = SDL_GetMouseState(&x, &y);
-    // TODO test this
     Mouse.XYf = Render::ScalePoint({ static_cast<float>(x) ,static_cast<float>(y) });
     Mouse.XY = { static_cast<int>(Mouse.XYf.x) ,static_cast<int>(Mouse.XYf.y) };
 

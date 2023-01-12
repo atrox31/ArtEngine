@@ -19,9 +19,13 @@
 #include "GuiElement/Slider.h"
 #include "GuiElement/TabPanel.h"
 
-FC_Font* Gui::GlobalFont;
-
-//TODO refactor this
+// All systems is from previous version of ArtCore writed many years ago.
+// Some code is rewrited, mostly drawing and events but rest have old style
+// returns of self.
+// This is from times when ArtCore do not have editor, everything must
+// be writed and compiled at once.
+// This works but I can write this better.
+// TODO rewrite this to newest standards, clean and comment this code.
 
 bool Gui::PointOnInterface(const SDL_FPoint p) const
 {

@@ -21,6 +21,9 @@ void Console::Init() {
 	if (_instance == nullptr)
 	{
 		Create();
+	}else
+	{
+		return;
 	}
 	_instance->_font = FC_CreateFont();
 	FC_LoadFont_RW(_instance->_font, SDL_RWFromConstMem(consola_ttf, 459181), 1, 16, C_BLACK, TTF_STYLE_NORMAL);
@@ -253,7 +256,7 @@ bool Console::InnerProcessInput(const SDL_Event* sdl_event)
 		{
 			if ((_current_input.length() > 0) && (_current_cursor_pos > 0))
 			{
-				_current_input.erase(_current_cursor_pos-1, 1);
+				_current_input.erase(static_cast<size_t>(_current_cursor_pos)-1, 1);
 				_current_cursor_pos--;
 			}
 			return true;

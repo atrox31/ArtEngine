@@ -1,4 +1,11 @@
 /*
+ *
+ * Old version of ArtCore debugger.
+ * Now Core have Debug element with user interface
+ * Every log writes console and if have error
+ * save all to file
+ *
+ *
 #include "Debug.h"
 #include <sstream>
 #include <fstream>
@@ -185,7 +192,7 @@ void Debug::write(const std::string& string)
 
 void Debug::write_to_file(const std::string& string)
 {
-	//TODO add multiplatform
+
 	std::ofstream ofs(OUTPUT_FILE, std::ofstream::app);
 	ofs << Debug::get_header() << string << '\n';
 	ofs.close();

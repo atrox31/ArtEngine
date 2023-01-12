@@ -107,9 +107,8 @@ void Core::ProcessStep() const
 
                 // in view
                 if (c_instance->Alive) {
-                    SDL_FPoint pos{ c_instance->PosX, c_instance->PosY };
                     const bool oldInView = c_instance->InView;
-                    c_instance->InView = Graphic.GetScreenSpace()->PointInRect(pos);
+                    c_instance->InView = GetCurrentScene()->InView({ c_instance->PosX, c_instance->PosY });
                     if (c_instance->InView != oldInView) {
                         if (EVENT_BIT_TEST(event_bit::HAVE_VIEW_CHANGE, c_flag)) {
                             if (oldInView == true) { // be inside, now exit view

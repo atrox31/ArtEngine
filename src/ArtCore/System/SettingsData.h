@@ -68,7 +68,7 @@ public:
         }
         // can not rewrite core settings
         if (_settings_data.contains(field)) {
-            Console::WriteLine("Can not set property of: '" + field + "'. Its read only.");
+            Console::WriteLine("Can not rewrite property of: '" + field + "'. Its read only.");
         }else
         {
             _settings_data.emplace(field, value);
@@ -78,6 +78,7 @@ public:
     // read all user settings data
     static bool LoadUserData(const std::string& settings_file)
 	{
+        //TODO SettingsData::LoadUserData() - not implemented
         Console::WriteLine("SettingsData::LoadUserData() - not implemented");
         return true;
 
@@ -98,6 +99,7 @@ public:
 	// write all values to file
 	static void WriteValues()
 	{
+        //TODO SettingsData::WriteValues() - not implemented
         Console::WriteLine("SettingsData::WriteValues() - not implemented");
 	}
 private:
