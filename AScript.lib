@@ -125,3 +125,6 @@ int string_get_length(string text);Get length of target <string> text;
 string string_join(string str1, string str2);Create new string from <string> and <string>;
 string string_replace(string target, string search, string replace);Target text: <string>.\nSearch <string> and replace with <string>;
 bool convert_int_to_bool(int input);Convert <int> to bool. Only 1 is true, rest is false;
+bool system_settings_data_save();Save all user system data to archive;
+null system_settings_apply_audio();Apply audio settings
+null system_settings_apply_graphic();Apply graphic settings
