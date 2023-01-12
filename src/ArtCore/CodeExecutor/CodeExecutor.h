@@ -348,6 +348,9 @@ private:
 	Script(string_join);
 	Script(string_replace);
 	Script(convert_int_to_bool);
+	Script(system_settings_data_save);
+	Script(system_settings_apply_audio);
+	Script(system_settings_apply_graphic);
 #undef Script
 };
 //end of file

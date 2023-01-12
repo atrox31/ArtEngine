@@ -131,5 +131,8 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["string_join"] = &CodeExecutor::string_join;
 	FunctionsMap["string_replace"] = &CodeExecutor::string_replace;
 	FunctionsMap["convert_int_to_bool"] = &CodeExecutor::convert_int_to_bool;
+	FunctionsMap["system_settings_data_save"] = &CodeExecutor::system_settings_data_save;
+	FunctionsMap["system_settings_apply_audio"] = &CodeExecutor::system_settings_apply_audio;
+	FunctionsMap["system_settings_apply_graphic"] = &CodeExecutor::system_settings_apply_graphic;
 }
 //end of file

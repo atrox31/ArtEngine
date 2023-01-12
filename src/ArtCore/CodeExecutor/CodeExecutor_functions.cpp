@@ -11,6 +11,7 @@
 #include "ArtCore/System/Core.h"
 #include "ArtCore/System/AssetManager.h"
 #include "ArtCore/Scene/Scene.h"
+#include "ArtCore/System/SettingsData.h"
 #include "ArtCore/_Debug/Debug.h"
 
 #define StackIn_b CodeExecutor::GlobalStack_bool.Get()
@@ -1155,14 +1156,14 @@ void CodeExecutor::system_set_video_resolution_from_string(Instance*) {
 	if(video_resolution_s.size() != 2)
 	{
 		// error
-		ASSERT(true, "error argument '"+ video_resolution+"' can not split");
+		ASSERT(true, "error argument '"+ video_resolution+"' can not split")
 	}
 	const int width = Func::TryGetInt(video_resolution_s[0]);
 	const int height = Func::TryGetInt(video_resolution_s[1]);
 	if(width == 0 || height == 0)
 	{
 		// error
-		ASSERT(true, "error argument '" + video_resolution + "' can not convert to int");
+		ASSERT(true, "error argument '" + video_resolution + "' can not convert to int")
 	}
 	Core::Graphic.SetScreenResolution(width, height);
 	Core::Graphic.Apply();
@@ -1170,25 +1171,8 @@ void CodeExecutor::system_set_video_resolution_from_string(Instance*) {
 
 //null system_set_video_bloom_factor(int mode);Set mode for bloom post process to <int>;0-off, 1-low, 2-medium, 3-high;
 void CodeExecutor::system_set_video_bloom_factor(Instance*) {
-	switch(std::clamp(StackIn_i, 0, 3))
-	{
-	case 0:
-		Render::SetGaussianEnabled(false);
-		break;
-	case 1:
-		Render::SetGaussianEnabled(true);
-		Render::SetGaussianProperties(4, 4, 0.0205f);
-		break;
-	case 2:
-		Render::SetGaussianEnabled(true);
-		Render::SetGaussianProperties(8, 8, 0.0205f);
-		break;
-	case 3:
-		Render::SetGaussianEnabled(true);
-		Render::SetGaussianProperties(16, 16, 0.0205f);
-		break;
-	default: break;
-	}
+	const int mode = StackIn_i;
+	Render::SetGaussianFromPreset(mode);
 }
 
 //null system_set_audio_master(bool mode);Set audio mode for master to <bool>; True means sounds can be played, have higher priority than other audio modes
@@ -1219,13 +1203,13 @@ void CodeExecutor::system_set_audio_sound_level(Instance*) {
 //int system_settings_data_get_int(string setting);Get value of settings data name <string>;On error return -1
 void CodeExecutor::system_settings_data_get_int(Instance*) {
 	const std::string setting = StackIn_s;
-	StackOut_i(Core::SD_GetInt(setting, -1));
+	StackOut_i(SettingsData::GetInt(setting, -1));
 }
 
 //string system_settings_data_get_string(string setting);Get value of settings data name <string>;On error return empty string ""
 void CodeExecutor::system_settings_data_get_string(Instance*) {
 	const std::string setting = StackIn_s;
-	StackOut_s(Core::SD_GetString(setting, ""));
+	StackOut_s(SettingsData::GetString(setting, ""));
 }
 
 //int string_get_length(string text);Get length of target <string> text;
@@ -1254,4 +1238,19 @@ void CodeExecutor::string_replace(Instance*) {
 //bool convert_int_to_bool(int input);Convert <int> to bool. Only 1 is true, rest is false;
 void CodeExecutor::convert_int_to_bool(Instance*) {
 	StackOut_b(StackIn_i == 1);
+}
+
+//bool system_settings_data_save();Save all user system data to archive;
+void CodeExecutor::system_settings_data_save(Instance*) {
+	SettingsData::WriteValues();
+}
+
+//null system_settings_apply_audio();Apply audio settings
+void CodeExecutor::system_settings_apply_audio(Instance*) {
+	Core::Audio.Apply();
+
+}
+//null system_settings_apply_graphic();Apply graphic settings
+void CodeExecutor::system_settings_apply_graphic(Instance*) {
+	Core::Graphic.Apply();
 }
