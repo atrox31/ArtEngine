@@ -90,9 +90,9 @@ float Func::GetVectorFromDirection(const vec2f& vector)
 	return std::atan2f(vector.y, vector.x);
 }
 
-Func::str_vec Func::VectorFromCharArray(char* arr[], int size)
+str_vec Func::VectorFromCharArray(char* arr[], int size)
 {
-	Func::str_vec _return;
+	str_vec _return;
 	for(int i=0; i< size; i++)
 	{
 		_return.emplace_back(arr[i]);
@@ -104,7 +104,7 @@ Func::str_vec Func::VectorFromCharArray(char* arr[], int size)
 std::string Func::GetFileName(const std::string& path, const char separator, bool with_extension)
 {
 	if (path.length() == 0) return "";
-	Func::str_vec path_separated = Func::Split(path, separator);
+	str_vec path_separated = Func::Split(path, separator);
 	if (with_extension)
 	{
 		return path_separated.back();
@@ -166,9 +166,9 @@ bool Func::FileExists(const std::string& file_name)
 	return (stat(file_name.c_str(), &buffer) == 0);
 }
 
-Func::str_vec Func::Explode(const std::string& string, const char separator)
+str_vec Func::Explode(const std::string& string, const char separator)
 {
-	Func::str_vec tokens;
+	str_vec tokens;
 	size_t prev = 0, pos = 0;
 	do
 	{
@@ -181,9 +181,9 @@ Func::str_vec Func::Explode(const std::string& string, const char separator)
 	return tokens;
 }
 
-Func::str_vec Func::Split(const std::string& string, const char separator)
+str_vec Func::Split(const std::string& string, const char separator)
 {
-	Func::str_vec internal;
+	str_vec internal;
 	std::stringstream ss(string);
 	std::string tok;
 
@@ -195,15 +195,15 @@ Func::str_vec Func::Split(const std::string& string, const char separator)
 	return internal;
 }
 
-Func::str_vec Func::ArchiveGetFileText(const std::string& file, int* size, const bool replace_slashes)
+str_vec Func::ArchiveGetFileText(const std::string& file, int* size, const bool replace_slashes)
 {
-	Func::str_vec _return = Func::str_vec();
+	str_vec _return = str_vec();
 	if(size != nullptr)
 		*size = 0;
 	std::string buffer(ArchiveGetFileBuffer(file, nullptr));
 	if (buffer.length() == 0) return _return;
 
-	Func::str_vec data = Func::Explode(buffer, '\n');
+	str_vec data = Func::Explode(buffer, '\n');
 	if (data.empty()) return _return;
 
 	// clean from \r on ends
@@ -368,7 +368,7 @@ Func::DataValues::DataValues(const char* data, const Sint64 size)
 		Console::WriteLine("DataValues: size is 0");
 		return;
 	}
-	Func::str_vec values = Func::str_vec();
+	str_vec values = str_vec();
 	std::string tmp_value;
 	Sint64 pos = -1;
 	while (pos++ < size) {
@@ -395,7 +395,7 @@ Func::DataValues::DataValues(const char* data, const Sint64 size)
 				Console::WriteLine("DataValues: section '" + c_section + "' is exists!");
 			}
 			else {
-				_data.insert({ c_section, Func::str_vec() });
+				_data.insert({ c_section, str_vec() });
 			}
 			continue;
 		}
@@ -422,7 +422,7 @@ std::string Func::DataValues::GetData(const std::string& section, const std::str
 	}
 
 	for (std::string& v : _data[section]) {
-		Func::str_vec data = Func::Split(v, '=');
+		str_vec data = Func::Split(v, '=');
 		if (data[0] != field) continue;
 		if (data.size() == 1) {
 			// not have value at all
@@ -434,11 +434,11 @@ std::string Func::DataValues::GetData(const std::string& section, const std::str
 	return "";
 }
 
-Func::str_vec Func::DataValues::GetSection(const std::string& section)
+str_vec Func::DataValues::GetSection(const std::string& section)
 {
 	if (!_data.contains(section)) {
 		Console::WriteLine("DataValues: section '" + section + "' not found!");
-		Func::str_vec _return = Func::str_vec();
+		str_vec _return = str_vec();
 		return _return;
 	}
 	return _data[section];

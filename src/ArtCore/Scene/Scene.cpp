@@ -6,6 +6,7 @@
 #include "ArtCore/Enums/Event.h"
 #include "ArtCore/System/Core.h"
 #include "ArtCore/System/AssetManager.h"
+#include "ArtCore/ShortTypenames.h"
 
 #include "nlohmann/json.hpp"
 #include "physfs-release-3.2.0/src/physfs.h"
@@ -15,6 +16,7 @@ Scene::Scene()
 {
 	_instances_size = 0;
 	_is_any_new_instances = false;
+	_enable_camera = false;
 	_width = 1;
 	_height = 1;
 	BackGround.Type = Scene::BackGround::BType::DrawColor;
@@ -29,7 +31,7 @@ Scene::Scene()
 void Scene::Clear()
 {
 	if (!InstanceColony.empty()) {
-		for (plf::colony<Instance*>::iterator it = InstanceColony.begin(); it != InstanceColony.end(); ) {
+		for (plf_it<Instance*> it = InstanceColony.begin(); it != InstanceColony.end(); ) {
 			
 			delete (*it);
 			it = InstanceColony.erase(it);
@@ -38,7 +40,7 @@ void Scene::Clear()
 	InstanceColony.clear();
 
 	if (!_instances_new.empty()) {
-		for (std::vector<Instance*>::iterator it = _instances_new.begin(); it != _instances_new.end(); ) {
+		for (vec_it<Instance*> it = _instances_new.begin(); it != _instances_new.end(); ) {
 			delete (*it);
 			it = _instances_new.erase(it);
 		}
@@ -59,8 +61,9 @@ bool Scene::Load(const std::string& name)
 	if (!dv.IsOk()) {
 		return false;
 	}
-	_width = Func::TryGetInt(dv.GetData("setup", "Width"));
-	_height = Func::TryGetInt(dv.GetData("setup", "Height"));
+	_width = Func::TryGetInt(dv.GetData("setup", "ViewWidth"));
+	_height = Func::TryGetInt(dv.GetData("setup", "ViewHeight"));
+	_enable_camera = Convert::Str2Bool(dv.GetData("setup", "EnableCamera"));
 	_begin_trigger = dv.GetData("setup", "SceneStartingTrigger");
 	_name = name;
 
@@ -96,7 +99,7 @@ bool Scene::Load(const std::string& name)
 
 	// instances
 	for (std::string& instance : dv.GetSection("instance")) {
-		Func::str_vec data = Func::Split(instance, '|');
+		str_vec data = Func::Split(instance, '|');
 		if (data.size() != 3) {
 			Console::WriteLine("Instance error: '" + instance + "'");
 			continue;
@@ -135,7 +138,7 @@ bool Scene::Start()
 	}
 	Clear();
 	for (const StartingInstanceSpawner& instance : _begin_instances) {
-		CreateInstance(instance.instance, (float)instance.x, (float)instance.y);
+		CreateInstance(instance.instance, static_cast<float>(instance.x), static_cast<float>(instance.y));
 	}
 	if(have_triggers && _begin_trigger.length() > 0)
 	{
@@ -185,7 +188,7 @@ void Scene::Exit()
 Instance* Scene::GetInstanceById(const int id)
 {
 	for (Instance* instance : InstanceColony) {
-		if (instance->GetId() == id) return instance;
+		if (instance->GetId() == static_cast<Uint64>(id)) return instance;
 	}
 	return nullptr;
 }

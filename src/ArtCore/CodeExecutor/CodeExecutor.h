@@ -43,21 +43,21 @@ private:
 		//		type, fields
 		std::string Name;
 		Instance* Template;
-		std::map<ArtCode::variable_type, Func::str_vec> VariablesNames;
+		std::map<ArtCode::variable_type, str_vec> VariablesNames;
 
 		InstanceDefinition()
 		{
 			Template = nullptr;
 			Name = "";
 			_events = std::vector<EventData>();
-			VariablesNames = std::map<ArtCode::variable_type, Func::str_vec>();
+			VariablesNames = std::map<ArtCode::variable_type, str_vec>();
 			for (
 				ArtCode::variable_type v = (ArtCode::variable_type)(ArtCode::variable_type::variable_typeInvalid+1);
 				v < ArtCode::variable_type::variable_typeEND;
 				v = (ArtCode::variable_type)(v + 1)
 				)
 			{
-				VariablesNames[v] = Func::str_vec();
+				VariablesNames[v] = str_vec();
 			}
 		}
 

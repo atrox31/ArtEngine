@@ -21,17 +21,21 @@ public:
 	void Exit();
 
 	Instance* CreateInstance(const std::string& name, float x, float y);
-	int GetWidth() const
+
+	[[nodiscard]] int GetWidth() const
 	{
 		return _width;
 	}
-	int GetHeight() const
+
+	[[nodiscard]] int GetHeight() const
 	{
 		return _height;
 	}
 
 private:
 	bool _is_any_new_instances;
+	bool _enable_camera;
+
 public:
 	void SpawnAll();
 

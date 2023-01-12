@@ -58,7 +58,7 @@ void GuiElement::DropDownList::SetVariableFromStringEx(const std::string& name, 
 	}
 	if (name == "Values")
 	{
-		Func::str_vec sliced_values = Func::Split(value, '|');
+		str_vec sliced_values = Func::Split(value, '|');
 		_values.insert(_values.begin(), sliced_values.begin(), sliced_values.end());
 		return;
 	}

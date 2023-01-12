@@ -28,7 +28,7 @@ extern "C"
 	__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 }
 
-int protected_main(const Func::str_vec& args) {
+int protected_main(const str_vec& args) {
 	if(!Core::Init(args))
 	{
 		Console::WriteLine("Core init fail.");

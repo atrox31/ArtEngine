@@ -50,12 +50,12 @@ private:
 	FC_Font* _font;
 
 	// user input history
-	Func::str_vec _string_input_history;
+	str_vec _string_input_history;
 	// starting position of history
 	int _string_input_history_pos;
 
 	// string list of all lines
-	inline static Func::str_vec _console_lines;
+	inline static str_vec _console_lines;
 	// current string input 
 	std::string _current_input;
 

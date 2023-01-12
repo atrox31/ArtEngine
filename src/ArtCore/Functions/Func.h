@@ -3,12 +3,12 @@
 #include <string>
 #include <vector>
 
+#include "ArtCore/ShortTypenames.h"
 #include "ArtCore/Structs/Rect.h"
 #include "SDL2/IncludeAll.h"
 class Func
 {
 public:
-	using str_vec = std::vector<std::string>;
 	static bool PointInGPU_Rect(const SDL_FPoint&, const  GPU_Rect&);
 	static bool PointInGPU_Rect(const float& x, const float& y, const GPU_Rect&);
 	static int TryGetInt(const std::string&);

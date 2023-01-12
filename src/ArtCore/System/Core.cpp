@@ -125,7 +125,7 @@ Core::~Core()
 ////////////////////////////////////////////////////////////////////////////////////
 
 // init all game data and libs
-bool Core::Init(const Func::str_vec& args)
+bool Core::Init(const str_vec& args)
 {
 #ifdef _DEBUG
     // debug timer to time all events in game
@@ -365,12 +365,10 @@ bool Core::LoadData()
 
     // set all settings
     Graphic.SetScreenResolution(
-        SettingsData::GetInt("ACWindowResolutionX", // user
-            SettingsData::GetInt("DefaultResolutionX", 1920)),  // core
-        SettingsData::GetInt("ACWindowResolutionY", // user
-            SettingsData::GetInt("DefaultResolutionY", 1080)) // core
+        SettingsData::GetInt("ACWindowResolutionX", 1920),  
+        SettingsData::GetInt("ACWindowResolutionY",1080) 
     );
-    Graphic.SetFrameRate(SettingsData::GetInt("DefaultFramerate", 60));
+    Graphic.SetFrameRate(SettingsData::GetInt("ACFramerate", 60));
     Graphic.SetFullScreen(SettingsData::GetInt("ACWindowMode", 0) == 1);
     Graphic.Apply();
 
@@ -412,7 +410,7 @@ bool Core::LoadData()
 
     // set starting scene
     {
-        const Func::str_vec starting_scene = Func::ArchiveGetFileText("scene/StartingScene.txt", nullptr, false);
+        const str_vec starting_scene = Func::ArchiveGetFileText("scene/StartingScene.txt", nullptr, false);
         if (starting_scene.empty()) {
             bgr.Stop();
             return false;
@@ -546,7 +544,7 @@ void Core::Exit()
 /////////////////////////////////////////
 
 // Converts arguments list to pairs, this allow to have nullptr if something is not populate.
-void Core::PopulateArguments(const Func::str_vec& args)
+void Core::PopulateArguments(const str_vec& args)
 {
     if (args.size() == 1) return;
     for (size_t i = 1; i < args.size();)
@@ -619,7 +617,7 @@ bool Core::LoadSetupFile(const char* platform, const std::string& setup_file)
         if ( data.length() < 2 ) continue;
         if ( data.substr(0, 2) == "//" ) continue;
 
-        Func::str_vec line = Func::Split(data, '=');
+        str_vec line = Func::Split(data, '=');
         if (line.empty()) continue;
         if (line.size() != 2) {
             Console::WriteLine("Cannot read property '" + data + "'");
@@ -965,7 +963,7 @@ void Core::CoreDebug::Draw() const
 
     if(_show_spy_window)
     {
-        const Func::str_vec text = Func::Split(Executor()->DebugGetTrackInfo(), '\n');
+        const str_vec text = Func::Split(Executor()->DebugGetTrackInfo(), '\n');
         std::string sliced_text;
 
         for(int i= _spy_line_begin; i< _spy_line_end; i++)
@@ -1075,7 +1073,7 @@ void Core::CoreDebug::Draw() const
 
         //FC_DrawColor(_instance._global_font, _instance._screenTarget, info_rect.x + 4.f, info_rect.y + 4.f, C_DGREEN, text_left.c_str());
         float current_height = info_rect.y;
-        Func::str_vec spliced_text = Func::Split(text_left, '\n');
+        str_vec spliced_text = Func::Split(text_left, '\n');
         int i = 0;
     	for (std::string& text : spliced_text)
         {

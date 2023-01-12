@@ -21,7 +21,7 @@ class Core final
 	~Core();
 public:
 	// Core step execute
-	static bool Init(const Func::str_vec& args);
+	static bool Init(const str_vec& args);
 	static bool Run();
 	static bool LoadData();
 	static void Exit();
@@ -141,7 +141,7 @@ public:
 
 private:
 	using program_argument = std::pair<const char*, const char*>;
-	void PopulateArguments(const Func::str_vec&);
+	void PopulateArguments(const str_vec&);
 	program_argument GetProgramArgument(const std::string& argument);
 	std::vector<program_argument> _program_arguments;
 

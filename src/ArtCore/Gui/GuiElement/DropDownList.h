@@ -24,7 +24,7 @@ private:
 	int _selected_index = -1;
 	std::string _selected_value = "";
 	bool _show_list = false;
-	Func::str_vec _values;
+	str_vec _values;
 	std::vector<bool> _child_state;
 	int _temp_selected_index = -1;
 };

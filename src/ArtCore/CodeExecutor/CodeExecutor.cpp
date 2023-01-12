@@ -48,7 +48,7 @@ bool CodeExecutor::LoadArtLib()
 		return false;
 	}
 	const std::string data(buffer);
-	Func::str_vec lines = Func::Explode(data, '\n');
+	str_vec lines = Func::Explode(data, '\n');
 	
 	if (lines.empty()) {
 		return false;
@@ -306,7 +306,7 @@ bool CodeExecutor::LoadSceneTriggers()
 					ExecuteCode(instance.Template, &def_values_code);
 				}else
 				{
-					if(const Func::str_vec trigger_type = Func::Split(e_name, '&'); trigger_type.size() != 2)
+					if(const str_vec trigger_type = Func::Split(e_name, '&'); trigger_type.size() != 2)
 					{
 						//error
 						Console::WriteLine("LoadSceneTriggers: '" + o_name + "' - expected 'trigger_type.size() == 2' but " + std::to_string(trigger_type.size()) + " is given");
@@ -320,7 +320,7 @@ bool CodeExecutor::LoadSceneTriggers()
 						}else
 						{
 							// gui element action
-							if (const Func::str_vec gui_element_type = Func::Split(trigger_type[0], '#'); gui_element_type.size() != 2)
+							if (const str_vec gui_element_type = Func::Split(trigger_type[0], '#'); gui_element_type.size() != 2)
 							{//error
 								Console::WriteLine("LoadSceneTriggers: '" + o_name + "' - expected 'gui_element_type.size() == 2' but " + std::to_string(gui_element_type.size()) + " is given");
 								ASSERT(false, "x05"); return false;

@@ -3,6 +3,7 @@
 #include "ColorDefinitions.h"
 #include "ArtCore/Functions/Convert.h"
 #include "ArtCore/Functions/Func.h"
+#include "ArtCore/Scene/Scene.h"
 #include "ArtCore/System/Core.h"
 #include "ArtCore/System/SettingsData.h"
 Render* Render::_instance = nullptr;
@@ -15,8 +16,8 @@ void Render::CreateRender(const int width, const int height)
 
 	_instance->_width = width;
 	_instance->_height = height;
-	_instance->_default_width = static_cast<float>(SettingsData::GetInt("DefaultWindowResolutionX", 1920));
-	_instance->_default_height = static_cast<float>(SettingsData::GetInt("DefaultWindowResolutionY", 1080));
+	_instance->_default_width = static_cast<float>(Core::GetCurrentScene()->GetWidth());
+	_instance->_default_height = static_cast<float>(Core::GetCurrentScene()->GetHeight());
 
 	_instance->_screenTexture = GPU_CreateImage(static_cast<Uint16>(width), static_cast<Uint16>(height), GPU_FormatEnum::GPU_FORMAT_RGBA);
 	_instance->_screenTexture_target = GPU_LoadTarget(_instance->_screenTexture);
@@ -32,12 +33,8 @@ void Render::CreateRender(const int width, const int height)
 
 	_instance->_width_scale =  (static_cast<float>(width) / _instance->_default_width);
 	_instance->_height_scale = (static_cast<float>(height) / _instance->_default_height);
-	_instance->_width_height_equal_scale = (_instance->_width_scale - _instance->_height_scale) < 0.1f;
-
-	//GPU_SetViewport(Core::GetScreenTarget(), 
-	//	{0.f, 0.f,
-	//				static_cast<float>(_instance->_width), static_cast<float>(_instance->_height) }
-	//	);
+	_instance->_width_height_equal_scale = std::abs(_instance->_width_scale - _instance->_height_scale) < 0.1f;
+	
 }
 
 void Render::DestroyRender()

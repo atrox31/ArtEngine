@@ -60,7 +60,7 @@ bool AssetManager::LoadData(BackGroundRenderer* bgr, const int p_min, const int 
 	const std::string buffer = std::string(Func::ArchiveGetFileBuffer("filelist.txt", &buffer_size));
 	if (buffer_size == 0) return true;
 
-	Func::str_vec data = Func::Explode(buffer, '\n');
+	str_vec data = Func::Explode(buffer, '\n');
 	if (data.empty()) return false;
 	
 	for (std::string& line : data) {
@@ -73,12 +73,12 @@ bool AssetManager::LoadData(BackGroundRenderer* bgr, const int p_min, const int 
 	for (std::string& line : data) {
 		c_pos++;
 
-		Func::str_vec temp = Func::Split(line, ';');
+		str_vec temp = Func::Split(line, ';');
 		if (temp.size() != 2) continue;
 
 		const std::string file = temp[0];
 
-		Func::str_vec path = Func::Split(temp[0], '/');
+		str_vec path = Func::Split(temp[0], '/');
 		if (path.empty()) continue;
 
 		const std::string normal_name = temp[1];

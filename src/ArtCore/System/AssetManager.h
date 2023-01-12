@@ -36,11 +36,11 @@ public:
 	int GetFontId(const std::string& name) const;
 
 #ifdef _DEBUG
-	Func::str_vec Debug_List_sprite_name;
-	Func::str_vec Debug_List_texture_name;
-	Func::str_vec Debug_List_music_name;
-	Func::str_vec Debug_List_sound_name;
-	Func::str_vec Debug_List_font_name;
+	str_vec Debug_List_sprite_name;
+	str_vec Debug_List_texture_name;
+	str_vec Debug_List_music_name;
+	str_vec Debug_List_sound_name;
+	str_vec Debug_List_font_name;
 #endif
 
 private:

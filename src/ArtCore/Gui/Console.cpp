@@ -69,14 +69,14 @@ void Console::Execute(const std::string& command)
 {
 	if (_instance == nullptr) return;
 	if (command.empty()) return;
-	const Func::str_vec arg = Func::Explode(command, ' ');
+	const str_vec arg = Func::Explode(command, ' ');
 	if (arg.empty()) return;
 	if(Core::Executor()->FunctionsMap.contains(arg[0]))
 	{
 		if(arg.size() > 1)
 		{
 			for (int i = 1; i < arg.size(); i++) {
-				Func::str_vec argument = Func::Split(arg[i], '|');
+				str_vec argument = Func::Split(arg[i], '|');
 				if(argument.size() != 2)
 				{
 					WriteLine("Error: argument must be in TYPE|value style");
@@ -124,7 +124,7 @@ void Console::Execute(const std::string& command)
 			if(arg.size() == 2)
 			{
 				Core::Executor()->DebugSetInstanceToTrack(Core::GetCurrentScene()->GetInstanceById(Func::TryGetInt(arg[1])));
-				const Func::str_vec text = Func::Split(Core::Executor()->DebugGetTrackInfo(), '\n');
+				const str_vec text = Func::Split(Core::Executor()->DebugGetTrackInfo(), '\n');
 				Core::GetInstance()->CoreDebug.SetSpyLines(static_cast<int>(text.size()));
 			}else
 			{
