@@ -46,9 +46,6 @@
     <ClCompile Include="src\ArtCore\Functions\Convert.cpp">
       <Filter>ArtCore\Functions</Filter>
     </ClCompile>
-    <ClCompile Include="src\ArtCore\System\Core.cpp">
-      <Filter>ArtCore\System</Filter>
-    </ClCompile>
     <ClCompile Include="src\ArtCore\Functions\Func.cpp">
       <Filter>ArtCore\Functions</Filter>
     </ClCompile>
@@ -175,6 +172,15 @@
     <ClCompile Include="src\physfs-release-3.2.0\src\physfs_archiver_hog.c">
       <Filter>outsource\physfs</Filter>
     </ClCompile>
+    <ClCompile Include="src\ArtCore\System\Core.cpp">
+      <Filter>ArtCore\System\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ArtCore\System\CoreAudioVideo.cpp">
+      <Filter>ArtCore\System\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ArtCore\System\CoreProcess.cpp">
+      <Filter>ArtCore\System\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ArtCore\main.h">
@@ -221,9 +227,6 @@
     </ClInclude>
     <ClInclude Include="src\ArtCore\Enums\EnumExtend.h">
       <Filter>ArtCore\Enums</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ArtCore\System\Core.h">
-      <Filter>ArtCore\System</Filter>
     </ClInclude>
     <ClInclude Include="src\ArtCore\Functions\Func.h">
       <Filter>ArtCore\Functions</Filter>
@@ -339,6 +342,12 @@
     <ClInclude Include="src\physfs-release-3.2.0\src\physfs.h">
       <Filter>outsource\physfs</Filter>
     </ClInclude>
+    <ClInclude Include="src\ArtCore\System\SettingsData.h">
+      <Filter>ArtCore\System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ArtCore\System\Core.h">
+      <Filter>ArtCore\System\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ArtCore">
@@ -394,6 +403,9 @@
     </Filter>
     <Filter Include="outsource\physfs">
       <UniqueIdentifier>{c1319b2a-9c44-4a6c-b9be-a31f664c4384}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ArtCore\System\Core">
+      <UniqueIdentifier>{4831df49-e9f8-4902-a968-2bd015276191}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

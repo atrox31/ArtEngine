@@ -167,6 +167,8 @@
     <ClCompile Include="src\ArtCore\Gui\Console.cpp" />
     <ClCompile Include="src\ArtCore\Functions\Convert.cpp" />
     <ClCompile Include="src\ArtCore\System\Core.cpp" />
+    <ClCompile Include="src\ArtCore\System\CoreAudioVideo.cpp" />
+    <ClCompile Include="src\ArtCore\System\CoreProcess.cpp" />
     <ClCompile Include="src\ArtCore\_Debug\Debug.cpp" />
     <ClCompile Include="src\ArtCore\Enums\Event.cpp" />
     <ClCompile Include="src\ArtCore\Functions\Func.cpp" />
@@ -230,6 +232,7 @@
     <ClInclude Include="src\ArtCore\Gui\Console.h" />
     <ClInclude Include="src\ArtCore\Functions\Convert.h" />
     <ClInclude Include="src\ArtCore\System\Core.h" />
+    <ClInclude Include="src\ArtCore\System\SettingsData.h" />
     <ClInclude Include="src\ArtCore\_Debug\Debug.h" />
     <ClInclude Include="src\ArtCore\Enums\EnumExtend.h" />
     <ClInclude Include="src\ArtCore\Enums\Event.h" />
