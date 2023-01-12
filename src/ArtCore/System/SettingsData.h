@@ -19,6 +19,9 @@ public:
         if (_settings_data_user.contains(field)) {
             return Func::TryGetInt(_settings_data_user[field]);
         }
+#ifdef _DEBUG
+        Console::WriteLine("SettingsData::GetInt: can not find '" + field + "'");
+#endif
         return _default;
     }
 
@@ -30,6 +33,9 @@ public:
         if (_settings_data_user.contains(field)) {
             return Func::TryGetFloat(_settings_data_user[field]);
         }
+#ifdef _DEBUG
+        Console::WriteLine("SettingsData::GetInt: can not find '" + field + "'");
+#endif
         return _default;
     }
 
@@ -41,6 +47,9 @@ public:
         if (_settings_data_user.contains(field)) {
             return _settings_data_user[field];
         }
+#ifdef _DEBUG
+        Console::WriteLine("SettingsData::GetInt: can not find '" + field + "'");
+#endif
         return _default;
     }
 
