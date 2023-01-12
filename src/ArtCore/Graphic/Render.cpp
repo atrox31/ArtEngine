@@ -4,6 +4,7 @@
 #include "ArtCore/Functions/Convert.h"
 #include "ArtCore/Functions/Func.h"
 #include "ArtCore/System/Core.h"
+#include "ArtCore/System/SettingsData.h"
 Render* Render::_instance = nullptr;
 
 void Render::CreateRender(const int width, const int height)
@@ -14,8 +15,8 @@ void Render::CreateRender(const int width, const int height)
 
 	_instance->_width = width;
 	_instance->_height = height;
-	_instance->_default_width = static_cast<float>(Core::SD_GetInt("DefaultResolutionX", 1920));
-	_instance->_default_height = static_cast<float>(Core::SD_GetInt("DefaultResolutionY", 1080));
+	_instance->_default_width = static_cast<float>(SettingsData::GetInt("DefaultResolutionX", 1920));
+	_instance->_default_height = static_cast<float>(SettingsData::GetInt("DefaultResolutionY", 1080));
 
 	_instance->_screenTexture = GPU_CreateImage(static_cast<Uint16>(width), static_cast<Uint16>(height), GPU_FormatEnum::GPU_FORMAT_RGBA);
 	_instance->_screenTexture_target = GPU_LoadTarget(_instance->_screenTexture);
@@ -81,6 +82,7 @@ Render::Render()
 {
 	_use_shader_gaussian = false;
 	_shader_gaussian = 0;
+	_shader_gaussian_mode = 0;
 	_shader_gaussian_var_quality = 8;
 	_shader_gaussian_var_directions = 8;
 	_shader_gaussian_var_distance = 0.02f;
@@ -88,12 +90,38 @@ Render::Render()
 	_shader_gaussian_var_directions_location = 0;
 	_shader_gaussian_var_distance_location = 0;
 	//_shader_gaussian_block;
+	_default_width = 0;
 	_width = 0;
 	_width_scale = 0.f;
+	_default_height = 0;
 	_height = 0;
 	_height_scale = 0.f;
 	_screenTexture = nullptr;
 	_screenTexture_target = nullptr;
+}
+
+void Render::SetGaussianFromPreset(int get)
+{
+	switch (std::clamp(get, 0, 3))
+	{
+	case 0:
+		Render::SetGaussianEnabled(false);
+		break;
+	case 1:
+		Render::SetGaussianEnabled(true);
+		Render::SetGaussianProperties(4, 4, 0.0205f);
+		break;
+	case 2:
+		Render::SetGaussianEnabled(true);
+		Render::SetGaussianProperties(8, 8, 0.0205f);
+		break;
+	case 3:
+		Render::SetGaussianEnabled(true);
+		Render::SetGaussianProperties(16, 16, 0.0205f);
+		break;
+	default: break;
+	}
+	SettingsData::SetValue("ACBloom", std::to_string(Render::GetGaussianMode()));
 }
 
 Render::~Render()

@@ -1,15 +1,13 @@
 // ReSharper disable CppUseAuto
 #include "Core.h"
-#include "Core.h"
 
 #include "ArtCore/Graphic/Render.h"
 #include "ArtCore/System/AssetManager.h"
-#include "ArtCore/_Debug/Debug.h"
 #include "ArtCore/CodeExecutor/CodeExecutor.h"
 #include "ArtCore/main.h" // for program version
 #include "ArtCore/Graphic/BackGroundRenderer.h"
 #include "ArtCore/Scene/Scene.h"
-#include "ArtCore/Physics/Physics.h"
+#include "ArtCore/System/SettingsData.h"
 
 #include "ArtCore/predefined_headers/SplashScreen.h"
 #include "ArtCore/Graphic/ColorDefinitions.h"
@@ -17,57 +15,14 @@
 #include "physfs-release-3.2.0/src/physfs.h"
 
 #ifdef _DEBUG
-// time measurment of core events
+// time of core events
 #include "ArtCore/_Debug/Time.h"
 #endif
 
+// static core structure.
 Core Core::_instance = Core();
 
-void Core::graphic::Apply()
-{
-    GPU_SetFullscreen(_window_fullscreen, false);
-    GPU_SetWindowResolution(static_cast<Uint16>(_window_width), static_cast<Uint16>(_window_height));
-    if (!_window_fullscreen)
-        SDL_SetWindowPosition(Core::GetWindowHandle(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-    if (_window_v_sync == 0) {
-        SDL_GL_SetSwapInterval(0);
-    }
-    else {
-        SDL_GL_SetSwapInterval(1);
-    }
-    Render::CreateRender(_window_width, _window_height);
-    _screen_rect.X = 0.f;
-    _screen_rect.Y = 0.f;
-    _screen_rect.W = static_cast<float>(Core::SD_GetInt("DefaultResolutionX", 1920));
-    _screen_rect.H = static_cast<float>(Core::SD_GetInt("DefaultResolutionY", 1080));
-    //_screen_rect.W = static_cast<float>(_window_width);
-    //_screen_rect.H = static_cast<float>(_window_height);
-}
-
-void Core::audio::Apply() const
-{
-    Mix_MasterVolume(
-        ((_audio_master && _audio_sound) ? static_cast<int>(Func::LinearScale(
-            static_cast<float>(_audio_sound_level),
-            0.f,
-            100.f,
-            0.f,
-            static_cast<float>(MIX_MAX_VOLUME)
-        ))
-            : 0));
-
-    Mix_VolumeMusic(
-        ((_audio_master && _audio_music) ? static_cast<int>(Func::LinearScale(
-        static_cast<float>(_audio_music_level),
-        0.f,
-        100.f,
-        0.f,
-        static_cast<float>(MIX_MAX_VOLUME)
-    ))
-        : 0));
-    
-}
-
+// Core create
 Core::Core()
 {
     game_loop = false;
@@ -85,6 +40,7 @@ Core::Core()
     _executor = nullptr;
 }
 
+// Core destroy
 Core::~Core()
 {
     if(_executor != nullptr)
@@ -104,9 +60,10 @@ Core::~Core()
     if(_screenTarget != nullptr)
 		GPU_FreeTarget(_screenTarget);
     //delete _screenTarget; heap error ?
-
-    SettingsData.clear();
+    
     Console::Exit();
+
+    PHYSFS_deinit();
 
     if (_global_font != nullptr)
         FC_FreeFont(_global_font);
@@ -129,25 +86,466 @@ Core::~Core()
     SDL_Quit();
 }
 
-// try to initialize critic game system
-// break loading when error
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// ArtCore normal work algorithm
+//
+// 1. Init(args) <- initialize all core systems and all needed libs. 
+// 2. LoadData() <- load all asset, objects (instances) and try to load and run first scene
+// 3. Run()      <- This is main program loop. Steps:
+//  1. Fill mouse event data, count fps, prepare new frame
+//  2. Process all system events
+//  3. Step -> Update all instances
+//      1. Create all new instances
+//      2. Process ExStep event for all
+//      3. Check if instance is in view
+//      4. Execute all instance events if have any (like mouse click, keyboard, death)
+//  4. Process Physics step like moving, collisions
+//  5. Render scene to buffer
+//  6. Apply post process if enabled
+//  7. System render, normal only gui in debug all console or debug view
+//  8. GPU_Flip <- show all on screen
+//
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// macro to help load data in init
+////////////////////////////////////////////////////////////////////////////////////
+// try to initialize critic game system, break loading when error
 #define TRY_TO_INIT_CRITIC(init, failure_msg, component)        \
  if (!(init)) {                                                 \
      Console::WriteLine(std::string( (component) )+": error."); \
      Console::WriteLine((failure_msg));                         \
      return false;                                              \
- } Console::WriteLine(std::string( (component) )+": success."); \
-
-// try to initialize game system
-// continue after error
+ } Console::WriteLine(std::string( (component) )+": success."); 
+// try to initialize game system, continue after error
 #define TRY_TO_INIT(init, failure_msg, component)                \
  if (!(init)) {                                                  \
-     Console::WriteLine(std::string( (component) )+": warning.");\
-     Console::WriteLine((failure_msg));                          \
- } Console::WriteLine(std::string( (component) )+": success.");  \
+     Console::WriteLine(std::string( (component) )+": warning. " + (failure_msg) );\
+ } else {Console::WriteLine(std::string( (component) )+": success.");}
+////////////////////////////////////////////////////////////////////////////////////
 
-// Converts arguments list to pairs, this allow to have nullptr if
-// something is not populate.
+// init all game data and libs
+bool Core::Init(const Func::str_vec& args)
+{
+#ifdef _DEBUG
+    // debug timer to time all events in game
+    Time timer;
+    timer.StartTest();
+#endif
+
+    // default assets path and name
+#ifdef _DEBUG
+    const char* fl_game_dat_file = "test\\game.dat";
+    const char* fl_assets_file = "test\\assets.pak";
+    const char* fl_platform_file = "test\\Platform.dat";
+#else //release
+    const char* fl_game_dat_file = "game.dat";
+    const char* fl_assets_file = "assets.pak";
+    const char* fl_platform_file = "Platform.dat";
+#endif
+
+    // get command line arguments
+    _instance.PopulateArguments(args);
+    // first output then exit application
+    if (const program_argument argument = _instance.GetProgramArgument("-version"); argument.first != nullptr)
+    {
+        SDL_Log("%d.%d.%d", VERSION_MAIN, VERSION_MINOR, VERSION_PATH);
+        return false;
+    }
+
+    // initialize console to standard output
+    Console::Create();
+
+    if (const program_argument argument = _instance.GetProgramArgument("-platform"); argument.second != nullptr)
+    {
+        fl_platform_file = argument.second;
+        Console::WriteLine("Fl_platform_file set to: '" + std::string(fl_platform_file) + "'");
+    }
+    if (const program_argument argument = _instance.GetProgramArgument("-game_dat"); argument.second != nullptr)
+    {
+        fl_game_dat_file = argument.second;
+        Console::WriteLine("FL_game_dat_file set to: '" + std::string(fl_game_dat_file) + "'");
+    }
+    if (const program_argument argument = _instance.GetProgramArgument("-assets"); argument.second != nullptr)
+    {
+        fl_assets_file = argument.second;
+        Console::WriteLine("FL_assets_file set to: '" + std::string(fl_assets_file) + "'");
+    }
+    if (const program_argument argument = _instance.GetProgramArgument("-debug"); argument.first != nullptr)
+    {
+        Console::SetOutputFile(
+            argument.second == nullptr ? "console.log"
+            : argument.second
+        );
+    }
+    // sdl subsystem
+    TRY_TO_INIT_CRITIC(
+        SDL_InitSubSystem(SDL_INIT_VIDEO) == 0,
+        std::string(SDL_GetError()),
+        "SDL_Init SDL_INIT_VIDEO"
+    )
+
+        TRY_TO_INIT_CRITIC(
+            PHYSFS_init(args[0].c_str()) != 0,
+            std::string(PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode())),
+            "PHYSFS_init"
+        )
+
+        // platform configuration data
+        TRY_TO_INIT(
+            LoadSetupFile(fl_platform_file, "setup.ini"),
+            "File not found, Using default settings",
+            "Platform settings load"
+        )
+
+        // platform configuration data, can not exists
+        TRY_TO_INIT(
+            SettingsData::LoadUserData("setup_user.ini"),
+            "File not found, Using default settings",
+            "User settings load"
+        )
+
+#ifdef _DEBUG
+        GPU_SetDebugLevel(GPU_DEBUG_LEVEL_MAX);
+#else
+        GPU_SetDebugLevel(GPU_DEBUG_LEVEL_0);
+#endif // _DEBUG
+
+    _instance._screenTarget = GPU_Init(255, 255, GPU_INIT_DISABLE_VSYNC);
+    TRY_TO_INIT_CRITIC(
+        _instance._screenTarget != nullptr,
+        std::string(SDL_GetError()),
+        "GPU_Init"
+    )
+        _instance._window = SDL_GetWindowFromID(_instance._screenTarget->context->windowID);
+    {
+        // splash screen for core loading
+        SDL_SetWindowBordered(_instance._window, SDL_FALSE);
+        GPU_Clear(_instance._screenTarget);
+        GPU_Image* splash = GPU_CopyImageFromSurface(SDL_LoadBMP_RW(SDL_RWFromConstMem(eula, 8190), 1));
+        if (splash == nullptr)
+        {
+            Console::WriteLine("loading splash image:" + std::string(SDL_GetError()));
+        }
+        else
+        {
+            GPU_BlitRect(splash, nullptr, _instance._screenTarget, nullptr);
+            GPU_Flip(_instance._screenTarget);
+            GPU_Clear(_instance._screenTarget);
+        }
+        GPU_FreeImage(splash);
+        splash = nullptr;
+    }
+
+    // SDL timer
+    TRY_TO_INIT_CRITIC(
+        SDL_InitSubSystem(SDL_INIT_TIMER) == 0,
+        std::string(SDL_GetError()),
+        "SDL_Init SDL_INIT_TIMER"
+    )
+
+        // SDL audio
+        TRY_TO_INIT_CRITIC(
+            SDL_InitSubSystem(SDL_INIT_AUDIO) == 0,
+            std::string(SDL_GetError()),
+            "SDL_Init SDL_INIT_AUDIO"
+        )
+
+        // SDL haptic - on mobile
+        if (SettingsData::GetInt("GameUsingHaptic", 0) == 1) {
+            TRY_TO_INIT_CRITIC(
+                SDL_InitSubSystem(SDL_INIT_HAPTIC) == 0,
+                std::string(SDL_GetError()),
+                "SDL_Init SDL_INIT_HAPTIC"
+            )
+        }
+
+    // SDL controller
+    if (SettingsData::GetInt("GameUsingController", 0) == 1) {
+        TRY_TO_INIT_CRITIC(
+            SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER) == 0,
+            std::string(SDL_GetError()),
+            "SDL_Init SDL_INIT_GAMECONTROLLER"
+        )
+            TRY_TO_INIT_CRITIC(
+                SDL_GameControllerAddMappingsFromRW(Func::ArchiveGetFileRWops("files/gamecontrollerdb.txt", nullptr), 1) > -1,
+                std::string(SDL_GetError()),
+                "SDL_GameControllerAddMappings"
+            )
+    }
+
+    // IMG_Init
+    TRY_TO_INIT_CRITIC(
+        IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG,
+        std::string(SDL_GetError()),
+        "IMG_Init"
+    )
+
+        // Mix_Init
+        TRY_TO_INIT_CRITIC(
+            Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG) & (MIX_INIT_MP3 | MIX_INIT_OGG),
+            std::string(SDL_GetError()),
+            "Mix_Init"
+        )
+
+        // Mix_OpenAudio all sounds must be 32-bit integer samples and 44100 hz
+        TRY_TO_INIT_CRITIC(
+            Mix_OpenAudio(
+                SettingsData::GetInt("AUDIO_FREQ", 44100),
+                AUDIO_S32LSB,
+                2,
+                SettingsData::GetInt("AUDIO_CHUNKSIZE", 4096)
+            ) == 0,
+            std::string(SDL_GetError()),
+            "Mix_OpenAudio"
+        )
+
+        // Mix_Init
+        TRY_TO_INIT_CRITIC(
+            TTF_Init() == 0,
+            std::string(SDL_GetError()),
+            "TTF_Init"
+        )
+
+        // SDLNet_Init
+        TRY_TO_INIT_CRITIC(
+            SDLNet_Init() == 0,
+            std::string(SDL_GetError()),
+            "SDLNet_Init"
+        )
+
+        // primary game data
+        TRY_TO_INIT_CRITIC(
+            PHYSFS_mount(fl_game_dat_file, nullptr, 0) != 0,
+            std::string(PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode())),
+            "PHYSFS_mount '" + std::string(fl_game_dat_file) + "'"
+        )
+
+        // assets
+        TRY_TO_INIT_CRITIC(
+            PHYSFS_mount(fl_assets_file, nullptr, 0) != 0,
+            std::string(PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode())),
+            "PHYSFS_mount '" + std::string(fl_assets_file) + "'"
+        )
+
+        // default font
+        _instance._global_font = FC_CreateFont();
+    TRY_TO_INIT_CRITIC(
+        FC_LoadFont_RW(_instance._global_font, Func::ArchiveGetFileRWops("files/TitilliumWeb-Light.ttf", nullptr), 1, 24, C_BLACK, TTF_STYLE_NORMAL) == 1,
+        std::string(SDL_GetError()),
+        "FC_LoadFont_RW: TitilliumWeb-Light.ttf"
+    )
+        FC_SetDefaultColor(_instance._global_font, C_BLACK);
+
+    srand(static_cast<unsigned int>(time(nullptr)));
+    Console::Init();
+
+    _instance._asset_manager = new AssetManager();
+    _instance._executor = new CodeExecutor();
+
+    Console::WriteLine("rdy");
+
+#ifdef _DEBUG
+    timer.EndTest();
+    timer.PrintTest("Core::Init()");
+#endif
+    return true;
+}
+#undef TRY_TO_INIT_CRITIC
+#undef TRY_TO_INIT
+
+// load all asset, objects (instances) and try to load and run first scene
+bool Core::LoadData()
+{
+#ifdef _DEBUG
+    Time timer;
+    timer.StartTest();
+#endif
+    SDL_SetWindowBordered(_instance._window, SDL_TRUE);
+
+    // set all settings
+    Graphic.SetScreenResolution(
+        SettingsData::GetInt("ACWindowResolutionX", // user
+            SettingsData::GetInt("DefaultResolutionX", 1920)),  // core
+        SettingsData::GetInt("ACWindowResolutionY", // user
+            SettingsData::GetInt("DefaultResolutionY", 1080)) // core
+    );
+    Graphic.SetFrameRate(SettingsData::GetInt("DefaultFramerate", 60));
+    Graphic.SetFullScreen(SettingsData::GetInt("ACWindowMode", 0) == 1);
+    Graphic.Apply();
+
+    Render::SetGaussianFromPreset(SettingsData::GetInt("ACBloom", 0));
+
+    Audio.SetMusic(SettingsData::GetInt("ACSoundEnabled", 1) == 1);
+    Audio.SetSound(SettingsData::GetInt("ACMusicEnabled", 1) == 1);
+    Audio.SetMusicLevel(SettingsData::GetInt("ACMusicLevel", 80));
+    Audio.SetSoundLevel(SettingsData::GetInt("ACSoundLevel", 80));
+    Audio.Apply();
+
+    // save all user settings to file, if its first time create.
+    SettingsData::WriteValues();
+
+    GPU_Clear(GetScreenTarget());
+    GPU_Flip(GetScreenTarget());
+
+    BackGroundRenderer bgr = BackGroundRenderer();
+    bgr.Run();
+
+    if (!Executor()->LoadArtLib()) {
+        bgr.Stop();
+        return false;
+    }
+    bgr.SetProgress(5);
+
+    // load assets
+    if (!_instance._asset_manager->LoadData(&bgr, 5, 60)) {
+        bgr.Stop();
+        return false;
+    }
+    bgr.SetProgress(60);
+
+    if (!Executor()->LoadObjectDefinitions(&bgr, 60, 90)) {
+        bgr.Stop();
+        return false;
+    }
+    bgr.SetProgress(90);
+
+    // set starting scene
+    {
+        const Func::str_vec starting_scene = Func::ArchiveGetFileText("scene/StartingScene.txt", nullptr, false);
+        if (starting_scene.empty()) {
+            bgr.Stop();
+            return false;
+        }
+        _instance._primary_scene = starting_scene[0];
+    }
+
+    // if error try set first scene
+    if (!_instance.ChangeScene(_instance._primary_scene)) {
+        Console::WriteLine("starting scene '" + _instance._primary_scene + "' not exists!");
+        bgr.Stop();
+        return false;
+    }
+    Render::LoadShaders();
+    bgr.SetProgress(100);
+
+    bgr.Stop();
+#ifdef _DEBUG
+    timer.EndTest();
+    timer.PrintTest("Core::LoadData()");
+#endif
+    return true;
+}
+
+//This is main program loop.
+bool Core::Run()
+{
+    _instance.game_loop = true;
+    SDL_TimerID my_timer_id = SDL_AddTimer(static_cast<Uint32>(1000), FpsCounterCallback, nullptr);
+#ifdef _DEBUG
+    Time performance_all;
+    Time performance_step;
+    Time performance_physics;
+    Time performance_render;
+    Time performance_post_process;
+    Time performance_counter_gpu_flip;
+
+#define debug_test_counter_start(counter)   \
+	if(_instance.CoreDebug._show_performance_times) {   \
+    (counter).StartTest();  \
+};                      \
+
+#define debug_test_counter_end(counter)     \
+	if(_instance.CoreDebug._show_performance_times) {   \
+    (counter).EndTest();    \
+};     \
+
+#define debug_test_counter_get(counter, target)             \
+	if(_instance.CoreDebug._show_performance_times) {   \
+    (target) += (counter).GetTestTime();    \
+};     \
+
+#else
+
+#define debug_test_counter_start(counter)
+#define debug_test_counter_end(counter) 
+#define debug_test_counter_get(counter, target) 
+
+#endif
+    while (true) {
+        debug_test_counter_start(performance_all);
+        if (_instance._current_scene == nullptr) return EXIT_FAILURE;
+        // FPS measurement
+        _instance.LAST = _instance.NOW;
+        _instance.NOW = SDL_GetTicks64();
+        DeltaTime = (static_cast<double>(_instance.NOW - _instance.LAST) / 1000.0);
+        _instance._frames++;
+
+        // Set global mouse state
+        Mouse.Reset();
+
+        debug_test_counter_start(performance_step)
+            if (_instance.ProcessEvents())
+            { // exit call
+                return true;
+            }
+
+        if (_instance.game_loop) {
+            _instance.ProcessStep();
+            debug_test_counter_end(performance_step)
+
+                debug_test_counter_start(performance_physics)
+                _instance.ProcessPhysics();
+            debug_test_counter_end(performance_physics)
+        }
+
+        debug_test_counter_start(performance_render)
+            Render::RenderClear();
+        // render scene
+        _instance.ProcessSceneRender();
+        debug_test_counter_end(performance_render)
+
+
+            debug_test_counter_start(performance_post_process)
+            // render interface and make scene pretty
+            _instance.ProcessPostProcessRender();
+        debug_test_counter_end(performance_post_process)
+
+            debug_test_counter_start(performance_counter_gpu_flip)
+            // render console, debug panels etc
+            _instance.ProcessSystemRender();
+
+        // get all to screen
+        GPU_Flip(_instance._screenTarget);
+        debug_test_counter_end(performance_counter_gpu_flip)
+
+            debug_test_counter_end(performance_all);
+
+
+        debug_test_counter_get(performance_all, _instance.CoreDebug._performance_counter_all_rt);
+        debug_test_counter_get(performance_step, _instance.CoreDebug._performance_counter_step_rt);
+        debug_test_counter_get(performance_physics, _instance.CoreDebug._performance_counter_psychics_rt);
+        debug_test_counter_get(performance_render, _instance.CoreDebug._performance_counter_render_rt);
+        debug_test_counter_get(performance_post_process, _instance.CoreDebug._performance_counter_post_process_rt);
+        debug_test_counter_get(performance_counter_gpu_flip, _instance.CoreDebug._performance_counter_gpu_flip_rt);
+    }
+}
+
+// push event to exit application
+void Core::Exit()
+{
+    SDL_Event* sdl_event = new SDL_Event();
+    sdl_event->type = SDL_QUIT;
+    SDL_PushEvent(sdl_event);
+}
+
+/////////////////////////////////////////
+//
+//  setup
+//
+/////////////////////////////////////////
+
+// Converts arguments list to pairs, this allow to have nullptr if something is not populate.
 void Core::PopulateArguments(const Func::str_vec& args)
 {
     if (args.size() == 1) return;
@@ -213,8 +611,13 @@ bool Core::LoadSetupFile(const char* platform, const std::string& setup_file)
         PHYSFS_unmount(platform);
 	    return false;
     }
+
+    const std::string SDL_GL = "SDL_GL_";
+    const std::string SDL_HINT = "SDL_";
+
     for (const std::string& data : Func::ArchiveGetFileText(setup_file, nullptr, false)) {
-        if (data.substr(0, 2) == "//") continue;
+        if ( data.length() < 2 ) continue;
+        if ( data.substr(0, 2) == "//" ) continue;
 
         Func::str_vec line = Func::Split(data, '=');
         if (line.empty()) continue;
@@ -223,13 +626,16 @@ bool Core::LoadSetupFile(const char* platform, const std::string& setup_file)
             continue;
         }
         // open gl command
-        if (line[0].substr(0, 2) == "SDL_GL_") {
+        if (line[0].substr(0, SDL_GL.length()) == SDL_GL) {
             bool error = false;
             const SDL_GLattr attr = Func::GetSdlAttrFromString(line[0], &error);
             if (error) {
                 Console::WriteLine("unknown property '" + data + "'");
             }
             else {
+#ifdef _DEBUG
+                Console::WriteLine("SDL_GL_SetAttribute: " + line[0] + " as " + line[1]);
+#endif
                 if (SDL_GL_SetAttribute(attr, Func::TryGetInt(line[1])) != 0) {
                     Console::WriteLine({ "sdl_error: -SDL_GL_SetAttribute-", SDL_GetError() });
                 }
@@ -237,7 +643,10 @@ bool Core::LoadSetupFile(const char* platform, const std::string& setup_file)
             continue;
         }
         // sdl command
-        if (line[0].substr(0, 2) == "SDL_") {
+        if (line[0].substr(0, SDL_HINT.length()) == SDL_HINT) {
+#ifdef _DEBUG
+            Console::WriteLine("SDL_SetHint: " + line[0] + " as " + line[1]);
+#endif
             if (SDL_SetHint(line[0].c_str(), line[1].c_str()) == SDL_FALSE) {
                 Console::WriteLine({ "sdl_error: -SDL_SetHint-", SDL_GetError() });
             }
@@ -245,7 +654,10 @@ bool Core::LoadSetupFile(const char* platform, const std::string& setup_file)
         }
         // other data
         {
-            SD_SetValue(line[0], line[1]);
+#ifdef _DEBUG
+            Console::WriteLine("SettingsData::SetValue: " + line[0] + " as " + line[1]);
+#endif
+            SettingsData::SetValue(line[0], line[1]);
         }
     }
 
@@ -253,480 +665,13 @@ bool Core::LoadSetupFile(const char* platform, const std::string& setup_file)
     return true;
 }
 
-bool Core::Init(const Func::str_vec& args)
-{
-#ifdef _DEBUG
-    // debug timer to time all events in game
-    Time timer;
-    timer.StartTest();
-#endif
+/////////////////////////////////////////
+//
+//  every frame actions
+//
+/////////////////////////////////////////
 
-	// default assets path and name
-#ifdef _DEBUG
-	const char* fl_game_dat_file = "test\\game.dat";
-	const char* fl_assets_file = "test\\assets.pak";
-	const char* fl_platform_file = "test\\Platform.dat";
-#else //release
-    const char* fl_game_dat_file = "game.dat";
-    const char* fl_assets_file = "assets.pak";
-    const char* fl_platform_file = "Platform.dat";
-#endif
-
-    // get command line arguments
-    _instance.PopulateArguments(args);
-    // first output then exit application
-    if(const program_argument argument = _instance.GetProgramArgument("-version"); argument.first != nullptr)
-    {
-        SDL_Log("%d.%d.%d",VERSION_MAIN,VERSION_MINOR,VERSION_PATH);
-        return false;
-    }
-
-    // initialize console to standard output
-    Console::Create();
-
-    if(const program_argument argument = _instance.GetProgramArgument("-platform"); argument.second != nullptr)
-    {
-        fl_platform_file = argument.second;
-        Console::WriteLine("Fl_platform_file set to: '" + std::string(fl_platform_file) + "'");
-    }
-    if(const program_argument argument = _instance.GetProgramArgument("-game_dat"); argument.second != nullptr)
-    {
-        fl_game_dat_file = argument.second;
-        Console::WriteLine("FL_game_dat_file set to: '" + std::string(fl_game_dat_file) + "'");
-    }
-    if(const program_argument argument = _instance.GetProgramArgument("-assets"); argument.second != nullptr)
-    {
-        fl_assets_file = argument.second;
-        Console::WriteLine("FL_assets_file set to: '" + std::string(fl_assets_file) + "'");
-    }
-    if(const program_argument argument = _instance.GetProgramArgument("-debug"); argument.first != nullptr)
-    {
-        Console::SetOutputFile(
-            argument.second == nullptr ? "console.log"
-            : argument.second
-        );
-    }
-    // sdl subsystem
-    TRY_TO_INIT_CRITIC(
-        SDL_InitSubSystem(SDL_INIT_VIDEO) == 0,
-        std::string(SDL_GetError()),
-        "SDL_Init SDL_INIT_VIDEO"
-    )
-
-        TRY_TO_INIT_CRITIC(
-            PHYSFS_init(args[0].c_str()) != 0,
-            std::string(PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode())),
-            "PHYSFS_init"
-        )
-
-        // platform configuration data
-        TRY_TO_INIT(
-            LoadSetupFile(fl_platform_file, "setup.ini"),
-            "File not found, Using default settings",
-            "Platform settings load"
-        )
-
-        // platform configuration data, can not exists
-        TRY_TO_INIT(
-            LoadSetupFile(fl_platform_file, "setup_user.ini"),
-            "File not found, Using default settings",
-            "Platform settings load"
-        )
-        
-
-#ifdef _DEBUG
-        GPU_SetDebugLevel(GPU_DEBUG_LEVEL_MAX);
-#else
-        GPU_SetDebugLevel(GPU_DEBUG_LEVEL_0);
-#endif // _DEBUG
-
-    _instance._screenTarget = GPU_Init(255, 255, GPU_INIT_DISABLE_VSYNC);
-    TRY_TO_INIT_CRITIC(
-        _instance._screenTarget != nullptr,
-        std::string(SDL_GetError()),
-        "GPU_Init"
-    )
-	_instance._window = SDL_GetWindowFromID(_instance._screenTarget->context->windowID);
-    {
-        // splash screen for core loading
-		SDL_SetWindowBordered(_instance._window, SDL_FALSE);
-        GPU_Clear(_instance._screenTarget);
-        GPU_Image* splash = GPU_CopyImageFromSurface(SDL_LoadBMP_RW(SDL_RWFromConstMem(eula, 8190), 1));
-        if (splash == nullptr)
-        {
-            Console::WriteLine("loading splash image:" + std::string(SDL_GetError()));
-        }
-        else
-        {
-            GPU_BlitRect(splash, nullptr, _instance._screenTarget, nullptr);
-            GPU_Flip(_instance._screenTarget);
-            GPU_Clear(_instance._screenTarget);
-        }
-        GPU_FreeImage(splash);
-        splash = nullptr;
-    }
-
-    // SDL timer
-    TRY_TO_INIT_CRITIC(
-        SDL_InitSubSystem(SDL_INIT_TIMER) == 0,
-        std::string(SDL_GetError()),
-        "SDL_Init SDL_INIT_TIMER"
-    )
-
-    // SDL audio
-    TRY_TO_INIT_CRITIC(
-        SDL_InitSubSystem(SDL_INIT_AUDIO) == 0,
-        std::string(SDL_GetError()),
-        "SDL_Init SDL_INIT_AUDIO"
-    )
-
-    // SDL haptic - on mobile
-	if (SD_GetInt("GameUsingHaptic", 0) == 1) {
-		TRY_TO_INIT_CRITIC(
-			SDL_InitSubSystem(SDL_INIT_HAPTIC) == 0,
-			std::string(SDL_GetError()),
-			"SDL_Init SDL_INIT_HAPTIC"
-		)
-	}
-
-    // SDL controller
-	if (SD_GetInt("GameUsingController", 0) == 1) {
-		TRY_TO_INIT_CRITIC(
-			SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER) == 0,
-			std::string(SDL_GetError()),
-			"SDL_Init SDL_INIT_GAMECONTROLLER"
-		)
-		TRY_TO_INIT_CRITIC(
-            SDL_GameControllerAddMappingsFromRW( Func::ArchiveGetFileRWops("files/gamecontrollerdb.txt", nullptr), 1) > -1,
-			std::string(SDL_GetError()),
-			"SDL_GameControllerAddMappings"
-		)
-	}
-
-    // IMG_Init
-	TRY_TO_INIT_CRITIC(
-        IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG,
-        std::string(SDL_GetError()),
-		"IMG_Init"
-	)
-
-    // Mix_Init
-	TRY_TO_INIT_CRITIC(
-        Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG) & (MIX_INIT_MP3 | MIX_INIT_OGG),
-        std::string(SDL_GetError()),
-		"Mix_Init"
-	)
-
-    // Mix_OpenAudio all sounds must be 32-bit integer samples and 44100 hz
-	TRY_TO_INIT_CRITIC(
-        Mix_OpenAudio(
-            Core::SD_GetInt("AUDIO_FREQ",44100),
-            AUDIO_S32LSB,
-            2, 
-            Core::SD_GetInt("AUDIO_CHUNKSIZE", 4096)
-            ) == 0,
-        std::string(SDL_GetError()),
-		"Mix_OpenAudio"
-    )
-
-	// Mix_Init
-	TRY_TO_INIT_CRITIC(
-        TTF_Init() == 0,
-		std::string(SDL_GetError()),
-		"TTF_Init"
-	)
-
-	// SDLNet_Init
-	TRY_TO_INIT_CRITIC(
-        SDLNet_Init() == 0,
-		std::string(SDL_GetError()),
-		"SDLNet_Init"
-	)
-
-    // primary game data
-    TRY_TO_INIT_CRITIC(
-        PHYSFS_mount(fl_game_dat_file, nullptr, 0) != 0,
-        std::string(PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode())),
-        "PHYSFS_mount '" + std::string(fl_game_dat_file) + "'"
-    )
-
-	// assets
-	TRY_TO_INIT_CRITIC(
-		PHYSFS_mount(fl_assets_file, nullptr, 0) != 0,
-		std::string(PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode())),
-		"PHYSFS_mount '" + std::string(fl_assets_file) + "'"
-	)
-
-    // default font
-	_instance._global_font = FC_CreateFont();
-	TRY_TO_INIT_CRITIC(
-		FC_LoadFont_RW(_instance._global_font, Func::ArchiveGetFileRWops("files/TitilliumWeb-Light.ttf", nullptr), 1, 24, C_BLACK, TTF_STYLE_NORMAL) == 1,
-		std::string(SDL_GetError()),
-		"FC_LoadFont_RW: TitilliumWeb-Light.ttf"
-	)
-    FC_SetDefaultColor(_instance._global_font, C_BLACK);
-
-    srand(static_cast<unsigned int>(time(nullptr)));
-    Console::Init();
-
-    _instance._asset_manager = new AssetManager();
-    _instance._executor = new CodeExecutor();
-
-	Graphic.SetScreenResolution(SD_GetInt("DefaultResolution_x", 1920), SD_GetInt("DefaultResolution_y", 1080));
-    Graphic.SetFrameRate(SD_GetInt("DefaultFramerate", 60));
-    Graphic.SetFullScreen(SD_GetInt("FullScreen", 0) == 1);
-
-    Console::WriteLine("rdy");
-
-#ifdef _DEBUG
-    timer.EndTest();
-    timer.PrintTest("Core::Init()");
-#endif
-    return true;
-}
-
-bool Core::ProcessCoreKeys(const Sint32 sym)
-{
-    if (sym == SDLK_INSERT) {
-        _show_fps = !_show_fps;
-        return true;
-    }
-    if (sym == SDLK_HOME) {
-        Console::ConsoleHomeButtonPressed();
-        return true;
-    }
-    return false;
-}
-
-bool Core::ProcessEvents()
-{
-    SDL_Event e;
-    while (SDL_PollEvent(&e) != 0) {
-        if (e.type == SDL_QUIT)
-        {
-            Console::WriteLine("exit request");
-            return true;
-        }
-
-        switch (e.type) {
-        case SDL_KEYDOWN:
-        {
-#ifdef _DEBUG
-            if (CoreDebug.ProcessEvent(&e)) {
-                return false;
-            }
-#endif
-            if (ProcessCoreKeys(e.key.keysym.sym)) break;
-            if (Console::ProcessEvent(&e)) break;
-        } break;
-
-        case SDL_TEXTINPUT:
-        {
-            if (Console::ProcessEvent(&e)) break;
-        } break;
-
-		case SDL_MOUSEBUTTONDOWN:
-        {
-            if (e.button.button == SDL_BUTTON_LEFT) {
-                Mouse.LeftEvent = Core::MouseState::ButtonState::PRESSED;
-            }
-            if (e.button.button == SDL_BUTTON_RIGHT) {
-                Mouse.RightEvent = Core::MouseState::ButtonState::PRESSED;
-            }
-        } break;
-        
-        case SDL_MOUSEBUTTONUP: {
-            if (e.button.button == SDL_BUTTON_LEFT) {
-                Mouse.LeftEvent = Core::MouseState::ButtonState::RELEASED;
-            }
-            if (e.button.button == SDL_BUTTON_RIGHT) {
-                Mouse.RightEvent = Core::MouseState::ButtonState::RELEASED;
-            }
-        } break;
-
-        case SDL_KEYUP:
-        case SDL_WINDOWEVENT:
-        case SDL_CONTROLLERDEVICEADDED:
-        case SDL_CONTROLLERDEVICEREMOVED:
-        case SDL_RENDER_TARGETS_RESET:/**< The render targets have been reset and their contents need to be updated */
-        case SDL_RENDER_DEVICE_RESET: /**< The device has been reset and all textures need to be recreated */
-        case SDL_CONTROLLERAXISMOTION:
-        case SDL_CONTROLLERBUTTONDOWN:
-        case SDL_CONTROLLERBUTTONUP:
-        case SDL_MOUSEWHEEL:
-            break;
-        default:continue;
-        }
-    }
-    return false;
-}
-
-void Core::ProcessStep() const
-{
-    // interface (gui) events
-    const bool gui_have_event = _current_scene->GuiSystem.Events();
-    // add all new instances to scene and execute OnCreate event
-    _current_scene->SpawnAll();
-    if (_current_scene->IsAnyInstances()) {
-        for (plf::colony<Instance*>::iterator it = _current_scene->InstanceColony.begin(); 
-            it != _current_scene->InstanceColony.end();)
-        {
-            if (Instance* c_instance = (*it); c_instance->Alive) {
-                // step
-                Executor()->ExecuteScript(c_instance, Event::EvStep);
-                const event_bit c_flag = c_instance->EventFlag;
-
-                // in view
-                if (c_instance->Alive) {
-                    SDL_FPoint pos{ c_instance->PosX, c_instance->PosY };
-                    const bool oldInView = c_instance->InView;
-                    c_instance->InView = Graphic.GetScreenSpace()->PointInRect(pos);
-                    if (c_instance->InView != oldInView) {
-                        if (EVENT_BIT_TEST(event_bit::HAVE_VIEW_CHANGE, c_flag)) {
-                            if (oldInView == true) { // be inside, now exit view
-                                Executor()->ExecuteScript(c_instance, Event::EvOnViewLeave);
-                            }
-                            else {
-                                Executor()->ExecuteScript(c_instance, Event::EvOnViewEnter);
-                            }
-                        }
-                    }
-                }
-
-                // mouse input
-                if (c_instance->Alive && (!gui_have_event)) {
-	                if (EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT, c_flag)) {
-		                if (Mouse.LeftEvent == MouseState::ButtonState::PRESSED) {
-			                // global click
-			                if (EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT_DOWN, c_flag)) {
-				                Executor()->ExecuteScript(c_instance, Event::EvOnMouseDown);
-			                }
-			                // on mask click
-			                if (EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT_CLICK, c_flag)) {
-				                if (c_instance->CheckMaskClick(Mouse.XYf)) {
-					                Executor()->ExecuteScript(c_instance, Event::EvClicked);
-				                }
-			                }
-		                }
-		                if (Mouse.LeftEvent == MouseState::ButtonState::RELEASED) {
-			                if (EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT_UP, c_flag)) {
-				                Executor()->ExecuteScript(c_instance, Event::EvOnMouseUp);
-			                }
-		                }
-	                }
-                }
-                // go to next instance
-                ++it;
-            }
-            else {
-                // delete instance if not alive
-                if (EVENT_BIT_TEST(event_bit::HAVE_ON_DESTROY, c_instance->EventFlag)) {
-                    Executor()->ExecuteScript(c_instance, Event::EvOnDestroy);
-                }
-                delete (*it);
-                it = _instance._current_scene->DeleteInstance(it);
-            }
-        }
-        // execute all suspended code
-		CodeExecutor::SuspendedCodeExecute();
-    }
-}
-#include "ArtCore/_Debug/Time.h"
-void Core::ProcessPhysics() const
-{
-    for (const auto instance : _current_scene->InstanceColony) {
-        if (instance->Alive) {
-            // collision
-            if (EVENT_BIT_TEST(event_bit::HAVE_COLLISION, instance->EventFlag)) {
-                for (Instance* target : _current_scene->InstanceColony) {
-                    if (Physics::CollisionTest(instance, target)) {
-                        _current_scene->CurrentCollisionInstance = target;
-                        _current_scene->CurrentCollisionInstanceId = target->GetId();
-                        Executor()->ExecuteScript(instance, Event::EvOnCollision);
-                        _current_scene->CurrentCollisionInstance = nullptr;
-                        _current_scene->CurrentCollisionInstanceId = -1;
-                    }
-                }
-            }
-        }
-    }
-}
-
-void Core::ProcessSceneRender() const
-{
-    // render scene background
-    if (_current_scene->BackGround.Texture != nullptr) {
-        Render::DrawTextureBox(_current_scene->BackGround.Texture, nullptr, nullptr);
-    }
-    else
-    {
-        Render::RenderClearColor(_current_scene->BackGround.Color);
-    }
-
-    // draw all instances if in view (defined in step event)
-    if (_current_scene->IsAnyInstances()) {
-        for (Instance* instance : _current_scene->InstanceColony) {
-            if (instance->InView) {
-                Executor()->ExecuteScript(instance, Event::EvDraw);
-            }
-        }
-    }
-}
-
-void Core::ProcessPostProcessRender() const
-{
-	// post process
-    Render::ProcessImageWithGaussian();
-
-	// draw interface
-    _current_scene->GuiSystem.Render();
-
-    // draw all scene to screen buffer
-    Render::RenderToTarget(_screenTarget);
-}
-
-void Core::ProcessSystemRender() const
-{
-    // DEBUG DRAW
-#ifdef _DEBUG
-    _instance.CoreDebug.Draw();
-#endif // _DEBUG
-
-    // draw console
-    Console::RenderConsole(_screenTarget);
-
-
-    if (_instance._show_fps) {
-        GPU_DeactivateShaderProgram();
-        const std::string text = "FPS: " + std::to_string(fps);
-        GPU_Rect info_rect = FC_GetBounds(_global_font, 0, 0, FC_ALIGN_LEFT, FC_Scale{ 1.2f, 1.2f }, text.c_str());
-        constexpr float info_rect_move = 8.f;
-        info_rect.x += info_rect_move;
-        info_rect.y += info_rect_move;
-        info_rect.w += info_rect_move;
-        info_rect.h += info_rect_move;
-
-        GPU_RectangleFilled2(_screenTarget, info_rect, C_BLACK);
-        GPU_Rectangle2(_screenTarget, info_rect, C_DGREEN);
-
-        FC_DrawEffect(_global_font, _screenTarget, info_rect.x + 4.f, info_rect.y, FC_MakeEffect(FC_ALIGN_LEFT, { 1.f,1.f }, C_DGREEN), text.c_str());
-    }
-}
-
-Scene* Core::GetCurrentScene()
-{
-	return _instance._current_scene;
-}
-
-
-SDL_Window* Core::GetWindowHandle()
-{
-    if (_instance._screenTarget) {
-        return SDL_GetWindowFromID(_instance._screenTarget->context->windowID);
-    }
-    return nullptr;
-}
-
+// reset mouse state every frame
 void Core::MouseState::Reset()
 {
     int x{}, y{};
@@ -742,43 +687,7 @@ void Core::MouseState::Reset()
     Mouse.RightEvent = ButtonState::NONE;
 }
 
-int Core::SD_GetInt(const std::string& field, const int _default)
-{
-    if (_instance.SettingsData.contains(field)) {
-        return Func::TryGetInt(_instance.SettingsData[field]);
-    }
-    return _default;
-}
-
-float Core::SD_GetFloat(const std::string& field, const float _default)
-{
-    if (_instance.SettingsData.contains(field)) {
-        return Func::TryGetFloat(_instance.SettingsData[field]);
-    }
-    return _default;
-}
-
-std::string Core::SD_GetString(const std::string& field, std::string _default)
-{
-    if (_instance.SettingsData.contains(field)) {
-        return _instance.SettingsData[field];
-    }
-    return _default;
-}
-
-void Core::SD_SetValue(const std::string& field, const std::string& value)
-{
-    if (_instance.SettingsData.contains(field)) {
-        if (_instance.SettingsData[field] != value) {
-           //PHYSFS_Archiver
-            _instance.SettingsData[field] = value;
-        }
-    }
-    else {
-        _instance.SettingsData.emplace(field, value);
-    }
-}
-
+// callback every 1 second to count fps
 Uint32 Core::FpsCounterCallback(Uint32 interval, void*)
 {
     Core::GetInstance()->fps = Core::GetInstance()->_frames;
@@ -789,170 +698,13 @@ Uint32 Core::FpsCounterCallback(Uint32 interval, void*)
     return interval;
 }
 
-bool Core::Run()
-{
-    _instance.game_loop = true;
-    SDL_TimerID my_timer_id = SDL_AddTimer(static_cast<Uint32>(1000), FpsCounterCallback, nullptr);
-#ifdef _DEBUG
-    Time performance_all;
-    Time performance_step;
-    Time performance_physics;
-    Time performance_render;
-    Time performance_post_process;
-    Time performance_counter_gpu_flip;
+/////////////////////////////////////////
+//
+//  trying to change scene and load it
+//
+/////////////////////////////////////////
 
-#define debug_test_counter_start(counter)   \
-	if(_instance.CoreDebug._show_performance_times) {   \
-    (counter).StartTest();  \
-};                      \
-
-#define debug_test_counter_end(counter)     \
-	if(_instance.CoreDebug._show_performance_times) {   \
-    (counter).EndTest();    \
-};     \
-
-#define debug_test_counter_get(counter, target)             \
-	if(_instance.CoreDebug._show_performance_times) {   \
-    (target) += (counter).GetTestTime();    \
-};     \
-
-#else
-
-#define debug_test_counter_start(counter)
-#define debug_test_counter_end(counter) 
-#define debug_test_counter_get(counter, target) 
-
-#endif
-
-
-    
-    while (true) {
-        debug_test_counter_start(performance_all);
-        if (_instance._current_scene == nullptr) return EXIT_FAILURE;
-        // FPS measurement
-        _instance.LAST = _instance.NOW;
-        _instance.NOW = SDL_GetTicks64();
-        DeltaTime = (static_cast<double>(_instance.NOW - _instance.LAST) / 1000.0);
-        _instance._frames++;
-
-        // Set global mouse state
-        Mouse.Reset();
-
-        debug_test_counter_start(performance_step)
-        if(_instance.ProcessEvents())
-        { // exit call
-            return true;
-        }
-
-        if (_instance.game_loop) {
-            _instance.ProcessStep();
-        debug_test_counter_end(performance_step)
-
-        debug_test_counter_start(performance_physics)
-            _instance.ProcessPhysics();
-        debug_test_counter_end(performance_physics)
-        }
-
-        debug_test_counter_start(performance_render)
-        Render::RenderClear();
-        // render scene
-        _instance.ProcessSceneRender();
-        debug_test_counter_end(performance_render)
-
-
-    	debug_test_counter_start(performance_post_process)
-        // render interface and make scene pretty
-        _instance.ProcessPostProcessRender();
-        debug_test_counter_end(performance_post_process)
-
-    	debug_test_counter_start(performance_counter_gpu_flip)
-        // render console, debug panels etc
-        _instance.ProcessSystemRender();
-
-        // get all to screen
-        GPU_Flip(_instance._screenTarget);
-        debug_test_counter_end(performance_counter_gpu_flip)
-
-        debug_test_counter_end(performance_all);
-
-
-        debug_test_counter_get(performance_all, _instance.CoreDebug._performance_counter_all_rt);
-        debug_test_counter_get(performance_step, _instance.CoreDebug._performance_counter_step_rt);
-        debug_test_counter_get(performance_physics, _instance.CoreDebug._performance_counter_psychics_rt);
-        debug_test_counter_get(performance_render, _instance.CoreDebug._performance_counter_render_rt);
-        debug_test_counter_get(performance_post_process, _instance.CoreDebug._performance_counter_post_process_rt);
-        debug_test_counter_get(performance_counter_gpu_flip, _instance.CoreDebug._performance_counter_gpu_flip_rt);
-    }
-}
-
-bool Core::LoadData()
-{
-#ifdef _DEBUG
-	Time timer;
-	timer.StartTest();
-#endif
-	SDL_SetWindowBordered(_instance._window, SDL_TRUE);
-	Graphic.Apply();
-    Audio.Apply();
-	GPU_Clear(GetScreenTarget());
-	GPU_Flip(GetScreenTarget());
-
-	BackGroundRenderer bgr = BackGroundRenderer();
-	bgr.Run();
-    
-	if (!Executor()->LoadArtLib()) {
-		bgr.Stop();
-		return false;
-	}
-	bgr.SetProgress(5);
-    
-	// load assets
-	if (!_instance._asset_manager->LoadData(&bgr, 5, 60)) {
-		bgr.Stop();
-		return false;
-	}
-	bgr.SetProgress(60);
-
-	if (!Executor()->LoadObjectDefinitions(&bgr, 60, 90)) {
-		bgr.Stop();
-		return false;
-	}
-	bgr.SetProgress(90);
-
-	// set starting scene
-    {
-        const Func::str_vec starting_scene = Func::ArchiveGetFileText("scene/StartingScene.txt", nullptr, false);
-        if (starting_scene.empty()) {
-            bgr.Stop();
-            return false;
-        }
-        _instance._primary_scene = starting_scene[0];
-    }
-
-    // if error try set first scene
-    if (!_instance.ChangeScene(_instance._primary_scene)) {
-        Console::WriteLine("starting scene '" + _instance._primary_scene + "' not exists!");
-        bgr.Stop();
-        return false;
-    }
-    Render::LoadShaders();
-    bgr.SetProgress(100);
-
-    bgr.Stop();
-#ifdef _DEBUG
-    timer.EndTest();
-    timer.PrintTest("Core::LoadData()");
-#endif
-    return true;
-}
-
-void Core::Exit()
-{
-    SDL_Event* sdl_event = new SDL_Event();
-    sdl_event->type = SDL_QUIT;
-    SDL_PushEvent(sdl_event);
-}
-
+// change active scene, on error try to load primary scene
 bool Core::ChangeScene(const std::string& name)
 {
     if (_instance._current_scene != nullptr) {
@@ -993,6 +745,39 @@ bool Core::ChangeScene(const std::string& name)
     delete primary_scene;
     return false;
 }
+
+/////////////////////////////////////////
+//
+//  Getters
+//
+/////////////////////////////////////////
+
+Scene* Core::GetCurrentScene()
+{
+	return _instance._current_scene;
+}
+
+SDL_Window* Core::GetWindowHandle()
+{
+    if (_instance._screenTarget) {
+        return SDL_GetWindowFromID(_instance._screenTarget->context->windowID);
+    }
+    return nullptr;
+}
+
+
+
+//////
+//////
+//////
+///
+///
+/// ArtCore debug system. Compiles only in debug mode. Slow but shows everything.
+///
+///
+//////
+//////
+//////
 #ifdef _DEBUG
 void Core::CoreDebug::PerformanceTimeSecondPassed()
 {
@@ -1025,7 +810,7 @@ Core::CoreDebug::CoreDebug()
     Options.emplace_back( "Show performance counters", &_show_performance_times, SDLK_F7);
 }
 
-bool Core::CoreDebug::ProcessEvent(SDL_Event* e)
+bool Core::CoreDebug::ProcessEvent(const SDL_Event* e)
 {
     switch (e->type)
     {

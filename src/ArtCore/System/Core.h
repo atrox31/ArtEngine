@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "SettingsData.h"
 #include "ArtCore/Functions/Func.h"
 #include "ArtCore/Gui/Console.h"
 #include "ArtCore/Structs/Rect.h"
@@ -70,43 +71,18 @@ private:
 	// systems of handle game audio/video
 	class graphic {
 	public:
-		graphic() {
-			_window_width = 0;
-			_window_height = 0;
-			_window_fullscreen = false;
-			_window_frame_rate = 0;
-			_window_v_sync = false;
-			_screen_rect = {};
-		}
-		void SetScreenResolution(const int w, const int h) {
-			_window_width = w;
-			_window_height = h;
-		}
-		void SetFullScreen(const bool value) {
-			_window_fullscreen = value;
-		}
-		void SetFrameRate(const int frame_rate) {
-			_window_frame_rate = frame_rate;
-		}
-		void SetVSync(const bool v_sync) {
-			_window_v_sync = v_sync;
-		}
+		graphic();
+		// setters
+		void SetScreenResolution(const int w, const int h);
+		void SetFullScreen(const bool value);
+		void SetFrameRate(const int frame_rate);
+		void SetVSync(const bool v_sync);
+		// getters
+		[[nodiscard]] int GetWindowWidth() const;
+		[[nodiscard]] int GetWindowHeight() const;
+		Rect* GetScreenSpace();
+		// apply
 		void Apply();
-		[[nodiscard]] int GetWindowWidth() const
-		{
-			return _window_width;
-		}
-
-		[[nodiscard]] int GetWindowHeight() const
-		{
-			return _window_height;
-		}
-
-		Rect* GetScreenSpace()
-		{
-			return &_screen_rect;
-		}
-
 	private:
 		int _window_width;
 		int _window_height;
@@ -120,40 +96,28 @@ public:
 private:
 	class audio {
 	public:
-		audio() {
-			_audio_music_level = 0;
-			_audio_sound_level = 0;
-			_audio_master = true;
-			_audio_music = true;
-			_audio_sound = true;
-		}
+		audio();
 		// setters
-		void SetSoundLevel(const int level) {
-			_audio_sound_level = std::clamp(level, 0, 100);
-			Apply();
-		}
-		void SetMusicLevel(const int level) {
-			_audio_music_level = std::clamp(level, 0, 100);
-			Apply();
-		}
-		void SetMaster(const bool& enabled) { _audio_master = enabled; Apply(); }
-		void SetSound(const bool& enabled) { _audio_sound = enabled; Apply(); }
-		void SetMusic(const bool& enabled) { _audio_music = enabled; Apply(); }
+		void SetSoundLevel(const int level);
+		void SetMusicLevel(const int level);
+		void SetMaster(const bool& enabled);
+		void SetSound(const bool& enabled);
+		void SetMusic(const bool& enabled);
 		// getters
-		[[nodiscard]] int GetMusicLevel() const { return (_audio_master && _audio_music) ? _audio_music_level : 0; }
-		[[nodiscard]] int GetSoundLevel() const { return (_audio_master && _audio_sound) ? _audio_sound_level : 0; }
-
+		[[nodiscard]] int GetMusicLevel() const;
+		[[nodiscard]] int GetSoundLevel() const;
+		// apply
 		void Apply() const;
 	private:
 		int _audio_music_level;
 		int _audio_sound_level;
-
 		bool _audio_master;
 		bool _audio_music;
 		bool _audio_sound;
 	};
 public:
 	inline static audio Audio;
+
 	struct MouseState {
 		enum class ButtonState {
 			PRESSED, RELEASED, NONE
@@ -173,19 +137,7 @@ public:
 		// Current mouse wheel position
 		int Wheel = 0;
 		static void Reset();
-	} inline static  Mouse;
-private:
-	// settings data -> global settings
-	std::map<std::string, std::string> SettingsData;
-public:
-	// Get value from Settings Data in int format
-	static int SD_GetInt(const std::string& field, int _default);
-	// Get value from Settings Data in float format
-	static float SD_GetFloat(const std::string& field, float _default);
-	// Get value from Settings Data in string format
-	static std::string SD_GetString(const std::string& field, std::string _default);
-	// Set value, replace if exists
-	static void SD_SetValue(const std::string& field, const std::string& value);
+	} inline static Mouse;
 
 private:
 	using program_argument = std::pair<const char*, const char*>;
@@ -203,15 +155,15 @@ private:
 
 	static Core _instance;
 	SDL_Window* _window;
+
 #ifdef _DEBUG
 	// all debug flags and variables
 private:
-	
 	class CoreDebug
 	{
 	public:
 		CoreDebug();
-		bool ProcessEvent(SDL_Event* e);
+		bool ProcessEvent(const SDL_Event* e);
 		void Draw() const;
 		void SetSpyLines(const int& lines)
 		{

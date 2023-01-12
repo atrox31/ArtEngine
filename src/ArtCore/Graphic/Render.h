@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Sprite.h"
+#include "ArtCore/CodeExecutor/Stack.h"
 #include "FC_Fontcache/SDL_FontCache.h"
 
 
@@ -66,6 +67,8 @@ public:
 	{
 		_instance->_use_shader_gaussian = mode;
 	}
+	static int GetGaussianMode() { return _instance->_shader_gaussian_mode; }
+	static void SetGaussianFromPreset(int get);
 private:
 	virtual ~Render();
 	Render();
@@ -82,6 +85,7 @@ private:
 	// bloom
 		// shaders
 	bool _use_shader_gaussian;
+	int _shader_gaussian_mode;
 	Uint32 _shader_gaussian;
 	GPU_ShaderBlock _shader_gaussian_block{};
 	int _shader_gaussian_var_quality;
