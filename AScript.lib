@@ -135,3 +135,4 @@ float math_sin(float x);Get sin of <float>;
 float math_cos(float x);Get cos of <float>;
 float math_abs(float value);Get absolute value of <float>
 null sprite_set_angle(float value);Set self sprite angle <float> in degree;Get (0..359)
+instance self();Get self reference

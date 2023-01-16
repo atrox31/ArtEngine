@@ -1253,3 +1253,8 @@ void CodeExecutor::math_abs(Instance*) {
 void CodeExecutor::sprite_set_angle(Instance* sender) {
 	sender->SpriteAngle = StackIn_f;
 }
+
+//instance self();Get self reference
+void CodeExecutor::self(Instance* sender) {
+	StackOut_ins(sender);
+}

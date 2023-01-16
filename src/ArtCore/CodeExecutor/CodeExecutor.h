@@ -359,6 +359,7 @@ private:
 	Script(math_cos);
 	Script(math_abs);
 	Script(sprite_set_angle);
+	Script(self);
 #undef Script
 };
 //end of file

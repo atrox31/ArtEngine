@@ -141,5 +141,6 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["math_cos"] = &CodeExecutor::math_cos;
 	FunctionsMap["math_abs"] = &CodeExecutor::math_abs;
 	FunctionsMap["sprite_set_angle"] = &CodeExecutor::sprite_set_angle;
+	FunctionsMap["self"] = &CodeExecutor::self;
 }
 //end of file
