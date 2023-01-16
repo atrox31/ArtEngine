@@ -224,6 +224,7 @@
     <ClInclude Include="src\ArtCore\Gui\GuiElement\Slider.h" />
     <ClInclude Include="src\ArtCore\Physics\Physics.h" />
     <ClInclude Include="src\ArtCore\ShortTypenames.h" />
+    <ClInclude Include="src\ArtCore\Structs\Mask.h" />
     <ClInclude Include="src\ArtCore\System\AssetManager.h" />
     <ClInclude Include="src\ArtCore\Graphic\BackGroundRenderer.h" />
     <ClInclude Include="src\ArtCore\Gui\GuiElement\Button.h" />

@@ -10,11 +10,11 @@ event_bit EventBitFromEvent(Event event) {
 		break;
 	case DEF_VALUES:
 		break;
-	case EvOnkeyDown:
+	case EvOnKeyDown:
 		flag = flag | event_bit::HAVE_KEYBOARD_EVENT;
 		flag = flag | event_bit::HAVE_KEYBOARD_EVENT_DOWN;
 		break;
-	case EvOnkeyUp:
+	case EvOnKeyUp:
 		flag = flag | event_bit::HAVE_KEYBOARD_EVENT;
 		flag = flag | event_bit::HAVE_KEYBOARD_EVENT_UP;
 		break;
@@ -25,9 +25,6 @@ event_bit EventBitFromEvent(Event event) {
 		flag = flag | event_bit::HAVE_MOUSE_EVENT;
 		break;
 	case EvOnMouseUp:
-		flag = flag | event_bit::HAVE_MOUSE_EVENT;
-		flag = flag | event_bit::HAVE_MOUSE_EVENT_UP;
-		break;
 	case EvOnMouseDown:
 		flag = flag | event_bit::HAVE_MOUSE_EVENT;
 		flag = flag | event_bit::HAVE_MOUSE_EVENT_UP;

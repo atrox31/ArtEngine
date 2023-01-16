@@ -49,7 +49,10 @@ null sprite_next_frame(); Set SelfSprite next frame; If sprite loop is enable, f
 null sprite_prev_frame(); Set SelfSprite previous frame; If sprite loop is enable, frame = frame_max if frame < frame_max 0;
 null sprite_set_frame(int frame); Set SelfSprite frame no <int>.; If frame is not exists nothing happen;
 null code_do_nothing();Do nothing, empty action;Use when there is no else in if
-null set_body_type(string type, float value);Set body type for instance, of <string> and optional <float> value; type is enum: None,Sprite,Rect,Circle
+null instance_set_body_as_rect(int width, int height);Make body for instance to enable collision check. Make body rectangle with <int> width and <int> height;Mark instance as collider.
+null instance_set_body_as_circle(int radius);Make body for instance to enable collision check. Make body circle with <int> width radius;Mark instance as collider.
+null instance_set_body_from_sprite();Make body for instance to enable collision check. Copy body value from self sprite if is set;Mark instance as collider.
+null instance_set_body_none();Delete instance body, make it non collider;
 null instance_set_tag(string tag);Set tag for current instance <string>.
 instance collision_get_collider();Return reference to instance with this object is collide;Other colliders must be solid too to collide;
 string collision_get_collider_tag();Get tag of instance that is coliding with this object;Other colliders must be solid too to collide;

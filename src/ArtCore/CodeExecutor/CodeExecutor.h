@@ -139,10 +139,11 @@ public:
 	static AStack<Rect> GlobalStack_rect;
 	static AStack<SDL_Color> GlobalStack_color;
 	static AStack<std::string> GlobalStack_string;
-private:
-	[[nodiscard]] Inspector* CreateInspector(const std::string& code_file) const;
+
 	// Break from current script
 	static void Break();
+private:
+	[[nodiscard]] Inspector* CreateInspector(const std::string& code_file) const;
 	// list of suspended code <time, code>
 	struct SuspendCodeStruct final
 	{
@@ -272,7 +273,10 @@ private:
 	Script(sprite_prev_frame);
 	Script(sprite_set_frame);
 	Script(code_do_nothing);
-	Script(set_body_type);
+	Script(instance_set_body_as_rect);
+	Script(instance_set_body_as_circle);
+	Script(instance_set_body_from_sprite);
+	Script(instance_set_body_none);
 	Script(instance_set_tag);
 	Script(collision_get_collider);
 	Script(collision_get_collider_tag);

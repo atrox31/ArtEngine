@@ -9,8 +9,8 @@ ENUM_WITH_STRING_CONVERSION(
     (EvOnDestroy)
     (DEF_VALUES)
 
-    (EvOnkeyDown)
-    (EvOnkeyUp)
+    (EvOnKeyDown)
+    (EvOnKeyUp)
 
     (EvOnMouseMotion)
     (EvOnMouseWheel)
@@ -38,7 +38,7 @@ enum class event_bit : E_TYPE {
     HAVE_MOUSE_EVENT_DOWN =     1 << 2,
     HAVE_MOUSE_EVENT_UP =       1 << 3,
     HAVE_MOUSE_EVENT_SCROLL =   1 << 4,
-    HAVE_MOUSE_EVENT_MOTION =   1 << 5,
+    UNUSED_1 =                  1 << 5,
 
     HAVE_KEYBOARD_EVENT =       1 << 6,
     HAVE_KEYBOARD_EVENT_UP =    1 << 7,

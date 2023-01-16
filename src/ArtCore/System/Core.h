@@ -8,6 +8,9 @@
 #include "ArtCore/Functions/Func.h"
 #include "ArtCore/Gui/Console.h"
 #include "ArtCore/Structs/Rect.h"
+#include "ArtCore/Enums/Event.h"
+#include "ArtCore/Scene/Instance.h"
+
 #include "FC_Fontcache/SDL_FontCache.h"
 #include "SDL2/IncludeAll.h"
 
@@ -16,7 +19,7 @@ class AssetManager;
 class CodeExecutor;
 class Core final
 {
-	private:
+private:
 	Core();
 	~Core();
 public:
@@ -26,33 +29,38 @@ public:
 	static bool LoadData();
 	static void Exit();
 
-	bool ProcessEvents();
-	void ProcessStep() const;
+	bool ProcessEvents(event_bit& global_events_flag);
+	void ProcessStep(const event_bit& global_events_flag) const;
 	void ProcessPhysics() const;
 	void ProcessSceneRender() const;
 	void ProcessPostProcessRender() const;
 	void ProcessSystemRender() const;
 
 	// getters
-	static Core* GetInstance() { return &Core::_instance; }
-	static Scene* GetCurrentScene();
-	static GPU_Target* GetScreenTarget() { return _instance._screenTarget; }
+	static Core* GetInstance()				{ return &_instance; }
+	static Scene* GetCurrentScene()			{ return _instance._current_scene; }
+	static GPU_Target* GetScreenTarget()	{ return _instance._screenTarget; }
+	static FC_Font* GetGlobalFont()			{ return _instance._global_font;  }
+	static AssetManager* GetAssetManager()	{ return _instance._asset_manager; }
+	static int GetScreenWidth()				{ return Graphic.GetWindowWidth();	}
+	static int GetScreenHeight()			{ return Graphic.GetWindowHeight();	}
+	static CodeExecutor* Executor()			{ return _instance._executor; }
 	static SDL_Window* GetWindowHandle();
-	static int GetScreenWidth() {	return Graphic.GetWindowWidth();	}
-	static int GetScreenHeight() {	return Graphic.GetWindowHeight();	}
-	static FC_Font* GetGlobalFont() { return _instance._global_font;  }
-	static AssetManager* GetAssetManager() { return _instance._asset_manager; }
 
 
 	// setters
 	static void Pause() {_instance.game_loop = false;}
 	static void Play() {_instance.game_loop = true;	}
-	static CodeExecutor* Executor() {return _instance._executor;}
 	bool ChangeScene(const std::string& name);
 
+	// time to generate one frame
 	static inline double DeltaTime;
+	// this is delta time multipler
+	static inline double GameSpeed = 1.0;
 private:
 	bool ProcessCoreKeys(Sint32 sym);
+	std::vector<Instance*> _instance_to_draw;
+	std::vector<Instance*> _instance_to_psyhic;
 	bool game_loop;
 	// graphic
 	bool use_bloom = false;

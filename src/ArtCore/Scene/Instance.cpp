@@ -8,33 +8,10 @@
 #include "ArtCore/_Debug/Debug.h"
 
 Uint64 Instance::_cid = 0;
-Instance::Instance(const int instance_definition_id)
+Instance::Instance(const int instance_definition_id) :
+	_instance_definition_id(instance_definition_id)
 {
-	this->_instance_definition_id = instance_definition_id;
-	this->Tag = "undefined";
-	this->Name = "no_name";
-
-	this->InView = false;
-	this->Alive = true;
-	this->IsCollider = false;
-
-	this->PosX = 0.0f;
-	this->PosY = 0.0f;
-	this->Direction = 0.0f;
-
-	this->SelfSprite = nullptr;
-	this->SpriteScaleX = 1.0f;
-	this->SpriteScaleY = 1.0f;
-	this->SpriteCenterX = 0;
-	this->SpriteCenterY = 0;
-	this->SpriteAngle = 0.0f;
-
-	this->SpriteAnimationFrame = 0.0f;
-	this->SpriteAnimationSpeed = 60.0f;
-	this->SpriteAnimationLoop = true;
-	this->EventFlag = event_bit::NONE;
-
-	this->_have_suspended_code = false;
+	
 }
 
 Instance* Instance::GiveId()
@@ -97,26 +74,27 @@ bool Instance::CheckMaskClick(SDL_FPoint& point) const
 	if (SelfSprite == nullptr) return false;
 	if (InView == false) return false;
 
-	const Sprite::mask_type MaskType = SelfSprite->GetMaskType();
-	if (MaskType == Sprite::mask_type::None) return false;
+	if (!SelfSprite->GetMask().HaveValue()) return false;
+	const Mask SpriteMask = SelfSprite->GetMask();
 
-	const float MaskValue = SelfSprite->GetMaskValue();
-	if (MaskValue < 1.0f) return false;
-
-	if (MaskType == Sprite::mask_type::Circle) {
+	if (SpriteMask.type == Mask::mask_type::Circle) {
 		SDL_FPoint spoint{ 
-			PosX + SelfSprite->GetCenterXRel(),
-			PosY + SelfSprite->GetCenterYRel()
+			(PosX + SelfSprite->GetCenterXRel()) * SpriteScaleX,
+			(PosY + SelfSprite->GetCenterYRel()) * SpriteScaleY
 		};
+		// scale point to current render scale
+		// TODO test this
+		Render::ScalePoint(&spoint);
 		const float distance = Func::Distance(point, spoint);
-		return (distance <= MaskValue);
+		return (distance <= SpriteMask.r);
 	}
-	if (MaskType == Sprite::mask_type::Rectangle) {
+	if (SpriteMask.type == Mask::mask_type::Rectangle) {
+		
 		Rect spoint{
-			PosX - SelfSprite->GetMaskValue(),
-			PosY - SelfSprite->GetMaskValue(),
-			PosX + SelfSprite->GetMaskValue(),
-			PosY + SelfSprite->GetMaskValue()
+			PosX - SpriteMask.w,
+			PosY - SpriteMask.h,
+			PosX + SpriteMask.w,
+			PosY + SpriteMask.h
 		};
 		SDL_FPoint mov{ SelfSprite->GetCenterXRel(), SelfSprite->GetCenterYRel() };
 		spoint += mov;
@@ -131,19 +109,19 @@ Rect Instance::GetBodyMask() const
 {
 	switch(Body.Type)
 	{
-	case BodyType::Circle:
+	case body::type::Circle:
 		return {
-		(PosX - Body.Value) * SpriteScaleX,
-			(PosY - Body.Value) * SpriteScaleY,
-			(PosX + Body.Value) * SpriteScaleX,
-			(PosY + Body.Value) * SpriteScaleY
+			PosX - Body.Radius * SpriteScaleX,
+			PosY - Body.Radius * SpriteScaleY,
+			PosX + Body.Radius * SpriteScaleX,
+			PosY + Body.Radius * SpriteScaleY
 		};
-	case BodyType::Rect:
+	case body::type::Rectangle:
 		return {
-		(PosX - Body.Value) * SpriteScaleX,
-			(PosY - Body.Value) * SpriteScaleY,
-			(PosX + Body.Value) * SpriteScaleX,
-			(PosY + Body.Value) * SpriteScaleY
+			PosX - (Body.Dimensions.x / 2.f) * SpriteScaleX,
+			PosY - (Body.Dimensions.y / 2.f) * SpriteScaleY,
+			PosX + (Body.Dimensions.x / 2.f) * SpriteScaleX,
+			PosY + (Body.Dimensions.y / 2.f) * SpriteScaleY
 		};
 	default:
 		return {};

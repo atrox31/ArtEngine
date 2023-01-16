@@ -396,8 +396,7 @@ void CodeExecutor::global_get_mouse(Instance*) {
 }
 //null set_self_sprite(sprite spr); Set self sprite to <sprite> with default scale, angle, speed, loop; You can mod sprite via set_sprite_ etc.;
 void CodeExecutor::set_self_sprite(Instance* instance) {
-	const int spriteId = StackIn_i;
-	if (spriteId != -1) {
+	if (const int spriteId = StackIn_i; spriteId != -1) {
 		Sprite* sprite = Core::GetAssetManager()->GetSprite(spriteId);
 		if (sprite != nullptr) {
 			instance->SelfSprite = sprite;
@@ -409,14 +408,6 @@ void CodeExecutor::set_self_sprite(Instance* instance) {
 			instance->SpriteAnimationFrame = 0.0f;
 			instance->SpriteAnimationSpeed = 60.0f;
 			instance->SpriteAnimationLoop = true;
-
-			// set body type from sprite values
-			if (instance->Body.Type == Instance::BodyType::Sprite) {
-				//null set_body_type(string type, int value);Set body type for instance, of <string> and optional <int> value; type is enum: None,Sprite,Rect,Circle
-				StackOut_s("Sprite");
-				StackOut_f(instance->SelfSprite->GetMaskValue());
-				set_body_type(instance);
-			}
 			return;
 		}
 	}
@@ -494,46 +485,33 @@ void CodeExecutor::sprite_set_frame(Instance* sender) {
 void CodeExecutor::code_do_nothing(Instance*) {
 	return;
 }
-//null set_body_type(string type, float value);Set body type for instance, of <string> and optional <float> value; type is enum: None,Sprite,Rect,Circle
-void CodeExecutor::set_body_type(Instance* sender) {
-	const float value = StackIn_f;
-	const std::string type = StackIn_s;
-	if (Instance::BodyType::Body_fromString(type) == Instance::BodyType::BodyInvalid) return;
-	if (Instance::BodyType::Body_fromString(type) == Instance::BodyType::Sprite) {
-		if (sender->SelfSprite != nullptr) {
-			switch (sender->SelfSprite->GetMaskType()) {
-			case Sprite::mask_type::None:
-			{
-				sender->Body.Value = 0;
-				sender->Body.Type = Instance::BodyType::None;
-				sender->IsCollider = false;
-			}break;
-			case Sprite::mask_type::Rectangle:
-			{
-				sender->Body.Value = sender->SelfSprite->GetMaskValue();
-				sender->Body.Type = Instance::BodyType::Rect;
-				sender->IsCollider = true;
-			}break;
-			case Sprite::mask_type::Circle:
-			{
-				sender->Body.Value = sender->SelfSprite->GetMaskValue();
-				sender->Body.Type = Instance::BodyType::Circle;
-				sender->IsCollider = true;
-			}break;
 
-			}
-		}
-		else {
-			sender->Body.Value = 0;
-			sender->Body.Type = Instance::BodyType::None;
-			sender->IsCollider = false;
-		}
-	}
-	else {
-		sender->Body.Value = value;
-		sender->Body.Type = Instance::BodyType::Body_fromString(type);
-		sender->IsCollider = true;
-	}
+//null instance_set_body_as_rect(int width, int height);Make body for instance to enable collision check. Make body rectangle with <int> width and <int> height;Mark instance as collider.
+void CodeExecutor::instance_set_body_as_rect(Instance* sender) {
+	const float height = static_cast<float>(StackIn_i);
+	const float width = static_cast<float>(StackIn_i);
+	sender->Body.MakeRectangle(width, height);
+	sender->IsCollider = true;
+}
+
+//null instance_set_body_as_circle(int radius);Make body for instance to enable collision check. Make body circle with <int> width radius;Mark instance as collider.
+void CodeExecutor::instance_set_body_as_circle(Instance* sender) {
+	const float radius = static_cast<float>(StackIn_i);
+	sender->Body.MakeCircle(radius);
+	sender->IsCollider = true;
+}
+
+//null instance_set_body_from_sprite();Make body for instance to enable collision check. Copy body value from self sprite if is set;Mark instance as collider.
+void CodeExecutor::instance_set_body_from_sprite(Instance* sender) {
+	if (sender->SelfSprite == nullptr) return;
+	sender->Body.FromSpriteMask(sender->SelfSprite->GetMask());
+	sender->IsCollider = true;
+}
+
+//null instance_set_body_none();Delete instance body, make it non collider;
+void CodeExecutor::instance_set_body_none(Instance* sender) {
+	sender->Body.Type = Instance::body::type::None;
+	sender->IsCollider = false;
 }
 
 //null instance_set_tag(string tag);Set tag for current instance <string>.
@@ -634,12 +612,12 @@ void CodeExecutor::set_direction(Instance* sender) {
 }
 
 //float convert_int_to_float(int value);Convert <int> to float type;
-void CodeExecutor::convert_int_to_float(Instance* sender) {
+void CodeExecutor::convert_int_to_float(Instance* ) {
 	StackOut_f((float)StackIn_i);
 }
 
 //int convert_float_to_int(float value);Convert <float> to int type;
-void CodeExecutor::convert_float_to_int(Instance* sender) {
+void CodeExecutor::convert_float_to_int(Instance* ) {
 	StackOut_i((int) SDL_roundf(StackIn_f));
 }
 //null instance_delete_self();Delete self;
@@ -651,35 +629,35 @@ void CodeExecutor::get_direction(Instance* sender) {
 	StackOut_f(sender->Direction);
 }
 //float math_add(float a, float b);Get sum of <float> + <float>;
-void CodeExecutor::math_add(Instance* sender) {
+void CodeExecutor::math_add(Instance* ) {
 	const float b = StackIn_f;
 	const float a = StackIn_f;
 	StackOut_f(a + b);
 }
 //float math_sub(float a, float b);Get sub of <float> - <float>;
-void CodeExecutor::math_sub(Instance* sender) {
+void CodeExecutor::math_sub(Instance* ) {
 	const float b = StackIn_f;
 	const float a = StackIn_f;
 	StackOut_f(a - b);
 }
 //float math_mul(float a, float b);Get mul of <float> * <float>;
-void CodeExecutor::math_mul(Instance* sender) {
+void CodeExecutor::math_mul(Instance* ) {
 	const float b = StackIn_f;
 	const float a = StackIn_f;
 	StackOut_f(a * b);
 }
 //float math_div(float a, float b);Get div of <float> / <float>;
-void CodeExecutor::math_div(Instance* sender) {
+void CodeExecutor::math_div(Instance*) {
 	const float b = StackIn_f;
 	const float a = StackIn_f;
 	StackOut_f(a / b);
 }
 //float get_point_x(point point);Get x of <point> point;
-void CodeExecutor::get_point_x(Instance* sender) {
+void CodeExecutor::get_point_x(Instance*) {
 	StackOut_f(StackIn_p.x);
 }
 //float get_point_y(point point);Get y of <point> point;
-void CodeExecutor::get_point_y(Instance* sender) {
+void CodeExecutor::get_point_y(Instance*) {
 	StackOut_f(StackIn_p.y);
 }
 //null collision_push_other(bool myself);Push other instance in other direction, if <bool> then push this instance too;Like opposite magnets;
@@ -942,7 +920,7 @@ void CodeExecutor::gui_get_check_box_value(Instance*) {
 		if (element == nullptr)
 		{
 			// error
-			ASSERT(true, "element not found id='" + gui_tag + "'");
+			ASSERT(true, "element not found id='" + gui_tag + "'")
 			Break();
 			return;
 		}
@@ -951,7 +929,7 @@ void CodeExecutor::gui_get_check_box_value(Instance*) {
 	catch (...)
 	{
 		// error cast
-		ASSERT(true, "error dynamic_cast<GuiElement::CheckButton*>");
+		ASSERT(true, "error dynamic_cast<GuiElement::CheckButton*>")
 	}
 }
 
@@ -963,7 +941,7 @@ void CodeExecutor::gui_get_drop_down_selected_index(Instance*) {
 		if (element == nullptr)
 		{
 			// error
-			ASSERT(true, "element not found id='" + gui_tag + "'");
+			ASSERT(true, "element not found id='" + gui_tag + "'")
 			Break();
 			return;
 		}

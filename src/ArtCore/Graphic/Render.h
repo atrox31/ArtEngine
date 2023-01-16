@@ -11,7 +11,8 @@ public:
 	static void CreateRender(int width, int height);
 	static void DestroyRender();
 	static void LoadShaders();
-	static SDL_FPoint ScalePoint(const SDL_FPoint& point);
+	static void ScalePoint(SDL_FPoint* point);
+	static SDL_FPoint ScalePoint(const float& x, const float& y);
 
 	// drawing
 	static void DrawTexture(GPU_Image* texture, const vec2f& position, const vec2f& scale, float angle, float alpha);

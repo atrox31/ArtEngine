@@ -5,6 +5,7 @@
 #include "ArtCore/Scene/Scene.h"
 #include "ArtCore/Physics/Physics.h"
 #include "ArtCore/System/SettingsData.h"
+#include "ArtCore/Enums/Event.h"
 
 #include "ArtCore/Graphic/ColorDefinitions.h"
 
@@ -27,7 +28,7 @@ bool Core::ProcessCoreKeys(const Sint32 sym)
     return false;
 }
 
-bool Core::ProcessEvents()
+bool Core::ProcessEvents(event_bit& global_events_flag)
 {
     SDL_Event e;
     while (SDL_PollEvent(&e) != 0) {
@@ -47,6 +48,13 @@ bool Core::ProcessEvents()
 #endif
             if (ProcessCoreKeys(e.key.keysym.sym)) break;
             if (Console::ProcessEvent(&e)) break;
+            global_events_flag = global_events_flag | event_bit::HAVE_KEYBOARD_EVENT;
+            global_events_flag = global_events_flag | event_bit::HAVE_KEYBOARD_EVENT_DOWN;
+        } break;
+        case SDL_KEYUP:
+        {
+            global_events_flag = global_events_flag | event_bit::HAVE_KEYBOARD_EVENT;
+            global_events_flag = global_events_flag | event_bit::HAVE_KEYBOARD_EVENT_UP;
         } break;
 
         case SDL_TEXTINPUT:
@@ -56,6 +64,9 @@ bool Core::ProcessEvents()
 
         case SDL_MOUSEBUTTONDOWN:
         {
+            global_events_flag = global_events_flag | event_bit::HAVE_MOUSE_EVENT;
+            global_events_flag = global_events_flag | event_bit::HAVE_MOUSE_EVENT_DOWN;
+            global_events_flag = global_events_flag | event_bit::HAVE_MOUSE_EVENT_CLICK;
             if (e.button.button == SDL_BUTTON_LEFT) {
                 Mouse.LeftEvent = Core::MouseState::ButtonState::PRESSED;
             }
@@ -65,6 +76,8 @@ bool Core::ProcessEvents()
         } break;
 
         case SDL_MOUSEBUTTONUP: {
+            global_events_flag = global_events_flag | event_bit::HAVE_MOUSE_EVENT;
+            global_events_flag = global_events_flag | event_bit::HAVE_MOUSE_EVENT_UP;
             if (e.button.button == SDL_BUTTON_LEFT) {
                 Mouse.LeftEvent = Core::MouseState::ButtonState::RELEASED;
             }
@@ -72,8 +85,12 @@ bool Core::ProcessEvents()
                 Mouse.RightEvent = Core::MouseState::ButtonState::RELEASED;
             }
         } break;
+        case SDL_MOUSEWHEEL:
+        {
+            global_events_flag = global_events_flag | event_bit::HAVE_MOUSE_EVENT;
+            global_events_flag = global_events_flag | event_bit::HAVE_MOUSE_EVENT_SCROLL;
+        } break;
 
-        case SDL_KEYUP:
         case SDL_WINDOWEVENT:
         case SDL_CONTROLLERDEVICEADDED:
         case SDL_CONTROLLERDEVICEREMOVED:
@@ -82,7 +99,6 @@ bool Core::ProcessEvents()
         case SDL_CONTROLLERAXISMOTION:
         case SDL_CONTROLLERBUTTONDOWN:
         case SDL_CONTROLLERBUTTONUP:
-        case SDL_MOUSEWHEEL:
             break;
         default:continue;
         }
@@ -90,95 +106,124 @@ bool Core::ProcessEvents()
     return false;
 }
 
-void Core::ProcessStep() const
+void Core::ProcessStep(const event_bit& global_events_flag) const
 {
     // interface (gui) events
     const bool gui_have_event = _current_scene->GuiSystem.Events();
     // add all new instances to scene and execute OnCreate event
     _current_scene->SpawnAll();
-    if (_current_scene->IsAnyInstances()) {
-        for (plf::colony<Instance*>::iterator it = _current_scene->InstanceColony.begin();
-            it != _current_scene->InstanceColony.end();)
-        {
-            if (Instance* c_instance = (*it); c_instance->Alive) {
-                // step
-                Executor()->ExecuteScript(c_instance, Event::EvStep);
-                const event_bit c_flag = c_instance->EventFlag;
+    if (!_current_scene->IsAnyInstances()) return;
 
-                // in view
-                if (c_instance->Alive) {
-                    const bool oldInView = c_instance->InView;
-                    c_instance->InView = GetCurrentScene()->InView({ c_instance->PosX, c_instance->PosY });
-                    if (c_instance->InView != oldInView) {
-                        if (EVENT_BIT_TEST(event_bit::HAVE_VIEW_CHANGE, c_flag)) {
-                            if (oldInView == true) { // be inside, now exit view
-                                Executor()->ExecuteScript(c_instance, Event::EvOnViewLeave);
-                            }
-                            else {
-                                Executor()->ExecuteScript(c_instance, Event::EvOnViewEnter);
-                            }
-                        }
-                    }
-                }
+    for (plf::colony<Instance*>::iterator it = _current_scene->InstanceColony.begin();
+        it != _current_scene->InstanceColony.end();)
+    {
+        if (Instance* c_instance = (*it); !c_instance->Alive) {
+            // delete instance if not alive
+            if (EVENT_BIT_TEST(event_bit::HAVE_ON_DESTROY, c_instance->EventFlag)) {
+                Executor()->ExecuteScript(c_instance, Event::EvOnDestroy);
+            }
+            delete (*it);
+            it = _instance._current_scene->DeleteInstance(it);
+        }else{ 
+            // instance exists and alive
+            // step
+            Executor()->ExecuteScript(c_instance, Event::EvStep);
+            const event_bit c_instance_events = c_instance->EventFlag;
 
-                // mouse input
-                if (c_instance->Alive && (!gui_have_event)) {
-                    if (EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT, c_flag)) {
-                        if (Mouse.LeftEvent == MouseState::ButtonState::PRESSED) {
-                            // global click
-                            if (EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT_DOWN, c_flag)) {
-                                Executor()->ExecuteScript(c_instance, Event::EvOnMouseDown);
-                            }
-                            // on mask click
-                            if (EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT_CLICK, c_flag)) {
-                                if (c_instance->CheckMaskClick(Mouse.XYf)) {
-                                    Executor()->ExecuteScript(c_instance, Event::EvClicked);
-                                }
-                            }
-                        }
-                        if (Mouse.LeftEvent == MouseState::ButtonState::RELEASED) {
-                            if (EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT_UP, c_flag)) {
-                                Executor()->ExecuteScript(c_instance, Event::EvOnMouseUp);
-                            }
-                        }
-                    }
-                }
-                // go to next instance
+            // check if instance is still alive
+            if (!c_instance->Alive) {
                 ++it;
+                continue;
             }
-            else {
-                // delete instance if not alive
-                if (EVENT_BIT_TEST(event_bit::HAVE_ON_DESTROY, c_instance->EventFlag)) {
-                    Executor()->ExecuteScript(c_instance, Event::EvOnDestroy);
+
+            // view change event
+            const bool oldInView = c_instance->InView;
+            c_instance->InView = GetCurrentScene()->InView({ c_instance->PosX, c_instance->PosY });
+            if (EVENT_BIT_TEST(event_bit::HAVE_VIEW_CHANGE, c_instance_events)
+            && c_instance->InView != oldInView) {
+
+                if (EVENT_BIT_TEST(event_bit::HAVE_VIEW_CHANGE, c_instance_events)) {
+                    if (oldInView == true) { // be inside, now exit view
+                        Executor()->ExecuteScript(c_instance, Event::EvOnViewLeave);
+                    }
+                    else {
+                        Executor()->ExecuteScript(c_instance, Event::EvOnViewEnter);
+                    }
                 }
-                delete (*it);
-                it = _instance._current_scene->DeleteInstance(it);
             }
+            
+
+            // check if instance is still alive
+            if (!c_instance->Alive) {
+                ++it;
+                continue;
+            }
+
+            // mouse input
+            // check mouse event and gui not handle it
+            if (EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT, global_events_flag) 
+                && (!gui_have_event)) {
+                // global mouse down
+                if (   EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT_DOWN, global_events_flag)     // first check if event happen
+                    && EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT_DOWN, c_instance_events))     // seccond check if instance have this event
+                    Executor()->ExecuteScript(c_instance, Event::EvOnMouseDown);                // execute event
+
+                // global mouse up
+                if (   EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT_UP, global_events_flag)       // first check if event happen
+                    && EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT_UP, c_instance_events))       // seccond check if instance have this event
+                    Executor()->ExecuteScript(c_instance, Event::EvOnMouseUp);                  // execute event
+
+                // local mouse clock - on instance sprite mask
+                if (   EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT_DOWN, global_events_flag)     // first check if event happen
+                    && EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT_CLICK, c_instance_events)     // seccond check if instance have this event
+                    && c_instance->CheckMaskClick(Mouse.XYf))                                   // third check if sprite mask is clicked
+                    Executor()->ExecuteScript(c_instance, Event::EvClicked);
+
+            }
+
+            // check if instance is still alive
+            if (!c_instance->Alive) {
+                ++it;
+                continue;
+            }
+
+            // keyboard input
+            if (EVENT_BIT_TEST(event_bit::HAVE_KEYBOARD_EVENT, global_events_flag)) {
+                if (EVENT_BIT_TEST(event_bit::HAVE_KEYBOARD_EVENT_DOWN, global_events_flag)     // first check if event happen
+                &&  EVENT_BIT_TEST(event_bit::HAVE_KEYBOARD_EVENT_DOWN, c_instance_events))     // seccond check if instance have this event
+                    Executor()->ExecuteScript(c_instance, Event::EvOnKeyDown);                  // execute event
+
+                if (EVENT_BIT_TEST(event_bit::HAVE_KEYBOARD_EVENT_UP, global_events_flag)       // first check if event happen
+                &&  EVENT_BIT_TEST(event_bit::HAVE_KEYBOARD_EVENT_UP, c_instance_events))       // seccond check if instance have this event
+                    Executor()->ExecuteScript(c_instance, Event::EvOnKeyUp);                    // execute event
+            }
+
+            // go to next instance
+            ++it;
         }
-        // execute all suspended code
-        CodeExecutor::SuspendedCodeExecute();
     }
+    // execute all suspended code
+    CodeExecutor::SuspendedCodeExecute();
 }
 
 void Core::ProcessPhysics() const
 {
     for (const auto instance : _current_scene->InstanceColony) {
-        if (instance->Alive) {
-            // collision
-            if (EVENT_BIT_TEST(event_bit::HAVE_COLLISION, instance->EventFlag)) {
-                for (Instance* target : _current_scene->InstanceColony) {
-                    if (Physics::CollisionTest(instance, target)) {
-                        _current_scene->CurrentCollisionInstance = target;
-                        _current_scene->CurrentCollisionInstanceId = target->GetId();
-                        Executor()->ExecuteScript(instance, Event::EvOnCollision);
-                        _current_scene->CurrentCollisionInstance = nullptr;
-                        _current_scene->CurrentCollisionInstanceId = -1;
-                    }
+        if (instance->Alive
+        && EVENT_BIT_TEST(event_bit::HAVE_COLLISION, instance->EventFlag)) {
+            for (Instance* target : _current_scene->InstanceColony) {
+                if (Physics::CollisionTest(instance, target)) {
+                    _current_scene->CurrentCollisionInstance = target;
+                    _current_scene->CurrentCollisionInstanceId = target->GetId();
+                    Executor()->ExecuteScript(instance, Event::EvOnCollision);
+                    _current_scene->CurrentCollisionInstance = nullptr;
+                    _current_scene->CurrentCollisionInstanceId = -1;
                 }
             }
         }
     }
 }
+
 
 void Core::ProcessSceneRender() const
 {

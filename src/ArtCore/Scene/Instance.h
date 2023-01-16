@@ -19,43 +19,118 @@ public:
 	void DrawSelf();
 	bool CheckMaskClick(SDL_FPoint&) const;
 
-	std::string Tag;
-	std::string Name;
+	Rect GetBodyMask() const;
 
-	bool InView;
-	bool Alive;
-	bool IsCollider;
+	std::string Tag = "undefined";
+	std::string Name = "undefined";
 
-	float PosX;
-	float PosY;
-	float Direction;
+	bool InView = false;
+	bool Alive = true;
+	bool IsCollider = false;
 
-	Sprite* SelfSprite;
-	float SpriteScaleX;
-	float SpriteScaleY;
-	int SpriteCenterX;
-	int SpriteCenterY;
-	float SpriteAngle;
+	float PosX = 0.f;
+	float PosY = 0.f;
+	float Direction = 0.f;
 
-	float SpriteAnimationFrame;
-	float SpriteAnimationSpeed;
-	bool SpriteAnimationLoop;
+	Sprite* SelfSprite = nullptr;
+	float SpriteScaleX = 1.f;
+	float SpriteScaleY = 1.f;
+	int SpriteCenterX = 0;
+	int SpriteCenterY = 0;
+	float SpriteAngle = 0.f;
 
-	std::vector<int> Variables_int;
-	std::vector<float> Variables_float;
-	std::vector<bool> Variables_bool;
-	std::vector<Instance*> Variables_instance;
-	std::vector<int> Variables_object;
-	std::vector<int> Variables_sprite;
-	std::vector<int> Variables_texture;
-	std::vector<int> Variables_sound;
-	std::vector<int> Variables_music;
-	std::vector<int> Variables_font;
-	std::vector<Rect> Variables_rect;
-	std::vector<SDL_FPoint> Variables_point;
-	std::vector<SDL_Color> Variables_color;
-	std::vector<std::string> Variables_string;
-	event_bit EventFlag;
+	float SpriteAnimationFrame = 0.f;
+	float SpriteAnimationSpeed = 60.f;
+	bool SpriteAnimationLoop = true;
+
+	std::vector<int> Variables_int{};
+	std::vector<float> Variables_float{};
+	std::vector<bool> Variables_bool{};
+	std::vector<Instance*> Variables_instance{};
+	std::vector<int> Variables_object{};
+	std::vector<int> Variables_sprite{};
+	std::vector<int> Variables_texture{};
+	std::vector<int> Variables_sound{};
+	std::vector<int> Variables_music{};
+	std::vector<int> Variables_font{};
+	std::vector<Rect> Variables_rect{};
+	std::vector<SDL_FPoint> Variables_point{};
+	std::vector<SDL_Color> Variables_color{};
+	std::vector<std::string> Variables_string{};
+	
+	event_bit EventFlag = event_bit::NONE;
+
+	struct body {
+	public:
+		enum class type {
+			None, Circle, Rectangle//, Polygon
+		};
+		type Type = type::None;
+		// Circle type radius
+		float Radius = 0.f;
+		// Rectangle type dimensions
+		SDL_FPoint Dimensions = { 0.f, 0.f };
+		body() = default;
+		body(type body_type, float dim_1 = 0.f, float dim_2 = 0.f) {
+			switch (body_type) {
+			using enum Instance::body::type;
+			case Circle:
+				Radius = dim_1;
+				Type = Circle;
+				return;
+			case Rectangle:
+				Dimensions.x = dim_1;
+				Dimensions.y = dim_2;
+				Type = Rectangle;
+				return;
+			case None:
+				Type = None;
+				return;
+			}
+		}
+
+		bool HaveValue() const {
+			switch (Type) {
+				using enum Instance::body::type;
+			case Circle:
+				return (Radius > 1.f );
+			case Rectangle:
+				return ((Dimensions.x > 1.f) && (Dimensions.y > 1.f));
+			case None: default:
+				return false;
+			}
+		}
+
+		void MakeRectangle(const float& width, const float& height) {
+			Dimensions.x = width;
+			Dimensions.y = height;
+			Type = type::Rectangle;
+		}
+		void MakeCircle(const float& radius) {
+			Radius = radius;;
+			Type = type::Circle;
+		}
+
+		void FromSpriteMask(const Mask& mask) {
+			switch (mask.type) {
+			case Mask::Circle:
+				Radius = mask.r;
+				Type = type::Circle;
+				return;
+			case Mask::Rectangle:
+				Dimensions.x = mask.w;
+				Dimensions.y = mask.h;
+				Type = type::Rectangle;
+				return;
+			case Mask::None:
+			default:
+				Type = type::None;
+				return;
+			}
+		}
+	};
+	body Body;
+
 
 	bool SuspendedCodeAdd();
 	bool SuspendedCodePop();
@@ -63,24 +138,9 @@ public:
 	[[nodiscard]] Uint8 SuspendedCodeStateCount() const { return _have_suspended_code;  }
 	// get info if have at least one suspended code
 	[[nodiscard]] bool SuspendedCodeStateHave() const { return _have_suspended_code > (uint8_t)0;  }
-public:
-	struct BodyType {
-	public:
-		ENUM_WITH_STRING_CONVERSION(Body,(None)(Sprite)(Rect)(Circle))
-		Body Type;
-		float Value;
-		BodyType() {
-			Type = Body::None;
-			Value = 0.f;
-		}
-
-	private:
-	};
-	BodyType Body;
-	[[nodiscard]] Rect GetBodyMask() const;
 private:
 	Uint64 _id = 0;
 	static Uint64 _cid;
 	int _instance_definition_id;
-	uint8_t _have_suspended_code;
+	uint8_t _have_suspended_code = false;
 };

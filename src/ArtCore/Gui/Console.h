@@ -12,7 +12,6 @@ class Console final
 public:
 	// Initialize console system
 	static void Init();
-	static void Create();
 	~Console();
 	static void SetOutputFile(const std::string& str);
 	static void Exit();
@@ -47,7 +46,7 @@ private:
 	// show on screen flag
 	bool _visible;
 	// console font
-	FC_Font* _font;
+	FC_Font* _font = nullptr;
 
 	// user input history
 	str_vec _string_input_history;

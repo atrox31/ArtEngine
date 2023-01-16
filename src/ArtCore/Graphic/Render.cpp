@@ -73,15 +73,22 @@ void Render::LoadShaders() {
 	SetGaussianProperties(8, 8, 0.02f); // load medium as default
 }
 
-SDL_FPoint Render::ScalePoint(const SDL_FPoint& point)
+
+void Render::ScalePoint( SDL_FPoint* point)
 {
+	// no deed to scale #preformance
+	if (_instance->_width_height_equal_scale) return;
+	point->x = Func::LinearScale(point->x, 0.f, static_cast<float>(_instance->_width), 0.f, _instance->_default_width);
+	point->y = Func::LinearScale(point->y, 0.f, static_cast<float>(_instance->_height), 0.f, _instance->_default_height);
+}
+
+SDL_FPoint Render::ScalePoint(const float& x, const float& y)
+{
+	// no deed to scale #preformance
+	if (_instance->_width_height_equal_scale) return { x, y };
 	return {
-		Func::LinearScale(point.x, 0.f, static_cast<float>(_instance->_width), 0.f, _instance->_default_width),
-		Func::LinearScale(point.y, 0.f, static_cast<float>(_instance->_height), 0.f, _instance->_default_height)
-	};
-	return {
-		point.x * _instance->_width_scale,
-		point.y * _instance->_height_scale,
+			Func::LinearScale(x, 0.f, static_cast<float>(_instance->_width), 0.f, _instance->_default_width),
+			Func::LinearScale(y, 0.f, static_cast<float>(_instance->_height), 0.f, _instance->_default_height)
 	};
 }
 
@@ -187,8 +194,8 @@ void Render::DrawSprite(const Sprite* sprite, const vec2f& position, const int f
 		frame,
 		1.0f,
 		1.0f,
-		(float)sprite->GetCenterX(),
-		(float)sprite->GetCenterY(),
+		sprite->GetCenterX(),
+		sprite->GetCenterY(),
 		0.0f,
 		1.0f);
 }

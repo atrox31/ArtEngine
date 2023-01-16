@@ -11,20 +11,13 @@
 #include "ArtCore/main.h"
 #include "ArtCore/CodeExecutor/CodeExecutor.h"
 #include "ArtCore/Functions/Convert.h"
-void Console::Create() {
-	if (_instance != nullptr) return;
-	_instance = new Console();
-	Console::WriteLine("ArtCore v" + std::to_string(VERSION_MAIN) + '.' + std::to_string(VERSION_MINOR));
-}
 
 void Console::Init() {
-	if (_instance == nullptr)
-	{
-		Create();
-	}else
-	{
-		return;
-	}
+	if (_instance != nullptr) return;
+	_instance = new Console();
+
+	//_console_lines.insert(_console_lines.begin(), "[" + GetCurrentTime() + "] " + "ArtCore v" + std::to_string(VERSION_MAIN) + '.' + std::to_string(VERSION_MINOR) + '\n');
+
 	_instance->_font = FC_CreateFont();
 	FC_LoadFont_RW(_instance->_font, SDL_RWFromConstMem(consola_ttf, 459181), 1, 16, C_BLACK, TTF_STYLE_NORMAL);
 	// generate lines to test console height, +1 to input line
@@ -57,7 +50,6 @@ void Console::Exit()
 
 void Console::WriteLine(const std::string& text)
 {
-	if (_instance == nullptr) return;
 	_console_lines.emplace_back( "[" + GetCurrentTime() +"] " + text + '\n');
 #ifdef _DEBUG
 #ifdef DEBUG_EDITOR
@@ -74,69 +66,42 @@ void Console::Execute(const std::string& command)
 	if (command.empty()) return;
 	const str_vec arg = Func::Explode(command, ' ');
 	if (arg.empty()) return;
-	if(Core::Executor()->FunctionsMap.contains(arg[0]))
+
+
+	// handle core functions
+	if (arg[0] == "exit")
 	{
-		if(arg.size() > 1)
-		{
-			for (int i = 1; i < arg.size(); i++) {
-				str_vec argument = Func::Split(arg[i], '|');
-				if(argument.size() != 2)
-				{
-					WriteLine("Error: argument must be in TYPE|value style");
-					CodeExecutor::EraseGlobalStack();
-					return;
-				}
-				switch (ArtCode::variable_type type = ArtCode::variable_type_fromString(argument[0])) {
-					case ArtCode::variable_type::INT:		CodeExecutor::GlobalStack_int.Add(Func::TryGetInt(argument[1])); break;
-					case ArtCode::variable_type::FLOAT: CodeExecutor::GlobalStack_float.Add(Func::TryGetFloat(argument[1])); break;
-					case ArtCode::variable_type::BOOL: CodeExecutor::GlobalStack_bool.Add( Convert::Str2Bool(argument[1])); break;
-					//case ArtCode::variable_type::INSTANCE: CodeExecutor::GlobalStack_instance.Add(); break;
-					//case ArtCode::variable_type::OBJECT:		CodeExecutor::GlobalStack_int.Add(Func::TryGetInt(argument[1])); break;
-					//case ArtCode::variable_type::SPRITE:		CodeExecutor::GlobalStack_int.Add(Func::TryGetInt(argument[1])); break;
-					//case ArtCode::variable_type::TEXTURE:	CodeExecutor::GlobalStack_int.Add(Func::TryGetInt(argument[1])); break;
-					//case ArtCode::variable_type::SOUND:		CodeExecutor::GlobalStack_int.Add(Func::TryGetInt(argument[1])); break;
-					//case ArtCode::variable_type::MUSIC:		CodeExecutor::GlobalStack_int.Add(Func::TryGetInt(argument[1])); break;
-					//case ArtCode::variable_type::FONT:		CodeExecutor::GlobalStack_int.Add(Func::TryGetInt(argument[1])); break;
-					case ArtCode::variable_type::POINT: CodeExecutor::GlobalStack_point.Add(Convert::Str2FPoint(argument[1])); break;
-					case ArtCode::variable_type::RECT: CodeExecutor::GlobalStack_rect.Add(Convert::Str2Rect(argument[1])); break;
-					case ArtCode::variable_type::COLOR: CodeExecutor::GlobalStack_color.Add(Convert::Hex2Color(argument[1])); break;
-					case ArtCode::variable_type::STRING: CodeExecutor::GlobalStack_string.Add(argument[1]); break;
-				default:
-					{
-					WriteLine("Error: argument "+ arg[i]+" is invalid");
-					CodeExecutor::EraseGlobalStack();
-					return;
-					}
-					}
-			}
-		}
-		Core::Executor()->FunctionsMap[arg[0]](nullptr);
-		CodeExecutor::EraseGlobalStack();
-		WriteLine("Execute: " + command);
-	}else
-	{
-		// handle core functions
-		if(arg[0] == "exit")
-		{
-			Core::Exit();
-			return;
-		}
-#ifdef _DEBUG
-		if(arg[0] == "spy")
-		{
-			if(arg.size() == 2)
-			{
-				Core::Executor()->DebugSetInstanceToTrack(Core::GetCurrentScene()->GetInstanceById(Func::TryGetInt(arg[1])));
-				const str_vec text = Func::Split(Core::Executor()->DebugGetTrackInfo(), '\n');
-				Core::GetInstance()->CoreDebug.SetSpyLines(static_cast<int>(text.size()));
-			}else
-			{
-				WriteLine("Error: spy need instance id");
-			}
-			return;
-		}
-#endif
+		Core::Exit();
+		return;
 	}
+#ifdef _DEBUG
+	if (arg[0] == "spy")
+	{
+		if (arg.size() == 2)
+		{
+			Core::Executor()->DebugSetInstanceToTrack(Core::GetCurrentScene()->GetInstanceById(Func::TryGetInt(arg[1])));
+			const str_vec text = Func::Split(Core::Executor()->DebugGetTrackInfo(), '\n');
+			Core::GetInstance()->CoreDebug.SetSpyLines(static_cast<int>(text.size()));
+		}
+		else
+		{
+			WriteLine("Error: spy need instance id");
+		}
+		return;
+	}
+	if (arg[0] == "game_speed") {
+		if (arg.size() == 2)
+		{
+			Core::GameSpeed = static_cast<double>(Func::TryGetInt(arg[1]));
+		}
+		else
+		{
+			WriteLine("Error: usage game_speed <int> (default 1.0)");
+		}
+		return;
+	}
+#endif
+
 	WriteLine("Command: '" + command + "' not found.");
 }
 

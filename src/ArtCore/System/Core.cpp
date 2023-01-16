@@ -153,8 +153,7 @@ bool Core::Init(const str_vec& args)
         return false;
     }
 
-    // initialize console to standard output
-    Console::Create();
+    Console::WriteLine(std::format("ArtCore v{}.{}\n", VERSION_MAIN, VERSION_MINOR));
 
     if (const program_argument argument = _instance.GetProgramArgument("-platform"); argument.second != nullptr)
     {
@@ -338,10 +337,14 @@ bool Core::Init(const str_vec& args)
         FC_SetDefaultColor(_instance._global_font, C_BLACK);
 
     srand(static_cast<unsigned int>(time(nullptr)));
+    // initialize console to standard output
     Console::Init();
 
     _instance._asset_manager = new AssetManager();
     _instance._executor = new CodeExecutor();
+
+    _instance._instance_to_draw = std::vector<Instance*>();
+    _instance._instance_to_psyhic = std::vector<Instance*>();
 
     Console::WriteLine("rdy");
 
@@ -439,7 +442,7 @@ bool Core::LoadData()
 bool Core::Run()
 {
     _instance.game_loop = true;
-    SDL_TimerID my_timer_id = SDL_AddTimer(static_cast<Uint32>(1000), FpsCounterCallback, nullptr);
+    SDL_AddTimer(static_cast<Uint32>(1000), FpsCounterCallback, nullptr);
 #ifdef _DEBUG
     Time performance_all;
     Time performance_step;
@@ -471,25 +474,26 @@ bool Core::Run()
 
 #endif
     while (true) {
-        debug_test_counter_start(performance_all);
+        debug_test_counter_start(performance_all)
         if (_instance._current_scene == nullptr) return EXIT_FAILURE;
         // FPS measurement
         _instance.LAST = _instance.NOW;
         _instance.NOW = SDL_GetTicks64();
-        DeltaTime = (static_cast<double>(_instance.NOW - _instance.LAST) / 1000.0);
+        DeltaTime = (static_cast<double>(_instance.NOW - _instance.LAST) / 1000.0) * GameSpeed;
         _instance._frames++;
 
         // Set global mouse state
-        Mouse.Reset();
+        MouseState::Reset();
+        event_bit current_event = event_bit::NONE;
 
         debug_test_counter_start(performance_step)
-            if (_instance.ProcessEvents())
+            if (_instance.ProcessEvents(current_event))
             { // exit call
                 return true;
             }
 
         if (_instance.game_loop) {
-            _instance.ProcessStep();
+            _instance.ProcessStep(current_event);
             debug_test_counter_end(performance_step)
 
                 debug_test_counter_start(performance_physics)
@@ -517,24 +521,24 @@ bool Core::Run()
         GPU_Flip(_instance._screenTarget);
         debug_test_counter_end(performance_counter_gpu_flip)
 
-            debug_test_counter_end(performance_all);
+            debug_test_counter_end(performance_all)
 
 
-        debug_test_counter_get(performance_all, _instance.CoreDebug._performance_counter_all_rt);
-        debug_test_counter_get(performance_step, _instance.CoreDebug._performance_counter_step_rt);
-        debug_test_counter_get(performance_physics, _instance.CoreDebug._performance_counter_psychics_rt);
-        debug_test_counter_get(performance_render, _instance.CoreDebug._performance_counter_render_rt);
-        debug_test_counter_get(performance_post_process, _instance.CoreDebug._performance_counter_post_process_rt);
-        debug_test_counter_get(performance_counter_gpu_flip, _instance.CoreDebug._performance_counter_gpu_flip_rt);
+        debug_test_counter_get(performance_all, _instance.CoreDebug._performance_counter_all_rt)
+        debug_test_counter_get(performance_step, _instance.CoreDebug._performance_counter_step_rt)
+        debug_test_counter_get(performance_physics, _instance.CoreDebug._performance_counter_psychics_rt)
+        debug_test_counter_get(performance_render, _instance.CoreDebug._performance_counter_render_rt)
+        debug_test_counter_get(performance_post_process, _instance.CoreDebug._performance_counter_post_process_rt)
+        debug_test_counter_get(performance_counter_gpu_flip, _instance.CoreDebug._performance_counter_gpu_flip_rt)
     }
 }
 
 // push event to exit application
 void Core::Exit()
 {
-    SDL_Event* sdl_event = new SDL_Event();
-    sdl_event->type = SDL_QUIT;
-    SDL_PushEvent(sdl_event);
+    SDL_Event sdl_event{};
+    sdl_event.type = SDL_QUIT;
+    SDL_PushEvent(&sdl_event);
 }
 
 /////////////////////////////////////////
@@ -586,7 +590,7 @@ void Core::PopulateArguments(const str_vec& args)
 
 Core::program_argument Core::GetProgramArgument(const std::string& argument)
 {
-	for (program_argument& program_argument : _program_arguments)
+	for (const program_argument& program_argument : _program_arguments)
 	{
 		if(program_argument.first == argument)
 		{
@@ -615,7 +619,7 @@ bool Core::LoadSetupFile(const char* platform, const std::string& setup_file)
 
     for (const std::string& data : Func::ArchiveGetFileText(setup_file, nullptr, false)) {
         if ( data.length() < 2 ) continue;
-        if ( data.substr(0, 2) == "//" ) continue;
+        if ( data.starts_with("//") ) continue;
 
         str_vec line = Func::Split(data, '=');
         if (line.empty()) continue;
@@ -651,12 +655,10 @@ bool Core::LoadSetupFile(const char* platform, const std::string& setup_file)
             continue;
         }
         // other data
-        {
 #ifdef _DEBUG
-            Console::WriteLine("SettingsData::SetValue: " + line[0] + " as " + line[1]);
+        Console::WriteLine("SettingsData::SetValue: " + line[0] + " as " + line[1]);
 #endif
-            SettingsData::SetValue(line[0], line[1]);
-        }
+        SettingsData::SetValue(line[0], line[1]);  
     }
 
     PHYSFS_unmount(platform);
@@ -672,9 +674,10 @@ bool Core::LoadSetupFile(const char* platform, const std::string& setup_file)
 // reset mouse state every frame
 void Core::MouseState::Reset()
 {
-    int x{}, y{};
+    int x{};
+    int y{};
     const Uint32 button_state = SDL_GetMouseState(&x, &y);
-    Mouse.XYf = Render::ScalePoint({ static_cast<float>(x) ,static_cast<float>(y) });
+    Mouse.XYf = Render::ScalePoint(static_cast<float>(x) ,static_cast<float>(y));
     Mouse.XY = { static_cast<int>(Mouse.XYf.x) ,static_cast<int>(Mouse.XYf.y) };
 
     Mouse.LeftPressed = (button_state == SDL_BUTTON(SDL_BUTTON_LEFT));
@@ -707,25 +710,32 @@ bool Core::ChangeScene(const std::string& name)
     if (_instance._current_scene != nullptr) {
         // exit scene
         _current_scene->Exit();
-    }
-    CodeExecutor::SuspendedCodeStop();
 
-    Scene* new_scene = new Scene();
+        delete _instance._current_scene;
+        _instance._current_scene = nullptr;
+        CodeExecutor::Break();
+        CodeExecutor::SuspendedCodeStop();
+        CodeExecutor::EraseGlobalStack();
+        _instance_to_draw.clear();
+        _instance_to_psyhic.clear();
+    }
+
+    Scene* new_scene = new Scene(); 
     if (new_scene->Load(name))
     {
         _current_scene = new_scene;
         if (_current_scene->Start()) {
             return true;
         }
-        delete new_scene;
         Console::WriteLine("[Core::ChangeScene] Error while starting new scene.");
     }
     else
     {
         Console::WriteLine("[Core::ChangeScene] scene '" + name + "' not exists! Try to load primary scene");
     }
+    delete new_scene;
 
-    Scene* primary_scene = new Scene();
+    Scene* primary_scene = new Scene(); 
     if (primary_scene->Load(_primary_scene))
     {
         _current_scene = primary_scene;
@@ -738,8 +748,8 @@ bool Core::ChangeScene(const std::string& name)
     {
         Console::WriteLine("[Core::ChangeScene] Error while load primary scene.");
     }
-
     delete primary_scene;
+
     return false;
 }
 
@@ -748,11 +758,6 @@ bool Core::ChangeScene(const std::string& name)
 //  Getters
 //
 /////////////////////////////////////////
-
-Scene* Core::GetCurrentScene()
-{
-	return _instance._current_scene;
-}
 
 SDL_Window* Core::GetWindowHandle()
 {
@@ -775,7 +780,9 @@ SDL_Window* Core::GetWindowHandle()
 //////
 //////
 //////
+
 #ifdef _DEBUG
+
 void Core::CoreDebug::PerformanceTimeSecondPassed()
 {
     if (!_show_performance_times) return;
@@ -797,6 +804,7 @@ void Core::CoreDebug::PerformanceTimeSecondPassed()
     _performance_counter_post_process_rt = 0.0;
     _performance_counter_gpu_flip_rt = 0.0;
 }
+
 Core::CoreDebug::CoreDebug()
 {
     Options.emplace_back( "Performance", &_show_performance, SDLK_F2);
@@ -809,8 +817,8 @@ Core::CoreDebug::CoreDebug()
 
 bool Core::CoreDebug::ProcessEvent(const SDL_Event* e)
 {
-    switch (e->type)
-    {
+    switch (e->type){
+    /* unused for now
     case SDL_MOUSEWHEEL:
 	    {
 		    
@@ -818,9 +826,10 @@ bool Core::CoreDebug::ProcessEvent(const SDL_Event* e)
         break;
     case SDL_MOUSEBUTTONDOWN:
 	    {
-
+            
 	    }
 	    break;
+        */
     case SDL_KEYDOWN:
     {
         if (e->key.keysym.sym == SDLK_F1) {
@@ -885,13 +894,19 @@ void Core::CoreDebug::Draw() const
                 }
 
                 if (_show_collider) {
-                    if (instance->Body.Type == Instance::BodyType::Circle) {
-                        const float radius_scale = instance->Body.Value * ((instance->SpriteScaleX + instance->SpriteScaleY) / 2.f);
+                    const float line_thickness = GPU_SetLineThickness(3.f);
+                    if (instance->Body.Type == Instance::body::type::Circle) {
+                        const float radius_scale = instance->Body.Radius * ((instance->SpriteScaleX + instance->SpriteScaleY) / 2.f);
+                        GPU_Circle(_instance._screenTarget, instance->PosX, instance->PosY, radius_scale, C_WHITE);
+                        GPU_SetLineThickness(2.f);
                         GPU_Circle(_instance._screenTarget, instance->PosX, instance->PosY, radius_scale, C_BLUE);
                     }
-                    if (instance->Body.Type == Instance::BodyType::Rect) {
+                    if (instance->Body.Type == Instance::body::type::Rectangle) {
+                        GPU_Rectangle2(_instance._screenTarget, instance->GetBodyMask().ToGPU_Rect_wh(), C_WHITE);
+                        GPU_SetLineThickness(2.f);
                         GPU_Rectangle2(_instance._screenTarget, instance->GetBodyMask().ToGPU_Rect_wh(), C_BLUE);
                     }
+                    GPU_SetLineThickness(line_thickness);
                 }
 
                 if (_show_instance_info) {
@@ -1089,4 +1104,5 @@ void Core::CoreDebug::Draw() const
             _performance_counter_other);
     }
 }
+
 #endif

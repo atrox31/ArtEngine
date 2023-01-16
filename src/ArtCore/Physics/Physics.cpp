@@ -16,36 +16,20 @@ bool Physics::CollisionTest(const Instance* object1, const Instance* object2)
 	if (!object1->IsCollider) return false;
 	if (!object2->IsCollider) return false;
 
-	if (object1->Body.Type == Instance::BodyType::None) return false;
-	if (object2->Body.Type == Instance::BodyType::None) return false;
+	if (!object1->Body.HaveValue()) return false;
+	if (!object2->Body.HaveValue()) return false;
 
 	//Instance::BodyType::Sprite is copied to circle or rect on create
-	switch (object1->Body.Type)
-	{
-		case Instance::BodyType::Rect:
-		{
-			switch (object2->Body.Type)
-			{
-			case Instance::BodyType::Rect:
-				return TestRect2Rect(object1, object2);
-			case Instance::BodyType::Circle:
-				return TestRect2Circle(object1, object2);
-			default: return false;
-			}
-		case Instance::BodyType::Circle:
-		{
-			switch (object2->Body.Type)
-			{
-			case Instance::BodyType::Rect:
-				return TestRect2Circle(object2, object1);  // NOLINT(readability-suspicious-call-argument)
-			case Instance::BodyType::Circle:
-				return TestCircle2Circle(object1, object2);
-			default: return false;
-			}
-		}
-		default: return false;
-		}
+	if (object1->Body.Type == Instance::body::type::Rectangle) {
+		if (object2->Body.Type == Instance::body::type::Rectangle) return TestRect2Rect(object1, object2);
+		if (object2->Body.Type == Instance::body::type::Circle) return TestRect2Circle(object1, object2);
+	}else 
+	if (object1->Body.Type == Instance::body::type::Circle) {							// this is no mistake
+		if (object2->Body.Type == Instance::body::type::Rectangle) return TestRect2Circle(object2, object1);
+		if (object2->Body.Type == Instance::body::type::Circle) return TestCircle2Circle(object1, object2);
 	}
+
+	return false;
 }
 bool Physics::TestRect2Rect(const Instance* object1, const Instance* object2)
 {
@@ -55,13 +39,13 @@ bool Physics::TestRect2Rect(const Instance* object1, const Instance* object2)
 }
 bool Physics::TestRect2Circle(const Instance* object1, const Instance* object2)
 {
-	const float object2_radius = (object2->Body.Value * object2->SpriteScaleX + object2->Body.Value * object2->SpriteScaleY) / 2.f;
+	const float object2_radius = (object2->Body.Radius * object2->SpriteScaleX + object2->Body.Radius * object2->SpriteScaleY) / 2.f;
 	return CollisionCircle2Rect( object2->PosX, object2->PosY, object2_radius, object1->GetBodyMask());
 }
 bool Physics::TestCircle2Circle(const Instance* object1, const Instance* object2)
 {
-	const float object1_radius = (object1->Body.Value * object1->SpriteScaleX + object1->Body.Value * object1->SpriteScaleY ) /2.f;
-	const float object2_radius = (object2->Body.Value * object2->SpriteScaleX + object2->Body.Value * object2->SpriteScaleY) / 2.f;
+	const float object1_radius = (object1->Body.Radius * object1->SpriteScaleX + object1->Body.Radius * object1->SpriteScaleY ) /2.f;
+	const float object2_radius = (object2->Body.Radius * object2->SpriteScaleX + object2->Body.Radius * object2->SpriteScaleY) / 2.f;
 	return CollisionCircle2Circle(
 		object1->PosX, object1->PosY, object1_radius,
 		object2->PosX, object2->PosY, object2_radius
@@ -78,47 +62,23 @@ void Physics::BounceInstance(Instance* object1, Instance* object2)
 	if (!object1->IsCollider) return;
 	if (!object2->IsCollider) return;
 
-	if (object1->Body.Type == Instance::BodyType::None) return;
-	if (object2->Body.Type == Instance::BodyType::None) return;
+	if (!object1->Body.HaveValue()) return;
+	if (!object2->Body.HaveValue()) return;
 
 	// direction vector
 	vec2f sender_direction_vec = Func::GetDirectionVector(object1->Direction);
+
 	// direction of collision vector, if value is -1 then direction id opposite
 	vec2f collision_direction_vector(1.f, 1.f);
+
 	//Instance::BodyType::Sprite is copied to circle or rect on create
-	switch (object1->Body.Type)
-	{
-		case Instance::BodyType::Rect:
-		{
-			switch (object2->Body.Type)
-			{
-			case Instance::BodyType::Rect:
-			{ // rect - rect
-				BounceRectRect(collision_direction_vector, object1, object2);
-			} break;
-			case Instance::BodyType::Circle:
-			{ // rect - circle
-				BounceCircleRect(collision_direction_vector, object2, object1);  // NOLINT(readability-suspicious-call-argument)
-			}break;
-			default: break;
-			}break;
-		case Instance::BodyType::Circle:
-		{
-			switch (object2->Body.Type)
-			{
-			case Instance::BodyType::Rect:
-			{ // circle - rect
-				BounceCircleRect(collision_direction_vector, object1, object2);
-			}break;
-			case Instance::BodyType::Circle:
-			{ // circle - circle
-				BounceCircleCircle(collision_direction_vector, object1, object2);
-			}break;
-			default: break;
-			}
-		}break;
-		}
-	default: break;
+	if (object1->Body.Type == Instance::body::type::Rectangle) {							
+		if (object2->Body.Type == Instance::body::type::Rectangle) BounceRectRect(collision_direction_vector, object1, object2); else
+		if (object2->Body.Type == Instance::body::type::Circle) BounceCircleRect(collision_direction_vector, object2, object1);// this is no mistake
+	}else
+	if (object1->Body.Type == Instance::body::type::Circle) {
+		if (object2->Body.Type == Instance::body::type::Rectangle) BounceCircleRect(collision_direction_vector, object1, object2); else
+		if (object2->Body.Type == Instance::body::type::Circle) BounceCircleCircle(collision_direction_vector, object1, object2);
 	}
 
 	sender_direction_vec *= collision_direction_vector;
@@ -191,7 +151,7 @@ void Physics::BounceRectRect(vec2f& collision_vector, const Instance* object1, c
 void Physics::BounceCircleCircle(vec2f& collision_vector, const Instance* object1, const Instance* object2)
 {
 	// always opposite direction
-	collision_vector += -1.f;
+	collision_vector *= -1.f;
 }
 
 void Physics::BounceCircleRect(vec2f& collision_vector, const Instance* object1, const Instance* object2)
@@ -214,7 +174,7 @@ void Physics::BounceCircleRect(vec2f& collision_vector, const Instance* object1,
 	const float object2LeftBoundary = object2BodyMask.X;
 	const float object2RightBoundary = object2BodyMask.W;
 
-	const float radius_scale = object1->Body.Value * ((object1->SpriteScaleX + object1->SpriteScaleY) / 2.f);
+	const float radius_scale = (object1->Body.Radius * object1->SpriteScaleX + object1->Body.Radius * object1->SpriteScaleY) / 2.f;
 	const float object1UpBoundary = object1->PosY - radius_scale;
 	const float object1DownBoundary = object1->PosY + radius_scale;
 	const float object1LeftBoundary = object1->PosX - radius_scale;
@@ -263,26 +223,8 @@ void Physics::BounceCircleRect(vec2f& collision_vector, const Instance* object1,
 
 bool Physics::CollisionCircle2Line(const float& circle_x, const float& circle_y, const float& circle_r, const SDL_FPoint& line_begin, const SDL_FPoint& line_end)
 {
+	// not implemented yet
 	return false;
-	/*
-		//https://mathworld.wolfram.com/Circle-LineIntersection.html
-		const float cx0 = 0.f;// -circle_x;
-		const float cy0 = 0.f;// -circle_y;
-
-		const float x1 = line_begin.x + cx0;
-		const float y1 = line_begin.y + cy0;
-		const float x2 = line_end.x + cx0;
-		const float y2 = line_end.y + cy0;
-		const float r = circle_r;
-
-		const float dx = x2 - x1;
-		const float dy = y2 - y1;
-		const float dr = std::sqrtf( dx*dx + dy*dy );
-		const float D = x1 * y2 - x2 * y1;
-
-		const int delta = (int)((r * r) * (dr * dr) - (D * D));
-		return delta >= 0;
-		*/
 }
 
 // rectangle must be absolute, not w=width and h=height

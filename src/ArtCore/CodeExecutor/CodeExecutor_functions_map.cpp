@@ -55,7 +55,10 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["sprite_prev_frame"] = &CodeExecutor::sprite_prev_frame;
 	FunctionsMap["sprite_set_frame"] = &CodeExecutor::sprite_set_frame;
 	FunctionsMap["code_do_nothing"] = &CodeExecutor::code_do_nothing;
-	FunctionsMap["set_body_type"] = &CodeExecutor::set_body_type;
+	FunctionsMap["instance_set_body_as_rect"] = &CodeExecutor::instance_set_body_as_rect;
+	FunctionsMap["instance_set_body_as_circle"] = &CodeExecutor::instance_set_body_as_circle;
+	FunctionsMap["instance_set_body_from_sprite"] = &CodeExecutor::instance_set_body_from_sprite;
+	FunctionsMap["instance_set_body_none"] = &CodeExecutor::instance_set_body_none;
 	FunctionsMap["instance_set_tag"] = &CodeExecutor::instance_set_tag;
 	FunctionsMap["collision_get_collider"] = &CodeExecutor::collision_get_collider;
 	FunctionsMap["collision_get_collider_tag"] = &CodeExecutor::collision_get_collider_tag;
