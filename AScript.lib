@@ -131,3 +131,7 @@ bool convert_int_to_bool(int input);Convert <int> to bool. Only 1 is true, rest 
 bool system_settings_data_save();Save all user system data to archive;
 null system_settings_apply_audio();Apply audio settings
 null system_settings_apply_graphic();Apply graphic settings
+float math_sin(float x);Get sin of <float>;
+float math_cos(float x);Get cos of <float>;
+float math_abs(float value);Get absolute value of <float>
+null sprite_set_angle(float value);Set self sprite angle <float> in degree;Get (0..359)

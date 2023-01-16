@@ -137,5 +137,9 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["system_settings_data_save"] = &CodeExecutor::system_settings_data_save;
 	FunctionsMap["system_settings_apply_audio"] = &CodeExecutor::system_settings_apply_audio;
 	FunctionsMap["system_settings_apply_graphic"] = &CodeExecutor::system_settings_apply_graphic;
+	FunctionsMap["math_sin"] = &CodeExecutor::math_sin;
+	FunctionsMap["math_cos"] = &CodeExecutor::math_cos;
+	FunctionsMap["math_abs"] = &CodeExecutor::math_abs;
+	FunctionsMap["sprite_set_angle"] = &CodeExecutor::sprite_set_angle;
 }
 //end of file

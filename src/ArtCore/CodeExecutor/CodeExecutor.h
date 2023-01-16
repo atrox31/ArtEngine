@@ -355,6 +355,10 @@ private:
 	Script(system_settings_data_save);
 	Script(system_settings_apply_audio);
 	Script(system_settings_apply_graphic);
+	Script(math_sin);
+	Script(math_cos);
+	Script(math_abs);
+	Script(sprite_set_angle);
 #undef Script
 };
 //end of file

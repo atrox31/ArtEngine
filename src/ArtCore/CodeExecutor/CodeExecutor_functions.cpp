@@ -1228,7 +1228,28 @@ void CodeExecutor::system_settings_apply_audio(Instance*) {
 	Core::Audio.Apply();
 
 }
+
 //null system_settings_apply_graphic();Apply graphic settings
 void CodeExecutor::system_settings_apply_graphic(Instance*) {
 	Core::Graphic.Apply();
+}
+
+//float math_sin(float x);Get sin of <float>;
+void CodeExecutor::math_sin(Instance*) {
+	StackOut_f( std::sinf(StackIn_f));
+}
+
+//float math_cos(float x);Get cos of <float>;
+void CodeExecutor::math_cos(Instance*) {
+	StackOut_f(std::cosf(StackIn_f));
+}
+
+//float math_abs(float value);Get absolute value of <float>
+void CodeExecutor::math_abs(Instance*) {
+	StackOut_f(std::fabsf(StackIn_f));
+}
+
+//null sprite_set_angle(float value);Set self sprite angle <float> in degree;Get (0..359)
+void CodeExecutor::sprite_set_angle(Instance* sender) {
+	sender->SpriteAngle = StackIn_f;
 }
