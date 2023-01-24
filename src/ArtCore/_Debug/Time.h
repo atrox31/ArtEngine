@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef _DEBUG
+#ifdef AC_ENABLE_DEBUG_MODE
 
 #include <chrono>
 #include <ostream>
