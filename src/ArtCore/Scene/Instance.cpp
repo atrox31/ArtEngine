@@ -28,10 +28,7 @@ void Instance::Delete()
 		CodeExecutor::SuspendedCodeDeleteInstance(this);
 	}
 }
-/**
- * \brief Check if can add more suspended state to instance (max is 255)
- * \return Answer is can add more state
- */
+
 bool Instance::SuspendedCodeAdd()
 {
 	_have_suspended_code += 1;
@@ -44,10 +41,6 @@ bool Instance::SuspendedCodeAdd()
 	return true;
 }
 
-/**
- * \brief Pop suspended code
- * \return Operation success state
- */
 bool Instance::SuspendedCodePop()
 {
 	_have_suspended_code -= 1;
@@ -62,11 +55,11 @@ bool Instance::SuspendedCodePop()
 
 void Instance::DrawSelf()
 {
-	SpriteAnimationFrame += (SpriteAnimationSpeed * (float)Core::DeltaTime);
-	if (!SpriteAnimationLoop && SpriteAnimationFrame > float(SelfSprite->GetMaxFrame())) {
+	SpriteAnimationFrame += (SpriteAnimationSpeed * static_cast<float>(Core::DeltaTime));
+	if (!SpriteAnimationLoop && SpriteAnimationFrame > static_cast<float>(SelfSprite->GetMaxFrame())) {
 		SpriteAnimationSpeed = 0.0f;
 	}
-	Render::DrawSprite_ex(SelfSprite, PosX, PosY , (int)SpriteAnimationFrame,  SpriteScaleX, SpriteScaleY, (float)SpriteCenterX, (float)SpriteCenterY, SpriteAngle, 1.0f);
+	Render::DrawSprite_ex(SelfSprite, PosX, PosY , static_cast<int>(SpriteAnimationFrame),  SpriteScaleX, SpriteScaleY, static_cast<float>(SpriteCenterX), static_cast<float>(SpriteCenterY), SpriteAngle, 1.0f);
 }
 
 bool Instance::CheckMaskClick(SDL_FPoint& point) const
@@ -82,8 +75,6 @@ bool Instance::CheckMaskClick(SDL_FPoint& point) const
 			(PosX + SelfSprite->GetCenterXRel()) * SpriteScaleX,
 			(PosY + SelfSprite->GetCenterYRel()) * SpriteScaleY
 		};
-		// scale point to current render scale
-		// TODO test this
 		Render::ScalePoint(&spoint);
 		const float distance = Func::Distance(point, spoint);
 		return (distance <= SpriteMask.r);
@@ -96,8 +87,7 @@ bool Instance::CheckMaskClick(SDL_FPoint& point) const
 			PosX + SpriteMask.w,
 			PosY + SpriteMask.h
 		};
-		SDL_FPoint mov{ SelfSprite->GetCenterXRel(), SelfSprite->GetCenterYRel() };
-		spoint += mov;
+		spoint += { SelfSprite->GetCenterXRel(), SelfSprite->GetCenterYRel() };
 		return spoint.PointInRect(point);
 	}
 

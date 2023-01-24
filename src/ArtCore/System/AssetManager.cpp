@@ -39,7 +39,7 @@ void AssetManager::ClearData()
 	List_music_name.clear();
 	List_sound_name.clear();
 	List_font_name.clear();
-#ifdef _DEBUG
+#ifdef AC_ENABLE_DEBUG_MODE
 	Debug_List_sprite_name.clear();
 	Debug_List_texture_name.clear();
 	Debug_List_music_name.clear();
@@ -121,7 +121,7 @@ bool AssetManager::LoadData(BackGroundRenderer* bgr, const int p_min, const int 
 				))
 			);
 	}
-#ifdef _DEBUG
+#ifdef AC_ENABLE_DEBUG_MODE
 	// only for debug build get asset names
 	for (auto& val : List_sprite_name) {
 		List_sprite_id.push_back(val.second);

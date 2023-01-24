@@ -19,7 +19,7 @@ public:
 	void DrawSelf();
 	bool CheckMaskClick(SDL_FPoint&) const;
 
-	Rect GetBodyMask() const;
+	[[nodiscard]] Rect GetBodyMask() const;
 
 	std::string Tag = "undefined";
 	std::string Name = "undefined";
@@ -43,6 +43,7 @@ public:
 	float SpriteAnimationSpeed = 60.f;
 	bool SpriteAnimationLoop = true;
 
+	// ReSharper disable CppInconsistentNaming
 	std::vector<int> Variables_int{};
 	std::vector<float> Variables_float{};
 	std::vector<bool> Variables_bool{};
@@ -57,6 +58,7 @@ public:
 	std::vector<SDL_FPoint> Variables_point{};
 	std::vector<SDL_Color> Variables_color{};
 	std::vector<std::string> Variables_string{};
+	// ReSharper restore CppInconsistentNaming
 	
 	event_bit EventFlag = event_bit::NONE;
 
@@ -71,7 +73,8 @@ public:
 		// Rectangle type dimensions
 		SDL_FPoint Dimensions = { 0.f, 0.f };
 		body() = default;
-		body(type body_type, float dim_1 = 0.f, float dim_2 = 0.f) {
+
+		explicit body(const type body_type, const float dim_1 = 0.f, const float dim_2 = 0.f) {
 			switch (body_type) {
 			using enum Instance::body::type;
 			case Circle:
@@ -89,7 +92,7 @@ public:
 			}
 		}
 
-		bool HaveValue() const {
+		[[nodiscard]] bool HaveValue() const {
 			switch (Type) {
 				using enum Instance::body::type;
 			case Circle:
@@ -123,16 +126,24 @@ public:
 				Type = type::Rectangle;
 				return;
 			case Mask::None:
-			default:
+			case Mask::mask_typeInvalid: 
+			case Mask::mask_typeEND:
 				Type = type::None;
 				return;
 			}
 		}
-	};
-	body Body;
+	} Body{};
 
-
+	/**
+	 * \brief Check if can add more suspended state to instance (max is 255)
+	 * \return Answer is can add more state
+	 */
 	bool SuspendedCodeAdd();
+
+	/**
+	 * \brief Pop suspended code
+	 * \return Operation success state
+	 */
 	bool SuspendedCodePop();
 	// get count of suspended code
 	[[nodiscard]] Uint8 SuspendedCodeStateCount() const { return _have_suspended_code;  }

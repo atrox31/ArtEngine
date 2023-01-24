@@ -11,10 +11,11 @@
 
 #include "ArtCore/predefined_headers/SplashScreen.h"
 #include "ArtCore/Graphic/ColorDefinitions.h"
+#include "ArtCore/_Debug/Time.h"
 
 #include "physfs-release-3.2.0/src/physfs.h"
 
-#ifdef _DEBUG
+#ifdef AC_ENABLE_DEBUG_MODE
 // time of core events
 #include "ArtCore/_Debug/Time.h"
 #endif
@@ -34,7 +35,6 @@ Core::Core()
     _global_font = nullptr;
     fps = 0;
     _frames = 0;
-    _current_scene = nullptr;
     _show_fps = false; 
     _asset_manager = nullptr;
     _executor = nullptr;
@@ -51,9 +51,7 @@ Core::~Core()
 		_asset_manager->ClearData();
     delete _asset_manager;
 
-    if (_current_scene != nullptr)
-    	_current_scene->Exit();
-	delete _current_scene;
+    Scene::Delete();
 
     Render::DestroyRender();
 
@@ -127,14 +125,14 @@ Core::~Core()
 // init all game data and libs
 bool Core::Init(const str_vec& args)
 {
-#ifdef _DEBUG
+#ifdef AC_ENABLE_DEBUG_MODE
     // debug timer to time all events in game
     Time timer;
     timer.StartTest();
 #endif
 
     // default assets path and name
-#ifdef _DEBUG
+#ifdef AC_ENABLE_DEBUG_MODE
     const char* fl_game_dat_file = "test\\game.dat";
     const char* fl_assets_file = "test\\assets.pak";
     const char* fl_platform_file = "test\\Platform.dat";
@@ -204,7 +202,7 @@ bool Core::Init(const str_vec& args)
             "User settings load"
         )
 
-#ifdef _DEBUG
+#ifdef AC_ENABLE_DEBUG_MODE
         GPU_SetDebugLevel(GPU_DEBUG_LEVEL_MAX);
 #else
         GPU_SetDebugLevel(GPU_DEBUG_LEVEL_0);
@@ -344,11 +342,11 @@ bool Core::Init(const str_vec& args)
     _instance._executor = new CodeExecutor();
 
     _instance._instance_to_draw = std::vector<Instance*>();
-    _instance._instance_to_psyhic = std::vector<Instance*>();
+    _instance._instance_to_physic = std::vector<Instance*>();
 
     Console::WriteLine("rdy");
 
-#ifdef _DEBUG
+#ifdef AC_ENABLE_DEBUG_MODE
     timer.EndTest();
     timer.PrintTest("Core::Init()");
 #endif
@@ -360,7 +358,7 @@ bool Core::Init(const str_vec& args)
 // load all asset, objects (instances) and try to load and run first scene
 bool Core::LoadData()
 {
-#ifdef _DEBUG
+#ifdef AC_ENABLE_DEBUG_MODE
     Time timer;
     timer.StartTest();
 #endif
@@ -411,27 +409,18 @@ bool Core::LoadData()
     }
     bgr.SetProgress(90);
 
-    // set starting scene
+    if(!Scene::Create(Core::GetStartingSceneName())
+        && Scene::Start(-1))
     {
-        const str_vec starting_scene = Func::ArchiveGetFileText("scene/StartingScene.txt", nullptr, false);
-        if (starting_scene.empty()) {
-            bgr.Stop();
-            return false;
-        }
-        _instance._primary_scene = starting_scene[0];
+        bgr.Stop();
+    	return false;
     }
 
-    // if error try set first scene
-    if (!_instance.ChangeScene(_instance._primary_scene)) {
-        Console::WriteLine("starting scene '" + _instance._primary_scene + "' not exists!");
-        bgr.Stop();
-        return false;
-    }
     Render::LoadShaders();
     bgr.SetProgress(100);
 
     bgr.Stop();
-#ifdef _DEBUG
+#ifdef AC_ENABLE_DEBUG_MODE
     timer.EndTest();
     timer.PrintTest("Core::LoadData()");
 #endif
@@ -443,39 +432,40 @@ bool Core::Run()
 {
     _instance.game_loop = true;
     SDL_AddTimer(static_cast<Uint32>(1000), FpsCounterCallback, nullptr);
-#ifdef _DEBUG
-    Time performance_all;
-    Time performance_step;
-    Time performance_physics;
-    Time performance_render;
-    Time performance_post_process;
-    Time performance_counter_gpu_flip;
+#ifdef AC_ENABLE_DEBUG_MODE
+    Time performance_all{};
+    Time performance_step{};
+    Time performance_physics{};
+    Time performance_render{};
+    Time performance_post_process{};
+    Time performance_counter_gpu_flip{};
 
-#define debug_test_counter_start(counter)   \
+#define DEBUG_TEST_COUNTER_START(counter)   \
 	if(_instance.CoreDebug._show_performance_times) {   \
     (counter).StartTest();  \
 };                      \
 
-#define debug_test_counter_end(counter)     \
+#define DEBUG_TEST_COUNTER_END(counter)     \
 	if(_instance.CoreDebug._show_performance_times) {   \
     (counter).EndTest();    \
 };     \
 
-#define debug_test_counter_get(counter, target)             \
+#define DEBUG_TEST_COUNTER_GET(counter, target)             \
 	if(_instance.CoreDebug._show_performance_times) {   \
     (target) += (counter).GetTestTime();    \
 };     \
 
 #else
 
-#define debug_test_counter_start(counter)
-#define debug_test_counter_end(counter) 
-#define debug_test_counter_get(counter, target) 
+#define DEBUG_TEST_COUNTER_START(counter)
+#define DEBUG_TEST_COUNTER_END(counter) 
+#define DEBUG_TEST_COUNTER_GET(counter, target) 
 
 #endif
     while (true) {
-        debug_test_counter_start(performance_all)
-        if (_instance._current_scene == nullptr) return EXIT_FAILURE;
+        _instance._reset_state = false;
+        DEBUG_TEST_COUNTER_START(performance_all)
+        if (Scene::GetCurrentScene() == nullptr) return EXIT_FAILURE;
         // FPS measurement
         _instance.LAST = _instance.NOW;
         _instance.NOW = SDL_GetTicks64();
@@ -486,50 +476,53 @@ bool Core::Run()
         MouseState::Reset();
         event_bit current_event = event_bit::NONE;
 
-        debug_test_counter_start(performance_step)
+        DEBUG_TEST_COUNTER_START(performance_step)
             if (_instance.ProcessEvents(current_event))
             { // exit call
                 return true;
             }
+        
+        if (_instance._reset_state) continue;// reset game loop
 
         if (_instance.game_loop) {
             _instance.ProcessStep(current_event);
-            debug_test_counter_end(performance_step)
+            if (_instance._reset_state) continue;// reset game loop
+            DEBUG_TEST_COUNTER_END(performance_step)
 
-                debug_test_counter_start(performance_physics)
+                DEBUG_TEST_COUNTER_START(performance_physics)
                 _instance.ProcessPhysics();
-            debug_test_counter_end(performance_physics)
+            DEBUG_TEST_COUNTER_END(performance_physics)
         }
 
-        debug_test_counter_start(performance_render)
+        DEBUG_TEST_COUNTER_START(performance_render)
             Render::RenderClear();
         // render scene
         _instance.ProcessSceneRender();
-        debug_test_counter_end(performance_render)
+        DEBUG_TEST_COUNTER_END(performance_render)
 
 
-            debug_test_counter_start(performance_post_process)
+            DEBUG_TEST_COUNTER_START(performance_post_process)
             // render interface and make scene pretty
             _instance.ProcessPostProcessRender();
-        debug_test_counter_end(performance_post_process)
+        DEBUG_TEST_COUNTER_END(performance_post_process)
 
-            debug_test_counter_start(performance_counter_gpu_flip)
+            DEBUG_TEST_COUNTER_START(performance_counter_gpu_flip)
             // render console, debug panels etc
             _instance.ProcessSystemRender();
 
         // get all to screen
         GPU_Flip(_instance._screenTarget);
-        debug_test_counter_end(performance_counter_gpu_flip)
+        DEBUG_TEST_COUNTER_END(performance_counter_gpu_flip)
 
-            debug_test_counter_end(performance_all)
+            DEBUG_TEST_COUNTER_END(performance_all)
 
 
-        debug_test_counter_get(performance_all, _instance.CoreDebug._performance_counter_all_rt)
-        debug_test_counter_get(performance_step, _instance.CoreDebug._performance_counter_step_rt)
-        debug_test_counter_get(performance_physics, _instance.CoreDebug._performance_counter_psychics_rt)
-        debug_test_counter_get(performance_render, _instance.CoreDebug._performance_counter_render_rt)
-        debug_test_counter_get(performance_post_process, _instance.CoreDebug._performance_counter_post_process_rt)
-        debug_test_counter_get(performance_counter_gpu_flip, _instance.CoreDebug._performance_counter_gpu_flip_rt)
+        DEBUG_TEST_COUNTER_GET(performance_all, _instance.CoreDebug._performance_counter_all_rt)
+        DEBUG_TEST_COUNTER_GET(performance_step, _instance.CoreDebug._performance_counter_step_rt)
+        DEBUG_TEST_COUNTER_GET(performance_physics, _instance.CoreDebug._performance_counter_psychics_rt)
+        DEBUG_TEST_COUNTER_GET(performance_render, _instance.CoreDebug._performance_counter_render_rt)
+        DEBUG_TEST_COUNTER_GET(performance_post_process, _instance.CoreDebug._performance_counter_post_process_rt)
+        DEBUG_TEST_COUNTER_GET(performance_counter_gpu_flip, _instance.CoreDebug._performance_counter_gpu_flip_rt)
     }
 }
 
@@ -635,7 +628,7 @@ bool Core::LoadSetupFile(const char* platform, const std::string& setup_file)
                 Console::WriteLine("unknown property '" + data + "'");
             }
             else {
-#ifdef _DEBUG
+#ifdef AC_ENABLE_DEBUG_MODE
                 Console::WriteLine("SDL_GL_SetAttribute: " + line[0] + " as " + line[1]);
 #endif
                 if (SDL_GL_SetAttribute(attr, Func::TryGetInt(line[1])) != 0) {
@@ -646,7 +639,7 @@ bool Core::LoadSetupFile(const char* platform, const std::string& setup_file)
         }
         // sdl command
         if (line[0].substr(0, SDL_HINT.length()) == SDL_HINT) {
-#ifdef _DEBUG
+#ifdef AC_ENABLE_DEBUG_MODE
             Console::WriteLine("SDL_SetHint: " + line[0] + " as " + line[1]);
 #endif
             if (SDL_SetHint(line[0].c_str(), line[1].c_str()) == SDL_FALSE) {
@@ -655,7 +648,7 @@ bool Core::LoadSetupFile(const char* platform, const std::string& setup_file)
             continue;
         }
         // other data
-#ifdef _DEBUG
+#ifdef AC_ENABLE_DEBUG_MODE
         Console::WriteLine("SettingsData::SetValue: " + line[0] + " as " + line[1]);
 #endif
         SettingsData::SetValue(line[0], line[1]);  
@@ -692,7 +685,7 @@ Uint32 Core::FpsCounterCallback(Uint32 interval, void*)
 {
     Core::GetInstance()->fps = Core::GetInstance()->_frames;
     Core::GetInstance()->_frames = 0;
-#ifdef _DEBUG
+#ifdef AC_ENABLE_DEBUG_MODE
     Core::GetInstance()->CoreDebug.PerformanceTimeSecondPassed();
 #endif
     return interval;
@@ -704,53 +697,35 @@ Uint32 Core::FpsCounterCallback(Uint32 interval, void*)
 //
 /////////////////////////////////////////
 
-// change active scene, on error try to load primary scene
-bool Core::ChangeScene(const std::string& name)
+bool Core::ChangeScene(const std::string& name, const int level)
 {
-    if (_instance._current_scene != nullptr) {
-        // exit scene
-        _current_scene->Exit();
+    ClearLevelCache();
+    if ( !Scene::Create(name) ) return false;
+    if ( !Scene::Start(level) ) return false;
+    return true;
+}
 
-        delete _instance._current_scene;
-        _instance._current_scene = nullptr;
-        CodeExecutor::Break();
-        CodeExecutor::SuspendedCodeStop();
-        CodeExecutor::EraseGlobalStack();
-        _instance_to_draw.clear();
-        _instance_to_psyhic.clear();
-    }
+void Core::ClearLevelCache()
+{
+    _instance._instance_to_draw.clear();
+    _instance._instance_to_physic.clear();
 
-    Scene* new_scene = new Scene(); 
-    if (new_scene->Load(name))
-    {
-        _current_scene = new_scene;
-        if (_current_scene->Start()) {
-            return true;
-        }
-        Console::WriteLine("[Core::ChangeScene] Error while starting new scene.");
-    }
-    else
-    {
-        Console::WriteLine("[Core::ChangeScene] scene '" + name + "' not exists! Try to load primary scene");
-    }
-    delete new_scene;
+    CodeExecutor::Break();
+    CodeExecutor::SuspendedCodeStop();
+    CodeExecutor::EraseGlobalStack();
 
-    Scene* primary_scene = new Scene(); 
-    if (primary_scene->Load(_primary_scene))
-    {
-        _current_scene = primary_scene;
-        if (_current_scene->Start()) {
-            return true;
-        }
-        Console::WriteLine("[Core::ChangeScene] Error while starting primary scene.");
-    }
-    else
-    {
-        Console::WriteLine("[Core::ChangeScene] Error while load primary scene.");
-    }
-    delete primary_scene;
+    _instance._reset_state = true;
+}
 
-    return false;
+std::string Core::GetStartingSceneName()
+{
+	if (const str_vec starting_scene = Func::ArchiveGetFileText("scene/StartingScene.txt", nullptr, false); 
+        starting_scene.empty()) {
+        return "";
+    }
+    else {
+        return starting_scene[0];
+    }
 }
 
 /////////////////////////////////////////
@@ -774,14 +749,14 @@ SDL_Window* Core::GetWindowHandle()
 //////
 ///
 ///
-/// ArtCore debug system. Compiles only in debug mode. Slow but shows everything.
+/// ArtCore debug system. Compiles only if AC_ENABLE_DEBUG_MODE is set
 ///
 ///
 //////
 //////
 //////
 
-#ifdef _DEBUG
+#ifdef AC_ENABLE_DEBUG_MODE
 
 void Core::CoreDebug::PerformanceTimeSecondPassed()
 {
@@ -812,6 +787,7 @@ Core::CoreDebug::CoreDebug()
     Options.emplace_back( "Draw Collider`s", &_show_collider, SDLK_F4);
     Options.emplace_back( "Draw Direction`s", &_show_directions, SDLK_F5);
     Options.emplace_back( "Show spy window", &_show_spy_window, SDLK_F6);
+
     Options.emplace_back( "Show performance counters", &_show_performance_times, SDLK_F7);
 }
 
@@ -871,8 +847,12 @@ void Core::CoreDebug::Draw() const
 {
     if (_show_instance_info || _show_collider || _show_directions)
     {
-        if (_instance._current_scene->IsAnyInstances()) {
-            for (const Instance* instance : _instance._current_scene->InstanceColony) {
+        if (Scene::IsAnyInstances()) {
+            for (plf::colony<Instance*>::iterator it = Scene::ColonyGetBegin();
+                it != Scene::ColonyGetEnd();)
+            {
+                Instance* instance = (*it);
+
                 GPU_Circle(_instance._screenTarget, instance->PosX, instance->PosY, 4, C_BLACK);
                 // always draw origins point
             	if (instance->SelfSprite) {
@@ -954,8 +934,8 @@ void Core::CoreDebug::Draw() const
     if(_show_performance)
     {
         const std::string text =
-            "instance count[colony size]: " + std::to_string(_instance._current_scene->GetInstancesCount()) + '[' + std::to_string(_instance._current_scene->InstanceColony.size()) + ']' + '\n' +
-            "delta time: " + std::to_string(_instance.DeltaTime) + '\n' +
+            "instance count: " + std::to_string(Scene::GetInstancesCount()) + '\n' +
+            "delta time: " + std::to_string(DeltaTime) + '\n' +
             "Executor global stack size[capacity]: " + std::to_string(CodeExecutor::GetGlobalStackSize()) + '[' + std::to_string(CodeExecutor::GetGlobalStackSize()) + ']' + '\n' +
             "Executor if-test stack size: " + std::to_string(Core::Executor()->DebugGetIfTestResultStackSize()) + ']' + '\n' +
             "bloom draw: " + (_instance.use_bloom ? "enabled (" + std::to_string(_instance.use_bloom_level) + ")" : "disabled");
@@ -1047,7 +1027,7 @@ void Core::CoreDebug::Draw() const
 
         float angle = 0.f;
 
-        const SDL_Color color_table[] = {
+        constexpr SDL_Color color_table[] = {
             C_LGREEN, C_GREEN, C_RED, C_GOLD, C_BLUE, C_DYELLOW, C_GRAY
         };
 

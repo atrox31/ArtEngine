@@ -79,7 +79,7 @@ void Console::Execute(const std::string& command)
 	{
 		if (arg.size() == 2)
 		{
-			Core::Executor()->DebugSetInstanceToTrack(Core::GetCurrentScene()->GetInstanceById(Func::TryGetInt(arg[1])));
+			Core::Executor()->DebugSetInstanceToTrack(Scene::GetCurrentScene()->GetInstanceById(Func::TryGetInt(arg[1])));
 			const str_vec text = Func::Split(Core::Executor()->DebugGetTrackInfo(), '\n');
 			Core::GetInstance()->CoreDebug.SetSpyLines(static_cast<int>(text.size()));
 		}

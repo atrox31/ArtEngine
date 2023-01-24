@@ -23,22 +23,25 @@ Scene::Scene()
 	BackGround.Color = SDL_Color({ 0,0,0,255 });
 	BackGround.Texture = nullptr;
 	BackGround.TypeWrap = (BackGround::BTypeWrap)0;
-	CurrentCollisionInstanceId = -1;
-	CurrentCollisionInstance = nullptr;
+	_level_current = -1;
+	_level_last = -1;
 	_view_rect = {};
-	//GuiSystem = Gui();
 }
 
-void Scene::Clear()
+
+Scene::~Scene()
 {
-	if (!InstanceColony.empty()) {
-		for (plf_it<Instance*> it = InstanceColony.begin(); it != InstanceColony.end(); ) {
-			
+	_trigger_data.clear();
+	delete _variables_holder;
+
+	if (!_instance_colony.empty()) {
+		for (plf_it<Instance*> it = _instance_colony.begin(); it != _instance_colony.end(); ) {
+
 			delete (*it);
-			it = InstanceColony.erase(it);
+			it = _instance_colony.erase(it);
 		}
 	}
-	InstanceColony.clear();
+	_instance_colony.clear();
 
 	if (!_instances_new.empty()) {
 		for (vec_it<Instance*> it = _instances_new.begin(); it != _instances_new.end(); ) {
@@ -47,17 +50,18 @@ void Scene::Clear()
 		}
 	}
 	_instances_new.clear();
+
+	if(_current_scene != nullptr && _current_scene == this)
+	{
+		_current_scene = nullptr;
+	}
 }
-Scene::~Scene()
-{
-	_trigger_data.clear();
-	
-	Clear();
-}
-bool Scene::Load(const std::string& name)
+
+
+bool Scene::LoadFromFile(const std::string& file)
 {
 	Sint64 len(0);
-	const char* buffer = Func::ArchiveGetFileBuffer("scene/" + name + "/" + name + ".asd", &len);
+	const char* buffer = Func::ArchiveGetFileBuffer("scene/" + file + "/" + file + ".asd", &len);
 	Func::DataValues dv(buffer, len);
 	if (!dv.IsOk()) {
 		return false;
@@ -65,7 +69,7 @@ bool Scene::Load(const std::string& name)
 	_width = Func::TryGetInt(dv.GetData("setup", "ViewWidth"));
 	_height = Func::TryGetInt(dv.GetData("setup", "ViewHeight"));
 	_begin_trigger = dv.GetData("setup", "SceneStartingTrigger");
-	_name = name;
+	_name = file;
 	_enable_camera = Convert::Str2Bool(dv.GetData("setup", "EnableCamera"));
 	//TODO if camera system be implemented
 	//_starting_x = Func::TryGetInt(dv.GetData("setup", "StartX"));
@@ -94,14 +98,9 @@ bool Scene::Load(const std::string& name)
 	}
 
 	// regions
-	for (std::string region : dv.GetSection("regions")) {
-
-	}
-
+	//for (std::string region : dv.GetSection("regions")) {}
 	// triggers
-	for (std::string trigger : dv.GetSection("triggers")) {
-
-	}
+	//for (std::string trigger : dv.GetSection("triggers")) {}
 
 	// instances
 	for (std::string& instance : dv.GetSection("instance")) {
@@ -110,62 +109,202 @@ bool Scene::Load(const std::string& name)
 			Console::WriteLine("Instance error: '" + instance + "'");
 			continue;
 		}
-		_begin_instances.emplace_back( data[0], Func::TryGetInt(data[1]), Func::TryGetInt(data[2]) );
+		// spawn instance to scene but get copy to first instance list
+		_instances_scene.emplace_back(
+			CreateInstance(
+				data[0],
+				static_cast<float>(Func::TryGetInt(data[1])),
+				static_cast<float>(Func::TryGetInt(data[2])),
+				this
+			)
+		);
 	}
 
-	const char* gui_schema_json_buffer = Func::ArchiveGetFileBuffer("scene/" + _name + "/GuiSchema.json", nullptr);
-	if (gui_schema_json_buffer == nullptr)
+	// gui
+	if (const char* gui_schema_json_buffer = Func::ArchiveGetFileBuffer("scene/" + _name + "/GuiSchema.json", nullptr);
+		gui_schema_json_buffer != nullptr)
 	{
-		return true;
+		if (const json data = json::parse(gui_schema_json_buffer);
+			!data.is_object())
+		{
+			Console::WriteLine("GuiSchema error");
+			return false;
+		}
+		else
+		{
+			if (!_gui_system.LoadFromJson(data)) return false;
+		}
 	}
-	const json data = json::parse(gui_schema_json_buffer);
-	if (!data.is_object())
-	{
-		Console::WriteLine("GuiSchema error");
-	}
-	else
-	{
-		if (!GuiSystem.LoadFromJson(data)) return false;
-	}
-	return true;
-}
-bool Scene::Start()
-{
-	_trigger_data.clear();
-	bool have_triggers = false;
+
 	// get gui triggers
 	if (PHYSFS_exists(std::string("scene/" + _name + "/scene_triggers.acp").c_str()))
 	{
-		if(!Core::Executor()->LoadSceneTriggers())
+		if (!Core::Executor()->LoadSceneTriggers(this))
 		{
 			return false;
 		}
-		have_triggers = true;
 	}
-	Clear();
-	for (const StartingInstanceSpawner& instance : _begin_instances) {
-		CreateInstance(instance.instance, static_cast<float>(instance.x), static_cast<float>(instance.y));
-	}
-	if(have_triggers && _begin_trigger.length() > 0)
-	{
-		Core::Executor()->ExecuteCode(_variables_holder, GetTriggerData(_begin_trigger));
-	}
+
 	return true;
 }
-Instance* Scene::CreateInstance(const std::string& name, const float x, const float y)
+
+bool Scene::SpawnLevelInstances(Scene* target) const
+{
+	if (target == nullptr) target = _current_scene;
+	if (target == nullptr) return false;
+
+	const std::string level_path = std::format("scene/{}/instances_level{}.txt", target->_name, target->_level_current);
+	if (!PHYSFS_exists(level_path.c_str())) return false;
+
+	for (std::string& instance_line : Func::ArchiveGetFileText(level_path, nullptr))
+	{
+		// big if statement but why make 3 alone ifs?
+		if (str_vec instance = Func::Split(instance_line, '|');		// get data from line name|x|y
+			instance.size() != 3											// data must be 3 size
+			|| CreateInstance(												// create target instance from data
+				instance[0],
+				static_cast<float>(Func::TryGetInt(instance[1])),
+				static_cast<float>(Func::TryGetInt(instance[2])),
+				target
+			) == nullptr)													// check if spawned, nullptr on error
+		{
+			Console::WriteLine("Instance error: '" + instance_line + "'"); // write error message but this is not end of world, continue
+		}
+	}
+
+	return true;
+}
+
+bool Scene::Create(const std::string& name)
+{
+	Scene* new_scene = new Scene();
+	if(!new_scene->LoadFromFile(name))
+	{
+		delete new_scene;
+		return false;
+	}
+	
+	// count levels, bad method but safe
+	for(int i=0; i<SCENE_MAX_LEVEL_COUNT; i++)
+	{
+		if (PHYSFS_exists(std::format("scene/{}/instances_level{}.txt", new_scene->_name,i).c_str()))
+		{
+			new_scene->_level_last = i;
+			continue;
+		}
+		break;
+	}
+
+	// all ok swap scenes
+	delete _current_scene;
+	_current_scene = new_scene;
+
+	// if scene have at least one level set to first (0) else -1 <- scene have no levels
+	_current_scene->_level_current = _current_scene->_level_last >= 0 ? 0 : -1;
+
+	_current_scene->SpawnAll(); // scene instances
+	Core::Executor()->ExecuteCode(_current_scene->_variables_holder, _current_scene->GetTriggerData(_current_scene->_begin_trigger));
+	_current_scene->SpawnAll(); // scene on create trigger may have some instances to spawn
+	
+	return true;
+}
+
+plf_it<Instance*> Scene::ColonyErase(const plf_it<Instance*>& it)
+{
+	_current_scene->_instances_size--;
+	// if instance is scene scene instance mark as dead.
+	// respawn on scene reset
+
+	if (!_current_scene->_instances_scene.empty()
+		&& std::ranges::find(_current_scene->_instances_scene, *it) != _current_scene->_instances_scene.end())
+	{
+		(*it)->Alive = false;
+	}
+
+	return _current_scene->_instance_colony.erase(it);
+}
+
+void Scene::Reset(const bool hard_reset)
+{
+	ClearListNewInstance(_current_scene);
+	if (hard_reset) {
+		ClearListColonyInstance(_current_scene);
+		for (Instance* instances_scene : _current_scene->_instances_scene)
+		{
+			CreateInstance(instances_scene);
+		}
+	}
+	else {
+		// spawn only dead instances
+		for (Instance* instances_scene : _current_scene->_instances_scene)
+		{
+			if (!instances_scene->Alive)
+			{
+				instances_scene->Alive = true;
+				_current_scene->_instances_new.emplace_back(instances_scene);
+				_current_scene->_is_any_new_instances = true;
+			}
+		}
+	}
+
+	// spawn level instances
+	_current_scene->SpawnLevelInstances();
+	_current_scene->SpawnAll();	// level instances
+}
+
+bool Scene::Start(const int level)
+{
+	if (level > _current_scene->_level_last) return false; // level not exists
+	_current_scene->_level_current = level;
+	Reset(false);
+	return true;
+}
+
+bool Scene::StartNextLevel()
+{
+	if(_current_scene->_level_current < _current_scene->_level_last)
+	{
+		_current_scene->_level_current++;
+		Reset(false);
+		return true;
+	}
+	return false;
+}
+
+bool Scene::HaveNextLevel()
+{
+	return _current_scene->_level_current < _current_scene->_level_last;
+}
+Instance* Scene::CreateInstance(const std::string& name, const float x, const float y, Scene* target)
 {
 	Instance* ins = Core::Executor()->SpawnInstance(name);
 	if (ins == nullptr) return nullptr;
 	ins->PosX = x;
 	ins->PosY = y;
-	_instances_new.push_back(ins);
-	_is_any_new_instances = true;
+	if (target == nullptr) {
+		_current_scene->_instances_new.emplace_back(ins);
+		_current_scene->_is_any_new_instances = true;
+	}else
+	{
+		target->_instances_new.emplace_back(ins);
+		target->_is_any_new_instances = true;
+	}
 	return ins;
 }
 
-bool Scene::InView(const SDL_FPoint& p) const
+Instance* Scene::CreateInstance(Instance* instance, Scene* target)
 {
-	return _view_rect.PointInRectWh(p);
+	if (target == nullptr) {
+		_current_scene->_instances_new.emplace_back(instance);
+		_current_scene->_is_any_new_instances = true;
+		return _current_scene->_instances_new.back();
+	}
+	else
+	{
+		target->_instances_new.emplace_back(instance);
+		target->_is_any_new_instances = true;
+		return target->_instances_new.back();
+	}
 }
 
 void Scene::SpawnAll()
@@ -180,40 +319,33 @@ void Scene::SpawnAll()
 	if (_is_any_new_instances) {
 		const size_t new_ins_size = _instances_new.size();
 		for(size_t i = 0; i < new_ins_size; i++){
-			InstanceColony.insert(_instances_new[i]);
+			_instance_colony.insert(_instances_new[i]);
 			_instances_size++;
 		}
 		for (size_t i = 0; i < new_ins_size; i++) {
 			Core::Executor()->ExecuteScript(_instances_new[i], Event::EvOnCreate);
 		}
-		_instances_new.erase(_instances_new.begin(), _instances_new.begin() + new_ins_size);
+		_instances_new.erase(_instances_new.begin(), _instances_new.begin() + static_cast<long long>(new_ins_size));
 		_is_any_new_instances = !_instances_new.empty();
 	}
 }
-void Scene::Exit()
-{
-	Clear();
-	// TODO: triggers
-	// TODO: regions
-}
-
 Instance* Scene::GetInstanceById(const int id)
 {
-	for (Instance* instance : InstanceColony) {
+	for (Instance* instance : _current_scene->_instance_colony) {
 		if (instance->GetId() == static_cast<Uint64>(id)) return instance;
 	}
 	return nullptr;
 }
 Instance* Scene::GetInstanceByTag(const std::string& tag)
 {
-	for (Instance* instance : InstanceColony) {
+	for (Instance* instance : _current_scene->_instance_colony) {
 		if (instance->Tag == tag) return instance;
 	}
 	return nullptr;
 }
 Instance* Scene::GetInstanceByName(const std::string& name)
 {
-	for (Instance* instance : InstanceColony) {
+	for (Instance* instance : _current_scene->_instance_colony) {
 		if (instance->Name == name) return instance;
 	}
 	return nullptr;
@@ -221,7 +353,7 @@ Instance* Scene::GetInstanceByName(const std::string& name)
 std::vector<Instance*> Scene::GetInstancesByTag(const std::string& tag)
 {
 	std::vector<Instance*> _return;
-	for (Instance* instance : InstanceColony) {
+	for (Instance* instance : _current_scene->_instance_colony) {
 		if (instance->Tag == tag) _return.push_back(instance);
 	}
 	return _return;
@@ -229,16 +361,10 @@ std::vector<Instance*> Scene::GetInstancesByTag(const std::string& tag)
 std::vector<Instance*> Scene::GetInstancesByName(const std::string& name)
 {
 	std::vector<Instance*> _return;
-	for (Instance* instance : InstanceColony) {
+	for (Instance* instance : _current_scene->_instance_colony) {
 		if (instance->Name == name) _return.push_back(instance);
 	}
 	return _return;
-}
-
-plf::colony<Instance*>::iterator Scene::DeleteInstance(const plf::colony<Instance*>::iterator& ptr)
-{
-	_instances_size--;
-	return InstanceColony.erase(ptr);
 }
 
 void Scene::SetTriggerData(const std::string& trigger, const unsigned char* data, Sint64 length)
@@ -253,4 +379,31 @@ std::pair<const unsigned char*, Sint64>* Scene::GetTriggerData(const std::string
 		return &_trigger_data[trigger];
 	}
 	return nullptr;
+}
+
+void Scene::Delete()
+{
+	delete _current_scene;
+}
+
+void Scene::ClearListNewInstance(Scene* target)
+{
+	if (!target->_instances_new.empty()) {
+		for (vec_it<Instance*> it = target->_instances_new.begin(); it != target->_instances_new.end(); ) {
+			delete (*it);
+			it = target->_instances_new.erase(it);
+		}
+	}
+	target->_instances_new.clear();
+}
+
+void Scene::ClearListColonyInstance(Scene* target)
+{
+	if (!target->_instance_colony.empty()) {
+		for (plf_it<Instance*> it = target->_instance_colony.begin(); it != target->_instance_colony.end(); ) {
+			delete (*it);
+			it = target->_instance_colony.erase(it);
+		}
+	}
+	target->_instance_colony.clear();
 }

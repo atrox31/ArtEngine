@@ -41,7 +41,7 @@ bool Core::ProcessEvents(event_bit& global_events_flag)
         switch (e.type) {
         case SDL_KEYDOWN:
         {
-#ifdef _DEBUG
+#ifdef AC_ENABLE_DEBUG_MODE
             if (CoreDebug.ProcessEvent(&e)) {
                 return false;
             }
@@ -109,13 +109,13 @@ bool Core::ProcessEvents(event_bit& global_events_flag)
 void Core::ProcessStep(const event_bit& global_events_flag) const
 {
     // interface (gui) events
-    const bool gui_have_event = _current_scene->GuiSystem.Events();
+    const bool gui_have_event = Scene::GuiSystem().Events();
     // add all new instances to scene and execute OnCreate event
-    _current_scene->SpawnAll();
-    if (!_current_scene->IsAnyInstances()) return;
+    Scene::GetCurrentScene()->SpawnAll();
+    if (!Scene::IsAnyInstances()) return;
 
-    for (plf::colony<Instance*>::iterator it = _current_scene->InstanceColony.begin();
-        it != _current_scene->InstanceColony.end();)
+    for (plf::colony<Instance*>::iterator it = Scene::ColonyGetBegin();
+        it != Scene::ColonyGetEnd();)
     {
         if (Instance* c_instance = (*it); !c_instance->Alive) {
             // delete instance if not alive
@@ -123,7 +123,7 @@ void Core::ProcessStep(const event_bit& global_events_flag) const
                 Executor()->ExecuteScript(c_instance, Event::EvOnDestroy);
             }
             delete (*it);
-            it = _instance._current_scene->DeleteInstance(it);
+            it = Scene::ColonyErase(it);
         }else{ 
             // instance exists and alive
             // step
@@ -138,7 +138,7 @@ void Core::ProcessStep(const event_bit& global_events_flag) const
 
             // view change event
             const bool oldInView = c_instance->InView;
-            c_instance->InView = GetCurrentScene()->InView({ c_instance->PosX, c_instance->PosY });
+            c_instance->InView = Scene::GetCurrentScene()->InView({ c_instance->PosX, c_instance->PosY });
             if (EVENT_BIT_TEST(event_bit::HAVE_VIEW_CHANGE, c_instance_events)
             && c_instance->InView != oldInView) {
 
@@ -190,11 +190,11 @@ void Core::ProcessStep(const event_bit& global_events_flag) const
             // keyboard input
             if (EVENT_BIT_TEST(event_bit::HAVE_KEYBOARD_EVENT, global_events_flag)) {
                 if (EVENT_BIT_TEST(event_bit::HAVE_KEYBOARD_EVENT_DOWN, global_events_flag)     // first check if event happen
-                &&  EVENT_BIT_TEST(event_bit::HAVE_KEYBOARD_EVENT_DOWN, c_instance_events))     // seccond check if instance have this event
+                &&  EVENT_BIT_TEST(event_bit::HAVE_KEYBOARD_EVENT_DOWN, c_instance_events))     // second check if instance have this event
                     Executor()->ExecuteScript(c_instance, Event::EvOnKeyDown);                  // execute event
 
                 if (EVENT_BIT_TEST(event_bit::HAVE_KEYBOARD_EVENT_UP, global_events_flag)       // first check if event happen
-                &&  EVENT_BIT_TEST(event_bit::HAVE_KEYBOARD_EVENT_UP, c_instance_events))       // seccond check if instance have this event
+                &&  EVENT_BIT_TEST(event_bit::HAVE_KEYBOARD_EVENT_UP, c_instance_events))       // second check if instance have this event
                     Executor()->ExecuteScript(c_instance, Event::EvOnKeyUp);                    // execute event
             }
 
@@ -206,41 +206,48 @@ void Core::ProcessStep(const event_bit& global_events_flag) const
     CodeExecutor::SuspendedCodeExecute();
 }
 
-void Core::ProcessPhysics() const
+void Core::ProcessPhysics()
 {
-    for (const auto instance : _current_scene->InstanceColony) {
-        if (instance->Alive
-        && EVENT_BIT_TEST(event_bit::HAVE_COLLISION, instance->EventFlag)) {
-            for (Instance* target : _current_scene->InstanceColony) {
-                if (Physics::CollisionTest(instance, target)) {
-                    _current_scene->CurrentCollisionInstance = target;
-                    _current_scene->CurrentCollisionInstanceId = target->GetId();
+    for (plf_it<Instance*> it = Scene::ColonyGetBegin();
+        it != Scene::ColonyGetEnd();++it)
+    {
+	    if (Instance* instance = (*it); 
+            instance->Alive
+            && EVENT_BIT_TEST(event_bit::HAVE_COLLISION, instance->EventFlag)) {
+            for (plf_it<Instance*> it2 = Scene::ColonyGetBegin();
+                it2 != Scene::ColonyGetEnd();++it2)
+            {
+                if (Instance* target = (*it2);
+                    target->Alive && Physics::CollisionTest(instance, target)) {
+                    Executor()->CollisionSetTarget(target);
                     Executor()->ExecuteScript(instance, Event::EvOnCollision);
-                    _current_scene->CurrentCollisionInstance = nullptr;
-                    _current_scene->CurrentCollisionInstanceId = -1;
+                    Executor()->CollisionResetTarget();
                 }
             }
         }
+
     }
 }
 
 
-void Core::ProcessSceneRender() const
+void Core::ProcessSceneRender()
 {
     // render scene background
-    if (_current_scene->BackGround.Texture != nullptr) {
-        Render::DrawTextureBox(_current_scene->BackGround.Texture, nullptr, nullptr);
+    if (Scene::GetCurrentScene()->BackGround.Texture != nullptr) {
+        Render::DrawTextureBox(Scene::GetCurrentScene()->BackGround.Texture, nullptr, nullptr);
     }
     else
     {
-        Render::RenderClearColor(_current_scene->BackGround.Color);
+        Render::RenderClearColor(Scene::GetCurrentScene()->BackGround.Color);
     }
 
     // draw all instances if in view (defined in step event)
-    if (_current_scene->IsAnyInstances()) {
-        for (Instance* instance : _current_scene->InstanceColony) {
-            if (instance->InView) {
-                Executor()->ExecuteScript(instance, Event::EvDraw);
+    if (Scene::IsAnyInstances()) {
+        for (plf_it<Instance*> it = Scene::ColonyGetBegin();
+            it != Scene::ColonyGetEnd(); ++it)
+        {
+            if ((*it)->InView) {
+                Executor()->ExecuteScript((*it), Event::EvDraw);
             }
         }
     }
@@ -252,7 +259,7 @@ void Core::ProcessPostProcessRender() const
     Render::ProcessImageWithGaussian();
 
     // draw interface
-    _current_scene->GuiSystem.Render();
+    Scene::GetCurrentScene()->GuiSystem().Render();
 
     // draw all scene to screen buffer
     Render::RenderToTarget(_screenTarget);

@@ -496,7 +496,7 @@ bool Gui::GuiElementTemplate::OnClick()
 	if(_callback_script[EvCallback::EvOnClick].first != nullptr)
 	{
 		Core::Executor()->ExecuteCode(
-			Core::GetCurrentScene()->GetVariableHolder(),
+			Scene::GetCurrentScene()->GetVariableHolder(),
 			&_callback_script[EvCallback::EvOnClick]);
 		return true;
 	}

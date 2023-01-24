@@ -13,6 +13,7 @@
 
 #include "FC_Fontcache/SDL_FontCache.h"
 #include "SDL2/IncludeAll.h"
+#include "ArtCore/main.h" // for debug flags
 
 class Scene;
 class AssetManager;
@@ -31,14 +32,14 @@ public:
 
 	bool ProcessEvents(event_bit& global_events_flag);
 	void ProcessStep(const event_bit& global_events_flag) const;
-	void ProcessPhysics() const;
-	void ProcessSceneRender() const;
+	static void ProcessPhysics();
+	static void ProcessSceneRender();
 	void ProcessPostProcessRender() const;
 	void ProcessSystemRender() const;
 
 	// getters
 	static Core* GetInstance()				{ return &_instance; }
-	static Scene* GetCurrentScene()			{ return _instance._current_scene; }
+	//static Scene* GetCurrentScene()			{ return _instance._current_scene; }
 	static GPU_Target* GetScreenTarget()	{ return _instance._screenTarget; }
 	static FC_Font* GetGlobalFont()			{ return _instance._global_font;  }
 	static AssetManager* GetAssetManager()	{ return _instance._asset_manager; }
@@ -51,7 +52,12 @@ public:
 	// setters
 	static void Pause() {_instance.game_loop = false;}
 	static void Play() {_instance.game_loop = true;	}
-	bool ChangeScene(const std::string& name);
+	static bool ChangeScene(const std::string& name, int level = 0);
+
+	// reset current level lists and variables
+	static void ClearLevelCache();
+
+	static std::string GetStartingSceneName();
 
 	// time to generate one frame
 	static inline double DeltaTime;
@@ -60,13 +66,16 @@ public:
 private:
 	bool ProcessCoreKeys(Sint32 sym);
 	std::vector<Instance*> _instance_to_draw;
-	std::vector<Instance*> _instance_to_psyhic;
+	std::vector<Instance*> _instance_to_physic;
 	bool game_loop;
 	// graphic
 	bool use_bloom = false;
 	Uint8 use_bloom_level = 0;
 	GPU_Target* _screenTarget;
 	CodeExecutor* _executor;
+
+	// this is flag used to reset game loop if level or scene is restarted
+	bool _reset_state = false;
 
 	// fps
 	static Uint32 FpsCounterCallback(Uint32 interval, void* parms);
@@ -156,13 +165,10 @@ private:
 	FC_Font* _global_font;
 	AssetManager* _asset_manager;
 
-	Scene* _current_scene;
-	std::string _primary_scene;
-
 	static Core _instance;
 	SDL_Window* _window;
 
-#ifdef _DEBUG
+#ifdef AC_ENABLE_DEBUG_MODE
 	// all debug flags and variables
 private:
 	class CoreDebug

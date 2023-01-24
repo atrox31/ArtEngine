@@ -4,6 +4,7 @@
 #include "ArtCore/Functions/Func.h"
 #include "ArtCore/Graphic/Sprite.h"
 #include "FC_Fontcache/SDL_FontCache.h"
+#include "ArtCore/main.h" // for debug flags
 
 class BackGroundRenderer;
 class AssetManager
@@ -35,7 +36,7 @@ public:
 	FC_Font* GetFont(const std::string& name);
 	int GetFontId(const std::string& name) const;
 
-#ifdef _DEBUG
+#ifdef AC_ENABLE_DEBUG_MODE
 	str_vec Debug_List_sprite_name;
 	str_vec Debug_List_texture_name;
 	str_vec Debug_List_music_name;
