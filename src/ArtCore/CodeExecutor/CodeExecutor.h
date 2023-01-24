@@ -8,6 +8,8 @@
 #include "Inspector.h"
 #include "ArtCore/Enums/Event.h"
 #include "ArtCore/Scene/Instance.h"
+#include "ArtCore/Scene/Scene.h"
+#include "ArtCore/main.h" // for debug flags
 
 class BackGroundRenderer;
 class CodeExecutor
@@ -18,7 +20,7 @@ public:
 	void MapFunctions();
 	bool LoadArtLib();
 	bool LoadObjectDefinitions(const BackGroundRenderer* bgr, const int p_min, const int p_max);
-	bool LoadSceneTriggers();
+	bool LoadSceneTriggers(Scene* sender);
 	void Delete();
 
 	static int GetGlobalStackSize();
@@ -119,7 +121,13 @@ private:
 		return nullptr;
 	}
 
+	Instance* _collision_target = nullptr;
 public:
+	void CollisionSetTarget(Instance* target) { _collision_target = target; }
+	[[nodiscard]] Instance* CollisionGetTarget() const { return _collision_target;  }
+	void CollisionResetTarget() { _collision_target = nullptr; }
+
+
 	[[nodiscard]] Instance* SpawnInstance(const std::string& name) const;
 	// not safe! use only in inner functions. this not error-proof
 	[[nodiscard]] Instance* SpawnInstance(int id) const; 
@@ -206,7 +214,7 @@ private:
 	static Rect h_operation_rect(int _operator, Rect val1, Rect val2);
 	static SDL_Color h_operation_color(int _operator, SDL_Color val1, SDL_Color val2);
 	static std::string h_operation_string(int _operator, std::string val1, std::string val2);
-#ifdef _DEBUG
+#ifdef AC_ENABLE_DEBUG_MODE
 	// all debug things
 public:
 	int DebugGetIfTestResultStackSize() const
@@ -286,6 +294,7 @@ private:
 	Script(get_random_range);
 	Script(scene_change_transmission);
 	Script(scene_change);
+	Script(scene_set_level);
 	Script(get_direction_of);
 	Script(instance_spawn);
 	Script(instance_spawn_on_point);
@@ -360,6 +369,8 @@ private:
 	Script(math_abs);
 	Script(sprite_set_angle);
 	Script(self);
+	Script(scene_count_instance_by_tag);
+	Script(scene_count_instance_by_name);
 #undef Script
 };
 //end of file

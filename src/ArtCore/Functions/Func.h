@@ -28,7 +28,7 @@ public:
 	static std::string GetFileName(const std::string& path, const char separator = '/', bool with_extension = false);
 
 	static bool IsHex(const std::string&);
-
+	
 	static float LinearScale(float value, float value_min, float value_max, float scale_min, float scale_max);
 	static std::string GetHexTable(const unsigned char* data, int size, int group = 16);
 	static std::size_t ReplaceAll(std::string& inout, std::string what, std::string with);
@@ -51,10 +51,7 @@ public:
 	static Uint32 LoadShader(GPU_ShaderEnum shader_type, const char* filename);
 
 	static GPU_ShaderBlock LoadShaderProgram(Uint32* p, const char* vertex_shader_file, const char* fragment_shader_file);
-	static void FreeShader(const Uint32 p)
-	{
-		GPU_FreeShaderProgram(p);
-	}
+	static void FreeShader(const Uint32 p)	{		GPU_FreeShaderProgram(p);	}
 
 	struct DataValues {
 	public:

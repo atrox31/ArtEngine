@@ -244,9 +244,9 @@ bool CodeExecutor::LoadObjectDefinitions(const BackGroundRenderer* bgr, const in
 	return (!_instance_definitions.empty());
 }
 
-bool CodeExecutor::LoadSceneTriggers()
+bool CodeExecutor::LoadSceneTriggers(Scene* sender)
 {
-	const std::unique_ptr<Inspector> code = std::make_unique<Inspector>(*CreateInspector("scene/" + Core::GetCurrentScene()->GetName() + "/scene_triggers.acp"));
+	const std::unique_ptr<Inspector> code = std::make_unique<Inspector>(*CreateInspector("scene/" + sender->GetName() + "/scene_triggers.acp"));
 	// object definitions
 	while (!code->IsEnd()) {
 		// first is OBJECT_DEFINITION command
@@ -275,7 +275,8 @@ bool CodeExecutor::LoadSceneTriggers()
 			}
 			else {
 				Console::WriteLine("LoadSceneTriggers: '"+ o_name+ "' - expected 'LOCAL_VARIABLE_DEFINITION' but " + std::to_string(code->Current()) + " is given");
-				ASSERT(false, "x01"); return false;
+				ASSERT(false, "x01")
+				return false;
 			}
 		} // variables
 
@@ -283,7 +284,8 @@ bool CodeExecutor::LoadSceneTriggers()
 		while (code->GetNextCommand() != COMMAND::END || code->IsEnd()) {
 			if (code->GetCurrentCommand() != COMMAND::FUNCTION_DEFINITION) {
 				Console::WriteLine("LoadSceneTriggers: '" + o_name + "' - expected 'FUNCTION_DEFINITION' but " + std::to_string(code->Current()) + " is given");
-				ASSERT(false, "x02"); return false;
+				ASSERT(false, "x02")
+				return false;
 			}
 			else {
 				std::string e_name = code->GetString();
@@ -298,7 +300,8 @@ bool CodeExecutor::LoadSceneTriggers()
 				if (static_cast<ArtCode::Command>(f_code[f_size - 1]) != COMMAND::END) {
 
 					Console::WriteLine("LoadSceneTriggers: '" + o_name + "' - expected 'END' but " + std::to_string(f_code[f_size - 1]) + " is given");
-					ASSERT(false, "x03"); return false;
+					ASSERT(false, "x03")
+					return false;
 				}
 				// scene accept only def values event, every other is trigger
 				if (Event_fromString(e_name) == Event::DEF_VALUES) {
@@ -310,24 +313,25 @@ bool CodeExecutor::LoadSceneTriggers()
 					{
 						//error
 						Console::WriteLine("LoadSceneTriggers: '" + o_name + "' - expected 'trigger_type.size() == 2' but " + std::to_string(trigger_type.size()) + " is given");
-						ASSERT(false, "x04"); return false;
+						ASSERT(false, "x04")
+						return false;
 					}else
 					{
 						if(trigger_type[0] == "scene")
 						{
 							// triggers
-							Core::GetCurrentScene()->SetTriggerData(e_name, f_code, f_size);
+							sender->SetTriggerData(e_name, f_code, f_size);
 						}else
 						{
 							// gui element action
 							if (const str_vec gui_element_type = Func::Split(trigger_type[0], '#'); gui_element_type.size() != 2)
 							{//error
 								Console::WriteLine("LoadSceneTriggers: '" + o_name + "' - expected 'gui_element_type.size() == 2' but " + std::to_string(gui_element_type.size()) + " is given");
-								ASSERT(false, "x05"); return false;
+								ASSERT(false, "x05")
+								return false;
 							}else
 							{
-								Gui::GuiElementTemplate* element = Core::GetCurrentScene()->GuiSystem.GetElementById(gui_element_type[1]);
-								if (element != nullptr)
+								if (Gui::GuiElementTemplate* element = sender->GetLocalGuiSystem().GetElementById(gui_element_type[1]); element != nullptr)
 								{
 									element->SetCallback(Gui::GuiElementTemplate::EvCallback_fromString(trigger_type[1]),
 									                     std::pair<const unsigned char*, Uint64>(f_code, f_size)
@@ -335,7 +339,8 @@ bool CodeExecutor::LoadSceneTriggers()
 								}else
 								{//error
 									Console::WriteLine("LoadSceneTriggers: '" + o_name + "' - 'GuiSystem.GetElementById("+ gui_element_type[0]+"' == nullptr");
-									ASSERT(false, "x06"); return false;
+									ASSERT(false, "x06")
+									return false;
 								}
 							}
 						}
@@ -348,11 +353,12 @@ bool CodeExecutor::LoadSceneTriggers()
 		if (code->GetCurrentCommand() != COMMAND::END) {
 			
 			Console::WriteLine("LoadSceneTriggers 'END' but " + std::to_string(code->Current()) + " is given");
-			ASSERT(false, "x07"); return false;
+			ASSERT(false, "x07")
+			return false;
 		}
 
 		// execute only starting event
-		Core::GetCurrentScene()->SetVariableHolder( new Instance(*instance.Template) );
+		sender->SetVariableHolder( new Instance(*instance.Template) );
 	}
 	return true;
 }
@@ -392,7 +398,7 @@ int CodeExecutor::GetGlobalStackCapacity()
 	return size;
 }
 
-#ifdef _DEBUG
+#ifdef AC_ENABLE_DEBUG_MODE
 // very not fps frendly but for debug must be
 void CodeExecutor::DebugSetInstanceToTrack(Instance* instance)
 {
@@ -727,7 +733,7 @@ void CodeExecutor::h_execute_script(Inspector* code, Instance* instance)
 
 		case COMMAND::OTHER: {
 			const int instance_type = (int)code->GetBit();
-			Instance* other = Core::GetCurrentScene()->CurrentCollisionInstance;
+			Instance* other =CollisionGetTarget();
 			if (other == nullptr) {
 				Break();
 				return;
@@ -786,7 +792,7 @@ int CodeExecutor::h_if_test(Inspector* code, Instance* instance) {
 
 		case COMMAND::OTHER: {
 			const int instance_type = (int)code->GetBit();
-			const Instance* other = Core::GetCurrentScene()->CurrentCollisionInstance;
+			const Instance* other = CollisionGetTarget();
 			if (other == nullptr) {
 				Break();
 				return -1;
@@ -796,7 +802,7 @@ int CodeExecutor::h_if_test(Inspector* code, Instance* instance) {
 				Break();
 				// error - wrong type
 			}
-			h_get_local_value(code, Core::GetCurrentScene()->CurrentCollisionInstance);
+			h_get_local_value(code, CollisionGetTarget());
 		} break;
 
 		case COMMAND::FUNCTION:
@@ -1184,7 +1190,7 @@ bool CodeExecutor::h_compare(const int type, const int operation)
 void CodeExecutor::h_get_local_value(Inspector* code, Instance* instance)
 {
 	const ArtCode::variable_type type = static_cast<ArtCode::variable_type>(code->GetBit());
-	ASSERT(type != ArtCode::variable_type::variable_typeInvalid, "variable_type::Invalid");
+	ASSERT(type != ArtCode::variable_type::variable_typeInvalid, "variable_type::Invalid")
 	const int index = (int)code->GetBit();
 	//GlobalStack.Add(instance->variables[type][index]);
 	switch (type) {
@@ -1223,7 +1229,7 @@ void CodeExecutor::h_get_value(Inspector* code, Instance* instance) {
 		case ArtCode::variable_type::INT:		GlobalStack_int.Add(Func::TryGetInt( code->GetString() )); break;
 		case ArtCode::variable_type::FLOAT:		GlobalStack_float.Add(Func::TryGetFloat(code->GetString())); break;
 		case ArtCode::variable_type::BOOL:		GlobalStack_bool.Add( Convert::Str2Bool( code->GetString()) ); break;
-		case ArtCode::variable_type::INSTANCE:	GlobalStack_instance.Add( Core::GetCurrentScene()->GetInstanceById(Func::TryGetInt(code->GetString())) ); break;
+		case ArtCode::variable_type::INSTANCE:	GlobalStack_instance.Add( Scene::GetInstanceById(Func::TryGetInt(code->GetString())) ); break;
 		case ArtCode::variable_type::OBJECT:	GlobalStack_int.Add(Func::TryGetInt(code->GetString())); break;
 		case ArtCode::variable_type::SPRITE:	GlobalStack_int.Add(Func::TryGetInt(code->GetString())); break;
 		case ArtCode::variable_type::TEXTURE:	GlobalStack_int.Add(Func::TryGetInt(code->GetString())); break;
