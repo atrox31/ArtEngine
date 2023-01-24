@@ -54,14 +54,15 @@ null instance_set_body_as_circle(int radius);Make body for instance to enable co
 null instance_set_body_from_sprite();Make body for instance to enable collision check. Copy body value from self sprite if is set;Mark instance as collider.
 null instance_set_body_none();Delete instance body, make it non collider;
 null instance_set_tag(string tag);Set tag for current instance <string>.
-instance collision_get_collider();Return reference to instance with this object is collide;Other colliders must be solid too to collide;
-string collision_get_collider_tag();Get tag of instance that is coliding with this object;Other colliders must be solid too to collide;
-string collision_get_collider_name();Get name of instance that is coliding with this object;Other colliders must be solid too to collide;
-int collision_get_collider_id();Get id of instance that is coliding with this object;Other colliders must be solid too to collide;
+instance collision_get_collider();Return reference to instance with this object is collide;Other collider must be solid too to collide;
+string collision_get_collider_tag();Get tag of instance that is colliding with this object;Other collider must be solid too to collide;
+string collision_get_collider_name();Get name of instance that is colliding with this object;Other collider must be solid too to collide;
+int collision_get_collider_id();Get id of instance that is colliding with this object;Other collider must be solid too to collide;
 int get_random(int max);Get random value [0,<int>).;0 is include max is exclude;
 int get_random_range(int min, int max);Get random value [<int>,<int>).;0 is include max is exclude;
 null scene_change_transmission(string scene, string transmission);[NOT_IMPLEMENTED_YET];0;
 null scene_change(string scene);Change scene to <scene>;This is quick change, for transmission use scene_change_transmission[NOT_IMPLEMENTED_YET];
+null scene_set_level(int level);Set current level to <int> and reload scene;
 float get_direction_of(instance target);Return direction of <instance> instance in degree (-180 : 180);Use with collision_get_collider, if target not exists return own direction
 instance instance_spawn(string name, float x, float y);Spawn object <string> at (<float>,<float>) and return reference to it;Ypu can use reference to pass arguments;
 instance instance_spawn_on_point(string name, point xy);Spawn object <string> at (<point>) and return reference to it;Ypu can use reference to pass arguments;
@@ -136,3 +137,5 @@ float math_cos(float x);Get cos of <float>;
 float math_abs(float value);Get absolute value of <float>
 null sprite_set_angle(float value);Set self sprite angle <float> in degree;Get (0..359)
 instance self();Get self reference
+int scene_count_instance_by_tag(string tag);Count instances in current scene by <string> tag;
+int scene_count_instance_by_name(string name);Count instances in current scene by <string> name;

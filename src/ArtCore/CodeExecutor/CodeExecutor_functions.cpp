@@ -520,55 +520,61 @@ void CodeExecutor::instance_set_tag(Instance* sender) {
 	sender->Tag = tag;
 }
 
-//instance collision_get_collider();Return reference to instance with this object is collide;Other colliders must be solid too to collide;
+//instance collision_get_collider();Return reference to instance with this object is collide;Other collider must be solid too to collide;
 void CodeExecutor::collision_get_collider(Instance*) {
-	StackOut_ins( Core::GetCurrentScene()->CurrentCollisionInstance );
+	StackOut_ins( Core::Executor()->CollisionGetTarget() );
 }
-//string collision_get_collider_tag();Get tag of instance that is coliding with this object;Other colliders must be solid too to collide;
+//string collision_get_collider_tag();Get tag of instance that is colliding with this object;Other collider must be solid too to collide;
 void CodeExecutor::collision_get_collider_tag(Instance*) {
-	if (Core::GetCurrentScene()->CurrentCollisionInstance != nullptr)
-		StackOut_s(Core::GetCurrentScene()->CurrentCollisionInstance->Tag);
+	if (Core::Executor()->CollisionGetTarget() != nullptr)
+		StackOut_s(Core::Executor()->CollisionGetTarget()->Tag);
 	else
 		StackOut_s("nul");
 }
-//string collision_get_collider_name();Get name of instance that is coliding with this object;Other colliders must be solid too to collide;
+//string collision_get_collider_name();Get name of instance that is colliding with this object;Other collider must be solid too to collide;
 void CodeExecutor::collision_get_collider_name(Instance*) {
-	if (Core::GetCurrentScene()->CurrentCollisionInstance != nullptr)
-		StackOut_s(Core::GetCurrentScene()->CurrentCollisionInstance->Name);
+	if (Core::Executor()->CollisionGetTarget() != nullptr)
+		StackOut_s(Core::Executor()->CollisionGetTarget()->Name);
 	else
 		StackOut_s("nul");
 }
-//int collision_get_collider_id();Get id of instance that is coliding with this object;Other colliders must be solid too to collide;
+//int collision_get_collider_id();Get id of instance that is colliding with this object;Other collider must be solid too to collide;
 void CodeExecutor::collision_get_collider_id(Instance*) {
-	if (Core::GetCurrentScene()->CurrentCollisionInstance != nullptr)
-		StackOut_i(static_cast<int>(Core::GetCurrentScene()->CurrentCollisionInstanceId));
+	if (Core::Executor()->CollisionGetTarget() != nullptr)
+		StackOut_i(static_cast<int>(Core::Executor()->CollisionGetTarget()->GetId()));
 	else
 		StackOut_i(-1);
 }
 //int get_random(int max);Get random value [0,<int>).;0 is include max is exclude;
 void CodeExecutor::get_random(Instance*) {
 	const int max = StackIn_i;
-	StackOut_i(rand() % max);
+	StackOut_i(rand() % max);  // NOLINT(concurrency-mt-unsafe)
 }
 //int get_random_range(int min, int max);Get random value [<int>,<int>).;0 is include max is exclude;
 void CodeExecutor::get_random_range(Instance*) {
 	const int max = StackIn_i;
 	const int min = StackIn_i;
-	StackOut_i(min + (std::rand() % (max - min + 1)));
+	StackOut_i(min + (rand() % (max - min + 1)));// NOLINT(concurrency-mt-unsafe)
 }
 //null scene_change_transmission(string scene, string transmission);[NOT_IMPLEMENTED_YET];0;
 void CodeExecutor::scene_change_transmission(Instance*) {
 	std::string transmission = StackIn_s;
 	std::string scene = StackIn_s;
 }
+
 //null scene_change(string scene);Change scene to <scene>;This is quick change, for transmission use scene_change_transmission[NOT_IMPLEMENTED_YET];
 void CodeExecutor::scene_change(Instance*) {
-	Core::GetInstance()->ChangeScene(StackIn_s);
+	Core::ChangeScene(StackIn_s);
 }
+
+//null scene_set_level(int level);Set current level to <int> and reload scene;
+void CodeExecutor::scene_set_level(Instance*) {
+	Scene::Start(StackIn_i);
+}
+
 //float get_direction_of(instance target);Return direction of <instance> instance in degree (-180 : 180);Use with collision_get_collider, if target not exists return own direction
 void CodeExecutor::get_direction_of(Instance* sender) {
-	const Instance* target = StackIn_ins;
-	if (target == nullptr) {
+	if (const Instance* target = StackIn_ins; target == nullptr) {
 		StackOut_f(Convert::RadiansToDegree(sender->Direction));
 	}
 	else {
@@ -580,14 +586,14 @@ void CodeExecutor::instance_spawn(Instance*) {
 	const float y = StackIn_f;
 	const float x = StackIn_f;
 	const std::string obj_name = StackIn_s;
-	Instance* ref = Core::GetCurrentScene()->CreateInstance(obj_name, x, y);
+	Instance* ref = Scene::CreateInstance(obj_name, x, y);
 	StackOut_ins(ref);
 }
 //instance instance_spawn_on_point(string name, point xy);Spawn object <string> at (<point>) and return reference to it;Ypu can use reference to pass arguments;
 void CodeExecutor::instance_spawn_on_point(Instance*) {
 	const SDL_FPoint xy = StackIn_p;
 	const std::string obj_name = StackIn_s;
-	Instance* ref = Core::GetCurrentScene()->CreateInstance(obj_name, xy.x, xy.y);
+	Instance* ref = Scene::CreateInstance(obj_name, xy.x, xy.y);
 	StackOut_ins(ref);
 }
 //null instance_create(string name, float x, float y);Spawn object <string> at (<float>,<float>) in current scene;This not return reference;
@@ -595,7 +601,7 @@ void CodeExecutor::instance_create(Instance*) {
 	const float y = StackIn_f;
 	const float x = StackIn_f;
 	const std::string obj_name = StackIn_s;
-	Core::GetCurrentScene()->CreateInstance(obj_name, x, y);
+	Scene::CreateInstance(obj_name, x, y);
 }
 //null set_direction_for_target(instance target, float direction);Set <instance> direction to <float> value in degree (-180 : 180);You can get reference from id of instance
 void CodeExecutor::set_direction_for_target(Instance*) {
@@ -664,7 +670,7 @@ void CodeExecutor::get_point_y(Instance*) {
 void CodeExecutor::collision_push_other(Instance* self) {
 	const bool myself = StackIn_b;
 
-	Instance* other = Core::GetCurrentScene()->CurrentCollisionInstance;
+	Instance* other = Core::Executor()->CollisionGetTarget();
 	if (other == nullptr) return;
 
 	const float direction = std::atan2f(other->PosY - self->PosY, other->PosX - self->PosX);
@@ -758,7 +764,7 @@ void CodeExecutor::gui_change_visibility(Instance*)
 	const bool visible = StackIn_b;
 	const std::string guiTag = StackIn_s;
 
-	Gui::GuiElementTemplate* element = Core::GetCurrentScene()->GuiSystem.Element(guiTag);
+	Gui::GuiElementTemplate* element = Scene::GuiSystem().Element(guiTag);
 	if (element == nullptr) return;
 	element->SetVisible(visible);
 }
@@ -768,7 +774,7 @@ void CodeExecutor::gui_change_enabled(Instance*)
 	const bool enable = StackIn_b;
 	const std::string guiTag = StackIn_s;
 
-	Gui::GuiElementTemplate* element = Core::GetCurrentScene()->GuiSystem.Element(guiTag);
+	Gui::GuiElementTemplate* element = Scene::GuiSystem().Element(guiTag);
 	if (element == nullptr) return;
 	element->SetEnabled(enable);
 }
@@ -777,8 +783,8 @@ void CodeExecutor::code_execute_trigger(Instance*)
 {
 	const std::string trigger = StackIn_s;
 	Core::Executor()->ExecuteCode(
-		Core::GetCurrentScene()->GetVariableHolder(),
-		Core::GetCurrentScene()->GetTriggerData(trigger));
+		Scene::GetCurrentScene()->GetVariableHolder(),
+		Scene::GetCurrentScene()->GetTriggerData(trigger));
 
 }
 //null code_wait(int milliseconds);Suspend this trigger for <int> milliseconds.;This suspend future execution of this trigger until time have pass.
@@ -832,7 +838,7 @@ void CodeExecutor::get_instance_position_y(Instance*)
 void CodeExecutor::instance_create_point(Instance*) {
 	const SDL_FPoint xy = StackIn_p;
 	const std::string obj_name = StackIn_s;
-	Core::GetCurrentScene()->CreateInstance(obj_name, xy.x, xy.y);
+	Scene::CreateInstance(obj_name, xy.x, xy.y);
 }
 
 //null instance_delete_other(instance instance);Delete <instance>;
@@ -849,7 +855,7 @@ void CodeExecutor::instance_delete_other(Instance*) {
 //instance instance_find_by_tag(string tag);Find instance by tag: <string>;All tags must be unique, else returned instance is first found;
 void CodeExecutor::instance_find_by_tag(Instance*) {
 	const std::string tag = StackIn_s;
-	Instance* instance = Core::GetCurrentScene()->GetInstanceByTag(tag);
+	Instance* instance = Scene::GetInstanceByTag(tag);
 	StackOut_ins(instance);
 }
 
@@ -878,16 +884,16 @@ void CodeExecutor::instance_alive(Instance*) {
 
 //int scene_get_width();Get scene width;
 void CodeExecutor::scene_get_width(Instance*) {
-	StackOut_i(Core::GetCurrentScene()->GetWidth());
+	StackOut_i(Scene::GetCurrentScene()->GetWidth());
 }
 //int scene_get_height();Get scene height;
 void CodeExecutor::scene_get_height(Instance*) {
-	StackOut_i(Core::GetCurrentScene()->GetHeight());
+	StackOut_i(Scene::GetCurrentScene()->GetHeight());
 }
 
 //null collision_bounce();Change direction of this object, bounce of other.;This trigger works only in OnCollision event!
 void CodeExecutor::collision_bounce(Instance* sender) {
-	Instance* target = Core::GetCurrentScene()->CurrentCollisionInstance;
+	Instance* target = Core::Executor()->CollisionGetTarget();
 	// all error checks is in Physics
 	Physics::BounceInstance(sender, target);
 }
@@ -896,11 +902,11 @@ void CodeExecutor::collision_bounce(Instance* sender) {
 void CodeExecutor::gui_get_slider_value(Instance*) {
 	const std::string gui_tag = StackIn_s;
 	try {
-		const GuiElement::Slider* element = dynamic_cast<GuiElement::Slider*>(Core::GetCurrentScene()->GuiSystem.GetElementById(gui_tag));
+		const GuiElement::Slider* element = dynamic_cast<GuiElement::Slider*>(Scene::GuiSystem().GetElementById(gui_tag));
 		if (element == nullptr)
 		{
 			// error
-			ASSERT(true, "element not found id='" + gui_tag + "'");
+			ASSERT(true, "element not found id='" + gui_tag + "'")
 			Break();
 			return;
 		}
@@ -908,7 +914,7 @@ void CodeExecutor::gui_get_slider_value(Instance*) {
 	} catch (...)
 	{
 		// error cast
-		ASSERT(true, "error dynamic_cast<GuiElement::Slider*>");
+		ASSERT(true, "error dynamic_cast<GuiElement::Slider*>")
 	}
 }
 
@@ -916,7 +922,7 @@ void CodeExecutor::gui_get_slider_value(Instance*) {
 void CodeExecutor::gui_get_check_box_value(Instance*) {
 	const std::string gui_tag = StackIn_s;
 	try {
-		const GuiElement::CheckButton* element = dynamic_cast<GuiElement::CheckButton*>(Core::GetCurrentScene()->GuiSystem.GetElementById(gui_tag));
+		const GuiElement::CheckButton* element = dynamic_cast<GuiElement::CheckButton*>(Scene::GuiSystem().GetElementById(gui_tag));
 		if (element == nullptr)
 		{
 			// error
@@ -937,7 +943,7 @@ void CodeExecutor::gui_get_check_box_value(Instance*) {
 void CodeExecutor::gui_get_drop_down_selected_index(Instance*) {
 	const std::string gui_tag = StackIn_s;
 	try {
-		const GuiElement::DropDownList* element = dynamic_cast<GuiElement::DropDownList*>(Core::GetCurrentScene()->GuiSystem.GetElementById(gui_tag));
+		const GuiElement::DropDownList* element = dynamic_cast<GuiElement::DropDownList*>(Scene::GuiSystem().GetElementById(gui_tag));
 		if (element == nullptr)
 		{
 			// error
@@ -950,7 +956,7 @@ void CodeExecutor::gui_get_drop_down_selected_index(Instance*) {
 	catch (...)
 	{
 		// error cast
-		ASSERT(true, "error dynamic_cast<GuiElement::DropDownList*>");
+		ASSERT(true, "error dynamic_cast<GuiElement::DropDownList*>")
 	}
 }
 
@@ -958,11 +964,11 @@ void CodeExecutor::gui_get_drop_down_selected_index(Instance*) {
 void CodeExecutor::gui_get_drop_down_selected_value(Instance*) {
 	const std::string gui_tag = StackIn_s;
 	try {
-		const GuiElement::DropDownList* element = dynamic_cast<GuiElement::DropDownList*>(Core::GetCurrentScene()->GuiSystem.GetElementById(gui_tag));
+		const GuiElement::DropDownList* element = dynamic_cast<GuiElement::DropDownList*>(Scene::GuiSystem().GetElementById(gui_tag));
 		if (element == nullptr)
 		{
 			// error
-			ASSERT(true, "element not found id='" + gui_tag + "'");
+			ASSERT(true, "element not found id='" + gui_tag + "'")
 			Break();
 			return;
 		}
@@ -971,7 +977,7 @@ void CodeExecutor::gui_get_drop_down_selected_value(Instance*) {
 	catch (...)
 	{
 		// error cast
-		ASSERT(true, "error dynamic_cast<GuiElement::DropDownList*>");
+		ASSERT(true, "error dynamic_cast<GuiElement::DropDownList*>")
 	}
 }
 
@@ -980,11 +986,11 @@ void CodeExecutor::gui_set_slider_value(Instance*) {
 	const std::string gui_tag = StackIn_s;
 	const int value = StackIn_i;
 	try {
-		GuiElement::Slider* element = dynamic_cast<GuiElement::Slider*>(Core::GetCurrentScene()->GuiSystem.GetElementById(gui_tag));
+		GuiElement::Slider* element = dynamic_cast<GuiElement::Slider*>(Scene::GuiSystem().GetElementById(gui_tag));
 		if (element == nullptr)
 		{
 			// error
-			ASSERT(true, "element not found id='" + gui_tag + "'");
+			ASSERT(true, "element not found id='" + gui_tag + "'")
 			Break();
 			return;
 		}
@@ -993,7 +999,7 @@ void CodeExecutor::gui_set_slider_value(Instance*) {
 	catch (...)
 	{
 		// error cast
-		ASSERT(true, "error dynamic_cast<GuiElement::Slider*>");
+		ASSERT(true, "error dynamic_cast<GuiElement::Slider*>")
 	}
 }
 
@@ -1002,11 +1008,11 @@ void CodeExecutor::gui_set_slider_value_min(Instance*) {
 	const std::string gui_tag = StackIn_s;
 	const int value = StackIn_i;
 	try {
-		GuiElement::Slider* element = dynamic_cast<GuiElement::Slider*>(Core::GetCurrentScene()->GuiSystem.GetElementById(gui_tag));
+		GuiElement::Slider* element = dynamic_cast<GuiElement::Slider*>(Scene::GuiSystem().GetElementById(gui_tag));
 		if (element == nullptr)
 		{
 			// error
-			ASSERT(true, "element not found id='" + gui_tag + "'");
+			ASSERT(true, "element not found id='" + gui_tag + "'")
 			Break();
 			return;
 		}
@@ -1015,7 +1021,7 @@ void CodeExecutor::gui_set_slider_value_min(Instance*) {
 	catch (...)
 	{
 		// error cast
-		ASSERT(true, "error dynamic_cast<GuiElement::Slider*>");
+		ASSERT(true, "error dynamic_cast<GuiElement::Slider*>")
 	}
 }
 
@@ -1024,11 +1030,11 @@ void CodeExecutor::gui_set_slider_value_max(Instance*) {
 	const std::string gui_tag = StackIn_s;
 	const int value = StackIn_i;
 	try {
-		GuiElement::Slider* element = dynamic_cast<GuiElement::Slider*>(Core::GetCurrentScene()->GuiSystem.GetElementById(gui_tag));
+		GuiElement::Slider* element = dynamic_cast<GuiElement::Slider*>(Scene::GuiSystem().GetElementById(gui_tag));
 		if (element == nullptr)
 		{
 			// error
-			ASSERT(true, "element not found id='" + gui_tag + "'");
+			ASSERT(true, "element not found id='" + gui_tag + "'")
 			Break();
 			return;
 		}
@@ -1037,7 +1043,7 @@ void CodeExecutor::gui_set_slider_value_max(Instance*) {
 	catch (...)
 	{
 		// error cast
-		ASSERT(true, "error dynamic_cast<GuiElement::Slider*>");
+		ASSERT(true, "error dynamic_cast<GuiElement::Slider*>")
 	}
 }
 
@@ -1046,11 +1052,11 @@ void CodeExecutor::gui_set_slider_value_step(Instance*) {
 	const std::string gui_tag = StackIn_s;
 	const int value = StackIn_i;
 	try {
-		GuiElement::Slider* element = dynamic_cast<GuiElement::Slider*>(Core::GetCurrentScene()->GuiSystem.GetElementById(gui_tag));
+		GuiElement::Slider* element = dynamic_cast<GuiElement::Slider*>(Scene::GuiSystem().GetElementById(gui_tag));
 		if (element == nullptr)
 		{
 			// error
-			ASSERT(true, "element not found id='" + gui_tag + "'");
+			ASSERT(true, "element not found id='" + gui_tag + "'")
 			Break();
 			return;
 		}
@@ -1059,7 +1065,7 @@ void CodeExecutor::gui_set_slider_value_step(Instance*) {
 	catch (...)
 	{
 		// error cast
-		ASSERT(true, "error dynamic_cast<GuiElement::Slider*>");
+		ASSERT(true, "error dynamic_cast<GuiElement::Slider*>")
 	}
 }
 
@@ -1068,11 +1074,11 @@ void CodeExecutor::gui_set_check_box_value(Instance*) {
 	const std::string gui_tag = StackIn_s;
 	const bool value = StackIn_b;
 	try {
-		GuiElement::CheckButton* element = dynamic_cast<GuiElement::CheckButton*>(Core::GetCurrentScene()->GuiSystem.GetElementById(gui_tag));
+		GuiElement::CheckButton* element = dynamic_cast<GuiElement::CheckButton*>(Scene::GuiSystem().GetElementById(gui_tag));
 		if (element == nullptr)
 		{
 			// error
-			ASSERT(true, "element not found id='" + gui_tag + "'");
+			ASSERT(true, "element not found id='" + gui_tag + "'")
 			Break();
 			return;
 		}
@@ -1081,7 +1087,7 @@ void CodeExecutor::gui_set_check_box_value(Instance*) {
 	catch (...)
 	{
 		// error cast
-		ASSERT(true, "error dynamic_cast<GuiElement::CheckButton*>");
+		ASSERT(true, "error dynamic_cast<GuiElement::CheckButton*>")
 	}
 }
 
@@ -1090,11 +1096,11 @@ void CodeExecutor::gui_set_drop_down_selected_index(Instance*) {
 	const std::string gui_tag = StackIn_s;
 	const int value = StackIn_i;
 	try {
-		GuiElement::DropDownList* element = dynamic_cast<GuiElement::DropDownList*>(Core::GetCurrentScene()->GuiSystem.GetElementById(gui_tag));
+		GuiElement::DropDownList* element = dynamic_cast<GuiElement::DropDownList*>(Scene::GuiSystem().GetElementById(gui_tag));
 		if (element == nullptr)
 		{
 			// error
-			ASSERT(true, "element not found id='" + gui_tag + "'");
+			ASSERT(true, "element not found id='" + gui_tag + "'")
 			Break();
 			return;
 		}
@@ -1103,7 +1109,7 @@ void CodeExecutor::gui_set_drop_down_selected_index(Instance*) {
 	catch (...)
 	{
 		// error cast
-		ASSERT(true, "error dynamic_cast<GuiElement::DropDownList*>");
+		ASSERT(true, "error dynamic_cast<GuiElement::DropDownList*>")
 	}
 }
 
@@ -1121,7 +1127,7 @@ void CodeExecutor::system_set_video_resolution(Instance*) {
 	if (width == 0 || height == 0)
 	{
 		// error
-		ASSERT(true, "error argument can not convert to int");
+		ASSERT(true, "error argument can not convert to int")
 	}
 	Core::Graphic.SetScreenResolution(width, height);
 	Core::Graphic.Apply();
@@ -1257,4 +1263,13 @@ void CodeExecutor::sprite_set_angle(Instance* sender) {
 //instance self();Get self reference
 void CodeExecutor::self(Instance* sender) {
 	StackOut_ins(sender);
+}
+
+//int scene_count_instance_by_tag(string tag);Count instances in current scene by <string> tag;
+void CodeExecutor::scene_count_instance_by_tag(Instance* sender) {
+	StackOut_i(Scene::GetInstancesCountByTag(StackIn_s));
+}
+//int scene_count_instance_by_name(string name);Count instances in current scene by <string> name;
+void CodeExecutor::scene_count_instance_by_name(Instance* sender) {
+	StackOut_i(Scene::GetInstancesCountByName(StackIn_s));
 }

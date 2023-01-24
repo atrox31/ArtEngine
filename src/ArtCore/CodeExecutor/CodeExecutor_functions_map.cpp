@@ -68,6 +68,7 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["get_random_range"] = &CodeExecutor::get_random_range;
 	FunctionsMap["scene_change_transmission"] = &CodeExecutor::scene_change_transmission;
 	FunctionsMap["scene_change"] = &CodeExecutor::scene_change;
+	FunctionsMap["scene_set_level"] = &CodeExecutor::scene_set_level;
 	FunctionsMap["get_direction_of"] = &CodeExecutor::get_direction_of;
 	FunctionsMap["instance_spawn"] = &CodeExecutor::instance_spawn;
 	FunctionsMap["instance_spawn_on_point"] = &CodeExecutor::instance_spawn_on_point;
@@ -142,5 +143,7 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["math_abs"] = &CodeExecutor::math_abs;
 	FunctionsMap["sprite_set_angle"] = &CodeExecutor::sprite_set_angle;
 	FunctionsMap["self"] = &CodeExecutor::self;
+	FunctionsMap["scene_count_instance_by_tag"] = &CodeExecutor::scene_count_instance_by_tag;
+	FunctionsMap["scene_count_instance_by_name"] = &CodeExecutor::scene_count_instance_by_name;
 }
 //end of file
