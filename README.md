@@ -61,11 +61,11 @@ Every frame has seven phases.
 
 ## Assets
 There are 5 asset types:
-1. Texture <- 
-2. Sprite <- 
-3. Music <- 
-4. Sound <- 
-5. Font <- 
+1. Texture <- Simple png file, good if have power of 2 dimensions
+2. Sprite <- Collection of textures, can be animated. Contains mask used by On Click event.
+3. Music <- Music file, can be played in background.
+4. Sound <- Short audio file, can be played in specyfic location (3D audio)
+5. Font <- Font used to draw on screen
 
 ## Objects (Instances) aka Entity
 Objects are defined in the editor and may have a body, sprite, script, and other properties. They are spawned in the scene and have a unique ID. <br>
