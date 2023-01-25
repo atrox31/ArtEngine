@@ -6,7 +6,7 @@ The whole system consists of 3 components: engine, editor and compilator. For mo
 
 ## Compilation
 ArtCore Engine is created in Visual Studio 2022. There is no cmake file to create new projects. <br>
-There is no aditional depedences, project include all nessesary files. The only exception are tests, for which there is a Google test API: <br>
+There is no aditional depedences, project include all necessary files. The only exception are tests, for which there is a Google test API: <br>
 To install using vcpkg type:<br>
 > vcpkg gtest:x64-windows 
 <br>
@@ -14,10 +14,10 @@ This is included as source files:<br>
 SDL2 (input and system), SDL2_GPU (graphic render), PHYSFS (game archive), JSON (Nlohmann version), and PLF (for data structures and dynamic containers)
 
 ## Game archive
-Game engines need game data archives to run. Program loads it from main directory or gets path from starting arguments (all arguments are listed later)<br>
-* game.dat    <- contains main game scripts, object definitions, and scene definitions. also contains basic core files like the default font, script library, and shaders.
-* assets.pak    <- contains all game assets: sprites, textures, music, sounds, and fonts.
-* Platform.dat - The first loaded file contains the configuration file and user saves and data. In setup.ini, there are sdl or openGL starting arguments. <br>
+Game engine need game data archives to run. Program loads it from main directory or gets path from starting arguments (all arguments are listed later)<br>
+* game.dat <- contains main game scripts, object definitions, and scene definitions. also contains basic core files like the default font, script library, and shaders.
+* assets.pak <- contains all game assets: sprites, textures, music, sounds, and fonts.
+* Platform.dat <- The first loaded file contains the configuration file and user saves and data. In setup.ini, there are sdl or openGL starting arguments. <br>
 engine using physfs archives to mount and read data from archives. All assets are loaded when the game starts.
 
 ## Configurations
@@ -54,21 +54,21 @@ This is the way to add new functions to the ArtScript language, and execute it i
 ## Debug mode and game console
 Engine have runtime console, to run press HOME button on keyboard. Console contains all game logs and warrings and can execute simple commands (more later).<br>
 To enable debug mode, compile with AC_ENABLE_DEBUG_MODE in main.h and press F1 in the game. The debug menu contains information about spawned instances and measures performance.
-* Performance (F2)  Show memory info. There is global stack size, must be always 0, otherwise game have memory leak. More about global stacking later.
-* Instance info (F3) Show all instance name#id and world position. ID is important for the spy window.
+* Performance (F2)Â <- Show memory info. There is global stack size, must be always 0, otherwise game have memory leak. More about global stacking later.
+* Instance info (F3) <- Show all instance name#id and world position. ID is important for the spy window.
 * Collider`s (F4) <- Draw blue frame of instances collision mask (body).
 * Direction`s (F5) <- Draw instances' directions as a yellow-green line.
 * Spy window (F6) <- Show all instance data, variables, and other info. To activate must type in game console "spy [id]". For instance, I would press F3.
-* Performance counters (F7): Show time in millisecconds about game indywidual game update loop phases.
+* Performance counters (F7) <- Show time in millisecconds about game indywidual game update loop phases.
 
 ## Engine workflow
 Every frame has seven phases.
 1. ProcessEvents <- Process all user input and system events, like mouse keyboard or game controller.
-2. ProcessStep: Main logic update for every instance; first spawn all new instances, later check for events, and execute them if they occur.
-3. ProcessPhysics: Check all collisions and move instances if needed.
+2. ProcessStep <- Main logic update for every instance; first spawn all new instances, later check for events, and execute them if they occur.
+3. ProcessPhysics <- Check all collisions and move instances if needed.
 4. ProcessSceneRender <- Render all instances on scene.
 5. ProcessPostProcessRender <- Render game interface (gui system) and apply post process.
-6. ProcessSystemRender: Render console and debug info
+6. ProcessSystemRender <- Render console and debug info
 7. Flip everything on the screen.
 
 ## Assets
@@ -99,11 +99,11 @@ Each instance can have programmed events; if they occur and meet the conditions,
 2. On destroy <- when instance is deleted
 3. Step <- logic update on every frame
 4. On view enter/leave <- when instance is outside screen or enters screen
-5. Mouse event (pressed, released, mask pressed)  on global mouse events. Every sprite can have mask, this mean if sprite has clicked.
+5. Mouse event (pressed, released)Â on global mouse events. (on Click) if sprite mask has been pressed.
 6. Keyboard event "on key pressed or released"
-(in version 1.0)
-7. Controller <- button or joystick (not implemented yet)
-8. Toutch screen (as mouse event) (not implemented yet)
+
+7. Controller <- button or joystick (not implemented yet) (in version 1.0)
+8. Toutch screen (as mouse event) (not implemented yet) (in version 1.0)
 
 ## Body, mask, collisions
 Every instance can have a body, rectangle, or circle. They are defined in the editor or via script. There is an option to copy the body from the sprite mask. <br>
