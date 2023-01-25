@@ -421,5 +421,8 @@
     <None Include="src\physfs-release-3.2.0\src\Makefile.os2">
       <Filter>outsource\physfs</Filter>
     </None>
+    <None Include="README.md" />
+    <None Include="packages.config" />
+    <None Include="ArtScript.md" />
   </ItemGroup>
 </Project>
