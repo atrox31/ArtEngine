@@ -110,14 +110,7 @@ bool Scene::LoadFromFile(const std::string& file)
 			continue;
 		}
 		// spawn instance to scene but get copy to first instance list
-		_instances_scene.emplace_back(
-			CreateInstance(
-				data[0],
-				static_cast<float>(Func::TryGetInt(data[1])),
-				static_cast<float>(Func::TryGetInt(data[2])),
-				this
-			)
-		);
+		_instances_scene.emplace_back(data[0], SDL_FPoint{ static_cast<float>(Func::TryGetInt(data[1])),	static_cast<float>(Func::TryGetInt(data[2])) });
 	}
 
 	// gui
@@ -203,8 +196,6 @@ bool Scene::Create(const std::string& name)
 	_current_scene->_level_current = _current_scene->_level_last >= 0 ? 0 : -1;
 
 	_current_scene->SpawnAll(); // scene instances
-	Core::Executor()->ExecuteCode(_current_scene->_variables_holder, _current_scene->GetTriggerData(_current_scene->_begin_trigger));
-	_current_scene->SpawnAll(); // scene on create trigger may have some instances to spawn
 	
 	return true;
 }
@@ -212,51 +203,38 @@ bool Scene::Create(const std::string& name)
 plf_it<Instance*> Scene::ColonyErase(const plf_it<Instance*>& it)
 {
 	_current_scene->_instances_size--;
-	// if instance is scene scene instance mark as dead.
-	// respawn on scene reset
+	
+	// inner deleter
+	(*it)->Delete();
 
-	if (!_current_scene->_instances_scene.empty()
-		&& std::ranges::find(_current_scene->_instances_scene, *it) != _current_scene->_instances_scene.end())
-	{
-		(*it)->Alive = false;
-	}
-
+	delete (*it);
 	return _current_scene->_instance_colony.erase(it);
 }
 
-void Scene::Reset(const bool hard_reset)
+void Scene::Reset()
 {
 	ClearListNewInstance(_current_scene);
-	if (hard_reset) {
-		ClearListColonyInstance(_current_scene);
-		for (Instance* instances_scene : _current_scene->_instances_scene)
-		{
-			CreateInstance(instances_scene);
-		}
-	}
-	else {
-		// spawn only dead instances
-		for (Instance* instances_scene : _current_scene->_instances_scene)
-		{
-			if (!instances_scene->Alive)
-			{
-				instances_scene->Alive = true;
-				_current_scene->_instances_new.emplace_back(instances_scene);
-				_current_scene->_is_any_new_instances = true;
-			}
-		}
+	ClearListColonyInstance(_current_scene);
+
+	// spawn scene instances
+	for (std::pair<std::string, SDL_FPoint>& instances_scene : _current_scene->_instances_scene)
+	{
+		Scene::CreateInstance(instances_scene.first, instances_scene.second.x, instances_scene.second.y);
 	}
 
 	// spawn level instances
 	_current_scene->SpawnLevelInstances();
 	_current_scene->SpawnAll();	// level instances
+
+	Core::Executor()->ExecuteCode(_current_scene->_variables_holder, _current_scene->GetTriggerData(_current_scene->_begin_trigger));
+	_current_scene->SpawnAll(); // scene on create trigger may have some instances to spawn
 }
 
 bool Scene::Start(const int level)
 {
 	if (level > _current_scene->_level_last) return false; // level not exists
 	_current_scene->_level_current = level;
-	Reset(false);
+	Reset();
 	return true;
 }
 
@@ -265,7 +243,7 @@ bool Scene::StartNextLevel()
 	if(_current_scene->_level_current < _current_scene->_level_last)
 	{
 		_current_scene->_level_current++;
-		Reset(false);
+		Reset();
 		return true;
 	}
 	return false;
@@ -354,7 +332,9 @@ std::vector<Instance*> Scene::GetInstancesByTag(const std::string& tag)
 {
 	std::vector<Instance*> _return;
 	for (Instance* instance : _current_scene->_instance_colony) {
-		if (instance->Tag == tag) _return.push_back(instance);
+		if (instance->Tag == tag) {
+			_return.push_back(instance);
+		}
 	}
 	return _return;
 }
@@ -362,7 +342,9 @@ std::vector<Instance*> Scene::GetInstancesByName(const std::string& name)
 {
 	std::vector<Instance*> _return;
 	for (Instance* instance : _current_scene->_instance_colony) {
-		if (instance->Name == name) _return.push_back(instance);
+		if (instance->Name == name) {
+			_return.push_back(instance);
+		}
 	}
 	return _return;
 }
@@ -401,6 +383,7 @@ void Scene::ClearListColonyInstance(Scene* target)
 {
 	if (!target->_instance_colony.empty()) {
 		for (plf_it<Instance*> it = target->_instance_colony.begin(); it != target->_instance_colony.end(); ) {
+			(*it)->Delete();
 			delete (*it);
 			it = target->_instance_colony.erase(it);
 		}

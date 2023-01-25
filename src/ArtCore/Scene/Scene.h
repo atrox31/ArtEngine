@@ -37,9 +37,8 @@ public: // common methods
 
 	/**
 	 * \brief Clear all level data, reset current level.
-	 * \param hard_reset If true reset entire scene, if false only level.
 	 */
-	static void Reset(bool hard_reset);
+	static void Reset();
 
 	/**
 	 * \brief Start new level in current scene
@@ -147,7 +146,7 @@ private:
 	// list of instances ready to spawn
 	std::vector<Instance*> _instances_new{};
 	// list of scene instances, there are not deleted on level change
-	std::vector<Instance*> _instances_scene{};
+	std::vector<std::pair<std::string, SDL_FPoint>> _instances_scene{};
 
 	// Object that holds all scene variables, must be this way
 	// because script system is designed this way
