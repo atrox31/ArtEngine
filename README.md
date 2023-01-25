@@ -8,7 +8,8 @@ The whole system consists of 3 components: engine, editor and compilator. For mo
 ArtCore Engine is created in Visual Studio 2022. There is no cmake file to create new projects. <br>
 There is no aditional depedences, project include all nessesary files. The only exception are tests, for which there is a Google test API: <br>
 To install using vcpkg type:<br>
-> vcpkg gtest:x64-windows <br>
+> vcpkg gtest:x64-windows 
+<br>
 This is included as source files:<br>
 SDL2 (input and system), SDL2_GPU (graphic render), PHYSFS (game archive), JSON (Nlohmann version), and PLF (for data structures and dynamic containers)
 
