@@ -48,7 +48,7 @@ To enable debug mode, compile with AC_ENABLE_DEBUG_MODE in main.h and press F1 i
 * Spy window (F6) <- Show all instance data, variables, and other info. To activate must type in game console "spy [id]". For instance, I would press F3.
 * Performance counters (F7): Show time in millisecconds about game indywidual game update loop phases.
 
-Engine workflow
+## Engine workflow
 Every frame has seven phases.
 1. ProcessEvents <- Process all user input and system events, like mouse keyboard or game controller.
 2. ProcessStep: Main logic update for every instance; first spawn all new instances, later check for events, and execute them if they occur.
@@ -60,10 +60,10 @@ Every frame has seven phases.
 
 ## Assets
 There are 5 asset types:
-1. Texture
-2. Sprite
-3. Music
-4. Sound
+1. Texture <- 
+2. Sprite <- 
+3. Music <- 
+4. Sound <- 
 5. Font <- 
 
 ## Objects (Instances) aka Entity
