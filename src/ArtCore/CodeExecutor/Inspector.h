@@ -3,7 +3,9 @@
 #include <string>
 #include "ArtCode.h"
 #include "ArtCore/Functions/Func.h"
+#include "ArtCore/Gui/Console.h"
 #include "ArtCore/_Debug/Debug.h"
+#include "ArtCore/_Debug/Time.h"
 
 
 class Inspector final
@@ -93,16 +95,20 @@ public:
 
 	std::string GetString() {
 		_pos++;
-		std::string string;
-		while (_pos < _size) {
-			if (IsEnd()) return string;
-			if (_code[_pos] == '\1') {
-				_current_bit = _code[_pos];
-				return string;
-			}
-			string += static_cast<char>(_code[_pos++]);
-		}
-		return "";
+
+		// search for string end
+		const Sint64 copyBegin = _pos;
+		while (_pos < _size && _code[_pos++] != '\1') {}
+		const Sint64 copyEnd = _pos - 1;
+		const Sint64 copySize = copyEnd - copyBegin;
+
+		char* output = new char[copySize + 1];
+		memcpy(output, _code + copyBegin, copySize);
+
+		output[copySize] = '\0';
+		_current_bit = _code[_pos--];
+
+		return output;
 	}
 
 	// skip x bytes and return isEnd()
