@@ -45,6 +45,7 @@ To make archive run "create_core_tar.bat" in the main directory, and open in Art
 ArtLibGenerator is a program that generates a library of functions for the ArtScript language. <br>
 It`s open "src/ArtCore/CodeExecutor/CodeExecutor_functions.cpp" and search function comments:<br>
 >//return_type function_name(type argument, ...);Some description
+<br>
 Then create function declaration in "CodeExecutor.h" and "CodeExecutor_functions_map.cpp"<br>
 This is the way to add new functions to the ArtScript language, and execute it in runtime.
 
