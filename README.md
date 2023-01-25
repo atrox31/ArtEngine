@@ -36,6 +36,18 @@ There are two files in the header that are compiled to executables: console font
 Engine is designed to run only prepared script files, not as standalone program. All components are written without
 depetences only on one platform for future porting to other platforms.<br>
 
+## Scripts
+### Core.tar
+Core.tar is a file that contains all core files for the engine. It is used to create a new game archive. <br>
+To make archive run "create_core_tar.bat" in the main directory, and open in ArtCore Editor (Project->Update core)<br>
+
+### ArtLibGenerator.exe
+ArtLibGenerator is a program that generates a library of functions for the ArtScript language. <br>
+It`s open "src/ArtCore/CodeExecutor/CodeExecutor_functions.cpp" and search function comments:<br>
+>//return_type function_name(type argument, ...);Some description
+Then create function declaration in "CodeExecutor.h" and "CodeExecutor_functions_map.cpp"<br>
+This is the way to add new functions to the ArtScript language, and execute it in runtime.
+
 # Game Engine
 <hr>
 
