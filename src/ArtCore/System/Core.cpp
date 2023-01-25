@@ -849,7 +849,7 @@ void Core::CoreDebug::Draw() const
     {
         if (Scene::IsAnyInstances()) {
             for (plf::colony<Instance*>::iterator it = Scene::ColonyGetBegin();
-                it != Scene::ColonyGetEnd();)
+                it != Scene::ColonyGetEnd(); ++it)
             {
                 Instance* instance = (*it);
 
