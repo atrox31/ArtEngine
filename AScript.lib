@@ -63,6 +63,8 @@ int get_random_range(int min, int max);Get random value [<int>,<int>).;0 is incl
 null scene_change_transmission(string scene, string transmission);[NOT_IMPLEMENTED_YET];0;
 null scene_change(string scene);Change scene to <scene>;This is quick change, for transmission use scene_change_transmission[NOT_IMPLEMENTED_YET];
 null scene_set_level(int level);Set current level to <int> and reload scene;
+null scene_go_to_next_level();Load next level if exists;
+bool scene_have_next_level();Get answer if next level exists;
 float get_direction_of(instance target);Return direction of <instance> instance in degree (-180 : 180);Use with collision_get_collider, if target not exists return own direction
 instance instance_spawn(string name, float x, float y);Spawn object <string> at (<float>,<float>) and return reference to it;Ypu can use reference to pass arguments;
 instance instance_spawn_on_point(string name, point xy);Spawn object <string> at (<point>) and return reference to it;Ypu can use reference to pass arguments;
@@ -99,6 +101,8 @@ float get_instance_position_y(instance instance);Get position Y of <instance>;
 null instance_create_point(string name, point xy);Spawn object <string> at (<point>) in current scene;This not return reference;
 null instance_delete_other(instance instance);Delete <instance>;
 instance instance_find_by_tag(string tag);Find instance by tag: <string>;All tags must be unique, else returned instance is first found;
+instance instance_find_nearest_by_tag(string tag);Find nearest instance by tag: <string>;
+instance instance_find_nearest_by_name(string name);Find nearest instance by name: <string>;
 bool instance_exists(instance instance);Get current status of <instance>
 bool instance_alive(instance instance);Get current status of <instance>
 int scene_get_width();Get scene width;

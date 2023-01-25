@@ -69,6 +69,8 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["scene_change_transmission"] = &CodeExecutor::scene_change_transmission;
 	FunctionsMap["scene_change"] = &CodeExecutor::scene_change;
 	FunctionsMap["scene_set_level"] = &CodeExecutor::scene_set_level;
+	FunctionsMap["scene_go_to_next_level"] = &CodeExecutor::scene_go_to_next_level;
+	FunctionsMap["scene_have_next_level"] = &CodeExecutor::scene_have_next_level;
 	FunctionsMap["get_direction_of"] = &CodeExecutor::get_direction_of;
 	FunctionsMap["instance_spawn"] = &CodeExecutor::instance_spawn;
 	FunctionsMap["instance_spawn_on_point"] = &CodeExecutor::instance_spawn_on_point;
@@ -105,6 +107,8 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["instance_create_point"] = &CodeExecutor::instance_create_point;
 	FunctionsMap["instance_delete_other"] = &CodeExecutor::instance_delete_other;
 	FunctionsMap["instance_find_by_tag"] = &CodeExecutor::instance_find_by_tag;
+	FunctionsMap["instance_find_nearest_by_tag"] = &CodeExecutor::instance_find_nearest_by_tag;
+	FunctionsMap["instance_find_nearest_by_name"] = &CodeExecutor::instance_find_nearest_by_name;
 	FunctionsMap["instance_exists"] = &CodeExecutor::instance_exists;
 	FunctionsMap["instance_alive"] = &CodeExecutor::instance_alive;
 	FunctionsMap["scene_get_width"] = &CodeExecutor::scene_get_width;

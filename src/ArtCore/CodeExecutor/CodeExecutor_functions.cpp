@@ -572,6 +572,16 @@ void CodeExecutor::scene_set_level(Instance*) {
 	Scene::Start(StackIn_i);
 }
 
+//null scene_go_to_next_level();Load next level if exists;
+void CodeExecutor::scene_go_to_next_level(Instance*) {
+	Scene::StartNextLevel();
+}
+
+//bool scene_have_next_level();Get answer if next level exists;
+void CodeExecutor::scene_have_next_level(Instance*) {
+	StackOut_b(Scene::HaveNextLevel());
+}
+
 //float get_direction_of(instance target);Return direction of <instance> instance in degree (-180 : 180);Use with collision_get_collider, if target not exists return own direction
 void CodeExecutor::get_direction_of(Instance* sender) {
 	if (const Instance* target = StackIn_ins; target == nullptr) {
@@ -856,6 +866,40 @@ void CodeExecutor::instance_delete_other(Instance*) {
 void CodeExecutor::instance_find_by_tag(Instance*) {
 	const std::string tag = StackIn_s;
 	Instance* instance = Scene::GetInstanceByTag(tag);
+	StackOut_ins(instance);
+}
+
+//instance instance_find_nearest_by_tag(string tag);Find nearest instance by tag: <string>;
+void CodeExecutor::instance_find_nearest_by_tag(Instance* sender) {
+	const std::string tag = StackIn_s;
+	Instance* instance = nullptr;
+	float distance = FLT_MAX;
+	for(Instance* target : Scene::GetInstancesByTag(tag))
+	{
+		if(const float distance_to_target = Func::Distance(sender->PosX, sender->PosY, target->PosX, target->PosY); 
+			distance_to_target < distance)
+		{
+			distance = distance_to_target;
+			instance = target;
+		}
+	}
+	StackOut_ins(instance);
+}
+
+//instance instance_find_nearest_by_name(string name);Find nearest instance by name: <string>;
+void CodeExecutor::instance_find_nearest_by_name(Instance* sender) {
+	const std::string tag = StackIn_s;
+	Instance* instance = nullptr;
+	float distance = FLT_MAX;
+	for (Instance* target : Scene::GetInstancesByName(tag))
+	{
+		if (const float distance_to_target = Func::Distance(sender->PosX, sender->PosY, target->PosX, target->PosY);
+			distance_to_target < distance)
+		{
+			distance = distance_to_target;
+			instance = target;
+		}
+	}
 	StackOut_ins(instance);
 }
 
@@ -1269,6 +1313,7 @@ void CodeExecutor::self(Instance* sender) {
 void CodeExecutor::scene_count_instance_by_tag(Instance* sender) {
 	StackOut_i(Scene::GetInstancesCountByTag(StackIn_s));
 }
+
 //int scene_count_instance_by_name(string name);Count instances in current scene by <string> name;
 void CodeExecutor::scene_count_instance_by_name(Instance* sender) {
 	StackOut_i(Scene::GetInstancesCountByName(StackIn_s));

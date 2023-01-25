@@ -83,7 +83,7 @@ bool CodeExecutor::LoadArtLib()
 					}
 					else {
 						FunctionsList.push_back(nullptr);
-						Console::WriteLine("function '"+ tmp+ "' not found");
+						Console::WriteLine("function '"+ tmp+ "' not found in engine");
 					}
 					tmp = "";
 					break;
@@ -98,7 +98,7 @@ bool CodeExecutor::LoadArtLib()
 	
 	if (!FunctionsMap.empty()) {
 		for (const auto& key : FunctionsMap | std::views::keys) {
-			Console::WriteLine("Function: '" + key + "' not found");
+			Console::WriteLine("Function: '" + key + "' not found in lib");
 		}
 	}
 	
@@ -646,18 +646,32 @@ void CodeExecutor::SuspendedCodeExecute()
 {
 	if (!_have_suspended_code) return;
 
+	// run suspended code, some code may be added
+	const std::vector<SuspendCodeStruct>::size_type size = _suspended_code.size();
+	for (std::vector<SuspendCodeStruct>::size_type i = 0; i < size; ++i)
+	{
+		_suspended_code[i].Time -= 1000.0 * Core::DeltaTime;
+		if (_suspended_code[i].Time <= 0.0)
+		{
+			if (_suspended_code[i].Sender != nullptr
+				&& _suspended_code[i].Sender->SuspendedCodePop()) {
+				// restore script break data
+				_suspended_code[i].CodeData.Break = false;
+				// flip ifs status, to continue execute
+				Core::Executor()->_if_test_result = _suspended_code[i].IfTestState;
+				//Console::WriteLine("execute code: " + _suspended_code[i].Sender->Name);
+				Core::Executor()->h_execute_script(&_suspended_code[i].CodeData, _suspended_code[i].Sender);
+			}
+		}
+		
+	}
+
+	// delete old
+	// this is two for`s because suspended script can create new suspended script
 	for (auto it = _suspended_code.begin(); it != _suspended_code.end(); )
 	{
-		(*it).Time -= 1000.0 * Core::DeltaTime;
 		if ((*it).Time <= 0.0)
 		{
-			if ((*it).Sender->SuspendedCodePop()) {
-				// restore script break data
-				(*it).CodeData.Break = false;
-				// flip ifs status, to continue execute
-				Core::Executor()->_if_test_result = (*it).IfTestState;
-				Core::Executor()->h_execute_script(&(*it).CodeData, (*it).Sender);
-			}
 			it = _suspended_code.erase(it);
 		}
 		else {

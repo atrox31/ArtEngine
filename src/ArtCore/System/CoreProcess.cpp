@@ -1,11 +1,11 @@
 #include "Core.h"
-#include "ArtCore/Graphic/Render.h"
 #include "ArtCore/CodeExecutor/CodeExecutor.h"
-#include "ArtCore/Graphic/BackGroundRenderer.h"
-#include "ArtCore/Scene/Scene.h"
-#include "ArtCore/Physics/Physics.h"
-#include "ArtCore/System/SettingsData.h"
 #include "ArtCore/Enums/Event.h"
+#include "ArtCore/Graphic/BackGroundRenderer.h"
+#include "ArtCore/Graphic/Render.h"
+#include "ArtCore/Physics/Physics.h"
+#include "ArtCore/Scene/Scene.h"
+#include "ArtCore/System/SettingsData.h"
 
 #include "ArtCore/Graphic/ColorDefinitions.h"
 
@@ -122,7 +122,6 @@ void Core::ProcessStep(const event_bit& global_events_flag) const
             if (EVENT_BIT_TEST(event_bit::HAVE_ON_DESTROY, c_instance->EventFlag)) {
                 Executor()->ExecuteScript(c_instance, Event::EvOnDestroy);
             }
-            delete (*it);
             it = Scene::ColonyErase(it);
         }else{ 
             // instance exists and alive

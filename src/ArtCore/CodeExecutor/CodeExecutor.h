@@ -176,7 +176,7 @@ private:
 		}
 		~SuspendCodeStruct()
 		{
-			CodeExecutor::_have_suspended_code = CodeExecutor::_suspended_code.empty();
+			CodeExecutor::_have_suspended_code = !CodeExecutor::_suspended_code.empty();
 		}
 	};
 	static std::vector<SuspendCodeStruct> _suspended_code;
@@ -295,6 +295,8 @@ private:
 	Script(scene_change_transmission);
 	Script(scene_change);
 	Script(scene_set_level);
+	Script(scene_go_to_next_level);
+	Script(scene_have_next_level);
 	Script(get_direction_of);
 	Script(instance_spawn);
 	Script(instance_spawn_on_point);
@@ -331,6 +333,8 @@ private:
 	Script(instance_create_point);
 	Script(instance_delete_other);
 	Script(instance_find_by_tag);
+	Script(instance_find_nearest_by_tag);
+	Script(instance_find_nearest_by_name);
 	Script(instance_exists);
 	Script(instance_alive);
 	Script(scene_get_width);
