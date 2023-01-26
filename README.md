@@ -2,6 +2,7 @@
 This is the main executable for ArtCore games. It is a game engine that can run games created in the ArtCore Editor. <br>
 <hr>
 
+## ArtCore
 ArtCore is a 2D game engine, currently for Windows, later for Android and Linux.
 The whole system consists of 3 components: engine, editor and compilator. For more information about the editor or compiler, go to their repositories. <br>
 
