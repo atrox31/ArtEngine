@@ -1,12 +1,14 @@
 # ArtCore Engine
 This is the main executable for ArtCore games. It is a game engine that can run games created in the ArtCore Editor. <br>
 <hr>
+
+## ArtCore
 ArtCore is a 2D game engine, currently for Windows, later for Android and Linux.
-The whole system consists of 3 components: engine, editor and compilator. For more information about the editor or compiler, go to their repositories. <br>
+The whole system consists of 3 components: engine, editor and compiler. For more information about the editor or compiler, go to their repositories. <br>
 
 ## Compilation
 ArtCore Engine is created in Visual Studio 2022. There is no cmake file to create new projects. <br>
-There is no aditional depedences, project include all necessary files. The only exception are tests, for which there is a Google test API: <br>
+There is no external dependencies, project include all necessary files. The only exception are tests, for which there is a Google test API: <br>
 To install using vcpkg type:<br>
 > vcpkg gtest:x64-windows 
 <br>
@@ -14,83 +16,80 @@ This is included as source files:<br>
 SDL2 (input and system), SDL2_GPU (graphic render), PHYSFS (game archive), JSON (Nlohmann version), and PLF (for data structures and dynamic containers)
 
 ## Game archive
-Game engine need game data archives to run. Program loads it from main directory or gets path from starting arguments (all arguments are listed later)<br>
-* game.dat <- contains main game scripts, object definitions, and scene definitions. also contains basic core files like the default font, script library, and shaders.
+Game engine needs game data archives to run. Program loads them from main directory or gets path from starting arguments (all arguments are listed later)<br>
+* game.dat <- contains main game scripts, object definitions and scene definitions. Also contains basic core files like the default font, script library and shaders.
 * assets.pak <- contains all game assets: sprites, textures, music, sounds, and fonts.
-* Platform.dat <- The first loaded file contains the configuration file and user saves and data. In setup.ini, there are sdl or openGL starting arguments. <br>
-engine using physfs archives to mount and read data from archives. All assets are loaded when the game starts.
+* Platform.dat <- The first loaded file contains the configuration file and user saves and data. In setup.ini, there are SDL or openGL starting arguments. <br>
+The engine uses physfs library to read data from archives. All assets are loaded when the game starts.
 
-## Configurations
+## Configuration
 There are three configurations: debug, debug editor, and release.
-* Debug - is for debugging in Visual Studio. This configuration loads game files from the "test" directory. opens a console window and outputs every game message. Have codebrak asserts en errors.
-* DebugEditor <- is for editor debug mode. Output is redirected to the editor console. On errors try to get message and close itself.
-* Release <- Is for shipping. On warrings and small errors try to work anyway.
+* Debug - is for debugging in Visual Studio. This configuration loads game files from the "test" directory, opens a console window and outputs every game message. Has codebreak asserts on errors.
+* DebugEditor <- is for editor debug mode. Output is redirected to the editor console.
+* Release <- is for shipping. Warnings and small errors are ignored.
 All configurations catch any thrown error in the main and dumb console output to the file "current_data_and_time.log."
 
 ## Technology
 The project is targeted for x64 platforms. <br>
 The engine is written in C++ and uses SDL2, SDL2_gpu, PhysFS, and JSON. <br>
-The code is compatible with C++20. Some of used librays are writen in C but most of it have custom c++ wrappers.<br>
-SDL2 and SDL subsystems are dynamically linked and use DLLs. Most asset data structures are written in JSON. <br>
+The code is compatible with C++20. Some of used libraries are writen in C, but most of them have custom c++ wrappers.<br>
+SDL2 and SDL subsystems are dynamically linked and use DLLs. Most assets data structures are written in JSON. <br>
 There are two files in the header that are compiled to executables: console font and splash screen (the ArtCore logo). <br>
-Engine is designed to run only prepared script files, not as standalone program. All components are written without
-depetences only on one platform for future porting to other platforms.<br>
+The engine is designed to run only prepared script files, not as a standalone program. All components are written without
+relying on one platform (in the future porting to other platforms).<br>
 
 ## Scripts
 ### Core.tar
 Core.tar is a file that contains all core files for the engine. It is used to create a new game archive. <br>
-To make archive run "create_core_tar.bat" in the main directory, and open in ArtCore Editor (Project->Update core)<br>
+To make archive, run "create_core_tar.bat" in the main directory and open it in ArtCore Editor (Project->Update core)<br>
 
 ### ArtLibGenerator.exe
 ArtLibGenerator is a program that generates a library of functions for the ArtScript language. <br>
-It`s open "src/ArtCore/CodeExecutor/CodeExecutor_functions.cpp" and search function comments:<br>
->//return_type function_name(type argument, ...);Some description
-Then create function declaration in "CodeExecutor.h" and "CodeExecutor_functions_map.cpp"<br>
-This is the way to add new functions to the ArtScript language, and execute it in runtime.
+It searchs function comment, then creates function declaration in "CodeExecutor.h" and "CodeExecutor_functions_map.cpp"<br>
+This is the way to add new functions to the ArtScript language.
 
 # Game Engine
 <hr>
 
 ## Debug mode and game console
-Engine have runtime console, to run press HOME button on keyboard. Console contains all game logs and warrings and can execute simple commands (more later).<br>
+The engine has a runtime console, to run press HOME button on keyboard. Console contains all game logs and warnings and can execute simple commands (more later).<br>
 To enable debug mode, compile with AC_ENABLE_DEBUG_MODE in main.h and press F1 in the game. The debug menu contains information about spawned instances and measures performance.
-* Performance (F2) <- Show memory info. There is global stack size, must be always 0, otherwise game have memory leak. More about global stacking later.
-* Instance info (F3) <- Show all instance name#id and world position. ID is important for the spy window.
-* Collider`s (F4) <- Draw blue frame of instances collision mask (body).
-* Direction`s (F5) <- Draw instances' directions as a yellow-green line.
-* Spy window (F6) <- Show all instance data, variables, and other info. To activate must type in game console "spy [id]". For instance, I would press F3.
-* Performance counters (F7) <- Show time in millisecconds about game indywidual game update loop phases.
-
+* Performance (F2) <- Show memory info. There is a global stack size, must be always 0, otherwise game has memory leak. More about global stacking later.
+* Instance info (F3) <- Show all instances name#id and world position. ID is important for the spy window.
+* Collider`s (F4) <- Draw a blue frame of instances collision mask (body).
+* Direction`s (F5) <- Draw instances directions as a yellow-green line.
+* Spy window (F6) <- Show all instance data, variables and other info. To activate must type in the game console "spy [id]". For check instance ID, I would press F3.
+* Performance counters (F7) <- They show execution real time (each frame) of individual steps in a game loop.
 ## Engine workflow
-Every frame has seven phases.
-1. ProcessEvents <- Process all user input and system events, like mouse keyboard or game controller.
-2. ProcessStep <- Main logic update for every instance; first spawn all new instances, later check for events, and execute them if they occur.
+Every frame has seven steps:
+1. ProcessEvents <- Process all user input and system events, like mouse, keyboard or game controller.
+2. ProcessStep <- Main logic update for every instance; first spawn all new instances, later check for events and execute them if they occur.
 3. ProcessPhysics <- Check all collisions and move instances if needed.
 4. ProcessSceneRender <- Render all instances on scene.
 5. ProcessPostProcessRender <- Render game interface (gui system) and apply post process.
-6. ProcessSystemRender <- Render console and debug info
+6. ProcessSystemRender <- Render console and debug info.
 7. Flip everything on the screen.
 
 ## Assets
 There are 5 asset types:
-1. Texture <- Simple png file, good if have power of 2 dimensions
-2. Sprite <- Collection of textures, can be animated. Contains mask used by On Click event.
-3. Music <- A music file can be played in the background.
-4. Sound <- A short audio file that can be played in a specific location (3D audio)
-5. Font <- The font used to draw on screen
+1. Texture <- Simple png file.
+2. Sprite <- Collection of textures that can be animated. Contains mask used by On Click event.
+3. Music <- A music file that can be played in the background.
+4. Sound <- A short audio file that can be played in a specific location (3D audio).
+5. Font <- The font used to draw on screen.
 
 ## Objects (Instances) aka Entity
-Objects are defined in the editor and may have a body, sprite, script, and other properties. They are spawned in the scene and have a unique ID. <br>
-Each frame engine update all instances, check events and execute them if occurs. They can be destroyed by a script or by an engine. <br>
+Objects are defined in the editor and may have a body, sprite, script, and other properties. They are spawned in the scene and have unique ID's. <br>
+Each frame the engine updates all instances, checks events and executes them if occur. <br>
 Object is definition of instance, instance is spawned object. Instances can be referenced by name, tag, or id. Each ID is unique, but tags
-can be same for many instances. The scripts used by instances (and scenes) are written in ArtScript, a custom scripting language.
+can be the same for many instances. The scripts used by instances (and scenes) are written in ArtScript, a custom scripting language.
 
 ## Scene
-Scene is a container for instances. They are defined in the editor and can be loaded by script. Scenes can have a background color or background texture. <br>
-Scenes can have scripts, which are executed on scene load. Each scene has levels that contain the starting positions of objects.
-Engines need at least one scene to run. <br>
-Scene have GuiSystem (user interface) witch working independed of instances. GuiSystem can be used to create buttons, text, images, and other elements.
-Each element on gui have own events and always draw on top of screen witchout post process efect.<br>
+Scene is a container for instances. It is defined in the editor. Scenes can have a background color or background texture. <br>
+Scenes can have scripts. Each scene has levels that contain the starting positions of objects.
+The engine needs at least one scene to run. <br>
+Scene has GuiSystem (user interface) which is working regardless of instances. GuiSystem can be used to create buttons, text, images and other elements.
+Each element on Gui has his own events and is always drawn on top of a screen without post process efect.<br>
 Scene can be used for storing global variables that have not been erased between levels.
 
 ## Event system
@@ -106,11 +105,11 @@ Each instance can have programmed events; if they occur and meet the conditions,
 8. Toutch screen (as mouse event) (not implemented yet) (in version 1.0)
 
 ## Body, mask, collisions
-Every instance can have a body, rectangle, or circle. They are defined in the editor or via script. There is an option to copy the body from the sprite mask. <br>
-The instance body and sprite mask work independently. Collision event rise only for one instance, but they can reference to eachother.
-A collision event can be executed only if both instances have bodies. If one of them is missing, the collision event will not rise. <br>
+Every instance can have a body: rectangle or circle. There is an option to copy the body from the sprite mask. <br>
+The instance body and sprite mask work independently. Collision event trigger only for one instance, but they can reference to each other.
+A collision event can be executed only if both instances have bodies. <br>
 
 ## ArtScript
-ArtScript is custom scripting language, created for ArtCore Engine. It is based on Lua or Pascal but has many differences.
+ArtScript is a custom scripting language, created for ArtCore Engine. It is based on Pascal but has many differences.
 For now, it contains only basic functions and operators. There are no dynamic variables or loops. Script is compiled to bytecode and executed by a virtual machine.
-Scripts can be executed by instance or scene. For more info abut ArtScript or Compilator see ArtCompiler repo. Documentation of all script functions is in the ArtScript.md file.
+Scripts can be executed by instance or scene. For more info abut ArtScript or Compiler see ArtCompiler repo. Documentation of all script functions is in the ArtScript.md file.
