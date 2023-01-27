@@ -17,6 +17,7 @@ class CodeExecutor
 public:
 	// init
 	CodeExecutor();
+	~CodeExecutor();
 	void MapFunctions();
 	bool LoadArtLib();
 	bool LoadObjectDefinitions(const BackGroundRenderer* bgr, const int p_min, const int p_max);
@@ -211,10 +212,10 @@ private:
 	static int h_operation_music(int _operator, int val1, int val2);
 	static int h_operation_font(int _operator, int val1, int val2);
 	static SDL_FPoint h_operation_point(int _operator, SDL_FPoint val1, SDL_FPoint val2);
-	static Rect h_operation_rect(int _operator, Rect val1, Rect val2);
+	static Rect h_operation_rect(int _operator, Rect val1, const Rect& val2);
 	static SDL_Color h_operation_color(int _operator, SDL_Color val1, SDL_Color val2);
 	static std::string h_operation_string(int _operator, std::string val1, std::string val2);
-#ifdef AC_ENABLE_DEBUG_MODE
+#if AC_ENABLE_DEBUG_MODE
 	// all debug things
 public:
 	int DebugGetIfTestResultStackSize() const
@@ -276,6 +277,7 @@ private:
 	Script(get_pos_x);
 	Script(get_pos_y);
 	Script(sound_play);
+	Script(sound_play_at);
 	Script(music_play);
 	Script(sprite_next_frame);
 	Script(sprite_prev_frame);

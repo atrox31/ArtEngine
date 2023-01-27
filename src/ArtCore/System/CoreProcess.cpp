@@ -41,7 +41,7 @@ bool Core::ProcessEvents(event_bit& global_events_flag)
         switch (e.type) {
         case SDL_KEYDOWN:
         {
-#ifdef AC_ENABLE_DEBUG_MODE
+#if AC_ENABLE_DEBUG_MODE
             if (CoreDebug.ProcessEvent(&e)) {
                 return false;
             }
@@ -267,7 +267,7 @@ void Core::ProcessPostProcessRender() const
 void Core::ProcessSystemRender() const
 {
     // DEBUG DRAW
-#ifdef _DEBUG
+#if AC_ENABLE_DEBUG_MODE
     _instance.CoreDebug.Draw();
 #endif // _DEBUG
 

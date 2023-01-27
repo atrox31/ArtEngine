@@ -432,12 +432,16 @@ void CodeExecutor::get_pos_y(Instance* instance) {
 	StackOut_f(instance->PosY);
 }
 
-//null sound_play(sound asset);Play <asset> sound global;For position call sound_play_at(sound asset)
+//null sound_play(sound asset);Play <asset> sound global;For position call sound_play_at(sound asset, float x, float y);
 void CodeExecutor::sound_play(Instance*) {
-	const int SoundId = StackIn_i;
-	Mix_Chunk* sound = Core::GetAssetManager()->GetSound(SoundId);
-	if (sound == nullptr) return;
-	Mix_PlayChannel(-1, sound, 0);
+	Scene::Audio::PlaySound(Core::GetAssetManager()->GetSound(StackIn_i));
+}
+
+//null sound_play_at(sound asset, float x, float y);Play <asset> sound global;
+void CodeExecutor::sound_play_at(Instance*) {
+	const float y = StackIn_f;
+	const float x = StackIn_f;
+	Scene::Audio::PlaySoundAt(Core::GetAssetManager()->GetSound(StackIn_i), x, y);
 }
 
 //null music_play(music asset);Play <asset> music.;There is only one music at once;
@@ -1220,12 +1224,12 @@ void CodeExecutor::system_set_audio_sound(Instance*) {
 
 //null system_set_audio_music_level(int level);Set audio level to <int> percent;Level can be from 0 to 100;
 void CodeExecutor::system_set_audio_music_level(Instance*) {
-	Core::Audio.SetSoundLevel(StackIn_i);
+	Core::Audio.SetMusicLevel(StackIn_i);
 }
 
 //null system_set_audio_sound_level(int level);Set audio level to <int> percent;Level can be from 0 to 100;
 void CodeExecutor::system_set_audio_sound_level(Instance*) {
-	Core::Audio.SetMusicLevel(StackIn_i);
+	Core::Audio.SetSoundLevel(StackIn_i);
 }
 
 //int system_settings_data_get_int(string setting);Get value of settings data name <string>;On error return -1

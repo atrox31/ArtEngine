@@ -121,11 +121,15 @@ private:
 		// getters
 		[[nodiscard]] int GetMusicLevel() const;
 		[[nodiscard]] int GetSoundLevel() const;
+		[[nodiscard]] bool IsSoundEnable() const { return (_audio_sound && _audio_master); }
+		[[nodiscard]] bool IsMusicEnable() const { return (_audio_music && _audio_master); }
 		// apply
 		void Apply() const;
 	private:
 		int _audio_music_level;
 		int _audio_sound_level;
+		int _audio_music_volume;
+		int _audio_sound_volume;
 		bool _audio_master;
 		bool _audio_music;
 		bool _audio_sound;
@@ -157,7 +161,7 @@ public:
 private:
 	using program_argument = std::pair<const char*, const char*>;
 	void PopulateArguments(const str_vec&);
-	program_argument GetProgramArgument(const std::string& argument);
+	program_argument GetProgramArgument(const std::string& argument) const;
 	std::vector<program_argument> _program_arguments;
 
 	static bool LoadSetupFile(const char*, const std::string&);
@@ -168,7 +172,7 @@ private:
 	static Core _instance;
 	SDL_Window* _window;
 
-#ifdef AC_ENABLE_DEBUG_MODE
+#if AC_ENABLE_DEBUG_MODE
 	// all debug flags and variables
 private:
 	class CoreDebug

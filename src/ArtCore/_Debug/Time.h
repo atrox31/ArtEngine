@@ -1,6 +1,6 @@
 #pragma once
 #include "ArtCore/main.h"
-#ifdef AC_ENABLE_DEBUG_MODE
+#if AC_ENABLE_DEBUG_MODE
 
 #include <chrono>
 #include <ostream>

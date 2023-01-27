@@ -74,7 +74,7 @@ void Console::Execute(const std::string& command)
 		Core::Exit();
 		return;
 	}
-#ifdef _DEBUG
+#if AC_ENABLE_DEBUG_MODE
 	if (arg[0] == "spy")
 	{
 		if (arg.size() == 2)

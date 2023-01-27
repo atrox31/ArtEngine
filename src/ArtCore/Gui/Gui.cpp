@@ -144,6 +144,7 @@ bool Gui::SpawnElementFromJsonData(GuiElementTemplate* parrent, const nlohmann::
 		return false;
 	}
 	new_element->SetParent(parrent);
+	new_element->SetSound(parrent->_sound_onClick);
 	for (const auto& variables : data["_elementVariables"])
 	{
 		const std::string v_name =  variables["Name"].get<std::string>();
@@ -264,9 +265,6 @@ bool Gui::_events(GuiElementTemplate* e)
 		if (e->_focus) {
 			if (Core::Mouse.LeftEvent == Core::MouseState::ButtonState::RELEASED) {
 				if (e->OnClick()) {
-					if (e->_sound_onClick != nullptr) {
-						// play audio(e->_sound_onClick);
-					}
 					return true;
 				}
 				e->_focus = false;
@@ -326,6 +324,7 @@ void Gui::GuiElementTemplate::SetVariableFromString(const std::string& name, con
 
 void Gui::GuiElementTemplate::SetVariableFromStringEx(const std::string& name, const std::string& value)
 {
+	// root element
 	if (name == "Pallet_background")
 	{
 		_pallet.Background = Convert::Hex2Color(value); return;
@@ -345,6 +344,10 @@ void Gui::GuiElementTemplate::SetVariableFromStringEx(const std::string& name, c
 	if (name == "Pallet_font")
 	{
 		_pallet.Font = Convert::Hex2Color(value); return;
+	}
+	if (name == "on_click_sound")
+	{
+		_sound_onClick = Core::GetAssetManager()->GetSound(value); return;
 	}
 	Console::WriteLine("[GuiElement::GuiElementTemplate::SetVariableFromStringEx]: '" + name + "' not found");
 }
@@ -495,6 +498,7 @@ bool Gui::GuiElementTemplate::OnClick()
 {
 	if(_callback_script[EvCallback::EvOnClick].first != nullptr)
 	{
+		Scene::Audio::PlaySound(_sound_onClick);
 		Core::Executor()->ExecuteCode(
 			Scene::GetCurrentScene()->GetVariableHolder(),
 			&_callback_script[EvCallback::EvOnClick]);
@@ -526,9 +530,9 @@ Gui::GuiElementTemplate* Gui::GuiElementTemplate::SetVisible(bool v)
 	return this;
 }
 
-Gui::GuiElementTemplate* Gui::GuiElementTemplate::SetSound(const std::string& sound)
+Gui::GuiElementTemplate* Gui::GuiElementTemplate::SetSound(Mix_Chunk* sound)
 {
-	_sound_onClick = Core::GetAssetManager()->GetSound(sound);
+	_sound_onClick = sound;
 	return this;
 }
 

@@ -4,6 +4,7 @@
 #include "Instance.h"
 #include "ArtCore/ShortTypenames.h"
 #include "ArtCore/Gui/Gui.h"
+#include "ArtCore/System/Core.h"
 
 #include "plf/plf_colony-master/plf_colony.h"
 
@@ -21,42 +22,132 @@ private: // private constructors
 	bool LoadFromFile(const std::string& file);
 	bool SpawnLevelInstances(Scene* target = nullptr) const;
 	inline static Scene* _current_scene = nullptr;
-public: // common methods
+
+public: // Audio
+	// Scene is audio manager, it can play music and sounds
+	struct Audio
+	{
+		/**
+		 * \brief Play new music
+		 * \param music Music asset
+		 * \param loops 0 - play once, -1 - play forever, 1 - play twice, etc.
+		 */
+		static void PlayMusic(Mix_Music* music, int loops = 0);
+
+		/**
+		 * \brief Pause current music
+		 */
+		static void PauseMusic();
+
+		/**
+		 * \brief Resume current music\n
+		 * To play new music use: PlayMusic(Mix_Music* music, int loops = 0)
+		 */
+		static void PlayMusic();
+
+		/**
+		 * \brief Stop current music
+		 */
+		static void StopMusic();
+
+		/**
+		 * \brief Check the playing status of the music\n
+		 * Paused music is treated as playing
+		 * \return Answer to question
+		 */
+		static bool IsMusicPlaying();
+
+		/**
+		 * \brief Play sound effect
+		 * \param sound Sound asset
+		 * \param loops 0 - play once, -1 - play forever, 1 - play twice, etc.
+		 */
+		static void PlaySound(Mix_Chunk* sound, int loops = 0);
+
+		/**
+		 * \brief Play sound effect at specified position in 2D space
+		 * \param sound Sound asset
+		 * \param x x-coordinate
+		 * \param y y-coordinate
+		 */
+		static void PlaySoundAt(Mix_Chunk* sound, float x, float y);
+
+		/**
+		 * \brief Play sound effect at specified position in 2D space
+		 * \param sound Sound asset
+		 * \param point Scene point to play sound at
+		 */
+		static void PlaySoundAt(Mix_Chunk* sound, const SDL_FPoint& point);
+
+		/**
+		 * \brief Stop all sounds
+		 */
+		static void StopAllSounds();
+	private:
+		friend class Scene;
+		/**
+		 * \brief Update sound position in audio 3D system
+		 */
+		static void UpdateSoundPosition();
+
+		/**
+		 * \brief Struct contains information about sound position in 2D space
+		 */
+		struct SoundPosition {
+			float X, Y;
+			int Channel;
+			bool Done;
+			SoundPosition(const float x, const float y, Mix_Chunk* chunk) {
+				this->X = x;
+				this->Y = y;
+				this->Channel = Mix_PlayChannel(-1, chunk, 0);
+				this->Done = false;
+			}
+		};
+		
+	};
+private:
 	/**
-	 * \brief Getter for current scene
-	 * \return Current scene reference
+	 * \brief List of sound positions in 2D space
 	 */
+	std::vector<Audio::SoundPosition*> _sound_position_list{};
+
+public: // common methods
+	/// <summary>
+	/// Getter for current scene
+	/// </summary>
+	/// <returns>Current scene reference</returns>
 	static Scene* GetCurrentScene() { return _current_scene;  }
 
-	/**
-	 * \brief Create new scene and load it, if success change core->current_scene to new created scene
-	 * \param name name of scene file
-	 * \return success state
-	 */
+	/// <summary>
+	/// Create new scene and load it, if success change core->current_scene to new created scene
+	/// </summary>
+	/// <param name="name">name name of scene file</param>
+	/// <returns>success state</returns>
 	static bool Create(const std::string& name);
 
-	/**
-	 * \brief Clear all level data, reset current level.
-	 */
+	/// <summary>
+	/// Clear all level data, reset current level.
+	/// </summary>
 	static void Reset();
 
-	/**
-	 * \brief Start new level in current scene
-	 * \param level level to load
-	 * \return success state
-	 */
+	/// <summary>
+	/// Start new level in current scene
+	/// </summary>
+	/// <param name="level">level level to load</param>
+	/// <returns>success state</returns>
 	static bool Start(int level = 0);
 
-	/**
-	 * \brief Load next level
-	 * \return success state, or false if there is no next level
-	 */
+	/// <summary>
+	/// Load next level
+	/// </summary>
+	/// <returns>success state, or false if there is no next level</returns>
 	static bool StartNextLevel();
 
-	/**
-	 * \brief Check if this level is last
-	 * \return Return answer to question.
-	 */
+	/// <summary>
+	/// Check if this level is last
+	/// </summary>
+	/// <returns>Return answer to question</returns>
 	static bool HaveNextLevel();
 
 	// core getters for game loop

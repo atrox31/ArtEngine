@@ -5,6 +5,7 @@
 
 #include "ArtCore/ShortTypenames.h"
 #include "ArtCore/Structs/Rect.h"
+#include "FC_Fontcache/SDL_FontCache.h"
 #include "SDL2/IncludeAll.h"
 class Func
 {
@@ -37,13 +38,31 @@ public:
 	static bool FileExists(const std::string& file_name);
 
 	// good for big data, for small use split
-	static str_vec Explode(const std::string& string, const char separator);
+	static str_vec Explode(const std::string& string, char separator);
 	// good for small data, for big use explode
-	static str_vec Split(const std::string& string, const char separator);
+	static str_vec Split(const std::string& string, char separator);
 
+	/**
+	 * \brief Split string into 2 parts
+	 * \param string Text to split
+	 * \param separator Separator
+	 * \return Separated string or empty string if separator not found
+	 */
+	static std::pair<std::string, std::string> Split2(const std::string& string, char separator);
+
+	/**
+	 * \brief Get file text in separate lines, size can be nullptr
+	 * \param file File name in archive
+	 * \param size Set this value to number of output lines
+	 * \param replace_slashes replace \ to /
+	 * \return String vector of file lines
+	 */
 	static str_vec ArchiveGetFileText(const std::string& file, int* size, bool replace_slashes = false);
+
 	static char* ArchiveGetFileBuffer(const std::string& file, Sint64* len);
+
 	static unsigned char* ArchiveGetFileBytes(const std::string& file, Sint64* len);
+
 	static SDL_RWops* ArchiveGetFileRWops(const std::string& file, Sint64* len);
 
 	static SDL_GLattr GetSdlAttrFromString(const std::string& arg, bool* error);
@@ -52,6 +71,8 @@ public:
 
 	static GPU_ShaderBlock LoadShaderProgram(Uint32* p, const char* vertex_shader_file, const char* fragment_shader_file);
 	static void FreeShader(const Uint32 p)	{		GPU_FreeShaderProgram(p);	}
+
+	static FC_Font* LoadFontRw(SDL_RWops* sdl_r_wops, int pt_size);
 
 	struct DataValues {
 	public:

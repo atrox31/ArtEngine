@@ -11,9 +11,9 @@ public:
 	Slider();
 	void  SetVariableFromStringEx(const std::string& name, const std::string& value) override;
 
-	void SetValue(int value)
+	void SetValue(const int value)
 	{
-		_value = SDL_clamp(_value, _value_min, _value_max);
+		_value = SDL_clamp(value, _value_min, _value_max);
 	}
 	[[nodiscard]] int GetValue() const 
 	{

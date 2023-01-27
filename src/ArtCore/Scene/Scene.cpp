@@ -390,3 +390,95 @@ void Scene::ClearListColonyInstance(Scene* target)
 	}
 	target->_instance_colony.clear();
 }
+
+void Scene::Audio::PlayMusic(Mix_Music* music, const int loops)
+{
+	if (music == nullptr) return;
+	if(Core::Audio.IsMusicEnable())
+	{
+		Mix_PlayMusic(music, loops);
+	}
+}
+
+void Scene::Audio::PauseMusic()
+{
+	Mix_PauseMusic();
+}
+
+void Scene::Audio::PlayMusic()
+{
+	if (Core::Audio.IsMusicEnable())
+	{
+		Mix_ResumeMusic();
+	}
+}
+
+void Scene::Audio::StopMusic()
+{
+	Mix_HaltMusic();
+}
+
+bool Scene::Audio::IsMusicPlaying()
+{
+	return Mix_PlayingMusic() && Core::Audio.IsMusicEnable();
+}
+
+void Scene::Audio::PlaySound(Mix_Chunk* sound, const int loops)
+{
+	if (sound == nullptr) return;
+	if (Core::Audio.IsSoundEnable()) {
+		Mix_PlayChannel(-1, sound, loops);
+	}
+}
+
+void Scene::Audio::PlaySoundAt(Mix_Chunk* sound, const float x, const float y)
+{
+	if (sound == nullptr) return;
+	if (Core::Audio.IsSoundEnable()) {
+		_current_scene->_sound_position_list.push_back(new SoundPosition(x, y, sound));
+	}
+}
+
+void Scene::Audio::PlaySoundAt(Mix_Chunk* sound, const SDL_FPoint& point)
+{
+	if (sound == nullptr) return;
+	if (Core::Audio.IsSoundEnable()) {
+		_current_scene->_sound_position_list.push_back(new SoundPosition(point.x, point.y, sound));
+	}
+}
+
+void Scene::Audio::StopAllSounds()
+{
+	Mix_HaltChannel(-1);
+	_current_scene->_sound_position_list.clear();
+}
+
+void Scene::Audio::UpdateSoundPosition()
+{
+	if (!_current_scene->_sound_position_list.empty() && Core::Audio.IsSoundEnable()) {
+
+		for (std::vector<SoundPosition*>::iterator it = _current_scene->_sound_position_list.begin(); it != _current_scene->_sound_position_list.end();) {
+			if ((*it)->Done) {
+				delete* it;
+				it = _current_scene->_sound_position_list.erase(it);
+			}
+			else {
+				/* for now, there is no camera system
+				//0..360
+				Sint16 angle = (Sint16)Convert::RadiansToDegree()
+
+				Sint16 angle = (Sint16)180 + (rad2deg(atan2f(
+					_parrent->Camera._postion.x - (*it)->x,
+					-(_parrent->Camera._postion.y - (*it)->y)
+				)));
+				// 0..255
+				Uint8 distance = (Uint8)round(linearScale(pointDistance(
+					_parrent->Camera._postion.x, _parrent->Camera._postion.y, (*it)->x, (*it)->y),
+					0, AC->GetCurrentScene()->_map_dimensions.x, 0, 255));
+				Mix_SetPosition((*it)->channell, angle, distance);
+				*/
+				++it;
+			}
+		}
+	}
+}

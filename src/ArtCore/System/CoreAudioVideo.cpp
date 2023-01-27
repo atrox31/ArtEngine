@@ -58,6 +58,8 @@ void Core::graphic::Apply() const
 Core::audio::audio() {
     _audio_music_level = 0;
     _audio_sound_level = 0;
+    _audio_sound_volume = 0;
+    _audio_music_volume = 0;
     _audio_master = true;
     _audio_music = true;
     _audio_sound = true;
@@ -66,9 +68,29 @@ Core::audio::audio() {
 // setters
 void Core::audio::SetSoundLevel(const int level) {
     _audio_sound_level = std::clamp(level, 0, 100);
+
+	_audio_sound_volume = ((_audio_master && _audio_sound) ? static_cast<int>(Func::LinearScale(
+        static_cast<float>(_audio_sound_level),
+        0.f,
+        100.f,
+        0.f,
+        static_cast<float>(MIX_MAX_VOLUME)
+    )) : 0);
+
+    Mix_Volume(-1, _audio_sound_volume);
 }
 void Core::audio::SetMusicLevel(const int level) {
     _audio_music_level = std::clamp(level, 0, 100);
+
+    _audio_music_volume = ((_audio_master && _audio_music) ? static_cast<int>(Func::LinearScale(
+        static_cast<float>(_audio_music_level),
+        0.f,
+        100.f,
+        0.f,
+        static_cast<float>(MIX_MAX_VOLUME)
+    )) : 0);
+
+    Mix_VolumeMusic(_audio_music_volume);
 }
 void Core::audio::SetMaster(const bool& enabled)
 {
@@ -93,27 +115,6 @@ void Core::audio::SetMusic(const bool& enabled)
 }
 void Core::audio::Apply() const
 {
-    Mix_MasterVolume(
-        ((_audio_master && _audio_sound) ? static_cast<int>(Func::LinearScale(
-            static_cast<float>(_audio_sound_level),
-            0.f,
-            100.f,
-            0.f,
-            static_cast<float>(MIX_MAX_VOLUME)
-        ))
-            : 0));
-
-    Mix_VolumeMusic(
-        ((_audio_master && _audio_music) ? static_cast<int>(Func::LinearScale(
-            static_cast<float>(_audio_music_level),
-            0.f,
-            100.f,
-            0.f,
-            static_cast<float>(MIX_MAX_VOLUME)
-        ))
-            : 0));
-
-
     SettingsData::SetValue("ACMusicLevel", std::to_string(_audio_music_level));
     SettingsData::SetValue("ACMusicLevel", std::to_string(_audio_music_level));
     SettingsData::SetValue("ACSoundEnabled", _audio_sound ? "1" : "0");

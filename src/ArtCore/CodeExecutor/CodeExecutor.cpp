@@ -20,14 +20,14 @@
 #include "ArtCore/Functions/SDL_FPoint_extend.h"
 #include "ArtCore/Functions/SDL_Color_extend.h"
 
-AStack<int> CodeExecutor::GlobalStack_int = AStack<int>();
-AStack<float> CodeExecutor::GlobalStack_float = AStack<float>();
-AStack<bool> CodeExecutor::GlobalStack_bool = AStack<bool>();
-AStack<Instance*> CodeExecutor::GlobalStack_instance = AStack<Instance*>();
-AStack<SDL_FPoint> CodeExecutor::GlobalStack_point = AStack<SDL_FPoint>();
-AStack<Rect> CodeExecutor::GlobalStack_rect = AStack<Rect>();
-AStack<SDL_Color> CodeExecutor::GlobalStack_color = AStack<SDL_Color>();
-AStack<std::string> CodeExecutor::GlobalStack_string = AStack<std::string>();
+AStack<int>			CodeExecutor::GlobalStack_int		= AStack<int>();
+AStack<float>		CodeExecutor::GlobalStack_float		= AStack<float>();
+AStack<bool>		CodeExecutor::GlobalStack_bool		= AStack<bool>();
+AStack<Instance*>	CodeExecutor::GlobalStack_instance	= AStack<Instance*>();
+AStack<SDL_FPoint>	CodeExecutor::GlobalStack_point		= AStack<SDL_FPoint>();
+AStack<Rect>		CodeExecutor::GlobalStack_rect		= AStack<Rect>();
+AStack<SDL_Color>	CodeExecutor::GlobalStack_color		= AStack<SDL_Color>();
+AStack<std::string> CodeExecutor::GlobalStack_string	= AStack<std::string>();
 
 std::vector<CodeExecutor::SuspendCodeStruct> CodeExecutor::_suspended_code;
 bool CodeExecutor::_have_suspended_code;
@@ -40,6 +40,11 @@ CodeExecutor::CodeExecutor()
 	_have_suspended_code = false;
 }
 
+CodeExecutor::~CodeExecutor()
+{
+	Delete();
+}
+
 bool CodeExecutor::LoadArtLib()
 {
 	MapFunctions();
@@ -48,7 +53,7 @@ bool CodeExecutor::LoadArtLib()
 		return false;
 	}
 	const std::string data(buffer);
-	str_vec lines = Func::Explode(data, '\n');
+	const str_vec lines = Func::Explode(data, '\n');
 	
 	if (lines.empty()) {
 		return false;
@@ -398,7 +403,7 @@ int CodeExecutor::GetGlobalStackCapacity()
 	return size;
 }
 
-#ifdef AC_ENABLE_DEBUG_MODE
+#if AC_ENABLE_DEBUG_MODE
 // very not fps frendly but for debug must be
 void CodeExecutor::DebugSetInstanceToTrack(Instance* instance)
 {
@@ -492,7 +497,7 @@ std::string CodeExecutor::DebugGetTrackInfo()
 						_return += "<null>";
 					}
 					else {
-						_return += Core::GetAssetManager()->Debug_List_sprite_name[_debug_tracked_instance->Variables_sprite[i]];
+						_return += Core::GetAssetManager()->Debug_List_Sprite_name[_debug_tracked_instance->Variables_sprite[i]];
 					}
 					break;
 				case ArtCode::TEXTURE:
@@ -501,7 +506,7 @@ std::string CodeExecutor::DebugGetTrackInfo()
 						_return += "<null>";
 					}
 					else {
-						_return += Core::GetAssetManager()->Debug_List_texture_name[_debug_tracked_instance->Variables_texture[i]];
+						_return += Core::GetAssetManager()->Debug_List_Texture_name[_debug_tracked_instance->Variables_texture[i]];
 					}
 					break;
 				case ArtCode::SOUND:
@@ -510,7 +515,7 @@ std::string CodeExecutor::DebugGetTrackInfo()
 						_return += "<null>";
 					}
 					else {
-						_return += Core::GetAssetManager()->Debug_List_sound_name[_debug_tracked_instance->Variables_sound[i]];
+						_return += Core::GetAssetManager()->Debug_List_Sound_name[_debug_tracked_instance->Variables_sound[i]];
 					}
 					break;
 				case ArtCode::MUSIC:
@@ -519,7 +524,7 @@ std::string CodeExecutor::DebugGetTrackInfo()
 						_return += "<null>";
 					}
 					else {
-						_return += Core::GetAssetManager()->Debug_List_music_name[_debug_tracked_instance->Variables_music[i]];
+						_return += Core::GetAssetManager()->Debug_List_Music_name[_debug_tracked_instance->Variables_music[i]];
 					}
 					break;
 				case ArtCode::FONT:
@@ -528,7 +533,7 @@ std::string CodeExecutor::DebugGetTrackInfo()
 						_return += "<null>";
 					}
 					else {
-						_return += Core::GetAssetManager()->Debug_List_font_name[_debug_tracked_instance->Variables_font[i]];
+						_return += Core::GetAssetManager()->Debug_List_Font_name[_debug_tracked_instance->Variables_font[i]];
 					}
 					break;
 				case ArtCode::POINT:
@@ -913,24 +918,13 @@ int CodeExecutor::h_operation_int(const int _operator, int val1, const int val2)
 }
 float CodeExecutor::h_operation_float(const int _operator, float val1, const float val2) {
 	switch(_operator){
-
-	case 0: // "+=",
-		return val1 + val2;
-		break;
-	case 1: //" -=",
-		return val1 - val2;
-		break;
-	case 2: // "*=",
-		return val1 * val2;
-		break;
-	case 3: // "/=",
-		return val1 / val2;
-		break;
-	case 4: // ":=",
-		return val2;
-		break;
+	case 0: return val1 + val2; // "+="
+	case 1: return val1 - val2; //" -="
+	case 2: return val1 * val2; // "*="
+	case 3: return val1 / val2; // "/="
+	case 4: return val2;		// ":="
+	default:return val2;
 	}
-	return val2;
 }
 bool CodeExecutor::h_operation_bool(const int _operator, bool val1, const bool val2) {
 	switch(_operator){
@@ -938,11 +932,11 @@ bool CodeExecutor::h_operation_bool(const int _operator, bool val1, const bool v
 	case 1: //" -=",
 	case 2: // "*=",
 	case 3: // "/=",
-		return false;
+		return false;	
 	case 4: // ":=",
-		return val2;
+		return val2;	
+	default:return val2;
 	}
-	return val2;
 }
 Instance* CodeExecutor::h_operation_instance(const int _operator, Instance* val1, Instance* val2) {
 	switch (_operator) {
@@ -953,8 +947,8 @@ Instance* CodeExecutor::h_operation_instance(const int _operator, Instance* val1
 		return nullptr;
 	case 4: // ":=",
 		return val2;
+	default:return val2;
 	}
-	return val2;
 }
 int CodeExecutor::h_operation_object(const int _operator, int val1, const int val2) {
 	switch (_operator) {
@@ -962,11 +956,11 @@ int CodeExecutor::h_operation_object(const int _operator, int val1, const int va
 	case 1: //" -=",
 	case 2: // "*=",
 	case 3: // "/=",
-		return false;
+		return -1;
 	case 4: // ":=",
 		return val2;
+	default:return val2;
 	}
-	return val2;
 }
 int CodeExecutor::h_operation_sprite(const int _operator, int val1, const int val2) {
 	switch (_operator) {
@@ -974,7 +968,7 @@ int CodeExecutor::h_operation_sprite(const int _operator, int val1, const int va
 	case 1: //" -=",
 	case 2: // "*=",
 	case 3: // "/=",
-		return false;
+		return -1;
 	case 4: // ":=",
 		return val2;
 	}
@@ -986,7 +980,7 @@ int CodeExecutor::h_operation_texture(const int _operator, int val1, const int v
 	case 1: //" -=",
 	case 2: // "*=",
 	case 3: // "/=",
-		return false;
+		return -1;
 	case 4: // ":=",
 		return val2;
 	}
@@ -998,7 +992,7 @@ int CodeExecutor::h_operation_sound(const int _operator, int val1, const int val
 	case 1: //" -=",
 	case 2: // "*=",
 	case 3: // "/=",
-		return false;
+		return -1;
 	case 4: // ":=",
 		return val2;
 	}
@@ -1010,7 +1004,7 @@ int CodeExecutor::h_operation_music(const int _operator, int val1, const int val
 	case 1: //" -=",
 	case 2: // "*=",
 	case 3: // "/=",
-		return false;
+		return -1;
 	case 4: // ":=",
 		return val2;
 	}
@@ -1022,7 +1016,7 @@ int CodeExecutor::h_operation_font(const int _operator, int val1, const int val2
 	case 1: //" -=",
 	case 2: // "*=",
 	case 3: // "/=",
-		return false;
+		return -1;
 	case 4: // ":=",
 		return val2;
 	}
@@ -1031,20 +1025,15 @@ int CodeExecutor::h_operation_font(const int _operator, int val1, const int val2
 SDL_FPoint CodeExecutor::h_operation_point(const int _operator, const SDL_FPoint val1, const SDL_FPoint val2) {
 	switch (_operator) {
 
-	case 0: // "+=",
-		return val1 + val2;
-	case 1: //" -=",
-		return val1 - val2;
-	case 2: // "*=",
-		return val1 * val2;
-	case 3: // "/=",
-		return val1 / val2;
-	case 4: // ":=",
-		return val2;
+	case 0: return val1 + val2;	// "+=",
+	case 1: return val1 - val2;	//" -=",
+	case 2: return val1 * val2;	// "*=",
+	case 3: return val1 / val2;	// "/=",
+	case 4: return val2;		// ":=",
+	default:return val2;
 	}
-	return val2;
 }
-Rect CodeExecutor::h_operation_rect(const int _operator, Rect val1, const Rect val2) {
+Rect CodeExecutor::h_operation_rect(const int _operator, Rect val1, const Rect& val2) {
 	switch (_operator) {
 
 	case 0: // "+=",
@@ -1052,12 +1041,10 @@ Rect CodeExecutor::h_operation_rect(const int _operator, Rect val1, const Rect v
 	case 2: // "*=",
 	case 3: // "/=",
 		return {};
-		break;
 	case 4: // ":=",
 		return val2;
-		break;
+	default:return val2;
 	}
-	return val2;
 }
 SDL_Color CodeExecutor::h_operation_color(const int _operator, SDL_Color val1, const SDL_Color val2) {
 	switch (_operator) {
@@ -1066,29 +1053,23 @@ SDL_Color CodeExecutor::h_operation_color(const int _operator, SDL_Color val1, c
 	case 2: // "*=",
 	case 3: // "/=",
 		return {};
-		break;
 	case 4: // ":=",
 		return val2;
-		break;
+	default:return val2;
 	}
-	return val2;
 }
 std::string CodeExecutor::h_operation_string(const int _operator, std::string val1, std::string val2) {
 	switch (_operator) {
 
-	case 0: // "+=",
-		return val1 += val2;
-		break;
+	case 0: return val1 += val2;	// "+=",
 	case 1: //" -=",
 	case 2: // "*=",
 	case 3: // "/=",
 		return {};
-		break;
 	case 4: // ":=",
 		return val2;
-		break;
+	default:return val2;
 	}
-	return val2;
 }
 
 bool CodeExecutor::h_compare(const int type, const int operation)
@@ -1101,25 +1082,25 @@ bool CodeExecutor::h_compare(const int type, const int operation)
 	case 0://	"||",
 	{
 		switch (type) {
-		case ArtCode::variable_type::BOOL:		return (GlobalStack_bool.Get() || GlobalStack_bool.Get());			break;
-		default: return false; break; // wrong operator
+		case ArtCode::variable_type::BOOL:		return (GlobalStack_bool.Get() || GlobalStack_bool.Get());
+		default: return false; // wrong operator
 		}
 	}
 		break;
 	case 1://	"&&",
 	{
 		switch (type) {
-		case ArtCode::variable_type::BOOL:		return (GlobalStack_bool.Get() && GlobalStack_bool.Get());			break;
-		default: return false; break; // wrong operator
+		case ArtCode::variable_type::BOOL:		return (GlobalStack_bool.Get() && GlobalStack_bool.Get());
+		default: return false; // wrong operator
 		}
 	}
 		break;
 	case 2://	"<<",
 	{
 		switch (type) { // values get are opposite
-		case ArtCode::variable_type::INT:		return (GlobalStack_int.Get() > GlobalStack_int.Get());				break;
-		case ArtCode::variable_type::FLOAT:		return (GlobalStack_float.Get() > GlobalStack_float.Get());			break;
-		case ArtCode::variable_type::POINT:		return (GlobalStack_point.Get() > GlobalStack_point.Get());			break;
+		case ArtCode::variable_type::INT:		return (GlobalStack_int.Get() > GlobalStack_int.Get());
+		case ArtCode::variable_type::FLOAT:		return (GlobalStack_float.Get() > GlobalStack_float.Get());	
+		case ArtCode::variable_type::POINT:		return (GlobalStack_point.Get() > GlobalStack_point.Get());	
 		default: return false; break; // wrong operator
 		}
 	}
@@ -1127,9 +1108,9 @@ bool CodeExecutor::h_compare(const int type, const int operation)
 	case 3://	">>"
 	{
 		switch (type) {// values get are opposite
-		case ArtCode::variable_type::INT:		return (GlobalStack_int.Get() < GlobalStack_int.Get());				break;
-		case ArtCode::variable_type::FLOAT:		return (GlobalStack_float.Get() < GlobalStack_float.Get());			break;
-		case ArtCode::variable_type::POINT:		return (GlobalStack_point.Get() < GlobalStack_point.Get());			break;
+		case ArtCode::variable_type::INT:		return (GlobalStack_int.Get() < GlobalStack_int.Get());		
+		case ArtCode::variable_type::FLOAT:		return (GlobalStack_float.Get() < GlobalStack_float.Get());	
+		case ArtCode::variable_type::POINT:		return (GlobalStack_point.Get() < GlobalStack_point.Get());	
 		default: return false; break; // wrong operator
 		}
 	}
@@ -1137,10 +1118,10 @@ bool CodeExecutor::h_compare(const int type, const int operation)
 	case 4://	">=",
 	{
 		switch (type) {// values get are opposite
-		case ArtCode::variable_type::INT:		return (GlobalStack_int.Get() <= GlobalStack_int.Get());			break;
-		case ArtCode::variable_type::FLOAT:		return (GlobalStack_float.Get() <= GlobalStack_float.Get());		break;
-		case ArtCode::variable_type::POINT:		return (GlobalStack_point.Get() <= GlobalStack_point.Get());		break;
-		case ArtCode::variable_type::STRING:	return (GlobalStack_string.Get() <= GlobalStack_string.Get());		break;
+		case ArtCode::variable_type::INT:		return (GlobalStack_int.Get() <= GlobalStack_int.Get());	
+		case ArtCode::variable_type::FLOAT:		return (GlobalStack_float.Get() <= GlobalStack_float.Get());
+		case ArtCode::variable_type::POINT:		return (GlobalStack_point.Get() <= GlobalStack_point.Get());
+		case ArtCode::variable_type::STRING:	return (GlobalStack_string.Get() <= GlobalStack_string.Get());
 		default: return false; break; // wrong operator
 		}
 	}
@@ -1148,9 +1129,9 @@ bool CodeExecutor::h_compare(const int type, const int operation)
 	case 5://	"<=",
 	{
 		switch (type) {
-		case ArtCode::variable_type::INT:		return (GlobalStack_int.Get() >= GlobalStack_int.Get());			break;
-		case ArtCode::variable_type::FLOAT:		return (GlobalStack_float.Get() >= GlobalStack_float.Get());		break;
-		case ArtCode::variable_type::POINT:		return (GlobalStack_point.Get() >= GlobalStack_point.Get());		break;
+		case ArtCode::variable_type::INT:		return (GlobalStack_int.Get() >= GlobalStack_int.Get());		
+		case ArtCode::variable_type::FLOAT:		return (GlobalStack_float.Get() >= GlobalStack_float.Get());	
+		case ArtCode::variable_type::POINT:		return (GlobalStack_point.Get() >= GlobalStack_point.Get());	
 		default: return false; break; // wrong operator
 		}
 	}
@@ -1158,18 +1139,18 @@ bool CodeExecutor::h_compare(const int type, const int operation)
 	case 6://	"!=",
 	{
 		switch (type) {
-		case ArtCode::variable_type::INT:		return (GlobalStack_int.Get() != GlobalStack_int.Get());			break;
-		case ArtCode::variable_type::FLOAT:		return (GlobalStack_float.Get() != GlobalStack_float.Get());		break;
-		case ArtCode::variable_type::BOOL:		return (GlobalStack_bool.Get() != GlobalStack_bool.Get());			break;
-		case ArtCode::variable_type::INSTANCE:	return (GlobalStack_instance.Get() != GlobalStack_instance.Get());	break;
-		case ArtCode::variable_type::OBJECT:	return (GlobalStack_int.Get() != GlobalStack_int.Get());			break;
-		case ArtCode::variable_type::SPRITE:	return (GlobalStack_int.Get() != GlobalStack_int.Get());			break;
-		case ArtCode::variable_type::TEXTURE:	return (GlobalStack_int.Get() != GlobalStack_int.Get());			break;
-		case ArtCode::variable_type::SOUND:		return (GlobalStack_int.Get() != GlobalStack_int.Get());			break;
-		case ArtCode::variable_type::MUSIC:		return (GlobalStack_int.Get() != GlobalStack_int.Get());			break;
-		case ArtCode::variable_type::FONT:		return (GlobalStack_int.Get() != GlobalStack_int.Get());			break;
-		case ArtCode::variable_type::RECT:		return (GlobalStack_rect.Get() != GlobalStack_rect.Get());			break;
-		case ArtCode::variable_type::STRING:	return (GlobalStack_string.Get() != GlobalStack_string.Get());		break;
+		case ArtCode::variable_type::INT:		return (GlobalStack_int.Get() !=		GlobalStack_int.Get());	
+		case ArtCode::variable_type::FLOAT:		return (GlobalStack_float.Get() !=		GlobalStack_float.Get());
+		case ArtCode::variable_type::BOOL:		return (GlobalStack_bool.Get() !=		GlobalStack_bool.Get());	
+		case ArtCode::variable_type::INSTANCE:	return (GlobalStack_instance.Get() !=	GlobalStack_instance.Get());
+		case ArtCode::variable_type::OBJECT:	return (GlobalStack_int.Get() !=		GlobalStack_int.Get());	
+		case ArtCode::variable_type::SPRITE:	return (GlobalStack_int.Get() !=		GlobalStack_int.Get());	
+		case ArtCode::variable_type::TEXTURE:	return (GlobalStack_int.Get() !=		GlobalStack_int.Get());	
+		case ArtCode::variable_type::SOUND:		return (GlobalStack_int.Get() !=		GlobalStack_int.Get());	
+		case ArtCode::variable_type::MUSIC:		return (GlobalStack_int.Get() !=		GlobalStack_int.Get());	
+		case ArtCode::variable_type::FONT:		return (GlobalStack_int.Get() !=		GlobalStack_int.Get());	
+		case ArtCode::variable_type::RECT:		return (GlobalStack_rect.Get() !=		GlobalStack_rect.Get());	
+		case ArtCode::variable_type::STRING:	return (GlobalStack_string.Get() !=		GlobalStack_string.Get());
 		default: return false; break; // wrong operator
 		}
 	}
@@ -1177,19 +1158,19 @@ bool CodeExecutor::h_compare(const int type, const int operation)
 	case 7://	"=="
 	{
 		switch (type) {
-		case ArtCode::variable_type::INT:		return (GlobalStack_int.Get() == GlobalStack_int.Get());			break;
-		case ArtCode::variable_type::FLOAT:		return (GlobalStack_float.Get() == GlobalStack_float.Get());		break;
-		case ArtCode::variable_type::BOOL:		return (GlobalStack_bool.Get() == GlobalStack_bool.Get());			break;
-		case ArtCode::variable_type::INSTANCE:	return (GlobalStack_instance.Get() == GlobalStack_instance.Get());	break;
-		case ArtCode::variable_type::OBJECT:	return (GlobalStack_int.Get() == GlobalStack_int.Get());			break;
-		case ArtCode::variable_type::SPRITE:	return (GlobalStack_int.Get() == GlobalStack_int.Get());			break;
-		case ArtCode::variable_type::TEXTURE:	return (GlobalStack_int.Get() == GlobalStack_int.Get());			break;
-		case ArtCode::variable_type::SOUND:		return (GlobalStack_int.Get() == GlobalStack_int.Get());			break;
-		case ArtCode::variable_type::MUSIC:		return (GlobalStack_int.Get() == GlobalStack_int.Get());			break;
-		case ArtCode::variable_type::FONT:		return (GlobalStack_int.Get() == GlobalStack_int.Get());			break;
-		case ArtCode::variable_type::RECT:		return (GlobalStack_rect.Get() == GlobalStack_rect.Get());			break;
-		case ArtCode::variable_type::COLOR:		return (GlobalStack_color.Get() == GlobalStack_color.Get());		break;
-		case ArtCode::variable_type::STRING:	return (GlobalStack_string.Get() == GlobalStack_string.Get());		break;
+		case ArtCode::variable_type::INT:		return (GlobalStack_int.Get() ==		GlobalStack_int.Get());		
+		case ArtCode::variable_type::FLOAT:		return (GlobalStack_float.Get() ==		GlobalStack_float.Get());	
+		case ArtCode::variable_type::BOOL:		return (GlobalStack_bool.Get() ==		GlobalStack_bool.Get());		
+		case ArtCode::variable_type::INSTANCE:	return (GlobalStack_instance.Get() ==	GlobalStack_instance.Get());
+		case ArtCode::variable_type::OBJECT:	return (GlobalStack_int.Get() ==		GlobalStack_int.Get());		
+		case ArtCode::variable_type::SPRITE:	return (GlobalStack_int.Get() ==		GlobalStack_int.Get());		
+		case ArtCode::variable_type::TEXTURE:	return (GlobalStack_int.Get() ==		GlobalStack_int.Get());		
+		case ArtCode::variable_type::SOUND:		return (GlobalStack_int.Get() ==		GlobalStack_int.Get());		
+		case ArtCode::variable_type::MUSIC:		return (GlobalStack_int.Get() ==		GlobalStack_int.Get());			
+		case ArtCode::variable_type::FONT:		return (GlobalStack_int.Get() ==		GlobalStack_int.Get());			
+		case ArtCode::variable_type::RECT:		return (GlobalStack_rect.Get() ==		GlobalStack_rect.Get());			
+		case ArtCode::variable_type::COLOR:		return (GlobalStack_color.Get() ==		GlobalStack_color.Get());		
+		case ArtCode::variable_type::STRING:	return (GlobalStack_string.Get() ==		GlobalStack_string.Get());		
 		default: return false; break; // wrong operator
 		}
 	}
@@ -1208,20 +1189,20 @@ void CodeExecutor::h_get_local_value(Inspector* code, Instance* instance)
 	const int index = (int)code->GetBit();
 	//GlobalStack.Add(instance->variables[type][index]);
 	switch (type) {
-	case ArtCode::variable_type::INT:		GlobalStack_int.Add(instance->Variables_int[index]);			break;
-	case ArtCode::variable_type::FLOAT:		GlobalStack_float.Add(instance->Variables_float[index]);		break;
-	case ArtCode::variable_type::BOOL:		GlobalStack_bool.Add(instance->Variables_bool[index]);			break;
+	case ArtCode::variable_type::INT:		GlobalStack_int.Add(	instance->Variables_int[index]);		break;
+	case ArtCode::variable_type::FLOAT:		GlobalStack_float.Add(	instance->Variables_float[index]);		break;
+	case ArtCode::variable_type::BOOL:		GlobalStack_bool.Add(instance->Variables_bool[index]);		break;
 	case ArtCode::variable_type::INSTANCE:	GlobalStack_instance.Add(instance->Variables_instance[index]);	break;
-	case ArtCode::variable_type::OBJECT:	GlobalStack_int.Add(instance->Variables_object[index]);			break;
-	case ArtCode::variable_type::SPRITE:	GlobalStack_int.Add(instance->Variables_sprite[index]);			break;
-	case ArtCode::variable_type::TEXTURE:	GlobalStack_int.Add(instance->Variables_texture[index]);		break;
-	case ArtCode::variable_type::SOUND:		GlobalStack_int.Add(instance->Variables_sound[index]);			break;
-	case ArtCode::variable_type::MUSIC:		GlobalStack_int.Add(instance->Variables_music[index]);			break;
-	case ArtCode::variable_type::FONT:		GlobalStack_int.Add(instance->Variables_font[index]);			break;
-	case ArtCode::variable_type::POINT:		GlobalStack_point.Add(instance->Variables_point[index]);		break;
-	case ArtCode::variable_type::RECT:		GlobalStack_rect.Add(instance->Variables_rect[index]);			break;
-	case ArtCode::variable_type::COLOR:		GlobalStack_color.Add(instance->Variables_color[index]);		break;
-	case ArtCode::variable_type::STRING:	GlobalStack_string.Add(instance->Variables_string[index]);		break;
+	case ArtCode::variable_type::OBJECT:	GlobalStack_int.Add(	instance->Variables_object[index]);		break;
+	case ArtCode::variable_type::SPRITE:	GlobalStack_int.Add(	instance->Variables_sprite[index]);		break;
+	case ArtCode::variable_type::TEXTURE:	GlobalStack_int.Add(	instance->Variables_texture[index]);	break;
+	case ArtCode::variable_type::SOUND:		GlobalStack_int.Add(	instance->Variables_sound[index]);		break;
+	case ArtCode::variable_type::MUSIC:		GlobalStack_int.Add(	instance->Variables_music[index]);		break;
+	case ArtCode::variable_type::FONT:		GlobalStack_int.Add(	instance->Variables_font[index]);		break;
+	case ArtCode::variable_type::POINT:		GlobalStack_point.Add(	instance->Variables_point[index]);		break;
+	case ArtCode::variable_type::RECT:		GlobalStack_rect.Add(instance->Variables_rect[index]);		break;
+	case ArtCode::variable_type::COLOR:		GlobalStack_color.Add(	instance->Variables_color[index]);		break;
+	case ArtCode::variable_type::STRING:	GlobalStack_string.Add(instance->Variables_string[index]);	break;
 	default: break;
 	}
 
@@ -1240,20 +1221,20 @@ void CodeExecutor::h_get_value(Inspector* code, Instance* instance) {
 		const int type = (int)code->GetBit(); // ignore for now
 		//GlobalStack.Add(code->GetString());
 		switch (type) {
-		case ArtCode::variable_type::INT:		GlobalStack_int.Add(Func::TryGetInt( code->GetString() )); break;
-		case ArtCode::variable_type::FLOAT:		GlobalStack_float.Add(Func::TryGetFloat(code->GetString())); break;
-		case ArtCode::variable_type::BOOL:		GlobalStack_bool.Add( Convert::Str2Bool( code->GetString()) ); break;
-		case ArtCode::variable_type::INSTANCE:	GlobalStack_instance.Add( Scene::GetInstanceById(Func::TryGetInt(code->GetString())) ); break;
-		case ArtCode::variable_type::OBJECT:	GlobalStack_int.Add(Func::TryGetInt(code->GetString())); break;
-		case ArtCode::variable_type::SPRITE:	GlobalStack_int.Add(Func::TryGetInt(code->GetString())); break;
-		case ArtCode::variable_type::TEXTURE:	GlobalStack_int.Add(Func::TryGetInt(code->GetString())); break;
-		case ArtCode::variable_type::SOUND:		GlobalStack_int.Add(Func::TryGetInt(code->GetString())); break;
-		case ArtCode::variable_type::MUSIC:		GlobalStack_int.Add(Func::TryGetInt(code->GetString())); break;
-		case ArtCode::variable_type::FONT:		GlobalStack_int.Add(Func::TryGetInt(code->GetString())); break;
-		case ArtCode::variable_type::POINT:		GlobalStack_point.Add( Convert::Str2FPoint(code->GetString()) ); break;
-		case ArtCode::variable_type::RECT:		GlobalStack_rect.Add(Convert::Str2Rect(code->GetString())); break;
-		case ArtCode::variable_type::COLOR:		GlobalStack_color.Add(Convert::Hex2Color(code->GetString())); break;
-		case ArtCode::variable_type::STRING:	GlobalStack_string.Add(code->GetString()); break;
+		case ArtCode::variable_type::INT:		GlobalStack_int.Add(	Func::TryGetInt( code->GetString() ));							break;
+		case ArtCode::variable_type::FLOAT:		GlobalStack_float.Add(	Func::TryGetFloat(code->GetString()));							break;
+		case ArtCode::variable_type::BOOL:		GlobalStack_bool.Add(	Convert::Str2Bool( code->GetString()) );						break;
+		case ArtCode::variable_type::INSTANCE:	GlobalStack_instance.Add(Scene::GetInstanceById(Func::TryGetInt(code->GetString())) );break;
+		case ArtCode::variable_type::OBJECT:	GlobalStack_int.Add(	Func::TryGetInt(code->GetString()));							break;
+		case ArtCode::variable_type::SPRITE:	GlobalStack_int.Add(	Func::TryGetInt(code->GetString()));							break;
+		case ArtCode::variable_type::TEXTURE:	GlobalStack_int.Add(	Func::TryGetInt(code->GetString()));							break;
+		case ArtCode::variable_type::SOUND:		GlobalStack_int.Add(	Func::TryGetInt(code->GetString()));							break;
+		case ArtCode::variable_type::MUSIC:		GlobalStack_int.Add(	Func::TryGetInt(code->GetString()));							break;
+		case ArtCode::variable_type::FONT:		GlobalStack_int.Add(	Func::TryGetInt(code->GetString()));							break;
+		case ArtCode::variable_type::POINT:		GlobalStack_point.Add(  Convert::Str2FPoint(code->GetString()) );						break;
+		case ArtCode::variable_type::RECT:		GlobalStack_rect.Add(	Convert::Str2Rect(code->GetString()));							break;
+		case ArtCode::variable_type::COLOR:		GlobalStack_color.Add(	Convert::Hex2Color(code->GetString()));						break;
+		case ArtCode::variable_type::STRING:	GlobalStack_string.Add(	code->GetString());											break;
 		default: break;
 		}
 	}

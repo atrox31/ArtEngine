@@ -195,6 +195,23 @@ str_vec Func::Split(const std::string& string, const char separator)
 	return internal;
 }
 
+std::pair<std::string, std::string> Func::Split2(const std::string& string, char separator)
+{
+	str_vec internal;
+	std::stringstream ss(string);
+	std::string tok;
+
+	while (getline(ss, tok, separator)) {
+		if (!tok.empty())
+			internal.push_back(tok);
+	}
+	if (internal.size() == 2)
+		return std::make_pair(internal[0], internal[1]);
+	if (internal.size() == 1)
+		return std::make_pair(internal[0], "");
+	return std::make_pair("", "");
+}
+
 str_vec Func::ArchiveGetFileText(const std::string& file, int* size, const bool replace_slashes)
 {
 	str_vec _return = str_vec();
@@ -359,6 +376,13 @@ GPU_ShaderBlock Func::LoadShaderProgram(Uint32* p, const char* vertex_shader_fil
 
 		return block;
 	}
+}
+
+FC_Font* Func::LoadFontRw(SDL_RWops* sdl_r_wops, int pt_size)
+{
+	FC_Font* font = FC_CreateFont();
+	FC_LoadFont_RW(font, sdl_r_wops, 1, pt_size, { 255,255,255 }, TTF_STYLE_NORMAL);
+	return font;
 }
 
 Func::DataValues::DataValues(const char* data, const Sint64 size)

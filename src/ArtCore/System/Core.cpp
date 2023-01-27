@@ -11,11 +11,10 @@
 
 #include "ArtCore/predefined_headers/SplashScreen.h"
 #include "ArtCore/Graphic/ColorDefinitions.h"
-#include "ArtCore/_Debug/Time.h"
 
 #include "physfs-release-3.2.0/src/physfs.h"
 
-#ifdef AC_ENABLE_DEBUG_MODE
+#if AC_ENABLE_DEBUG_MODE
 // time of core events
 #include "ArtCore/_Debug/Time.h"
 #endif
@@ -43,16 +42,10 @@ Core::Core()
 // Core destroy
 Core::~Core()
 {
-    if(_executor != nullptr)
-		_executor->Delete();
     delete _executor;
-
-    if(_asset_manager != nullptr)
-		_asset_manager->ClearData();
     delete _asset_manager;
 
     Scene::Delete();
-
     Render::DestroyRender();
 
     if(_screenTarget != nullptr)
@@ -125,14 +118,14 @@ Core::~Core()
 // init all game data and libs
 bool Core::Init(const str_vec& args)
 {
-#ifdef AC_ENABLE_DEBUG_MODE
+#if AC_ENABLE_DEBUG_MODE
     // debug timer to time all events in game
     Time timer;
     timer.StartTest();
 #endif
 
     // default assets path and name
-#ifdef AC_ENABLE_DEBUG_MODE
+#if _DEBUG
     const char* fl_game_dat_file = "test\\game.dat";
     const char* fl_assets_file = "test\\assets.pak";
     const char* fl_platform_file = "test\\Platform.dat";
@@ -202,7 +195,7 @@ bool Core::Init(const str_vec& args)
             "User settings load"
         )
 
-#ifdef AC_ENABLE_DEBUG_MODE
+#if AC_ENABLE_DEBUG_MODE
         GPU_SetDebugLevel(GPU_DEBUG_LEVEL_MAX);
 #else
         GPU_SetDebugLevel(GPU_DEBUG_LEVEL_0);
@@ -346,7 +339,7 @@ bool Core::Init(const str_vec& args)
 
     Console::WriteLine("rdy");
 
-#ifdef AC_ENABLE_DEBUG_MODE
+#if AC_ENABLE_DEBUG_MODE
     timer.EndTest();
     timer.PrintTest("Core::Init()");
 #endif
@@ -358,7 +351,7 @@ bool Core::Init(const str_vec& args)
 // load all asset, objects (instances) and try to load and run first scene
 bool Core::LoadData()
 {
-#ifdef AC_ENABLE_DEBUG_MODE
+#if AC_ENABLE_DEBUG_MODE
     Time timer;
     timer.StartTest();
 #endif
@@ -410,7 +403,7 @@ bool Core::LoadData()
     bgr.SetProgress(90);
 
     if(!Scene::Create(Core::GetStartingSceneName())
-        && Scene::Start(-1))
+        || !Scene::Start(-1))
     {
         bgr.Stop();
     	return false;
@@ -420,7 +413,7 @@ bool Core::LoadData()
     bgr.SetProgress(100);
 
     bgr.Stop();
-#ifdef AC_ENABLE_DEBUG_MODE
+#if AC_ENABLE_DEBUG_MODE
     timer.EndTest();
     timer.PrintTest("Core::LoadData()");
 #endif
@@ -432,7 +425,7 @@ bool Core::Run()
 {
     _instance.game_loop = true;
     SDL_AddTimer(static_cast<Uint32>(1000), FpsCounterCallback, nullptr);
-#ifdef AC_ENABLE_DEBUG_MODE
+#if AC_ENABLE_DEBUG_MODE
     Time performance_all{};
     Time performance_step{};
     Time performance_physics{};
@@ -581,7 +574,7 @@ void Core::PopulateArguments(const str_vec& args)
     }
 }
 
-Core::program_argument Core::GetProgramArgument(const std::string& argument)
+Core::program_argument Core::GetProgramArgument(const std::string& argument) const
 {
 	for (const program_argument& program_argument : _program_arguments)
 	{
@@ -628,7 +621,7 @@ bool Core::LoadSetupFile(const char* platform, const std::string& setup_file)
                 Console::WriteLine("unknown property '" + data + "'");
             }
             else {
-#ifdef AC_ENABLE_DEBUG_MODE
+#if AC_ENABLE_DEBUG_MODE
                 Console::WriteLine("SDL_GL_SetAttribute: " + line[0] + " as " + line[1]);
 #endif
                 if (SDL_GL_SetAttribute(attr, Func::TryGetInt(line[1])) != 0) {
@@ -639,7 +632,7 @@ bool Core::LoadSetupFile(const char* platform, const std::string& setup_file)
         }
         // sdl command
         if (line[0].substr(0, SDL_HINT.length()) == SDL_HINT) {
-#ifdef AC_ENABLE_DEBUG_MODE
+#if AC_ENABLE_DEBUG_MODE
             Console::WriteLine("SDL_SetHint: " + line[0] + " as " + line[1]);
 #endif
             if (SDL_SetHint(line[0].c_str(), line[1].c_str()) == SDL_FALSE) {
@@ -648,7 +641,7 @@ bool Core::LoadSetupFile(const char* platform, const std::string& setup_file)
             continue;
         }
         // other data
-#ifdef AC_ENABLE_DEBUG_MODE
+#if AC_ENABLE_DEBUG_MODE
         Console::WriteLine("SettingsData::SetValue: " + line[0] + " as " + line[1]);
 #endif
         SettingsData::SetValue(line[0], line[1]);  
@@ -685,7 +678,7 @@ Uint32 Core::FpsCounterCallback(Uint32 interval, void*)
 {
     Core::GetInstance()->fps = Core::GetInstance()->_frames;
     Core::GetInstance()->_frames = 0;
-#ifdef AC_ENABLE_DEBUG_MODE
+#if AC_ENABLE_DEBUG_MODE
     Core::GetInstance()->CoreDebug.PerformanceTimeSecondPassed();
 #endif
     return interval;
@@ -756,7 +749,7 @@ SDL_Window* Core::GetWindowHandle()
 //////
 //////
 
-#ifdef AC_ENABLE_DEBUG_MODE
+#if AC_ENABLE_DEBUG_MODE
 
 void Core::CoreDebug::PerformanceTimeSecondPassed()
 {

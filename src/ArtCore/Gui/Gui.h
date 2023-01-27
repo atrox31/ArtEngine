@@ -154,7 +154,7 @@ public:
 		virtual GuiElementTemplate* SetVisible(bool v) final;
 		virtual GuiElementTemplate* SetCallback(const EvCallback ev, const std::pair<const unsigned char*, Sint64> code) final { _callback_script[ev] = code; return this;}
 		virtual GuiElementTemplate* SetPosition(const int x, const int y) final { _x = x; _y = y;  return this;}
-		virtual GuiElementTemplate* SetSound(const std::string& sound) final;
+		virtual GuiElementTemplate* SetSound(Mix_Chunk* sound) final;
 		virtual GuiElementTemplate* SetDefaultFont(FC_Font* font) final { _default_font = font; return this;}
 		virtual GuiElementTemplate* SetPosition(const int x1, const int y1, const int x2, const int y2) final {
 			_x = x1;
