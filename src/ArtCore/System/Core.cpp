@@ -502,9 +502,7 @@ bool Core::Run()
             DEBUG_TEST_COUNTER_START(performance_counter_gpu_flip)
             // render console, debug panels etc
             _instance.ProcessSystemRender();
-
-		GPU_CircleFilled(_instance._screenTarget, Mouse.XYf.x, Mouse.XYf.y, 5, GPU_MakeColor(255, 0, 0, 255));
-
+        
         // get all to screen
         GPU_Flip(_instance._screenTarget);
         DEBUG_TEST_COUNTER_END(performance_counter_gpu_flip)
@@ -862,7 +860,7 @@ void Core::CoreDebug::Draw() const
                     GPU_Circle(_instance._screenTarget, scaled_pos.x, scaled_pos.y, 6, C_GOLD);
                 }
 
-                if(_show_directions && false)
+                if(_show_directions)
                 {
                     const float prv = GPU_SetLineThickness(4.f);
                     vec2f line_begin{ scaled_pos.x, scaled_pos.y };
@@ -873,7 +871,7 @@ void Core::CoreDebug::Draw() const
                     GPU_SetLineThickness(prv);
                 }
 
-                if (_show_collider && false) {
+                if (_show_collider) {
                     const float line_thickness = GPU_SetLineThickness(3.f);
                     if (instance->Body.Type == Instance::body::type::Circle) {
                         const float radius_scale = instance->Body.Radius * ((instance->SpriteScaleX + instance->SpriteScaleY) / 2.f);
@@ -892,7 +890,7 @@ void Core::CoreDebug::Draw() const
                     GPU_SetLineThickness(line_thickness);
                 }
 
-                if (_show_instance_info && false) {
+                if (_show_instance_info) {
                     const std::string text = instance->Name + "#" + std::to_string(instance->GetId()) + "[" + std::to_string(static_cast<int>(scaled_pos.x)) + "," + std::to_string(static_cast<int>(scaled_pos.y)) + "]";
                     GPU_Rect draw_surface = FC_GetBounds(_instance._global_font, 0.f, 0.f, FC_ALIGN_LEFT, { 1.f, 1.f }, text.c_str());
                     draw_surface.x = std::clamp(scaled_pos.x, 0.f, static_cast<float>(GetScreenWidth()) - draw_surface.w);
