@@ -216,6 +216,10 @@ void Scene::Reset()
 	ClearListNewInstance(_current_scene);
 	ClearListColonyInstance(_current_scene);
 
+	CodeExecutor::SuspendedCodeStop();
+	CodeExecutor::EraseGlobalStack();
+	CodeExecutor::Break();
+
 	// spawn scene instances
 	for (std::pair<std::string, SDL_FPoint>& instances_scene : _current_scene->_instances_scene)
 	{

@@ -661,11 +661,12 @@ void CodeExecutor::SuspendedCodeExecute()
 			if (_suspended_code[i].Sender != nullptr
 				&& _suspended_code[i].Sender->SuspendedCodePop()) {
 				// restore script break data
-				_suspended_code[i].CodeData.Break = false;
-				// flip ifs status, to continue execute
-				Core::Executor()->_if_test_result = _suspended_code[i].IfTestState;
-				//Console::WriteLine("execute code: " + _suspended_code[i].Sender->Name);
-				Core::Executor()->h_execute_script(&_suspended_code[i].CodeData, _suspended_code[i].Sender);
+				if (!_suspended_code[i].CodeData.Break) {
+					// flip ifs status, to continue execute
+					Core::Executor()->_if_test_result = _suspended_code[i].IfTestState;
+					//Console::WriteLine("execute code: " + _suspended_code[i].Sender->Name);
+					Core::Executor()->h_execute_script(&_suspended_code[i].CodeData, _suspended_code[i].Sender);
+				}
 			}
 		}
 		
@@ -734,7 +735,6 @@ void CodeExecutor::h_execute_script(Inspector* code, Instance* instance)
 				WriteValue		var->Type, var->index 
 	* */
 	_current_inspector = code;
-	if (code->Break) return;
 	while (!code->IsEnd()) {
 		if (code->Break) return;
 		switch (code->GetNextCommand()) {
