@@ -95,6 +95,10 @@ void Core::audio::SetMusicLevel(const int level) {
 void Core::audio::SetMaster(const bool& enabled)
 {
     _audio_master = enabled;
+    if (_audio_master)
+        Mix_ResumeMusic();
+    else
+        Mix_PauseMusic();
 }
 void Core::audio::SetSound(const bool& enabled)
 {
@@ -103,6 +107,10 @@ void Core::audio::SetSound(const bool& enabled)
 void Core::audio::SetMusic(const bool& enabled)
 {
     _audio_music = enabled;
+    if (_audio_music)
+        Mix_ResumeMusic();
+    else
+        Mix_PauseMusic();
 }
 // getters
 [[nodiscard]] int Core::audio::GetMusicLevel() const
