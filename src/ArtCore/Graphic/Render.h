@@ -5,13 +5,16 @@
 #include "FC_Fontcache/SDL_FontCache.h"
 
 
-class Render
+class Render final
 {
 public:
 	static void CreateRender(int width, int height);
 	static void DestroyRender();
 	static void LoadShaders();
+	static SDL_FPoint ScalePoint(const SDL_FPoint& point);
 	static void ScalePoint(SDL_FPoint* point);
+	static void ScaleCoords(float& x, float& y);
+	static void ScaleRect(Rect& rect);
 	static SDL_FPoint ScalePoint(const float& x, const float& y);
 
 	// drawing
@@ -70,18 +73,29 @@ public:
 	}
 	static int GetGaussianMode() { return _instance->_shader_gaussian_mode; }
 	static void SetGaussianFromPreset(int get);
+
+	// Create render via CreateRender()
+	Render(const Render&) = delete;
+	// Create render via CreateRender()
+	Render& operator=(const Render&) = delete;
+	// Create render via CreateRender()
+	Render& operator=(Render&&) = delete;
+	// Create render via CreateRender()
+	Render(Render&&) = delete;
 private:
-	virtual ~Render();
+	~Render();
 	Render();
+
 
 	static Render* _instance;
 	// global screen
 	int _width, _height;
-	float _default_width, _default_height;
-	float _width_scale, _height_scale;
-	bool _width_height_equal_scale{};
-	GPU_Target* _screenTexture_target = nullptr;
-	GPU_Image* _screenTexture = nullptr;
+	// mouse scale point
+	float _scale_width_value, _scale_height_value;
+	bool _scale_width, _scale_height;
+
+	GPU_Target* _screen_texture_target = nullptr;
+	GPU_Image* _screen_texture = nullptr;
 
 	// bloom
 		// shaders

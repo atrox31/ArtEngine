@@ -62,20 +62,24 @@ void GuiElement::Slider::Render()
 			_slider_move = false;
 		}else
 		{
-			if(Core::Mouse.XYf.x < _dimensions.X + 16.f)
+			Rect scaled_dimensions = _dimensions;
+			Render::ScaleRect(scaled_dimensions);
+
+			if(Core::Mouse.XYf.x < scaled_dimensions.X + 16.f)
 			{
 				_value = _value_min;
 			}else
-			if(Core::Mouse.XYf.x > _dimensions.X + _dimensions.W - 16.f)
+			if(Core::Mouse.XYf.x > scaled_dimensions.X + scaled_dimensions.W - 16.f)
 			{
 				_value = _value_max;
 			}else
 			{
+
 				_value = std::clamp(
 					(static_cast<int>(Func::LinearScale(
 						Core::Mouse.XYf.x,
-						_dimensions.X + 16.f,
-						(_dimensions.X + _dimensions.W - 16.f - slider_width),
+						scaled_dimensions.X + 16.f,
+						(scaled_dimensions.X + scaled_dimensions.W - 16.f - slider_width),
 						static_cast<float>(_value_min), static_cast<float>(_value_max)
 					)) / _step) * _step,
 					_value_min,
@@ -109,7 +113,14 @@ void GuiElement::Slider::Render()
 		slider_width,
 		36.f
 	};
-	const bool slider_point_mouse_hover = ( ( slider_point.PointInRectWh(Core::Mouse.XYf) || _slider_move) || slider_bar.PointInRectWh(Core::Mouse.XYf));
+
+	Rect slider_point_scaled = slider_point;
+	Render::ScaleRect(slider_point_scaled);
+
+	Rect slider_bar_scaled = slider_bar;
+	Render::ScaleRect(slider_bar_scaled);
+
+	const bool slider_point_mouse_hover = ( (slider_point_scaled.PointInRectWh(Core::Mouse.XYf) || _slider_move) || slider_bar_scaled.PointInRectWh(Core::Mouse.XYf));
 	SDL_Color slider_point_color = _pallet.Active;
 	if (Core::Mouse.LeftPressed && slider_point_mouse_hover)
 	{

@@ -11,40 +11,43 @@ Render* Render::_instance = nullptr;
 void Render::CreateRender(const int width, const int height)
 {
 	// if instance exists create new
-	delete _instance;
-	_instance = new Render();
+	if (_instance == nullptr) {
+		_instance = new Render();
+		
+		_instance->_screen_texture = GPU_CreateImage(static_cast<Uint16>(width), static_cast<Uint16>(height), GPU_FormatEnum::GPU_FORMAT_RGBA);
+		_instance->_screen_texture_target = GPU_LoadTarget(_instance->_screen_texture);
 
-	_instance->_width = width;
-	_instance->_height = height;
+		_instance->_shader_gaussian_texture = GPU_CreateImage(static_cast<Uint16>(width), static_cast<Uint16>(height), GPU_FormatEnum::GPU_FORMAT_RGBA);
+		_instance->_shader_gaussian_texture_target = GPU_LoadTarget(_instance->_shader_gaussian_texture);
 
-	if(Scene::GetCurrentScene() == nullptr)
-	{
-		// first run, load screen. Get default resolution
-		_instance->_default_width = SettingsData::GetFloat("ACWindowResolutionX", 1920);
-		_instance->_default_height = SettingsData::GetFloat("ACWindowResolutionY", 1080);
-	}
-	else 
-	{
-		_instance->_default_width = static_cast<float>(Scene::GetCurrentScene()->GetWidth());
-		_instance->_default_height = static_cast<float>(Scene::GetCurrentScene()->GetHeight());
+		_instance->_width = width;
+		_instance->_height = height;
+
 	}
 
-	_instance->_screenTexture = GPU_CreateImage(static_cast<Uint16>(width), static_cast<Uint16>(height), GPU_FormatEnum::GPU_FORMAT_RGBA);
-	_instance->_screenTexture_target = GPU_LoadTarget(_instance->_screenTexture);
+	if(width != _instance->_width)
+	{
+		_instance->_scale_width_value = static_cast<float>(width) / static_cast<float>(_instance->_width);
+		_instance->_scale_width = true;
+	}else
+	{
+		_instance->_scale_width = false;
+	}
 
-	_instance->_shader_gaussian_texture = GPU_CreateImage(static_cast<Uint16>(width), static_cast<Uint16>(height), GPU_FormatEnum::GPU_FORMAT_RGBA);
-	_instance->_shader_gaussian_texture_target = GPU_LoadTarget(_instance->_shader_gaussian_texture);
-	
-	GPU_Clear(_instance->_screenTexture_target);
-	GPU_Flip(_instance->_screenTexture_target);
+	if (height != _instance->_height)
+	{
+		_instance->_scale_height_value = static_cast<float>(height) / static_cast<float>(_instance->_height);
+		_instance->_scale_height = true;
+	}else
+	{
+		_instance->_scale_height = false;
+	}
 
-	GPU_Clear(_instance->_screenTexture_target);
-	GPU_Flip(_instance->_screenTexture_target);
+	GPU_Clear(_instance->_screen_texture_target);
+	GPU_Flip(_instance->_screen_texture_target);
 
-	_instance->_width_scale =  (static_cast<float>(width) / _instance->_default_width);
-	_instance->_height_scale = (static_cast<float>(height) / _instance->_default_height);
-	_instance->_width_height_equal_scale = std::abs(_instance->_width_scale - _instance->_height_scale) < 0.1f;
-	
+	GPU_Clear(_instance->_screen_texture_target);
+	GPU_Flip(_instance->_screen_texture_target);
 }
 
 void Render::DestroyRender()
@@ -56,10 +59,10 @@ void Render::DestroyRender()
 	_instance->_shader_gaussian_texture_target = nullptr;
 	_instance->_shader_gaussian_texture = nullptr;
 
-	GPU_FreeTarget(_instance->_screenTexture_target);
-	GPU_FreeImage(_instance->_screenTexture);
-	_instance->_screenTexture = nullptr;
-	_instance->_screenTexture_target = nullptr;
+	GPU_FreeTarget(_instance->_screen_texture_target);
+	GPU_FreeImage(_instance->_screen_texture);
+	_instance->_screen_texture = nullptr;
+	_instance->_screen_texture_target = nullptr;
 
 	GPU_FreeShaderProgram(_instance->_shader_gaussian);
 }
@@ -74,21 +77,43 @@ void Render::LoadShaders() {
 }
 
 
+SDL_FPoint Render::ScalePoint(const SDL_FPoint& point)
+{
+	return SDL_FPoint{
+		_instance->_scale_width ? point.x * _instance->_scale_width_value : point.x,
+		_instance->_scale_height ? point.y * _instance->_scale_height_value : point.y
+	};
+}
+
+
 void Render::ScalePoint( SDL_FPoint* point)
 {
-	// no deed to scale #preformance
-	if (_instance->_width_height_equal_scale) return;
-	point->x = Func::LinearScale(point->x, 0.f, static_cast<float>(_instance->_width), 0.f, _instance->_default_width);
-	point->y = Func::LinearScale(point->y, 0.f, static_cast<float>(_instance->_height), 0.f, _instance->_default_height);
+	if (_instance->_scale_width)  point->x *= _instance->_scale_width_value;
+	if (_instance->_scale_height) point->y *= _instance->_scale_height_value;
+}
+
+void Render::ScaleCoords(float& x, float& y)
+{
+	if (_instance->_scale_width)  x *= _instance->_scale_width_value;
+	if (_instance->_scale_height) y *= _instance->_scale_height_value;
+}
+void Render::ScaleRect(Rect& rect)
+{
+	if (_instance->_scale_width) {
+		rect.X *= _instance->_scale_width_value;
+		rect.W *= _instance->_scale_width_value;
+	}
+	if (_instance->_scale_height) {
+		rect.Y *= _instance->_scale_height_value;
+		rect.H *= _instance->_scale_height_value;
+	}
 }
 
 SDL_FPoint Render::ScalePoint(const float& x, const float& y)
 {
-	// no deed to scale #preformance
-	if (_instance->_width_height_equal_scale) return { x, y };
-	return {
-			Func::LinearScale(x, 0.f, static_cast<float>(_instance->_width), 0.f, _instance->_default_width),
-			Func::LinearScale(y, 0.f, static_cast<float>(_instance->_height), 0.f, _instance->_default_height)
+	return SDL_FPoint{
+		_instance->_scale_width ? x * _instance->_scale_width_value : x,
+		_instance->_scale_height ? y * _instance->_scale_height_value : y
 	};
 }
 
@@ -104,17 +129,17 @@ Render::Render()
 	_shader_gaussian_var_directions_location = 0;
 	_shader_gaussian_var_distance_location = 0;
 	//_shader_gaussian_block;
-	_default_width = 0;
+	_scale_height = false;
+	_scale_width = false;
 	_width = 0;
-	_width_scale = 0.f;
-	_default_height = 0;
 	_height = 0;
-	_height_scale = 0.f;
-	_screenTexture = nullptr;
-	_screenTexture_target = nullptr;
+	_scale_width_value = 0.f;
+	_scale_height_value = 0.f;
+	_screen_texture = nullptr;
+	_screen_texture_target = nullptr;
 }
 
-void Render::SetGaussianFromPreset(int get)
+void Render::SetGaussianFromPreset(const int get)
 {
 	switch (std::clamp(get, 0, 3))
 	{
@@ -152,7 +177,7 @@ void Render::DrawTexture(GPU_Image* texture, const vec2f& position, const vec2f&
 		//GPU_GetBlendModeFromPreset(GPU_BlendPresetEnum::GPU_BLEND_MOD_ALPHA);
 		GPU_SetColor(texture, { static_cast<Uint8>(255),static_cast<Uint8>(255),static_cast<Uint8>(255),static_cast<Uint8>(alpha * 255.f) });
 	}
-	GPU_BlitTransform(texture, nullptr, _instance->_screenTexture_target, position.x * _instance->_width_scale, position.y * _instance->_height_scale, Convert::RadiansToDegree(angle), scale.x, scale.y);
+	GPU_BlitTransform(texture, nullptr, _instance->_screen_texture_target, position.x, position.y, Convert::RadiansToDegree(angle), scale.x, scale.y);
 	if (alpha_flag) {
 		GPU_SetBlending(texture, false);
 
@@ -164,12 +189,12 @@ void Render::DrawTextureBox(GPU_Image* texture, GPU_Rect* input_box, GPU_Rect* o
 {
 	if(output_box != nullptr)
 	{
-		output_box->x = output_box->x * _instance->_width_scale;
-		output_box->y = output_box->y * _instance->_height_scale;
-		output_box->w = output_box->w * _instance->_width_scale;
-		output_box->h = output_box->h * _instance->_height_scale;
+		output_box->x = output_box->x;
+		output_box->y = output_box->y;
+		output_box->w = output_box->w;
+		output_box->h = output_box->h;
 	}
-	GPU_BlitRect(texture, input_box, _instance->_screenTexture_target, output_box);
+	GPU_BlitRect(texture, input_box, _instance->_screen_texture_target, output_box);
 }
 
 void Render::DrawLine(const SDL_FPoint& point_begin, const SDL_FPoint& point_end, const float& line_thickness,
@@ -177,11 +202,11 @@ void Render::DrawLine(const SDL_FPoint& point_begin, const SDL_FPoint& point_end
 {
 	const float lt = GPU_SetLineThickness(line_thickness);
 	GPU_Line(
-		_instance->_screenTexture_target,
-		point_begin.x * _instance->_width_scale,
-		point_begin.y * _instance->_height_scale,
-		point_end.x * _instance->_width_scale,
-		point_end.y * _instance->_height_scale,
+		_instance->_screen_texture_target,
+		point_begin.x,
+		point_begin.y,
+		point_end.x,
+		point_end.y,
 		color);
 	GPU_SetLineThickness(lt);
 }
@@ -227,14 +252,14 @@ void Render::DrawSprite_ex(const Sprite* sprite, const float pos_x, const float 
 	GPU_BlitTransformX(
 		source,
 		nullptr,
-		_instance->_screenTexture_target,
-		pos_x * _instance->_width_scale,
-		pos_y * _instance->_height_scale,
+		_instance->_screen_texture_target,
+		pos_x,
+		pos_y,
 		center_x, 
 		center_y,
 		Convert::RadiansToDegree(angle),
-		scale_x * _instance->_width_scale,
-		scale_y * _instance->_height_scale
+		scale_x,
+		scale_y
 	);
 
 	if (alpha_flag) {
@@ -266,12 +291,12 @@ void Render::DrawSpriteBox(const Sprite* sprite, GPU_Rect box, int frame, float 
 		GPU_SetColor(source, { static_cast<Uint8>(255),static_cast<Uint8>(255),static_cast<Uint8>(255),static_cast<Uint8>(alpha * 255) });
 	}
 
-	box.x = box.x * _instance->_width_scale;
-	box.y = box.y * _instance->_height_scale;
-	box.w = box.w * _instance->_width_scale;
-	box.h = box.h * _instance->_height_scale;
+	box.x = box.x;
+	box.y = box.y;
+	box.w = box.w;
+	box.h = box.h;
 
-	GPU_BlitRect(source, nullptr, _instance->_screenTexture_target, &box);
+	GPU_BlitRect(source, nullptr, _instance->_screen_texture_target, &box);
 	
 	if (alpha_flag) {
 		GPU_SetBlending(source, false);
@@ -283,11 +308,11 @@ void Render::DrawRect(const GPU_Rect rect, const SDL_Color color)
 {
 	//GPU_Rectangle2(_instance->_screenTexture_target, rect, color);
 	GPU_Rectangle(
-		_instance->_screenTexture_target,
-		rect.x * _instance->_width_scale,
-		rect.y * _instance->_height_scale,
-		rect.w * _instance->_width_scale,
-		rect.h * _instance->_height_scale,
+		_instance->_screen_texture_target,
+		rect.x,
+		rect.y,
+		rect.w,
+		rect.h,
 		color
 	);
 }
@@ -295,23 +320,23 @@ void Render::DrawRect(const GPU_Rect rect, const SDL_Color color)
 void Render::DrawRect_wh(const GPU_Rect rect, const SDL_Color color)
 {
 	GPU_Rectangle(
-		_instance->_screenTexture_target,
-		rect.x * _instance->_width_scale,
-		rect.y * _instance->_height_scale,
-		(rect.x + rect.w) * _instance->_width_scale,
-		(rect.y + rect.h) * _instance->_height_scale,
+		_instance->_screen_texture_target,
+		rect.x,
+		rect.y,
+		(rect.x + rect.w),
+		(rect.y + rect.h),
 		color
 	);
 }
 
 void Render::DrawRectFilled(GPU_Rect rect, const SDL_Color color)
 {
-	rect.x = rect.x * _instance->_width_scale;
-	rect.y = rect.y * _instance->_height_scale;
-	rect.w = rect.w * _instance->_width_scale;
-	rect.h = rect.h * _instance->_height_scale;
+	rect.x = rect.x;
+	rect.y = rect.y;
+	rect.w = rect.w;
+	rect.h = rect.h;
 	GPU_RectangleFilled2(
-		_instance->_screenTexture_target,
+		_instance->_screen_texture_target,
 		rect,
 		color
 	);
@@ -319,12 +344,12 @@ void Render::DrawRectFilled(GPU_Rect rect, const SDL_Color color)
 
 void Render::DrawRectRounded( GPU_Rect rect, const float round_factor, const SDL_Color color)
 {
-	rect.x = rect.x * _instance->_width_scale;
-	rect.y = rect.y * _instance->_height_scale;
-	rect.w = rect.w * _instance->_width_scale;
-	rect.h = rect.h * _instance->_height_scale;
+	rect.x = rect.x;
+	rect.y = rect.y;
+	rect.w = rect.w;
+	rect.h = rect.h;
 	GPU_RectangleRound2(
-		_instance->_screenTexture_target,
+		_instance->_screen_texture_target,
 		rect,
 		round_factor,
 		color
@@ -333,12 +358,12 @@ void Render::DrawRectRounded( GPU_Rect rect, const float round_factor, const SDL
 
 void Render::DrawRectRoundedFilled( GPU_Rect rect, const float round_factor, const SDL_Color color)
 {
-	rect.x = rect.x * _instance->_width_scale;
-	rect.y = rect.y * _instance->_height_scale;
-	rect.w = rect.w * _instance->_width_scale;
-	rect.h = rect.h * _instance->_height_scale;
+	rect.x = rect.x;
+	rect.y = rect.y;
+	rect.w = rect.w;
+	rect.h = rect.h;
 	GPU_RectangleRoundFilled2(
-		_instance->_screenTexture_target,
+		_instance->_screen_texture_target,
 		rect,
 		round_factor,
 		color
@@ -348,66 +373,36 @@ void Render::DrawRectRoundedFilled( GPU_Rect rect, const float round_factor, con
 
 void Render::DrawCircle(const vec2f& position, const float radius, const SDL_Color color)
 {
-	if(_instance->_width_height_equal_scale)
-	{
-		GPU_Circle(
-			_instance->_screenTexture_target,
-			position.x * _instance->_width_scale,
-			position.y * _instance->_height_scale,
-			radius * _instance->_height_scale,
-			color
-		);
-	}
-	else
-	{
-		GPU_Ellipse(
-			_instance->_screenTexture_target,
-			position.x * _instance->_width_scale,
-			position.y * _instance->_height_scale,
-			radius * _instance->_width_scale,
-			radius * _instance->_height_scale,
-			0.f,
-			color
-		);
-	}
+	GPU_Circle(
+		_instance->_screen_texture_target,
+		position.x,
+		position.y,
+		radius,
+		color
+	);
 }
 
 void Render::DrawCircleFilled(const vec2f& position, const float radius, const SDL_Color color)
 {
-	if (_instance->_width_height_equal_scale)
-	{
-		GPU_CircleFilled(
-			_instance->_screenTexture_target,
-			position.x * _instance->_width_scale,
-			position.y * _instance->_height_scale,
-			radius * _instance->_height_scale,
-			color
-		);
-	}
-	else
-	{
-		GPU_EllipseFilled(
-			_instance->_screenTexture_target,
-			position.x * _instance->_width_scale,
-			position.y * _instance->_height_scale,
-			radius * _instance->_width_scale,
-			radius * _instance->_height_scale,
-			0.f,
-			color
-		);
-	}
+	GPU_CircleFilled(
+		_instance->_screen_texture_target,
+		position.x,
+		position.y,
+		radius,
+		color
+	);
 }
 
 void Render::DrawTriangle(const vec2f& a, const vec2f& b, const vec2f& c, const SDL_Color color)
 {
 	GPU_Tri(
-		_instance->_screenTexture_target,
-		a.x * _instance->_width_scale,
-		a.y * _instance->_height_scale,
-		b.x * _instance->_width_scale,
-		b.y * _instance->_height_scale,
-		c.x * _instance->_width_scale,
-		c.y * _instance->_height_scale,
+		_instance->_screen_texture_target,
+		a.x,
+		a.y,
+		b.x,
+		b.y,
+		c.x,
+		c.y,
 		color
 	);
 }
@@ -415,13 +410,13 @@ void Render::DrawTriangle(const vec2f& a, const vec2f& b, const vec2f& c, const 
 void Render::DrawTriangleFilled(const vec2f& a, const vec2f& b, const vec2f& c, const SDL_Color color)
 {
 	GPU_TriFilled(
-		_instance->_screenTexture_target,
-		a.x * _instance->_width_scale,
-		a.y * _instance->_height_scale,
-		b.x * _instance->_width_scale,
-		b.y * _instance->_height_scale,
-		c.x * _instance->_width_scale,
-		c.y * _instance->_height_scale,
+		_instance->_screen_texture_target,
+		a.x,
+		a.y,
+		b.x,
+		b.y,
+		c.x,
+		c.y,
 		color
 	);
 }
@@ -443,13 +438,13 @@ GPU_Rect Render::DrawTextAlign(const std::string& text, FC_Font* font, const vec
 {
 	return FC_DrawEffect(
 		font,
-		_instance->_screenTexture_target,
-		pos.x * _instance->_width_scale,
-		pos.y * _instance->_height_scale,
+		_instance->_screen_texture_target,
+		pos.x,
+		pos.y,
 		FC_MakeEffect(align,
 			{
-				1.f * _instance->_width_scale,
-				1.f * _instance->_height_scale
+				1.f,
+				1.f
 			}, 
 			color
 		),
@@ -460,19 +455,19 @@ GPU_Rect Render::DrawTextAlign(const std::string& text, FC_Font* font, const vec
 // Draw text
 GPU_Rect Render::DrawTextBox(const std::string& text, FC_Font* font, GPU_Rect box, const SDL_Color color, const FC_AlignEnum align)
 {
-	box.x = box.x * _instance->_width_scale;
-	box.y = box.y * _instance->_height_scale;
-	box.w = box.w * _instance->_width_scale;
-	box.h = box.h * _instance->_height_scale;
+	box.x = box.x;
+	box.y = box.y;
+	box.w = box.w;
+	box.h = box.h;
 	return FC_DrawBoxEffect(
 		font, 
-		_instance->_screenTexture_target,
+		_instance->_screen_texture_target,
 		box, 
 		FC_MakeEffect(
 			align,
 			{
-				1.0f * _instance->_width_scale,
-				1.0f * _instance->_height_scale
+				1.0f,
+				1.0f
 			}, 
 			color
 		),
@@ -484,7 +479,7 @@ void Render::RenderToTarget(GPU_Target* target)
 {
 	GPU_Clear(target);
 	GPU_DeactivateShaderProgram();
-	GPU_BlitRect(_instance->_screenTexture, nullptr, target, nullptr);
+	GPU_BlitRect(_instance->_screen_texture, nullptr, target, nullptr);
 }
 
 void Render::ProcessImageWithGaussian()
@@ -495,10 +490,10 @@ void Render::ProcessImageWithGaussian()
 	GPU_SetUniformi(_instance->_shader_gaussian_var_quality_location, _instance->_shader_gaussian_var_quality);
 	GPU_SetUniformi(_instance->_shader_gaussian_var_directions_location, _instance->_shader_gaussian_var_directions);
 	GPU_SetUniformf(_instance->_shader_gaussian_var_distance_location, _instance->_shader_gaussian_var_distance);
-	GPU_BlitRect(_instance->_screenTexture, nullptr, _instance->_shader_gaussian_texture_target, nullptr);
+	GPU_BlitRect(_instance->_screen_texture, nullptr, _instance->_shader_gaussian_texture_target, nullptr);
 
 	GPU_DeactivateShaderProgram();
-	GPU_BlitRect(_instance->_shader_gaussian_texture, nullptr, _instance->_screenTexture_target, nullptr);
+	GPU_BlitRect(_instance->_shader_gaussian_texture, nullptr, _instance->_screen_texture_target, nullptr);
 }
 
 void Render::SetGaussianProperties(const int quality, const int directions, const float distance)
@@ -511,9 +506,9 @@ void Render::SetGaussianProperties(const int quality, const int directions, cons
 // clear all textures cache
 void Render::RenderClear()
 {
-	GPU_Clear(_instance->_screenTexture_target);
+	GPU_Clear(_instance->_screen_texture_target);
 }
 void Render::RenderClearColor(const SDL_Color& color)
 {
-	GPU_ClearColor(_instance->_screenTexture_target, color);
+	GPU_ClearColor(_instance->_screen_texture_target, color);
 }

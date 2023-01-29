@@ -5,6 +5,7 @@
 #include "ArtCore/System/Core.h"
 #include "ArtCore/Graphic/ColorDefinitions.h"
 #include "ArtCore/CodeExecutor/CodeExecutor.h"
+#include "ArtCore/Graphic/Render.h"
 #include "ArtCore/Scene/Scene.h"
 #include "ArtCore/System/AssetManager.h"
 
@@ -19,11 +20,11 @@
 #include "GuiElement/Slider.h"
 #include "GuiElement/TabPanel.h"
 
-// All systems is from previous version of ArtCore writed many years ago.
-// Some code is rewrited, mostly drawing and events but rest have old style
+// All systems is from previous version of ArtCore write many years ago.
+// Some code is rewrites, mostly drawing and events but rest have old style
 // returns of self.
 // This is from times when ArtCore do not have editor, everything must
-// be writed and compiled at once.
+// be write and compiled at once.
 // This works but I can write this better.
 // TODO rewrite this to newest standards, clean and comment this code.
 
@@ -196,7 +197,9 @@ void Gui::Render() const
 }
 void Gui::_render(Gui::GuiElementTemplate* e)
 {
-	const bool point_on_element = e->_dimensions.PointInRectWh(Core::Mouse.XYf);
+	Rect scaled_dimensions = e->_dimensions;
+	Render::ScaleRect(scaled_dimensions);
+	const bool point_on_element = scaled_dimensions.PointInRectWh(Core::Mouse.XYf);
 	e->_mouse_hover = point_on_element;
 	if(e->_mouse_hover)
 	{

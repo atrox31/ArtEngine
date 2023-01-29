@@ -482,15 +482,15 @@ bool Core::Run()
             if (_instance._reset_state) continue;// reset game loop
             DEBUG_TEST_COUNTER_END(performance_step)
 
-                DEBUG_TEST_COUNTER_START(performance_physics)
-                _instance.ProcessPhysics();
+        	DEBUG_TEST_COUNTER_START(performance_physics)
+                ProcessPhysics();
             DEBUG_TEST_COUNTER_END(performance_physics)
         }
 
         DEBUG_TEST_COUNTER_START(performance_render)
             Render::RenderClear();
         // render scene
-        _instance.ProcessSceneRender();
+        ProcessSceneRender();
         DEBUG_TEST_COUNTER_END(performance_render)
 
 
@@ -502,6 +502,8 @@ bool Core::Run()
             DEBUG_TEST_COUNTER_START(performance_counter_gpu_flip)
             // render console, debug panels etc
             _instance.ProcessSystemRender();
+
+		GPU_CircleFilled(_instance._screenTarget, Mouse.XYf.x, Mouse.XYf.y, 5, GPU_MakeColor(255, 0, 0, 255));
 
         // get all to screen
         GPU_Flip(_instance._screenTarget);
@@ -663,8 +665,12 @@ void Core::MouseState::Reset()
     int x{};
     int y{};
     const Uint32 button_state = SDL_GetMouseState(&x, &y);
-    Mouse.XYf = Render::ScalePoint(static_cast<float>(x) ,static_cast<float>(y));
-    Mouse.XY = { static_cast<int>(Mouse.XYf.x) ,static_cast<int>(Mouse.XYf.y) };
+
+    Mouse.XY = { x, y };
+    Mouse.XYf = { static_cast<float>(Mouse.XY.x) ,static_cast<float>(Mouse.XY.y) };
+
+    //Mouse.XYf = Render::ScalePoint(static_cast<float>(x) ,static_cast<float>(y));
+    //Mouse.XY = { static_cast<int>(Mouse.XYf.x) ,static_cast<int>(Mouse.XYf.y) };
 
     Mouse.LeftPressed = (button_state == SDL_BUTTON(SDL_BUTTON_LEFT));
     Mouse.RightPressed = (button_state == SDL_BUTTON(SDL_BUTTON_RIGHT));
@@ -845,20 +851,21 @@ void Core::CoreDebug::Draw() const
                 it != Scene::ColonyGetEnd(); ++it)
             {
                 Instance* instance = (*it);
+				const SDL_FPoint scaled_pos = Render::ScalePoint(instance->PosX, instance->PosY);
 
                 GPU_Circle(_instance._screenTarget, instance->PosX, instance->PosY, 4, C_BLACK);
                 // always draw origins point
             	if (instance->SelfSprite) {
-                    GPU_Circle(_instance._screenTarget, instance->PosX + instance->SelfSprite->GetCenterXRel(), instance->PosY + instance->SelfSprite->GetCenterYRel(), 6, C_GOLD);
+                    GPU_Circle(_instance._screenTarget, scaled_pos.x + instance->SelfSprite->GetCenterXRel(), scaled_pos.y + instance->SelfSprite->GetCenterYRel(), 6, C_GOLD);
                 }
                 else {
-                    GPU_Circle(_instance._screenTarget, instance->PosX, instance->PosY, 6, C_GOLD);
+                    GPU_Circle(_instance._screenTarget, scaled_pos.x, scaled_pos.y, 6, C_GOLD);
                 }
 
-                if(_show_directions)
+                if(_show_directions && false)
                 {
                     const float prv = GPU_SetLineThickness(4.f);
-                    vec2f line_begin{ instance->PosX, instance->PosY };
+                    vec2f line_begin{ scaled_pos.x, scaled_pos.y };
                     vec2f line_end = Func::GetDirectionVector(instance->Direction);
                     line_end *= 42.f;
                     line_end += line_begin;
@@ -866,27 +873,30 @@ void Core::CoreDebug::Draw() const
                     GPU_SetLineThickness(prv);
                 }
 
-                if (_show_collider) {
+                if (_show_collider && false) {
                     const float line_thickness = GPU_SetLineThickness(3.f);
                     if (instance->Body.Type == Instance::body::type::Circle) {
                         const float radius_scale = instance->Body.Radius * ((instance->SpriteScaleX + instance->SpriteScaleY) / 2.f);
-                        GPU_Circle(_instance._screenTarget, instance->PosX, instance->PosY, radius_scale, C_WHITE);
+                        GPU_Circle(_instance._screenTarget, scaled_pos.x, scaled_pos.y, radius_scale, C_WHITE);
                         GPU_SetLineThickness(2.f);
-                        GPU_Circle(_instance._screenTarget, instance->PosX, instance->PosY, radius_scale, C_BLUE);
+                        GPU_Circle(_instance._screenTarget, scaled_pos.x, scaled_pos.y, radius_scale, C_BLUE);
                     }
                     if (instance->Body.Type == Instance::body::type::Rectangle) {
-                        GPU_Rectangle2(_instance._screenTarget, instance->GetBodyMask().ToGPU_Rect_wh(), C_WHITE);
+						GPU_Rect rect = instance->GetBodyMask().ToGPU_Rect_wh();
+						Render::ScaleCoords(rect.x, rect.y);
+						Render::ScaleCoords(rect.w, rect.h);
+                        GPU_Rectangle2(_instance._screenTarget, rect, C_WHITE);
                         GPU_SetLineThickness(2.f);
-                        GPU_Rectangle2(_instance._screenTarget, instance->GetBodyMask().ToGPU_Rect_wh(), C_BLUE);
+                        GPU_Rectangle2(_instance._screenTarget, rect, C_BLUE);
                     }
                     GPU_SetLineThickness(line_thickness);
                 }
 
-                if (_show_instance_info) {
-                    const std::string text = instance->Name + "#" + std::to_string(instance->GetId()) + "[" + std::to_string(static_cast<int>(instance->PosX)) + "," + std::to_string(static_cast<int>(instance->PosY)) + "]";
+                if (_show_instance_info && false) {
+                    const std::string text = instance->Name + "#" + std::to_string(instance->GetId()) + "[" + std::to_string(static_cast<int>(scaled_pos.x)) + "," + std::to_string(static_cast<int>(scaled_pos.y)) + "]";
                     GPU_Rect draw_surface = FC_GetBounds(_instance._global_font, 0.f, 0.f, FC_ALIGN_LEFT, { 1.f, 1.f }, text.c_str());
-                    draw_surface.x = std::clamp(instance->PosX, 0.f, static_cast<float>(GetScreenWidth()) - draw_surface.w);
-                    draw_surface.y = std::clamp(instance->PosY, 0.f, static_cast<float>(GetScreenHeight()) - draw_surface.h);
+                    draw_surface.x = std::clamp(scaled_pos.x, 0.f, static_cast<float>(GetScreenWidth()) - draw_surface.w);
+                    draw_surface.y = std::clamp(scaled_pos.y, 0.f, static_cast<float>(GetScreenHeight()) - draw_surface.h);
                     FC_DrawColor(_instance._global_font, _instance._screenTarget, draw_surface.x, draw_surface.y, C_RED, text.c_str());
                 }
             }

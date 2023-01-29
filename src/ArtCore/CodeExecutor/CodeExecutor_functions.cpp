@@ -449,7 +449,7 @@ void CodeExecutor::music_play(Instance*) {
 	const int SoundId = StackIn_i;
 	Mix_Music* music = Core::GetAssetManager()->GetMusic(SoundId);
 	if (music == nullptr) return;
-	Mix_PlayMusic(music, 0);
+	Mix_PlayMusic(music, -1);
 }
 
 //null sprite_next_frame(); Set SelfSprite next frame; If sprite loop is enable, frame = 0 if frame > frame_max;

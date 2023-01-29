@@ -120,7 +120,10 @@ void GuiElement::DropDownList::Render()
 		for (const auto& value : _values)
 		{
 			tmp_i++;
-			const bool element_mouse_hover = alter_dimensions.PointInRectWh(Core::Mouse.XYf);
+			Rect scaled_dimensions = alter_dimensions;
+			Render::ScaleRect(scaled_dimensions);
+
+			const bool element_mouse_hover = scaled_dimensions.PointInRectWh(Core::Mouse.XYf);
 			if(element_mouse_hover)
 			{
 				_temp_selected_index = tmp_i;
