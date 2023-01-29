@@ -1329,3 +1329,19 @@ void CodeExecutor::scene_count_instance_by_tag(Instance* sender) {
 void CodeExecutor::scene_count_instance_by_name(Instance* sender) {
 	StackOut_i(Scene::GetInstancesCountByName(StackIn_s));
 }
+
+//bool keyboard_is_key_pressed(string key);Get <string> key state;Use normal names like 'Escape' 'A'
+void CodeExecutor::keyboard_is_key_pressed(Instance*){
+	const Uint8* keyboard_state_array = SDL_GetKeyboardState(nullptr);
+	StackOut_b(keyboard_state_array[SDL_GetScancodeFromName(StackIn_s.c_str())] == 1);
+}
+
+//null game_pause();Count instances in current scene by <string> name;
+void CodeExecutor::game_pause(Instance* sender) {
+	Core::Pause();
+}
+
+//null game_resume();Count instances in current scene by <string> name;
+void CodeExecutor::game_resume(Instance* sender) {
+	Core::Play();
+}

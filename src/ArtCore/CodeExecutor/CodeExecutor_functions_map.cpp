@@ -151,5 +151,8 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["self"] = &CodeExecutor::self;
 	FunctionsMap["scene_count_instance_by_tag"] = &CodeExecutor::scene_count_instance_by_tag;
 	FunctionsMap["scene_count_instance_by_name"] = &CodeExecutor::scene_count_instance_by_name;
+	FunctionsMap["keyboard_is_key_pressed"] = &CodeExecutor::keyboard_is_key_pressed;
+	FunctionsMap["game_pause"] = &CodeExecutor::game_pause;
+	FunctionsMap["game_resume"] = &CodeExecutor::game_resume;
 }
 //end of file

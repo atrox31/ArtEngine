@@ -477,15 +477,14 @@ bool Core::Run()
         
         if (_instance._reset_state) continue;// reset game loop
 
-        if (_instance.game_loop) {
-            _instance.ProcessStep(current_event);
-            if (_instance._reset_state) continue;// reset game loop
-            DEBUG_TEST_COUNTER_END(performance_step)
 
-        	DEBUG_TEST_COUNTER_START(performance_physics)
-                ProcessPhysics();
-            DEBUG_TEST_COUNTER_END(performance_physics)
-        }
+    		ProcessStep(current_event);
+    	if (_instance._reset_state) continue;// reset game loop
+    	DEBUG_TEST_COUNTER_END(performance_step)
+
+    	DEBUG_TEST_COUNTER_START(performance_physics)
+    		ProcessPhysics();
+    	DEBUG_TEST_COUNTER_END(performance_physics)
 
         DEBUG_TEST_COUNTER_START(performance_render)
             Render::RenderClear();

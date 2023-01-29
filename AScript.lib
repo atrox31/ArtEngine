@@ -145,3 +145,6 @@ null sprite_set_angle(float value);Set self sprite angle <float> in degree;Get (
 instance self();Get self reference
 int scene_count_instance_by_tag(string tag);Count instances in current scene by <string> tag;
 int scene_count_instance_by_name(string name);Count instances in current scene by <string> name;
+bool keyboard_is_key_pressed(string key);Get <string> key state;Use normal names like 'Escape' 'A'
+null game_pause();Count instances in current scene by <string> name;
+null game_resume();Count instances in current scene by <string> name;

@@ -31,7 +31,7 @@ public:
 	static void Exit();
 
 	bool ProcessEvents(event_bit& global_events_flag);
-	void ProcessStep(const event_bit& global_events_flag) const;
+	static void ProcessStep(const event_bit& global_events_flag);
 	static void ProcessPhysics();
 	static void ProcessSceneRender();
 	void ProcessPostProcessRender() const;
@@ -73,6 +73,7 @@ private:
 	Uint8 use_bloom_level = 0;
 	GPU_Target* _screenTarget;
 	CodeExecutor* _executor;
+
 
 	// this is flag used to reset game loop if level or scene is restarted
 	bool _reset_state = false;

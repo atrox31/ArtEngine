@@ -103,13 +103,16 @@ bool Core::ProcessEvents(event_bit& global_events_flag)
         default:continue;
         }
     }
+
     return false;
 }
 
-void Core::ProcessStep(const event_bit& global_events_flag) const
+void Core::ProcessStep(const event_bit& global_events_flag)
 {
     // interface (gui) events
     const bool gui_have_event = Scene::GuiSystem().Events();
+
+    if (!_instance.game_loop) return;
     // add all new instances to scene and execute OnCreate event
     Scene::GetCurrentScene()->SpawnAll();
     if (!Scene::IsAnyInstances()) return;
@@ -136,13 +139,13 @@ void Core::ProcessStep(const event_bit& global_events_flag) const
             }
 
             // view change event
-            const bool oldInView = c_instance->InView;
-            c_instance->InView = Scene::GetCurrentScene()->InView({ c_instance->PosX, c_instance->PosY });
+            const bool old_in_view = c_instance->InView;
+            c_instance->InView = Scene::InView({ c_instance->PosX, c_instance->PosY });
             if (EVENT_BIT_TEST(event_bit::HAVE_VIEW_CHANGE, c_instance_events)
-            && c_instance->InView != oldInView) {
+            && c_instance->InView != old_in_view) {
 
                 if (EVENT_BIT_TEST(event_bit::HAVE_VIEW_CHANGE, c_instance_events)) {
-                    if (oldInView == true) { // be inside, now exit view
+                    if (old_in_view == true) { // be inside, now exit view
                         Executor()->ExecuteScript(c_instance, Event::EvOnViewLeave);
                     }
                     else {
@@ -164,17 +167,17 @@ void Core::ProcessStep(const event_bit& global_events_flag) const
                 && (!gui_have_event)) {
                 // global mouse down
                 if (   EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT_DOWN, global_events_flag)     // first check if event happen
-                    && EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT_DOWN, c_instance_events))     // seccond check if instance have this event
+                    && EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT_DOWN, c_instance_events))     // second check if instance have this event
                     Executor()->ExecuteScript(c_instance, Event::EvOnMouseDown);                // execute event
 
                 // global mouse up
                 if (   EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT_UP, global_events_flag)       // first check if event happen
-                    && EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT_UP, c_instance_events))       // seccond check if instance have this event
+                    && EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT_UP, c_instance_events))       // second check if instance have this event
                     Executor()->ExecuteScript(c_instance, Event::EvOnMouseUp);                  // execute event
 
                 // local mouse clock - on instance sprite mask
                 if (   EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT_DOWN, global_events_flag)     // first check if event happen
-                    && EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT_CLICK, c_instance_events)     // seccond check if instance have this event
+                    && EVENT_BIT_TEST(event_bit::HAVE_MOUSE_EVENT_CLICK, c_instance_events)     // second check if instance have this event
                     && c_instance->CheckMaskClick(Mouse.XYf))                                   // third check if sprite mask is clicked
                     Executor()->ExecuteScript(c_instance, Event::EvClicked);
 
@@ -207,6 +210,7 @@ void Core::ProcessStep(const event_bit& global_events_flag) const
 
 void Core::ProcessPhysics()
 {
+    if (!_instance.game_loop) return;
     for (plf_it<Instance*> it = Scene::ColonyGetBegin();
         it != Scene::ColonyGetEnd();++it)
     {
@@ -258,7 +262,7 @@ void Core::ProcessPostProcessRender() const
     Render::ProcessImageWithGaussian();
 
     // draw interface
-    Scene::GetCurrentScene()->GuiSystem().Render();
+    Scene::GuiSystem().Render();
 
     // draw all scene to screen buffer
     Render::RenderToTarget(_screenTarget);

@@ -378,6 +378,9 @@ private:
 	Script(self);
 	Script(scene_count_instance_by_tag);
 	Script(scene_count_instance_by_name);
+	Script(keyboard_is_key_pressed);
+	Script(game_pause);
+	Script(game_resume);
 #undef Script
 };
 //end of file
