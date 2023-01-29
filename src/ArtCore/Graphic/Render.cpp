@@ -228,8 +228,7 @@ void Render::DrawSprite(const Sprite* sprite, const vec2f& position, const int f
 void Render::DrawSprite_ex(const Sprite* sprite, const float pos_x, const float pos_y, int frame, const float scale_x, const float scale_y, const float center_x, const float center_y, const float angle, float alpha) {
 	if (sprite == nullptr) return;
 
-	const int spr_max_frames = sprite->GetMaxFrame();
-	if (spr_max_frames == 1) {
+	if (const int spr_max_frames = sprite->GetMaxFrame(); spr_max_frames == 1) {
 		frame = 0;
 	}
 	else {
@@ -240,14 +239,10 @@ void Render::DrawSprite_ex(const Sprite* sprite, const float pos_x, const float 
 
 	GPU_Image* source = sprite->GetFrame(frame);
 
-	const bool alpha_flag = alpha < 1.0f;
-	if (alpha_flag) {
-		if (alpha < 0.0f) alpha = 0.0f;
-		if (alpha > 1.0f) alpha = 1.0f;
-		GPU_SetBlending(source, true);
-		//GPU_GetBlendModeFromPreset(GPU_BlendPresetEnum::GPU_BLEND_MOD_ALPHA);
-		GPU_SetColor(source, { static_cast<Uint8>(255),static_cast<Uint8>(255),static_cast<Uint8>(255),static_cast<Uint8>(alpha * 255.f) });
-	}
+	alpha = std::clamp(alpha, 0.f, 1.f);
+
+	GPU_SetBlending(source, true);
+	GPU_SetColor(source, { static_cast<Uint8>(255),static_cast<Uint8>(255),static_cast<Uint8>(255),static_cast<Uint8>(alpha * 255.f) });
 
 	GPU_BlitTransformX(
 		source,
@@ -262,10 +257,8 @@ void Render::DrawSprite_ex(const Sprite* sprite, const float pos_x, const float 
 		scale_y
 	);
 
-	if (alpha_flag) {
-		GPU_SetBlending(source, false);
-		GPU_SetColor(source, C_FULL);
-	}
+	GPU_SetBlending(source, false);
+	GPU_SetColor(source, C_FULL);
 }
 void Render::DrawSpriteBox(const Sprite* sprite, GPU_Rect box, int frame, float alpha) {
 	if (sprite == nullptr) return;

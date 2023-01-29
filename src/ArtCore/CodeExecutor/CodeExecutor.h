@@ -260,6 +260,7 @@ private:
 	Script(draw_texture);
 	Script(draw_texture_ex);
 	Script(draw_sprite_self);
+	Script(draw_sprite_self_alpha);
 	Script(draw_shape_rectangle);
 	Script(draw_shape_rectangle_r);
 	Script(draw_shape_rectangle_filled);

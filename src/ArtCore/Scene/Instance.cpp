@@ -53,13 +53,13 @@ bool Instance::SuspendedCodePop()
 	return true;
 }
 
-void Instance::DrawSelf()
+void Instance::DrawSelf(const float alpha)
 {
 	SpriteAnimationFrame += (SpriteAnimationSpeed * static_cast<float>(Core::DeltaTime));
 	if (!SpriteAnimationLoop && SpriteAnimationFrame > static_cast<float>(SelfSprite->GetMaxFrame())) {
 		SpriteAnimationSpeed = 0.0f;
 	}
-	Render::DrawSprite_ex(SelfSprite, PosX, PosY , static_cast<int>(SpriteAnimationFrame),  SpriteScaleX, SpriteScaleY, static_cast<float>(SpriteCenterX), static_cast<float>(SpriteCenterY), SpriteAngle, 1.0f);
+	Render::DrawSprite_ex(SelfSprite, PosX, PosY , static_cast<int>(SpriteAnimationFrame),  SpriteScaleX, SpriteScaleY, static_cast<float>(SpriteCenterX), static_cast<float>(SpriteCenterY), SpriteAngle, alpha);
 }
 
 bool Instance::CheckMaskClick(SDL_FPoint& point) const

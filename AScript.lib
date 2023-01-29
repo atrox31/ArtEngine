@@ -23,10 +23,11 @@ float direction_to_point(point p);Give direction to <point> in degree (-180 : 18
 float direction_between_point(point p1, point p2);Give direction from <point> to <point> in degree (-180 : 180);Measure distance.
 float direction_to_instance(instance i);Give direction to <instance> in degree (-180 : 180);Measure from current instance to target point. If target not exists return own direction
 null draw_sprite(sprite spr, float x, float y, float frame);Draw <sprite> on location (<float>,<float>) with target frame <frame>;Draw default sprite. To more options use draw_sprite_ex
-null draw_sprite_ex(sprite spr, float x, float y, float frame, float x_scale, float y_scale, float x_center, float y_center, float angle, float alpha);
+null draw_sprite_ex(sprite spr, float x, float y, float frame, float x_scale, float y_scale, float x_center, float y_center, float angle, float alpha);Draw <sprite> on location (<float>,<float>)\nWith target frame <frame>\nWith scale (<float>,<float>)\nWith center (<float>,<float>)\nWith angle <float>\nWith alpha <float>\n;Draw sprite with more options
 null draw_texture(texture tex, float x, float y);Draw <texture> on (<float>,<float>).;Draw standard texture with it normal dimensions. For extended option use 'Draw texture extended';
 null draw_texture_ex(texture tex, float x, float y, float x_scale, float y_scale, float angle, float alpha);Draw <texture> on (<float>,<float>), with scale (<float>,<float>), angle <float> and aplha <float>;Angle range is (0 - 359) alpha (0.0f - 1.0f).
 null draw_sprite_self();Draw self sprite on self coords with sprite scale and angle;Use build-in variables;
+null draw_sprite_self_alpha(float alpha);Draw self sprite on self coords with sprite scale and angle using <float> alpha;Alpha is [0..1];
 null draw_shape_rectangle(float x1, float y2, float x2, float y2, color color);Draw frame of Rectangle from (<float>,<float>) to (<float>,<float>) with color <color>.;Draw Rectangle on final coords;
 null draw_shape_rectangle_r(Rectangle rect, color color);Draw frame of <Rectangle> with color <color>.;Draw Rectangle;
 null draw_shape_rectangle_filled(float x1, float y2, float x2, float y2, color color);Draw filled of Rectangle from (<float>,<float>) to (<float>,<float>) with color <color>.;Draw Rectangle on final coords;

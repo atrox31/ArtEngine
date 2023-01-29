@@ -16,7 +16,7 @@ public:
 	void Delete();
 	[[nodiscard]] int GetInstanceDefinitionId() const {	return _instance_definition_id; }
 
-	void DrawSelf();
+	void DrawSelf(float alpha);
 	bool CheckMaskClick(SDL_FPoint&) const;
 
 	[[nodiscard]] Rect GetBodyMask() const;

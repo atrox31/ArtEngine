@@ -33,6 +33,7 @@ void CodeExecutor::MapFunctions()
 	FunctionsMap["draw_texture"] = &CodeExecutor::draw_texture;
 	FunctionsMap["draw_texture_ex"] = &CodeExecutor::draw_texture_ex;
 	FunctionsMap["draw_sprite_self"] = &CodeExecutor::draw_sprite_self;
+	FunctionsMap["draw_sprite_self_alpha"] = &CodeExecutor::draw_sprite_self_alpha;
 	FunctionsMap["draw_shape_rectangle"] = &CodeExecutor::draw_shape_rectangle;
 	FunctionsMap["draw_shape_rectangle_r"] = &CodeExecutor::draw_shape_rectangle_r;
 	FunctionsMap["draw_shape_rectangle_filled"] = &CodeExecutor::draw_shape_rectangle_filled;

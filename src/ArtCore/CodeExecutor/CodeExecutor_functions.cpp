@@ -25,7 +25,7 @@
 
 #define StackOut_b(X) CodeExecutor::GlobalStack_bool.Add(X)
 #define StackOut_p(X) CodeExecutor::GlobalStack_point.Add(X)
-#define StackOut_c(X) CodeExecutor::GlobalStack_color.Add(X)
+#define StackOut_c(X) CodeExecutor::GlobalStack_color.Add(X)  // NOLINT(clang-diagnostic-unused-macros)
 #define StackOut_r(X) CodeExecutor::GlobalStack_rect.Add(X)
 #define StackOut_f(X) CodeExecutor::GlobalStack_float.Add(X)
 #define StackOut_i(X) CodeExecutor::GlobalStack_int.Add(X)
@@ -253,7 +253,7 @@ void CodeExecutor::draw_sprite(Instance*) {
 	Render::DrawSprite(Core::GetAssetManager()->GetSprite(spriteId), { x, y }, static_cast<int>(frame));
 }
 
-//null draw_sprite_ex(sprite spr, float x, float y, float frame, float x_scale, float y_scale, float x_center, float y_center, float angle, float alpha);
+//null draw_sprite_ex(sprite spr, float x, float y, float frame, float x_scale, float y_scale, float x_center, float y_center, float angle, float alpha);Draw <sprite> on location (<float>,<float>)\nWith target frame <frame>\nWith scale (<float>,<float>)\nWith center (<float>,<float>)\nWith angle <float>\nWith alpha <float>\n;Draw sprite with more options
 void CodeExecutor::draw_sprite_ex(Instance*) {
 	const float alpha = StackIn_f;
 	const float angle = StackIn_f;
@@ -291,7 +291,14 @@ void CodeExecutor::draw_texture_ex(Instance*) {
 //null draw_sprite_self();Draw self sprite on self coords with sprite scale and angle;Use build-in variables;
 void CodeExecutor::draw_sprite_self(Instance* instance) {
 	if (instance->SelfSprite == nullptr) return;
-	instance->DrawSelf();
+	instance->DrawSelf(1.0f);
+}
+
+//null draw_sprite_self_alpha(float alpha);Draw self sprite on self coords with sprite scale and angle using <float> alpha;Alpha is [0..1];
+void CodeExecutor::draw_sprite_self_alpha(Instance* instance) {
+	const float alpha = std::clamp(StackIn_f, 0.f, 1.f);
+	if (instance->SelfSprite == nullptr) return;
+	instance->DrawSelf(alpha);
 }
 
 //null draw_shape_rectangle(float x1, float y2, float x2, float y2, color color);Draw frame of Rectangle from (<float>,<float>) to (<float>,<float>) with color <color>.;Draw Rectangle on final coords;
