@@ -93,61 +93,61 @@ $(document).ready(function(){initNavTree('_sprite_8h_source.html',''); initResiz
   <div class="headertitle"><div class="title">Sprite.h</div></div>
 </div><!--header-->
 <div class="contents">
-<a href="_sprite_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;string&gt;</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="_rect_8h.html">ArtCore/Structs/Rect.h</a>&quot;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="_mask_8h.html">ArtCore/Structs/Mask.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;ArtCore/Structs/Rect.h&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;ArtCore/Structs/Mask.h&quot;</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="class_sprite.html">    8</a></span><span class="keyword">class </span><a class="code hl_class" href="class_sprite.html">Sprite</a> final</div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>{</div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="class_sprite.html#a03ea660b2e77213c9ae05830bfdfbc5d">   11</a></span>    <a class="code hl_function" href="class_sprite.html#a03ea660b2e77213c9ae05830bfdfbc5d">Sprite</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <a class="code hl_function" href="class_sprite.html#a8accab430f9d90ae5117b57d67e32b84">~Sprite</a>();</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_sprite.html#a9cf1d4057e09b3ed255e40e52c504364">Delete</a>(<a class="code hl_class" href="class_sprite.html">Sprite</a>*);</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keyword">static</span> <a class="code hl_class" href="class_sprite.html">Sprite</a>* <a class="code hl_function" href="class_sprite.html#a437b7d2eacb6370f6425cf720ad80bc3">Load</a>(<span class="keyword">const</span> std::string&amp; file);</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <a class="code hl_class" href="class_sprite.html">Sprite</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <a class="code hl_class" href="class_sprite.html">~Sprite</a>();</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> Delete(<a class="code hl_class" href="class_sprite.html">Sprite</a>*);</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keyword">static</span> <a class="code hl_class" href="class_sprite.html">Sprite</a>* Load(<span class="keyword">const</span> std::string&amp; file);</div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    [[nodiscard]] GPU_Image* <a class="code hl_function" href="class_sprite.html#a67a92d2b815900a238ba1e2cdf2ff3d1">GetFrame</a>(<span class="keywordtype">int</span> frame) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    [[nodiscard]] <a class="code hl_struct" href="struct_g_p_u___image.html">GPU_Image</a>* GetFrame(<span class="keywordtype">int</span> frame) <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="class_sprite.html#abc19fd56dfa7c60b2727e99a15078d3c">   18</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="class_sprite.html#abc19fd56dfa7c60b2727e99a15078d3c">GetMaxFrame</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    [[nodiscard]] <span class="keywordtype">int</span> GetMaxFrame()<span class="keyword"> const</span></div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">    </span>{</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        <span class="keywordflow">return</span> m_texture_size;</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    };</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="class_sprite.html#ae20713b4636eae8dc812a2fb4618cc9b">   23</a></span>    [[nodiscard]] <span class="keyword">constexpr</span> <span class="keywordtype">float</span> <a class="code hl_function" href="class_sprite.html#ae20713b4636eae8dc812a2fb4618cc9b">GetCenterX</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    [[nodiscard]] <span class="keyword">constexpr</span> <span class="keywordtype">float</span> GetCenterX()<span class="keyword"> const</span></div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">    </span>{</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(m_center_x);</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    }</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="class_sprite.html#ab948accf24a17e51c7f4af18c03e23d2">   27</a></span>    [[nodiscard]] <span class="keyword">constexpr</span> <span class="keywordtype">float</span> <a class="code hl_function" href="class_sprite.html#ab948accf24a17e51c7f4af18c03e23d2">GetCenterY</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    [[nodiscard]] <span class="keyword">constexpr</span> <span class="keywordtype">float</span> GetCenterY()<span class="keyword"> const</span></div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">    </span>{</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(m_center_y);</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    }</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="class_sprite.html#adb882653517e228a63b462900061e1f8">   31</a></span>    [[nodiscard]] <span class="keyword">constexpr</span> <span class="keywordtype">float</span> <a class="code hl_function" href="class_sprite.html#adb882653517e228a63b462900061e1f8">GetCenterXRel</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    [[nodiscard]] <span class="keyword">constexpr</span> <span class="keywordtype">float</span> GetCenterXRel()<span class="keyword"> const</span></div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="keyword">    </span>{</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(-m_center_x + m_width / 2);</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    }</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="class_sprite.html#ac0cc7aff59a1104399a70705bb187c26">   35</a></span>    [[nodiscard]] <span class="keyword">constexpr</span> <span class="keywordtype">float</span> <a class="code hl_function" href="class_sprite.html#ac0cc7aff59a1104399a70705bb187c26">GetCenterYRel</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    [[nodiscard]] <span class="keyword">constexpr</span> <span class="keywordtype">float</span> GetCenterYRel()<span class="keyword"> const</span></div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keyword">    </span>{</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(-m_center_y + m_height / 2);</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    }</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    </div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="class_sprite.html#af4791f19c0f1b30c1032bd1068f1b7cf">   41</a></span>    [[nodiscard]] <span class="keyword">constexpr</span> <span class="keywordtype">int</span> <a class="code hl_function" href="class_sprite.html#af4791f19c0f1b30c1032bd1068f1b7cf">GetWidth</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    [[nodiscard]] <span class="keyword">constexpr</span> <span class="keywordtype">int</span> GetWidth()<span class="keyword"> const</span></div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="keyword">    </span>{</div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keywordflow">return</span> m_width;</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    }</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="class_sprite.html#a555ada0920d44db7e18b220ca31cc03d">   45</a></span>    [[nodiscard]] <span class="keyword">constexpr</span> <span class="keywordtype">int</span> <a class="code hl_function" href="class_sprite.html#a555ada0920d44db7e18b220ca31cc03d">GetHeight</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    [[nodiscard]] <span class="keyword">constexpr</span> <span class="keywordtype">int</span> GetHeight()<span class="keyword"> const</span></div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="keyword">    </span>{</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keywordflow">return</span> m_height;</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    }</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="class_sprite.html#afc80de12bd6b9a3b882d135aedf647cf">   50</a></span>    [[nodiscard]] <span class="keyword">constexpr</span> <a class="code hl_struct" href="struct_mask.html">Mask</a> <a class="code hl_function" href="class_sprite.html#afc80de12bd6b9a3b882d135aedf647cf">GetMask</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    [[nodiscard]] <span class="keyword">constexpr</span> <a class="code hl_struct" href="struct_mask.html">Mask</a> GetMask()<span class="keyword"> const</span></div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="keyword">    </span>{</div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keywordflow">return</span> m_mask;</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    }</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="class_sprite.html#a0123da8621d6c0e60b730c84ceab7e2e">   55</a></span>    <span class="keyword">constexpr</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_sprite.html#a0123da8621d6c0e60b730c84ceab7e2e">SetMask</a>(<span class="keyword">const</span> <a class="code hl_struct" href="struct_mask.html">Mask</a>&amp; new_mask)</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keyword">constexpr</span> <span class="keywordtype">void</span> SetMask(<span class="keyword">const</span> <a class="code hl_struct" href="struct_mask.html">Mask</a>&amp; new_mask)</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    {</div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        m_mask = <a class="code hl_struct" href="struct_mask.html">Mask</a>(new_mask);</div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    }</div>
@@ -165,30 +165,15 @@ $(document).ready(function(){initNavTree('_sprite_8h_source.html',''); initResiz
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordtype">int</span> m_center_y = 0;</div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>};</div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
-<div class="ttc" id="a_mask_8h_html"><div class="ttname"><a href="_mask_8h.html">Mask.h</a></div></div>
-<div class="ttc" id="a_rect_8h_html"><div class="ttname"><a href="_rect_8h.html">Rect.h</a></div></div>
 <div class="ttc" id="aclass_sprite_html"><div class="ttname"><a href="class_sprite.html">Sprite</a></div><div class="ttdef"><b>Definition:</b> Sprite.h:9</div></div>
-<div class="ttc" id="aclass_sprite_html_a0123da8621d6c0e60b730c84ceab7e2e"><div class="ttname"><a href="class_sprite.html#a0123da8621d6c0e60b730c84ceab7e2e">Sprite::SetMask</a></div><div class="ttdeci">constexpr void SetMask(const Mask &amp;new_mask)</div><div class="ttdef"><b>Definition:</b> Sprite.h:55</div></div>
-<div class="ttc" id="aclass_sprite_html_a03ea660b2e77213c9ae05830bfdfbc5d"><div class="ttname"><a href="class_sprite.html#a03ea660b2e77213c9ae05830bfdfbc5d">Sprite::Sprite</a></div><div class="ttdeci">Sprite()=default</div></div>
-<div class="ttc" id="aclass_sprite_html_a437b7d2eacb6370f6425cf720ad80bc3"><div class="ttname"><a href="class_sprite.html#a437b7d2eacb6370f6425cf720ad80bc3">Sprite::Load</a></div><div class="ttdeci">static Sprite * Load(const std::string &amp;file)</div><div class="ttdef"><b>Definition:</b> Sprite.cpp:26</div></div>
-<div class="ttc" id="aclass_sprite_html_a555ada0920d44db7e18b220ca31cc03d"><div class="ttname"><a href="class_sprite.html#a555ada0920d44db7e18b220ca31cc03d">Sprite::GetHeight</a></div><div class="ttdeci">constexpr int GetHeight() const</div><div class="ttdef"><b>Definition:</b> Sprite.h:45</div></div>
-<div class="ttc" id="aclass_sprite_html_a67a92d2b815900a238ba1e2cdf2ff3d1"><div class="ttname"><a href="class_sprite.html#a67a92d2b815900a238ba1e2cdf2ff3d1">Sprite::GetFrame</a></div><div class="ttdeci">GPU_Image * GetFrame(int frame) const</div><div class="ttdef"><b>Definition:</b> Sprite.cpp:67</div></div>
-<div class="ttc" id="aclass_sprite_html_a8accab430f9d90ae5117b57d67e32b84"><div class="ttname"><a href="class_sprite.html#a8accab430f9d90ae5117b57d67e32b84">Sprite::~Sprite</a></div><div class="ttdeci">~Sprite()</div><div class="ttdef"><b>Definition:</b> Sprite.cpp:10</div></div>
-<div class="ttc" id="aclass_sprite_html_a9cf1d4057e09b3ed255e40e52c504364"><div class="ttname"><a href="class_sprite.html#a9cf1d4057e09b3ed255e40e52c504364">Sprite::Delete</a></div><div class="ttdeci">static void Delete(Sprite *)</div><div class="ttdef"><b>Definition:</b> Sprite.cpp:18</div></div>
-<div class="ttc" id="aclass_sprite_html_ab948accf24a17e51c7f4af18c03e23d2"><div class="ttname"><a href="class_sprite.html#ab948accf24a17e51c7f4af18c03e23d2">Sprite::GetCenterY</a></div><div class="ttdeci">constexpr float GetCenterY() const</div><div class="ttdef"><b>Definition:</b> Sprite.h:27</div></div>
-<div class="ttc" id="aclass_sprite_html_abc19fd56dfa7c60b2727e99a15078d3c"><div class="ttname"><a href="class_sprite.html#abc19fd56dfa7c60b2727e99a15078d3c">Sprite::GetMaxFrame</a></div><div class="ttdeci">int GetMaxFrame() const</div><div class="ttdef"><b>Definition:</b> Sprite.h:18</div></div>
-<div class="ttc" id="aclass_sprite_html_ac0cc7aff59a1104399a70705bb187c26"><div class="ttname"><a href="class_sprite.html#ac0cc7aff59a1104399a70705bb187c26">Sprite::GetCenterYRel</a></div><div class="ttdeci">constexpr float GetCenterYRel() const</div><div class="ttdef"><b>Definition:</b> Sprite.h:35</div></div>
-<div class="ttc" id="aclass_sprite_html_adb882653517e228a63b462900061e1f8"><div class="ttname"><a href="class_sprite.html#adb882653517e228a63b462900061e1f8">Sprite::GetCenterXRel</a></div><div class="ttdeci">constexpr float GetCenterXRel() const</div><div class="ttdef"><b>Definition:</b> Sprite.h:31</div></div>
-<div class="ttc" id="aclass_sprite_html_ae20713b4636eae8dc812a2fb4618cc9b"><div class="ttname"><a href="class_sprite.html#ae20713b4636eae8dc812a2fb4618cc9b">Sprite::GetCenterX</a></div><div class="ttdeci">constexpr float GetCenterX() const</div><div class="ttdef"><b>Definition:</b> Sprite.h:23</div></div>
-<div class="ttc" id="aclass_sprite_html_af4791f19c0f1b30c1032bd1068f1b7cf"><div class="ttname"><a href="class_sprite.html#af4791f19c0f1b30c1032bd1068f1b7cf">Sprite::GetWidth</a></div><div class="ttdeci">constexpr int GetWidth() const</div><div class="ttdef"><b>Definition:</b> Sprite.h:41</div></div>
-<div class="ttc" id="aclass_sprite_html_afc80de12bd6b9a3b882d135aedf647cf"><div class="ttname"><a href="class_sprite.html#afc80de12bd6b9a3b882d135aedf647cf">Sprite::GetMask</a></div><div class="ttdeci">constexpr Mask GetMask() const</div><div class="ttdef"><b>Definition:</b> Sprite.h:50</div></div>
+<div class="ttc" id="astruct_g_p_u___image_html"><div class="ttname"><a href="struct_g_p_u___image.html">GPU_Image</a></div><div class="ttdef"><b>Definition:</b> SDL_gpu.h:334</div></div>
 <div class="ttc" id="astruct_mask_html"><div class="ttname"><a href="struct_mask.html">Mask</a></div><div class="ttdef"><b>Definition:</b> Mask.h:6</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_cd18baaff0be5c4b5724714bc899523d.html">ArtCore</a></li><li class="navelem"><a class="el" href="dir_68594fa5bd78564262979c268c33d76b.html">Graphic</a></li><li class="navelem"><a class="el" href="_sprite_8h.html">Sprite.h</a></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_cd18baaff0be5c4b5724714bc899523d.html">ArtCore</a></li><li class="navelem"><a class="el" href="dir_68594fa5bd78564262979c268c33d76b.html">Graphic</a></li><li class="navelem"><b>Sprite.h</b></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
   </ul>
 </div>

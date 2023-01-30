@@ -93,10 +93,10 @@ $(document).ready(function(){initNavTree('_event_8h_source.html',''); initResiza
   <div class="headertitle"><div class="title">Event.h</div></div>
 </div><!--header-->
 <div class="contents">
-<a href="_event_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="_enum_extend_8h.html">EnumExtend.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;EnumExtend.h&quot;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span>ENUM_WITH_STRING_CONVERSION(</div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>    Event,</div>
@@ -125,7 +125,7 @@ $(document).ready(function(){initNavTree('_event_8h_source.html',''); initResiza
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>)</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="preprocessor">#define E_TYPE std::uint16_t</span></div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="keyword">enum class</span> event_bit : <a class="code hl_define" href="_event_8h.html#ad17a903af48e97aafe7870a4ad3f3bbb">E_TYPE</a> {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="keyword">enum class</span> event_bit : E_TYPE {</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    NONE =                      0,</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    HAVE_MOUSE_EVENT =          1 &lt;&lt; 0,</div>
@@ -148,28 +148,23 @@ $(document).ready(function(){initNavTree('_event_8h_source.html',''); initResiza
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    UNUSED_3 =                  1 &lt;&lt; 15,</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>};</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>event_bit <a class="code hl_function" href="_event_8h.html#acbc3cc683035b79bd9b6f0c518a8c870">EventBitFromEvent</a>(Event);</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="_event_8h.html#aba93ca33504b7e97c514e1bb4c48c016">   57</a></span><span class="keyword">constexpr</span> event_bit <a class="code hl_function" href="_event_8h.html#aba93ca33504b7e97c514e1bb4c48c016">operator|</a>(event_bit a, event_bit b) {</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>event_bit<span class="keyword">&gt;</span>(<span class="keyword">static_cast&lt;</span><a class="code hl_define" href="_event_8h.html#ad17a903af48e97aafe7870a4ad3f3bbb">E_TYPE</a><span class="keyword">&gt;</span>(a) | <span class="keyword">static_cast&lt;</span><a class="code hl_define" href="_event_8h.html#ad17a903af48e97aafe7870a4ad3f3bbb">E_TYPE</a><span class="keyword">&gt;</span>(b));</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>event_bit EventBitFromEvent(Event);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="keyword">constexpr</span> event_bit operator|(event_bit a, event_bit b) {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>event_bit<span class="keyword">&gt;</span>(<span class="keyword">static_cast&lt;</span>E_TYPE<span class="keyword">&gt;</span>(a) | <span class="keyword">static_cast&lt;</span>E_TYPE<span class="keyword">&gt;</span>(b));</div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>}</div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="_event_8h.html#aafcbcbdd364621d98a18a595c4635eba">   61</a></span><span class="keyword">constexpr</span> event_bit <a class="code hl_function" href="_event_8h.html#aafcbcbdd364621d98a18a595c4635eba">operator&amp;</a>(event_bit a, event_bit b) {</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>event_bit<span class="keyword">&gt;</span>(<span class="keyword">static_cast&lt;</span><a class="code hl_define" href="_event_8h.html#ad17a903af48e97aafe7870a4ad3f3bbb">E_TYPE</a><span class="keyword">&gt;</span>(a) &amp; <span class="keyword">static_cast&lt;</span><a class="code hl_define" href="_event_8h.html#ad17a903af48e97aafe7870a4ad3f3bbb">E_TYPE</a><span class="keyword">&gt;</span>(b));</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="keyword">constexpr</span> event_bit operator&amp;(event_bit a, event_bit b) {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>event_bit<span class="keyword">&gt;</span>(<span class="keyword">static_cast&lt;</span>E_TYPE<span class="keyword">&gt;</span>(a) &amp; <span class="keyword">static_cast&lt;</span>E_TYPE<span class="keyword">&gt;</span>(b));</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>}</div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="comment">// if condition is in flag</span></div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="_event_8h.html#acccabaf6c22b1be7dce684dd65892836">   66</a></span><span class="preprocessor">#define EVENT_BIT_TEST(condition, flag)  (flag &amp; condition) == condition</span></div>
-<div class="ttc" id="a_enum_extend_8h_html"><div class="ttname"><a href="_enum_extend_8h.html">EnumExtend.h</a></div></div>
-<div class="ttc" id="a_event_8h_html_aafcbcbdd364621d98a18a595c4635eba"><div class="ttname"><a href="_event_8h.html#aafcbcbdd364621d98a18a595c4635eba">operator&amp;</a></div><div class="ttdeci">constexpr event_bit operator&amp;(event_bit a, event_bit b)</div><div class="ttdef"><b>Definition:</b> Event.h:61</div></div>
-<div class="ttc" id="a_event_8h_html_aba93ca33504b7e97c514e1bb4c48c016"><div class="ttname"><a href="_event_8h.html#aba93ca33504b7e97c514e1bb4c48c016">operator|</a></div><div class="ttdeci">constexpr event_bit operator|(event_bit a, event_bit b)</div><div class="ttdef"><b>Definition:</b> Event.h:57</div></div>
-<div class="ttc" id="a_event_8h_html_acbc3cc683035b79bd9b6f0c518a8c870"><div class="ttname"><a href="_event_8h.html#acbc3cc683035b79bd9b6f0c518a8c870">EventBitFromEvent</a></div><div class="ttdeci">ENUM_WITH_STRING_CONVERSION(Event,(EvOnCreate)(EvOnDestroy)(DEF_VALUES)(EvOnKeyDown)(EvOnKeyUp)(EvOnMouseMotion)(EvOnMouseWheel)(EvOnMouseDown)(EvOnMouseUp)(EvOnCollision)(EvOnViewEnter)(EvOnViewLeave)(EvClicked)(EvTrigger)(EvStep)(EvDraw)) enum class event_bit event_bit EventBitFromEvent(Event)</div><div class="ttdef"><b>Definition:</b> Event.cpp:3</div></div>
-<div class="ttc" id="a_event_8h_html_ad17a903af48e97aafe7870a4ad3f3bbb"><div class="ttname"><a href="_event_8h.html#ad17a903af48e97aafe7870a4ad3f3bbb">E_TYPE</a></div><div class="ttdeci">#define E_TYPE</div></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="preprocessor">#define EVENT_BIT_TEST(condition, flag)  (flag &amp; condition) == condition</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_cd18baaff0be5c4b5724714bc899523d.html">ArtCore</a></li><li class="navelem"><a class="el" href="dir_c3f1e903312d92c426224eef812e5b22.html">Enums</a></li><li class="navelem"><a class="el" href="_event_8h.html">Event.h</a></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_cd18baaff0be5c4b5724714bc899523d.html">ArtCore</a></li><li class="navelem"><a class="el" href="dir_c3f1e903312d92c426224eef812e5b22.html">Enums</a></li><li class="navelem"><b>Event.h</b></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
   </ul>
 </div>

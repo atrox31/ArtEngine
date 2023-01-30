@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['guielement_0',['GuiElement',['../namespace_gui_element.html',1,'']]]
+  ['detail_0',['detail',['../namespacedetail.html',1,'']]],
+  ['dtoa_5fimpl_1',['dtoa_impl',['../namespacedetail_1_1dtoa__impl.html',1,'detail']]]
 ];

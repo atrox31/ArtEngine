@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['else_0',['ELSE',['../struct_art_code.html#ae26b5eac54f8272454063dc389d02c87a778537b0acce06229cb78d5f72c907ab',1,'ArtCode']]],
-  ['end_1',['END',['../struct_art_code.html#ae26b5eac54f8272454063dc389d02c87ab1a326c06d88bf042f73d70f50197905',1,'ArtCode']]]
+  ['discarded_0',['discarded',['../namespacedetail.html#a917c3efabea8a20dc72d9ae2c673d632a94708897ec9db8647dfe695714c98e46',1,'detail']]]
 ];

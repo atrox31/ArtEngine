@@ -93,13 +93,13 @@ $(document).ready(function(){initNavTree('_gui_8h_source.html',''); initResizabl
   <div class="headertitle"><div class="title">Gui.h</div></div>
 </div><!--header-->
 <div class="contents">
-<a href="_gui_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;string&gt;</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="_debug_8h.html">ArtCore/_Debug/Debug.h</a>&quot;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="_rect_8h.html">ArtCore/Structs/Rect.h</a>&quot;</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="_enum_extend_8h.html">ArtCore/Enums/EnumExtend.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;ArtCore/_Debug/Debug.h&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;ArtCore/Structs/Rect.h&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;ArtCore/Enums/EnumExtend.h&quot;</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;SDL2/IncludeAll.h&quot;</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;FC_Fontcache/SDL_FontCache.h&quot;</span></div>
@@ -115,42 +115,42 @@ $(document).ready(function(){initNavTree('_gui_8h_source.html',''); initResizabl
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="class_gui.html">   20</a></span><span class="keyword">class </span><a class="code hl_class" href="class_gui.html">Gui</a> final</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>{</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <a class="code hl_function" href="class_gui.html#ab2655dbb6d3a91d7e90cb83dad6c0450">Gui</a>();</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="class_gui.html#a4fd8485d226f9b8a2ac2d81d7f0f3598">   24</a></span>    <a class="code hl_function" href="class_gui.html#a4fd8485d226f9b8a2ac2d81d7f0f3598">~Gui</a>()</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <a class="code hl_class" href="class_gui.html">Gui</a>();</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <a class="code hl_class" href="class_gui.html">~Gui</a>()</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    {</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <a class="code hl_function" href="class_gui.html#a0783cb5736eda5698d1c7ee007094590">Clear</a>();</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        Clear();</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    }</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">public</span>:</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keyword">class </span>GuiElementTemplate;</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_gui.html#a5c6ea47a22c9370953389e69469ffa8b">SortAllElements</a>(GuiElementTemplate*);</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="class_gui.html#a21d335da889bde2694bdc87939258fed">LoadFromJson</a>(<span class="keyword">const</span> json&amp; data) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_gui.html#aa5098e6334f12f725ba20dfe5a4fa021">SpawnElementFromJsonData</a>(GuiElementTemplate* parrent, <span class="keyword">const</span> nlohmann::basic_json&lt;&gt;&amp; data) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_gui.html#a0783cb5736eda5698d1c7ee007094590">Clear</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_gui.html#ad9df31f12fee659e4598a9e81ac6e947">Render</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="class_gui.html#a86d4c8ec50e02efb44f7ad1cb2f5f90c">Events</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_gui.html#aaf51c5dbf9b6d475bc6b65a7ad5e4b42">UpdateView</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    GuiElementTemplate* <a class="code hl_function" href="class_gui.html#a301c653547a99f49a8222d4197320375">GetElementById</a>(<span class="keyword">const</span> std::string&amp; tag, GuiElementTemplate* search_root = <span class="keyword">nullptr</span>);</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="class_gui.html#a415b851309f50aed0077a735cc2aa9e0">PointOnInterface</a>(SDL_FPoint) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> SortAllElements(GuiElementTemplate*);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    [[nodiscard]] <span class="keywordtype">bool</span> LoadFromJson(<span class="keyword">const</span> <a class="code hl_class" href="classbasic__json.html">json</a>&amp; data) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordtype">bool</span> SpawnElementFromJsonData(GuiElementTemplate* parrent, <span class="keyword">const</span> nlohmann::basic_json&lt;&gt;&amp; data) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordtype">void</span> Clear() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordtype">void</span> <a class="code hl_class" href="class_render.html">Render</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    [[nodiscard]] <span class="keywordtype">bool</span> Events() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">void</span> UpdateView() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    GuiElementTemplate* GetElementById(<span class="keyword">const</span> std::string&amp; tag, GuiElementTemplate* search_root = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    [[nodiscard]] <span class="keywordtype">bool</span> PointOnInterface(<a class="code hl_struct" href="struct_s_d_l___f_point.html">SDL_FPoint</a>) <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    GuiElementTemplate* <a class="code hl_function" href="class_gui.html#aa4e881afe386c7001baeb1b008c2d925">AddElement</a>(GuiElementTemplate* target, GuiElementTemplate* element) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    [[nodiscard]] GuiElementTemplate* <a class="code hl_function" href="class_gui.html#a5a9222892facc2d6ca4604ff16fa4947">Element</a>(<span class="keyword">const</span> std::string&amp;) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    GuiElementTemplate* AddElement(GuiElementTemplate* target, GuiElementTemplate* element) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    [[nodiscard]] GuiElementTemplate* Element(<span class="keyword">const</span> std::string&amp;) <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="struct_gui_1_1_pallet.html">   44</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="struct_gui_1_1_pallet.html">Pallet</a> {</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="struct_gui_1_1_pallet.html#af86489a23d15ed84ca2e8d6dd48ab015">   45</a></span>        SDL_Color <a class="code hl_variable" href="struct_gui_1_1_pallet.html#af86489a23d15ed84ca2e8d6dd48ab015">Background</a>{};</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="struct_gui_1_1_pallet.html#abffcefb3e3283fae0f21b0096ace5060">   46</a></span>        SDL_Color <a class="code hl_variable" href="struct_gui_1_1_pallet.html#abffcefb3e3283fae0f21b0096ace5060">BackgroundDisable</a>{};</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="struct_gui_1_1_pallet.html#a26540e6ab52b7c7775c39b0658f260a0">   47</a></span>        SDL_Color <a class="code hl_variable" href="struct_gui_1_1_pallet.html#a26540e6ab52b7c7775c39b0658f260a0">Frame</a>{};</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="struct_gui_1_1_pallet.html#a2f6e2b2b71b4e75d0504b5cc0ae6ffac">   48</a></span>        SDL_Color <a class="code hl_variable" href="struct_gui_1_1_pallet.html#a2f6e2b2b71b4e75d0504b5cc0ae6ffac">Active</a>{};</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="struct_gui_1_1_pallet.html#adeb1de74bfa441d92e8997e0467f2308">   49</a></span>        SDL_Color <a class="code hl_variable" href="struct_gui_1_1_pallet.html#adeb1de74bfa441d92e8997e0467f2308">Font</a>{};</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <a class="code hl_function" href="struct_gui_1_1_pallet.html#af09cc603c39c89de5be89ce9d490d958">Pallet</a>();</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <a class="code hl_struct" href="struct_s_d_l___color.html">SDL_Color</a> Background{};</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <a class="code hl_struct" href="struct_s_d_l___color.html">SDL_Color</a> BackgroundDisable{};</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <a class="code hl_struct" href="struct_s_d_l___color.html">SDL_Color</a> Frame{};</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <a class="code hl_struct" href="struct_s_d_l___color.html">SDL_Color</a> Active{};</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <a class="code hl_struct" href="struct_s_d_l___color.html">SDL_Color</a> Font{};</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <a class="code hl_struct" href="struct_gui_1_1_pallet.html">Pallet</a>();</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <a class="code hl_function" href="struct_gui_1_1_pallet.html#af09cc603c39c89de5be89ce9d490d958">Pallet</a>(<span class="keyword">const</span> <a class="code hl_struct" href="struct_gui_1_1_pallet.html">Pallet</a>&amp; pattern);</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <a class="code hl_function" href="struct_gui_1_1_pallet.html#af09cc603c39c89de5be89ce9d490d958">Pallet</a>(SDL_Color background, SDL_Color frame, SDL_Color active, SDL_Color font);</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <a class="code hl_function" href="struct_gui_1_1_pallet.html#af09cc603c39c89de5be89ce9d490d958">Pallet</a>(<span class="keyword">const</span> std::string&amp; hash_background, <span class="keyword">const</span> std::string&amp; hash_frame, <span class="keyword">const</span> std::string&amp; hash_active, <span class="keyword">const</span> std::string&amp; hash_font);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <a class="code hl_struct" href="struct_gui_1_1_pallet.html">Pallet</a>(<span class="keyword">const</span> <a class="code hl_struct" href="struct_gui_1_1_pallet.html">Pallet</a>&amp; pattern);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <a class="code hl_struct" href="struct_gui_1_1_pallet.html">Pallet</a>(<a class="code hl_struct" href="struct_s_d_l___color.html">SDL_Color</a> background, <a class="code hl_struct" href="struct_s_d_l___color.html">SDL_Color</a> frame, <a class="code hl_struct" href="struct_s_d_l___color.html">SDL_Color</a> active, <a class="code hl_struct" href="struct_s_d_l___color.html">SDL_Color</a> font);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <a class="code hl_struct" href="struct_gui_1_1_pallet.html">Pallet</a>(<span class="keyword">const</span> std::string&amp; hash_background, <span class="keyword">const</span> std::string&amp; hash_frame, <span class="keyword">const</span> std::string&amp; hash_active, <span class="keyword">const</span> std::string&amp; hash_font);</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    };</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="keyword">public</span>:</div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="class_gui.html#a6599b80865073d626ac539eae75342f7">   58</a></span>    <a class="code hl_function" href="class_gui.html#a6599b80865073d626ac539eae75342f7">ENUM_WITH_STRING_CONVERSION</a>(Style,</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    ENUM_WITH_STRING_CONVERSION(Style,</div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        (ALIGN_LEFT)</div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        (ALIGN_RIGHT)</div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        (ALIGN_CENTER)</div>
@@ -161,7 +161,7 @@ $(document).ready(function(){initNavTree('_gui_8h_source.html',''); initResizabl
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        (ABSOLUTE)</div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    )</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <a class="code hl_function" href="class_gui.html#a6599b80865073d626ac539eae75342f7">ENUM_WITH_STRING_CONVERSION</a>(ImageStyle,</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    ENUM_WITH_STRING_CONVERSION(ImageStyle,</div>
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        (LEFT)</div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        (RIGHT)</div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
@@ -172,7 +172,7 @@ $(document).ready(function(){initNavTree('_gui_8h_source.html',''); initResizabl
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        (TOP)</div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        (BOTTOM)</div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        (<a class="code hl_function" href="class_gui.html#a2d55860f447f2ba296233d71179b7620">FILL</a>)</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        (FILL)</div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        (PURE)</div>
 <div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        )</div>
 <div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    </div>
@@ -180,7 +180,7 @@ $(document).ready(function(){initNavTree('_gui_8h_source.html',''); initResizabl
 <div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keyword">class </span>GuiElementTemplate {</div>
 <div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keyword">public</span>:</div>
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <a class="code hl_function" href="class_gui.html#a6599b80865073d626ac539eae75342f7">ENUM_WITH_STRING_CONVERSION</a>(Type,</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        ENUM_WITH_STRING_CONVERSION(Type,</div>
 <div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            (USER_DEFINED)</div>
 <div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            (ROOT_ELEMENT)</div>
 <div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            (PANEL)</div>
@@ -201,7 +201,7 @@ $(document).ready(function(){initNavTree('_gui_8h_source.html',''); initResizabl
 <div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>            _create_x = 0;</div>
 <div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>            _create_y = 0;</div>
 <div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>            _tag = <span class="stringliteral">&quot;undefined&quot;</span>;</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>            _default_font = <a class="code hl_variable" href="class_gui.html#ab200cbf5fc1127327f68b15a973d9a82">Gui::GlobalFont</a>;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>            _default_font = Gui::GlobalFont;</div>
 <div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>            _parent = <span class="keyword">nullptr</span>;</div>
 <div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>            <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i = EvCallbackInvalid + 1; i&lt;EvCallbackEND; i++)</div>
 <div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>            {</div>
@@ -221,26 +221,26 @@ $(document).ready(function(){initNavTree('_gui_8h_source.html',''); initResizabl
 <div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>            _style = Style::ALIGN_LEFT;</div>
 <div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>            _type = GuiElementTemplate::Type::USER_DEFINED;</div>
 <div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>            _enable_on_pause = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>            _pallet = <a class="code hl_struct" href="struct_gui_1_1_pallet.html">Pallet</a>();</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>            _pallet = Pallet();</div>
 <div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>        }</div>
 <div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>        <a class="code hl_function" href="class_gui.html#a6599b80865073d626ac539eae75342f7">ENUM_WITH_STRING_CONVERSION</a>(EvCallback, (EvOnClick)(EvOnHover))</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>        ENUM_WITH_STRING_CONVERSION(EvCallback, (EvOnClick)(EvOnHover))</div>
 <div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>        <span class="keyword">virtual</span> ~GuiElementTemplate() = <span class="keywordflow">default</span>;</div>
 <div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        <span class="comment">// pure virtual, every gui element have its own render function</span></div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_gui.html#ad9df31f12fee659e4598a9e81ac6e947">Render</a>(){}</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_class" href="class_render.html">Render</a>(){}</div>
 <div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>        <span class="keyword">virtual</span> <span class="keywordtype">void</span> ApplyStyle();</div>
 <div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        <span class="keyword">virtual</span> <span class="keywordtype">bool</span> OnClick();</div>
 <div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span> </div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        <span class="keyword">virtual</span> <span class="keywordtype">bool</span> GetEnabled() <span class="keyword">final</span> { <span class="keywordflow">return</span> _enabled; }</div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>        <span class="keyword">virtual</span> <span class="keywordtype">bool</span> GetVisible() <span class="keyword">final</span> { <span class="keywordflow">return</span> _visible; };</div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>        <span class="keyword">virtual</span> std::string GetTag() <span class="keyword">final</span> { <span class="keywordflow">return</span> _tag; }</div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>        <span class="keyword">virtual</span> std::vector&lt;GuiElementTemplate*&gt; GetChildren() <span class="keyword">final</span> { <span class="keywordflow">return</span> _elements; };</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        <span class="keyword">virtual</span> <span class="keywordtype">bool</span> GetEnabled() final { <span class="keywordflow">return</span> _enabled; }</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>        <span class="keyword">virtual</span> <span class="keywordtype">bool</span> GetVisible() final { <span class="keywordflow">return</span> _visible; };</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>        <span class="keyword">virtual</span> std::string GetTag() final { <span class="keywordflow">return</span> _tag; }</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>        <span class="keyword">virtual</span> std::vector&lt;GuiElementTemplate*&gt; GetChildren() final { <span class="keywordflow">return</span> _elements; };</div>
 <div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span> </div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        <span class="keyword">virtual</span> <span class="keywordtype">int</span> GetX() <span class="keyword">final</span> { <span class="keywordflow">return</span> _x; }</div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        <span class="keyword">virtual</span> <span class="keywordtype">int</span> GetY() <span class="keyword">final</span> { <span class="keywordflow">return</span> _y; }</div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>        <span class="keyword">virtual</span> <a class="code hl_class" href="class_rect.html">Rect</a> GetDimensions() <span class="keyword">final</span> { <span class="keywordflow">return</span> _dimensions; }</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        <span class="keyword">virtual</span> <span class="keywordtype">int</span> GetX() final { <span class="keywordflow">return</span> _x; }</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        <span class="keyword">virtual</span> <span class="keywordtype">int</span> GetY() final { <span class="keywordflow">return</span> _y; }</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>        <span class="keyword">virtual</span> <a class="code hl_class" href="class_rect.html">Rect</a> GetDimensions() final { <span class="keywordflow">return</span> _dimensions; }</div>
 <div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_gui.html#a0783cb5736eda5698d1c7ee007094590">Clear</a>();</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        <span class="keyword">virtual</span> <span class="keywordtype">void</span> Clear();</div>
 <div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
 <div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        <span class="keyword">virtual</span> GuiElementTemplate* SetFocus(<span class="keyword">const</span> <span class="keywordtype">bool</span> f) <span class="keyword">final</span> { _focus = f; <span class="keywordflow">return</span> <span class="keyword">this</span>; }</div>
 <div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>        <span class="keyword">virtual</span> GuiElementTemplate* SetEnabledOnPause(<span class="keyword">const</span> <span class="keywordtype">bool</span> e) <span class="keyword">final</span> { this-&gt;_enable_on_pause = e; <span class="keywordflow">return</span> <span class="keyword">this</span>; }</div>
@@ -249,8 +249,8 @@ $(document).ready(function(){initNavTree('_gui_8h_source.html',''); initResizabl
 <div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        <span class="keyword">virtual</span> GuiElementTemplate* SetVisible(<span class="keywordtype">bool</span> v) <span class="keyword">final</span>;</div>
 <div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>        <span class="keyword">virtual</span> GuiElementTemplate* SetCallback(<span class="keyword">const</span> EvCallback ev, <span class="keyword">const</span> std::pair&lt;const unsigned char*, Sint64&gt; code) <span class="keyword">final</span> { _callback_script[ev] = code; <span class="keywordflow">return</span> <span class="keyword">this</span>;}</div>
 <div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        <span class="keyword">virtual</span> GuiElementTemplate* SetPosition(<span class="keyword">const</span> <span class="keywordtype">int</span> x, <span class="keyword">const</span> <span class="keywordtype">int</span> y) <span class="keyword">final</span> { _x = x; _y = y;  <span class="keywordflow">return</span> <span class="keyword">this</span>;}</div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        <span class="keyword">virtual</span> GuiElementTemplate* SetSound(Mix_Chunk* sound) <span class="keyword">final</span>;</div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        <span class="keyword">virtual</span> GuiElementTemplate* SetDefaultFont(FC_Font* font) <span class="keyword">final</span> { _default_font = font; <span class="keywordflow">return</span> <span class="keyword">this</span>;}</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        <span class="keyword">virtual</span> GuiElementTemplate* SetSound(<a class="code hl_struct" href="struct_mix___chunk.html">Mix_Chunk</a>* sound) <span class="keyword">final</span>;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        <span class="keyword">virtual</span> GuiElementTemplate* SetDefaultFont(<a class="code hl_struct" href="struct_f_c___font.html">FC_Font</a>* font) <span class="keyword">final</span> { _default_font = font; <span class="keywordflow">return</span> <span class="keyword">this</span>;}</div>
 <div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>        <span class="keyword">virtual</span> GuiElementTemplate* SetPosition(<span class="keyword">const</span> <span class="keywordtype">int</span> x1, <span class="keyword">const</span> <span class="keywordtype">int</span> y1, <span class="keyword">const</span> <span class="keywordtype">int</span> x2, <span class="keyword">const</span> <span class="keywordtype">int</span> y2) <span class="keyword">final</span> {</div>
 <div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>            _x = x1;</div>
 <div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>            _y = y1;</div>
@@ -258,10 +258,10 @@ $(document).ready(function(){initNavTree('_gui_8h_source.html',''); initResizabl
 <div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>            ApplyStyle();</div>
 <div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        <span class="keywordflow">return</span> <span class="keyword">this</span>;}</div>
 <div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        <span class="keyword">virtual</span> GuiElementTemplate* SetTag(<span class="keyword">const</span> std::string&amp; tag) <span class="keyword">final</span> { _tag = tag; <span class="keywordflow">return</span> <span class="keyword">this</span>;}</div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        <span class="keyword">virtual</span> GuiElementTemplate* SetPallet(<a class="code hl_struct" href="struct_gui_1_1_pallet.html">Pallet</a>* pallet) <span class="keyword">final</span> { _pallet = *pallet; <span class="keywordflow">return</span> <span class="keyword">this</span>;}</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        <span class="keyword">virtual</span> GuiElementTemplate* SetPallet(Pallet* pallet) <span class="keyword">final</span> { _pallet = *pallet; <span class="keywordflow">return</span> <span class="keyword">this</span>;}</div>
 <div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>        <span class="keyword">virtual</span> GuiElementTemplate* SetParent(GuiElementTemplate* parrent) <span class="keyword">final</span> { _parent = parrent; <span class="keywordflow">return</span> <span class="keyword">this</span>;}</div>
 <div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>        <span class="keyword">virtual</span> GuiElementTemplate* SetStyle(Style s);</div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>        <span class="keyword">virtual</span> GuiElementTemplate* SetText(<span class="keyword">const</span> std::string&amp;, FC_AlignEnum = FC_AlignEnum::FC_ALIGN_LEFT, FC_Scale = { 1.0f, 1.0f });</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>        <span class="keyword">virtual</span> GuiElementTemplate* SetText(<span class="keyword">const</span> std::string&amp;, FC_AlignEnum = FC_AlignEnum::FC_ALIGN_LEFT, <a class="code hl_struct" href="struct_f_c___scale.html">FC_Scale</a> = { 1.0f, 1.0f });</div>
 <div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span> </div>
 <div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>        <span class="keyword">virtual</span> <span class="keywordtype">void</span> SetVariableFromString(<span class="keyword">const</span> std::string&amp; name, <span class="keyword">const</span> std::string&amp; value) <span class="keyword">final</span>;</div>
 <div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>        <span class="comment">// for root element, else must be override</span></div>
@@ -270,7 +270,7 @@ $(document).ready(function(){initNavTree('_gui_8h_source.html',''); initResizabl
 <div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    <span class="keyword">protected</span>:</div>
 <div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        <span class="keywordtype">int</span> _x, _y;</div>
 <div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        <a class="code hl_class" href="class_rect.html">Rect</a> _dimensions{};</div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        <span class="keyword">friend</span> <a class="code hl_function" href="class_gui.html#ab2655dbb6d3a91d7e90cb83dad6c0450">Gui</a>;</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        <span class="keyword">friend</span> <a class="code hl_class" href="class_gui.html">Gui</a>;</div>
 <div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span> </div>
 <div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        <span class="keywordtype">bool</span> _enable_on_pause;</div>
 <div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        std::string _tag;</div>
@@ -278,8 +278,8 @@ $(document).ready(function(){initNavTree('_gui_8h_source.html',''); initResizabl
 <div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span> </div>
 <div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        std::string _text;</div>
 <div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>        FC_AlignEnum _text_align;</div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>        FC_Scale _text_scale{};</div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        GPU_Rect _text_area{};</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>        <a class="code hl_struct" href="struct_f_c___scale.html">FC_Scale</a> _text_scale{};</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        <a class="code hl_struct" href="struct_g_p_u___rect.html">GPU_Rect</a> _text_area{};</div>
 <div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span> </div>
 <div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        GuiElementTemplate* _parent;</div>
 <div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        <span class="keywordtype">bool</span> _enabled;</div>
@@ -288,18 +288,18 @@ $(document).ready(function(){initNavTree('_gui_8h_source.html',''); initResizabl
 <div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>        <span class="keywordtype">bool</span> _enable_transparent;</div>
 <div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        <span class="keywordtype">int</span> _create_x, _create_y;</div>
 <div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        Style _style;</div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        <a class="code hl_struct" href="struct_gui_1_1_pallet.html">Pallet</a> _pallet;</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        Pallet _pallet;</div>
 <div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        std::map&lt; EvCallback, std::pair&lt;const unsigned char*, Sint64&gt;&gt; _callback_script;</div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        Mix_Chunk* _sound_onClick;</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        <a class="code hl_struct" href="struct_mix___chunk.html">Mix_Chunk</a>* _sound_onClick;</div>
 <div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        <span class="keywordtype">bool</span> _mouse_hover;</div>
 <div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        <span class="keywordtype">double</span> _hover_time;</div>
 <div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        std::vector&lt;GuiElementTemplate*&gt; _elements;</div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        FC_Font* _default_font;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        <a class="code hl_struct" href="struct_f_c___font.html">FC_Font</a>* _default_font;</div>
 <div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    <span class="keyword">private</span>:</div>
 <div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>        <span class="keywordtype">void</span> _deleteElement();</div>
 <div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    };</div>
 <div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno"><a class="line" href="class_gui.html#ab200cbf5fc1127327f68b15a973d9a82">  207</a></span>    <span class="keyword">inline</span> <span class="keyword">static</span> FC_Font* <a class="code hl_variable" href="class_gui.html#ab200cbf5fc1127327f68b15a973d9a82">GlobalFont</a>;</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    <span class="keyword">inline</span> <span class="keyword">static</span> <a class="code hl_struct" href="struct_f_c___font.html">FC_Font</a>* GlobalFont;</div>
 <div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span><span class="keyword">private</span>:</div>
 <div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> _render(GuiElementTemplate*);</div>
 <div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> _events(GuiElementTemplate*);</div>
@@ -308,40 +308,23 @@ $(document).ready(function(){initNavTree('_gui_8h_source.html',''); initResizabl
 <div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>};</div>
 <div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span> </div>
 <div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span> </div>
-<div class="ttc" id="a_debug_8h_html"><div class="ttname"><a href="_debug_8h.html">Debug.h</a></div></div>
-<div class="ttc" id="a_enum_extend_8h_html"><div class="ttname"><a href="_enum_extend_8h.html">EnumExtend.h</a></div></div>
-<div class="ttc" id="a_rect_8h_html"><div class="ttname"><a href="_rect_8h.html">Rect.h</a></div></div>
 <div class="ttc" id="aclass_gui_html"><div class="ttname"><a href="class_gui.html">Gui</a></div><div class="ttdef"><b>Definition:</b> Gui.h:21</div></div>
-<div class="ttc" id="aclass_gui_html_a0783cb5736eda5698d1c7ee007094590"><div class="ttname"><a href="class_gui.html#a0783cb5736eda5698d1c7ee007094590">Gui::Clear</a></div><div class="ttdeci">void Clear() const</div><div class="ttdef"><b>Definition:</b> Gui.cpp:165</div></div>
-<div class="ttc" id="aclass_gui_html_a21d335da889bde2694bdc87939258fed"><div class="ttname"><a href="class_gui.html#a21d335da889bde2694bdc87939258fed">Gui::LoadFromJson</a></div><div class="ttdeci">bool LoadFromJson(const json &amp;data) const</div><div class="ttdef"><b>Definition:</b> Gui.cpp:55</div></div>
-<div class="ttc" id="aclass_gui_html_a2d55860f447f2ba296233d71179b7620"><div class="ttname"><a href="class_gui.html#a2d55860f447f2ba296233d71179b7620">Gui::FILL</a></div><div class="ttdeci">() LEFT() RIGHT() CENTER() CENTER_TOP() CENTER_BOTTOM() TOP() BOTTOM() FILL(PURE)) class GuiElementTemplate</div><div class="ttdef"><b>Definition:</b> Gui.h:81</div></div>
-<div class="ttc" id="aclass_gui_html_a301c653547a99f49a8222d4197320375"><div class="ttname"><a href="class_gui.html#a301c653547a99f49a8222d4197320375">Gui::GetElementById</a></div><div class="ttdeci">GuiElementTemplate * GetElementById(const std::string &amp;tag, GuiElementTemplate *search_root=nullptr)</div><div class="ttdef"><b>Definition:</b> Gui.cpp:377</div></div>
-<div class="ttc" id="aclass_gui_html_a415b851309f50aed0077a735cc2aa9e0"><div class="ttname"><a href="class_gui.html#a415b851309f50aed0077a735cc2aa9e0">Gui::PointOnInterface</a></div><div class="ttdeci">bool PointOnInterface(SDL_FPoint) const</div><div class="ttdef"><b>Definition:</b> Gui.cpp:31</div></div>
-<div class="ttc" id="aclass_gui_html_a4fd8485d226f9b8a2ac2d81d7f0f3598"><div class="ttname"><a href="class_gui.html#a4fd8485d226f9b8a2ac2d81d7f0f3598">Gui::~Gui</a></div><div class="ttdeci">~Gui()</div><div class="ttdef"><b>Definition:</b> Gui.h:24</div></div>
-<div class="ttc" id="aclass_gui_html_a5a9222892facc2d6ca4604ff16fa4947"><div class="ttname"><a href="class_gui.html#a5a9222892facc2d6ca4604ff16fa4947">Gui::Element</a></div><div class="ttdeci">GuiElementTemplate * Element(const std::string &amp;) const</div><div class="ttdef"><b>Definition:</b> Gui.cpp:407</div></div>
-<div class="ttc" id="aclass_gui_html_a5c6ea47a22c9370953389e69469ffa8b"><div class="ttname"><a href="class_gui.html#a5c6ea47a22c9370953389e69469ffa8b">Gui::SortAllElements</a></div><div class="ttdeci">static void SortAllElements(GuiElementTemplate *)</div><div class="ttdef"><b>Definition:</b> Gui.cpp:83</div></div>
-<div class="ttc" id="aclass_gui_html_a6599b80865073d626ac539eae75342f7"><div class="ttname"><a href="class_gui.html#a6599b80865073d626ac539eae75342f7">Gui::ENUM_WITH_STRING_CONVERSION</a></div><div class="ttdeci">ENUM_WITH_STRING_CONVERSION(Style,(ALIGN_LEFT)(ALIGN_RIGHT)(ALIGN_CENTER)(FILL_CENTER)(RELATIVE_PARENT)(ABSOLUTE)) ENUM_WITH_STRING_CONVERSION(ImageStyle</div></div>
-<div class="ttc" id="aclass_gui_html_a86d4c8ec50e02efb44f7ad1cb2f5f90c"><div class="ttname"><a href="class_gui.html#a86d4c8ec50e02efb44f7ad1cb2f5f90c">Gui::Events</a></div><div class="ttdeci">bool Events() const</div><div class="ttdef"><b>Definition:</b> Gui.cpp:237</div></div>
-<div class="ttc" id="aclass_gui_html_aa4e881afe386c7001baeb1b008c2d925"><div class="ttname"><a href="class_gui.html#aa4e881afe386c7001baeb1b008c2d925">Gui::AddElement</a></div><div class="ttdeci">GuiElementTemplate * AddElement(GuiElementTemplate *target, GuiElementTemplate *element) const</div><div class="ttdef"><b>Definition:</b> Gui.cpp:395</div></div>
-<div class="ttc" id="aclass_gui_html_aa5098e6334f12f725ba20dfe5a4fa021"><div class="ttname"><a href="class_gui.html#aa5098e6334f12f725ba20dfe5a4fa021">Gui::SpawnElementFromJsonData</a></div><div class="ttdeci">bool SpawnElementFromJsonData(GuiElementTemplate *parrent, const nlohmann::basic_json&lt;&gt; &amp;data) const</div><div class="ttdef"><b>Definition:</b> Gui.cpp:96</div></div>
-<div class="ttc" id="aclass_gui_html_aaf51c5dbf9b6d475bc6b65a7ad5e4b42"><div class="ttname"><a href="class_gui.html#aaf51c5dbf9b6d475bc6b65a7ad5e4b42">Gui::UpdateView</a></div><div class="ttdeci">void UpdateView() const</div><div class="ttdef"><b>Definition:</b> Gui.cpp:367</div></div>
-<div class="ttc" id="aclass_gui_html_ab200cbf5fc1127327f68b15a973d9a82"><div class="ttname"><a href="class_gui.html#ab200cbf5fc1127327f68b15a973d9a82">Gui::GlobalFont</a></div><div class="ttdeci">static FC_Font * GlobalFont</div><div class="ttdef"><b>Definition:</b> Gui.h:207</div></div>
-<div class="ttc" id="aclass_gui_html_ab2655dbb6d3a91d7e90cb83dad6c0450"><div class="ttname"><a href="class_gui.html#ab2655dbb6d3a91d7e90cb83dad6c0450">Gui::Gui</a></div><div class="ttdeci">Gui()</div><div class="ttdef"><b>Definition:</b> Gui.cpp:48</div></div>
-<div class="ttc" id="aclass_gui_html_ad9df31f12fee659e4598a9e81ac6e947"><div class="ttname"><a href="class_gui.html#ad9df31f12fee659e4598a9e81ac6e947">Gui::Render</a></div><div class="ttdeci">void Render() const</div><div class="ttdef"><b>Definition:</b> Gui.cpp:187</div></div>
 <div class="ttc" id="aclass_rect_html"><div class="ttname"><a href="class_rect.html">Rect</a></div><div class="ttdef"><b>Definition:</b> Rect.h:7</div></div>
+<div class="ttc" id="aclass_render_html"><div class="ttname"><a href="class_render.html">Render</a></div><div class="ttdef"><b>Definition:</b> Render.h:9</div></div>
+<div class="ttc" id="aclassbasic__json_html"><div class="ttname"><a href="classbasic__json.html">basic_json</a></div><div class="ttdoc">namespace for Niels Lohmann</div><div class="ttdef"><b>Definition:</b> json.hpp:19313</div></div>
+<div class="ttc" id="astruct_f_c___font_html"><div class="ttname"><a href="struct_f_c___font.html">FC_Font</a></div><div class="ttdef"><b>Definition:</b> SDL_FontCache.c:414</div></div>
+<div class="ttc" id="astruct_f_c___scale_html"><div class="ttname"><a href="struct_f_c___scale.html">FC_Scale</a></div><div class="ttdef"><b>Definition:</b> SDL_FontCache.h:87</div></div>
+<div class="ttc" id="astruct_g_p_u___rect_html"><div class="ttname"><a href="struct_g_p_u___rect.html">GPU_Rect</a></div><div class="ttdef"><b>Definition:</b> SDL_gpu.h:138</div></div>
 <div class="ttc" id="astruct_gui_1_1_pallet_html"><div class="ttname"><a href="struct_gui_1_1_pallet.html">Gui::Pallet</a></div><div class="ttdef"><b>Definition:</b> Gui.h:44</div></div>
-<div class="ttc" id="astruct_gui_1_1_pallet_html_a26540e6ab52b7c7775c39b0658f260a0"><div class="ttname"><a href="struct_gui_1_1_pallet.html#a26540e6ab52b7c7775c39b0658f260a0">Gui::Pallet::Frame</a></div><div class="ttdeci">SDL_Color Frame</div><div class="ttdef"><b>Definition:</b> Gui.h:47</div></div>
-<div class="ttc" id="astruct_gui_1_1_pallet_html_a2f6e2b2b71b4e75d0504b5cc0ae6ffac"><div class="ttname"><a href="struct_gui_1_1_pallet.html#a2f6e2b2b71b4e75d0504b5cc0ae6ffac">Gui::Pallet::Active</a></div><div class="ttdeci">SDL_Color Active</div><div class="ttdef"><b>Definition:</b> Gui.h:48</div></div>
-<div class="ttc" id="astruct_gui_1_1_pallet_html_abffcefb3e3283fae0f21b0096ace5060"><div class="ttname"><a href="struct_gui_1_1_pallet.html#abffcefb3e3283fae0f21b0096ace5060">Gui::Pallet::BackgroundDisable</a></div><div class="ttdeci">SDL_Color BackgroundDisable</div><div class="ttdef"><b>Definition:</b> Gui.h:46</div></div>
-<div class="ttc" id="astruct_gui_1_1_pallet_html_adeb1de74bfa441d92e8997e0467f2308"><div class="ttname"><a href="struct_gui_1_1_pallet.html#adeb1de74bfa441d92e8997e0467f2308">Gui::Pallet::Font</a></div><div class="ttdeci">SDL_Color Font</div><div class="ttdef"><b>Definition:</b> Gui.h:49</div></div>
-<div class="ttc" id="astruct_gui_1_1_pallet_html_af09cc603c39c89de5be89ce9d490d958"><div class="ttname"><a href="struct_gui_1_1_pallet.html#af09cc603c39c89de5be89ce9d490d958">Gui::Pallet::Pallet</a></div><div class="ttdeci">Pallet()</div><div class="ttdef"><b>Definition:</b> Gui.cpp:559</div></div>
-<div class="ttc" id="astruct_gui_1_1_pallet_html_af86489a23d15ed84ca2e8d6dd48ab015"><div class="ttname"><a href="struct_gui_1_1_pallet.html#af86489a23d15ed84ca2e8d6dd48ab015">Gui::Pallet::Background</a></div><div class="ttdeci">SDL_Color Background</div><div class="ttdef"><b>Definition:</b> Gui.h:45</div></div>
+<div class="ttc" id="astruct_mix___chunk_html"><div class="ttname"><a href="struct_mix___chunk.html">Mix_Chunk</a></div><div class="ttdef"><b>Definition:</b> SDL_mixer.h:228</div></div>
+<div class="ttc" id="astruct_s_d_l___color_html"><div class="ttname"><a href="struct_s_d_l___color.html">SDL_Color</a></div><div class="ttdef"><b>Definition:</b> SDL_pixels.h:310</div></div>
+<div class="ttc" id="astruct_s_d_l___f_point_html"><div class="ttname"><a href="struct_s_d_l___f_point.html">SDL_FPoint</a></div><div class="ttdef"><b>Definition:</b> SDL_rect.h:61</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_cd18baaff0be5c4b5724714bc899523d.html">ArtCore</a></li><li class="navelem"><a class="el" href="dir_c6216de05dce2b392b106872c60b557c.html">Gui</a></li><li class="navelem"><a class="el" href="_gui_8h.html">Gui.h</a></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_cd18baaff0be5c4b5724714bc899523d.html">ArtCore</a></li><li class="navelem"><a class="el" href="dir_c6216de05dce2b392b106872c60b557c.html">Gui</a></li><li class="navelem"><b>Gui.h</b></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
   </ul>
 </div>

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['set_0',['SET',['../struct_art_code.html#ae26b5eac54f8272454063dc389d02c87a8c52684db8f49511e9b44471716bf164',1,'ArtCode']]]
+  ['replace_0',['replace',['../namespacedetail.html#abe7cfa1fd8fa706ff4392bff9d1a8298a9dde360102c103867bd2f45872f1129c',1,'detail']]]
 ];

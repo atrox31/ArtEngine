@@ -93,11 +93,11 @@ $(document).ready(function(){initNavTree('_asset_manager_8h_source.html',''); in
   <div class="headertitle"><div class="title">AssetManager.h</div></div>
 </div><!--header-->
 <div class="contents">
-<a href="_asset_manager_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="_func_8h.html">ArtCore/Functions/Func.h</a>&quot;</span></div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="_sprite_8h.html">ArtCore/Graphic/Sprite.h</a>&quot;</span></div>
+<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;ArtCore/Functions/Func.h&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;ArtCore/Graphic/Sprite.h&quot;</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;FC_Fontcache/SDL_FontCache.h&quot;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="main_8h.html">ArtCore/main.h</a>&quot;</span> <span class="comment">// for debug flags</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;ArtCore/main.h&quot;</span> <span class="comment">// for debug flags</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">// all macros to define asset manager</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#pragma region All macros to define asset manager</span></div>
@@ -105,9 +105,9 @@ $(document).ready(function(){initNavTree('_asset_manager_8h_source.html',''); in
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#if AC_ENABLE_DEBUG_MODE                                                        </span></div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">    #define CREATE_DEBUG_LIST(getter_name)  std::vector&lt;std::string&gt; Debug_List_##getter_name##_name;</span></div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="_asset_manager_8h.html#a7c1dbc21ead7e3237a7da90f6982824e">   13</a></span><span class="preprocessor">    #define CREATE_DEBUG_LIST(getter_name)</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">    #define CREATE_DEBUG_LIST(getter_name)</span></div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="_asset_manager_8h.html#a2c1efe264667b4b491b6d64b7fc44569">   15</a></span><span class="preprocessor">#define GENERATE_GETTER_FUNCTION_DEFINITION(type, getter_name)                  \</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#define GENERATE_GETTER_FUNCTION_DEFINITION(type, getter_name)                  \</span></div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">    public:                                                                     \</span></div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">    type* Get##getter_name(int id) const;                                       \</span></div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">    type* Get##getter_name(const std::string&amp; name);                            \</span></div>
@@ -118,7 +118,7 @@ $(document).ready(function(){initNavTree('_asset_manager_8h_source.html',''); in
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">    std::map&lt; std::string, type*&gt; _list_##getter_name##_name;</span></div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>                                                                    </div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="comment">// This macro is used to create getters functions for each asset type</span></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="_asset_manager_8h.html#a5c6e3bdaabecf7ec747d63d7b33caccf">   27</a></span><span class="preprocessor">#define GENERATE_GETTER_FUNCTION(type, asset_Name)                              \</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">#define GENERATE_GETTER_FUNCTION(type, asset_Name)                              \</span></div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">type* AssetManager::Get##asset_Name(const int id) const                         \</span></div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">{                                                                               \</span></div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="preprocessor">    if (static_cast&lt;size_t&gt;(id) &lt; _list_##asset_Name##_id.size()) {             \</span></div>
@@ -150,10 +150,10 @@ $(document).ready(function(){initNavTree('_asset_manager_8h_source.html',''); in
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        Debug_List_##asset_Name##_name[i++]);                                   </div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="preprocessor">    #define CLEAN_DEBUG_LIST(asset_Name) Debug_List_##asset_Name##_name.clear();                                    </span></div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="_asset_manager_8h.html#a57737f6e1a7053cf383b87805e0c4bdb">   60</a></span><span class="preprocessor">    #define WRITE_DEBUG_LIST(asset_Name)</span></div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="_asset_manager_8h.html#a4f5a45dab5ecf0672c9ab77e3fb4da8b">   61</a></span><span class="preprocessor">    #define CLEAN_DEBUG_LIST(asset_Name)</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="preprocessor">    #define WRITE_DEBUG_LIST(asset_Name)</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="preprocessor">    #define CLEAN_DEBUG_LIST(asset_Name)</span></div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="_asset_manager_8h.html#a5f16056c95e8dbc3063539d7f78550c2">   63</a></span><span class="preprocessor">#define ADD_CLEAR_ASSET(asset_Name, delete_method)                              \</span></div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="preprocessor">#define ADD_CLEAR_ASSET(asset_Name, delete_method)                              \</span></div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><span class="preprocessor">for (int i=0;auto* ref : _list_##asset_Name##_id) {                             \</span></div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="preprocessor">delete_method;                                                                  \</span></div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="preprocessor">WRITE_DEBUG_LIST(asset_Name)                                                    \</span></div>
@@ -166,9 +166,9 @@ $(document).ready(function(){initNavTree('_asset_manager_8h_source.html',''); in
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="preprocessor">    Console::WriteLine(&quot;AssetManager::LoadData - loaded: &quot;</span> +                    \</div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    std::string(#asset_Name) + &quot; &quot; + asset_data.second);                        </div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="_asset_manager_8h.html#a14caa0d2a4de71002114f5ad285c9fe1">   77</a></span><span class="preprocessor">#define DEBUG_OUTPUT(asset_Name)</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><span class="preprocessor">#define DEBUG_OUTPUT(asset_Name)</span></div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="_asset_manager_8h.html#a3d24c85fed7c8a6c27eeeaf883d525f4">   79</a></span><span class="preprocessor">#define ADD_LOAD_ASSET(type, asset_Name, method)                                \</span></div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="preprocessor">#define ADD_LOAD_ASSET(type, asset_Name, method)                                \</span></div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="preprocessor">    if(asset_type == #asset_Name ) {                                            \</span></div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span><span class="preprocessor">        type* tmp = method;                                                     \</span></div>
 <div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span><span class="preprocessor">        if (tmp == nullptr) return false;                                       \</span></div>
@@ -183,7 +183,7 @@ $(document).ready(function(){initNavTree('_asset_manager_8h_source.html',''); in
 <div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span><span class="preprocessor">        Debug_List_##asset_Name##_name.push_back(val.first);                    \</span></div>
 <div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span><span class="preprocessor">    }</span></div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="_asset_manager_8h.html#ae7adf2fdce14a4bcef54a9ce003689d9">   96</a></span><span class="preprocessor">    #define FILL_ASSET_ID_LIST(asset_Name)                                      \</span></div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span><span class="preprocessor">    #define FILL_ASSET_ID_LIST(asset_Name)                                      \</span></div>
 <div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span><span class="preprocessor">        for (auto* val : _list_##asset_Name##_name | std::views::values) {      \</span></div>
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span><span class="preprocessor">            _list_##asset_Name##_id.push_back(val);                             \</span></div>
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span><span class="preprocessor">        }</span></div>
@@ -194,38 +194,34 @@ $(document).ready(function(){initNavTree('_asset_manager_8h_source.html',''); in
 <div class="line"><a id="l00109" name="l00109"></a><span class="lineno"><a class="line" href="class_asset_manager.html">  109</a></span><span class="keyword">class </span><a class="code hl_class" href="class_asset_manager.html">AssetManager</a> final</div>
 <div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>{</div>
 <div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno"><a class="line" href="class_asset_manager.html#a48938b146fa7ad19270a11be5363472a">  112</a></span>    <a class="code hl_function" href="class_asset_manager.html#a48938b146fa7ad19270a11be5363472a">AssetManager</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="class_asset_manager.html#a9c89817cbf3516f1451c116e89f47d30">  113</a></span>    <a class="code hl_function" href="class_asset_manager.html#a9c89817cbf3516f1451c116e89f47d30">~AssetManager</a>() { <a class="code hl_function" href="class_asset_manager.html#a5dfcf4743d4811daf4c750eb402ccca5">ClearData</a>(); }</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <a class="code hl_class" href="class_asset_manager.html">AssetManager</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <a class="code hl_class" href="class_asset_manager.html">~AssetManager</a>() { ClearData(); }</div>
 <div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_asset_manager.html#a6c62f9f0f96f62d45741fa3c9afa1e37">LoadData</a>(<span class="keyword">const</span> <a class="code hl_class" href="class_back_ground_renderer.html">BackGroundRenderer</a>* bgr, <span class="keywordtype">int</span> p_min, <span class="keywordtype">int</span> p_max);</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_asset_manager.html#a5dfcf4743d4811daf4c750eb402ccca5">ClearData</a>();</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordtype">bool</span> LoadData(<span class="keyword">const</span> <a class="code hl_class" href="class_back_ground_renderer.html">BackGroundRenderer</a>* bgr, <span class="keywordtype">int</span> p_min, <span class="keywordtype">int</span> p_max);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keywordtype">void</span> ClearData();</div>
 <div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <a class="code hl_define" href="_asset_manager_8h.html#a2c1efe264667b4b491b6d64b7fc44569">GENERATE_GETTER_FUNCTION_DEFINITION</a>(<a class="code hl_class" href="class_sprite.html">Sprite</a>,     <a class="code hl_class" href="class_sprite.html">Sprite</a>)</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <a class="code hl_define" href="_asset_manager_8h.html#a2c1efe264667b4b491b6d64b7fc44569">GENERATE_GETTER_FUNCTION_DEFINITION</a>(GPU_Image,  Texture)</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <a class="code hl_define" href="_asset_manager_8h.html#a2c1efe264667b4b491b6d64b7fc44569">GENERATE_GETTER_FUNCTION_DEFINITION</a>(Mix_Music,  Music)</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <a class="code hl_define" href="_asset_manager_8h.html#a2c1efe264667b4b491b6d64b7fc44569">GENERATE_GETTER_FUNCTION_DEFINITION</a>(Mix_Chunk,  Sound)</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <a class="code hl_define" href="_asset_manager_8h.html#a2c1efe264667b4b491b6d64b7fc44569">GENERATE_GETTER_FUNCTION_DEFINITION</a>(FC_Font,    Font)</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    GENERATE_GETTER_FUNCTION_DEFINITION(<a class="code hl_class" href="class_sprite.html">Sprite</a>,     <a class="code hl_class" href="class_sprite.html">Sprite</a>)</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    GENERATE_GETTER_FUNCTION_DEFINITION(<a class="code hl_struct" href="struct_g_p_u___image.html">GPU_Image</a>,  Texture)</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    GENERATE_GETTER_FUNCTION_DEFINITION(<a class="code hl_typedef" href="_s_d_l__mixer_8h.html#a1d58ae8fa29e1c03df23baeffb32b14c">Mix_Music</a>,  Music)</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    GENERATE_GETTER_FUNCTION_DEFINITION(<a class="code hl_struct" href="struct_mix___chunk.html">Mix_Chunk</a>,  Sound)</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    GENERATE_GETTER_FUNCTION_DEFINITION(<a class="code hl_struct" href="struct_f_c___font.html">FC_Font</a>,    Font)</div>
 <div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        </div>
 <div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span><span class="preprocessor">#undef GENERATE_GETTER_FUNCTION_DEFINITION</span></div>
 <div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>};</div>
 <div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
-<div class="ttc" id="a_asset_manager_8h_html_a2c1efe264667b4b491b6d64b7fc44569"><div class="ttname"><a href="_asset_manager_8h.html#a2c1efe264667b4b491b6d64b7fc44569">GENERATE_GETTER_FUNCTION_DEFINITION</a></div><div class="ttdeci">#define GENERATE_GETTER_FUNCTION_DEFINITION(type, getter_name)</div><div class="ttdef"><b>Definition:</b> AssetManager.h:15</div></div>
-<div class="ttc" id="a_func_8h_html"><div class="ttname"><a href="_func_8h.html">Func.h</a></div></div>
-<div class="ttc" id="a_sprite_8h_html"><div class="ttname"><a href="_sprite_8h.html">Sprite.h</a></div></div>
+<div class="ttc" id="a_s_d_l__mixer_8h_html_a1d58ae8fa29e1c03df23baeffb32b14c"><div class="ttname"><a href="_s_d_l__mixer_8h.html#a1d58ae8fa29e1c03df23baeffb32b14c">Mix_Music</a></div><div class="ttdeci">struct _Mix_Music Mix_Music</div><div class="ttdef"><b>Definition:</b> SDL_mixer.h:264</div></div>
 <div class="ttc" id="aclass_asset_manager_html"><div class="ttname"><a href="class_asset_manager.html">AssetManager</a></div><div class="ttdoc">Asset manager is full of macros, but it's very useful. Many lines of code is doubled....</div><div class="ttdef"><b>Definition:</b> AssetManager.h:110</div></div>
-<div class="ttc" id="aclass_asset_manager_html_a48938b146fa7ad19270a11be5363472a"><div class="ttname"><a href="class_asset_manager.html#a48938b146fa7ad19270a11be5363472a">AssetManager::AssetManager</a></div><div class="ttdeci">AssetManager()=default</div></div>
-<div class="ttc" id="aclass_asset_manager_html_a5dfcf4743d4811daf4c750eb402ccca5"><div class="ttname"><a href="class_asset_manager.html#a5dfcf4743d4811daf4c750eb402ccca5">AssetManager::ClearData</a></div><div class="ttdeci">void ClearData()</div><div class="ttdef"><b>Definition:</b> AssetManager.cpp:58</div></div>
-<div class="ttc" id="aclass_asset_manager_html_a6c62f9f0f96f62d45741fa3c9afa1e37"><div class="ttname"><a href="class_asset_manager.html#a6c62f9f0f96f62d45741fa3c9afa1e37">AssetManager::LoadData</a></div><div class="ttdeci">bool LoadData(const BackGroundRenderer *bgr, int p_min, int p_max)</div><div class="ttdef"><b>Definition:</b> AssetManager.cpp:12</div></div>
-<div class="ttc" id="aclass_asset_manager_html_a9c89817cbf3516f1451c116e89f47d30"><div class="ttname"><a href="class_asset_manager.html#a9c89817cbf3516f1451c116e89f47d30">AssetManager::~AssetManager</a></div><div class="ttdeci">~AssetManager()</div><div class="ttdef"><b>Definition:</b> AssetManager.h:113</div></div>
 <div class="ttc" id="aclass_back_ground_renderer_html"><div class="ttname"><a href="class_back_ground_renderer.html">BackGroundRenderer</a></div><div class="ttdef"><b>Definition:</b> BackGroundRenderer.h:4</div></div>
 <div class="ttc" id="aclass_sprite_html"><div class="ttname"><a href="class_sprite.html">Sprite</a></div><div class="ttdef"><b>Definition:</b> Sprite.h:9</div></div>
-<div class="ttc" id="amain_8h_html"><div class="ttname"><a href="main_8h.html">main.h</a></div></div>
+<div class="ttc" id="astruct_f_c___font_html"><div class="ttname"><a href="struct_f_c___font.html">FC_Font</a></div><div class="ttdef"><b>Definition:</b> SDL_FontCache.c:414</div></div>
+<div class="ttc" id="astruct_g_p_u___image_html"><div class="ttname"><a href="struct_g_p_u___image.html">GPU_Image</a></div><div class="ttdef"><b>Definition:</b> SDL_gpu.h:334</div></div>
+<div class="ttc" id="astruct_mix___chunk_html"><div class="ttname"><a href="struct_mix___chunk.html">Mix_Chunk</a></div><div class="ttdef"><b>Definition:</b> SDL_mixer.h:228</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_cd18baaff0be5c4b5724714bc899523d.html">ArtCore</a></li><li class="navelem"><a class="el" href="dir_b431b3d684f48bf698a3b7485fa7238e.html">System</a></li><li class="navelem"><a class="el" href="_asset_manager_8h.html">AssetManager.h</a></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_cd18baaff0be5c4b5724714bc899523d.html">ArtCore</a></li><li class="navelem"><a class="el" href="dir_b431b3d684f48bf698a3b7485fa7238e.html">System</a></li><li class="navelem"><b>AssetManager.h</b></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
   </ul>
 </div>

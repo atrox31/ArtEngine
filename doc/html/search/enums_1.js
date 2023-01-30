@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['command_0',['Command',['../struct_art_code.html#ae26b5eac54f8272454063dc389d02c87',1,'ArtCode']]]
+  ['error_5fhandler_5ft_0',['error_handler_t',['../namespacedetail.html#abe7cfa1fd8fa706ff4392bff9d1a8298',1,'detail']]]
 ];

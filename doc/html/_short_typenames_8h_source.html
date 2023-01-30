@@ -93,7 +93,7 @@ $(document).ready(function(){initNavTree('_short_typenames_8h_source.html',''); 
   <div class="headertitle"><div class="title">ShortTypenames.h</div></div>
 </div><!--header-->
 <div class="contents">
-<a href="_short_typenames_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">// Short type names for often using types</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;plf/plf_colony-master/plf_colony.h&quot;</span></div>
@@ -101,22 +101,20 @@ $(document).ready(function(){initNavTree('_short_typenames_8h_source.html',''); 
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;string&gt;</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="_short_typenames_8h.html#a91e896f71dde8e11776171cbac4d6595">    9</a></span><span class="keyword">using </span><a class="code hl_typedef" href="_short_typenames_8h.html#a91e896f71dde8e11776171cbac4d6595">vec_it</a> = <span class="keyword">typename</span>  std::vector&lt;T&gt;::iterator;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">using </span>vec_it = <span class="keyword">typename</span>  std::vector&lt;T&gt;::iterator;</div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="_short_typenames_8h.html#a75d38d63a5292a5f29b2845109e2bb4a">   12</a></span><span class="keyword">using </span><a class="code hl_typedef" href="_short_typenames_8h.html#a75d38d63a5292a5f29b2845109e2bb4a">plf_it</a> = <span class="keyword">typename</span>  plf::colony&lt;T&gt;::iterator;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">using </span>plf_it = <span class="keyword">typename</span>  <a class="code hl_class" href="classplf_1_1colony_1_1colony__iterator.html">plf::colony&lt;T&gt;::iterator</a>;</div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="_short_typenames_8h.html#a81c93da295e5e59d347490c3c9d0420a">   15</a></span><span class="keyword">using </span><a class="code hl_typedef" href="_short_typenames_8h.html#a81c93da295e5e59d347490c3c9d0420a">str_vec</a> = std::vector&lt;std::string&gt;;</div>
-<div class="ttc" id="a_short_typenames_8h_html_a75d38d63a5292a5f29b2845109e2bb4a"><div class="ttname"><a href="_short_typenames_8h.html#a75d38d63a5292a5f29b2845109e2bb4a">plf_it</a></div><div class="ttdeci">typename plf::colony&lt; T &gt;::iterator plf_it</div><div class="ttdef"><b>Definition:</b> ShortTypenames.h:12</div></div>
-<div class="ttc" id="a_short_typenames_8h_html_a81c93da295e5e59d347490c3c9d0420a"><div class="ttname"><a href="_short_typenames_8h.html#a81c93da295e5e59d347490c3c9d0420a">str_vec</a></div><div class="ttdeci">std::vector&lt; std::string &gt; str_vec</div><div class="ttdef"><b>Definition:</b> ShortTypenames.h:15</div></div>
-<div class="ttc" id="a_short_typenames_8h_html_a91e896f71dde8e11776171cbac4d6595"><div class="ttname"><a href="_short_typenames_8h.html#a91e896f71dde8e11776171cbac4d6595">vec_it</a></div><div class="ttdeci">typename std::vector&lt; T &gt;::iterator vec_it</div><div class="ttdef"><b>Definition:</b> ShortTypenames.h:9</div></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">using </span>str_vec = std::vector&lt;std::string&gt;;</div>
+<div class="ttc" id="aclassplf_1_1colony_1_1colony__iterator_html"><div class="ttname"><a href="classplf_1_1colony_1_1colony__iterator.html">plf::colony::colony_iterator&lt; false &gt;</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_cd18baaff0be5c4b5724714bc899523d.html">ArtCore</a></li><li class="navelem"><a class="el" href="_short_typenames_8h.html">ShortTypenames.h</a></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_cd18baaff0be5c4b5724714bc899523d.html">ArtCore</a></li><li class="navelem"><b>ShortTypenames.h</b></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
   </ul>
 </div>

@@ -1,4 +1,24 @@
 var searchData=
 [
-  ['mouse_0',['Mouse',['../class_core.html#a47ff6f9f4871cffcda15db2f5b15365b',1,'Core']]]
+  ['m_5fit_0',['m_it',['../classdetail_1_1iter__impl.html#a79b7b8c6b778d9f7e76b086b45d9ea2e',1,'detail::iter_impl']]],
+  ['m_5fvalue_1',['m_value',['../classbasic__json.html#acd0f167153f047a246b51858d7c921b8',1,'basic_json']]],
+  ['magnitude_2',['magnitude',['../struct_s_d_l___haptic_periodic.html#aad0ad2b00c7e6959da627663d91f7b94',1,'SDL_HapticPeriodic']]],
+  ['major_3',['major',['../struct_p_h_y_s_f_s___version.html#ac60a805b6b7c342cb1718356f5be4dc2',1,'PHYSFS_Version::major()'],['../struct_s_d_l__version.html#ad7d7674532073eed237b90f546c97cd0',1,'SDL_version::major()']]],
+  ['malloc_4',['Malloc',['../struct_p_h_y_s_f_s___allocator.html#a60feb4a23ff8d56afd1c2ad66ca6aa5e',1,'PHYSFS_Allocator']]],
+  ['manufacturer_5fstring_5',['manufacturer_string',['../struct_s_d_l__hid__device__info.html#ac874d63dbfe581736033f266f08fd51a',1,'SDL_hid_device_info']]],
+  ['map_6',['map',['../struct_s_d_l___surface.html#ac68afc0e3de01e3f40cb8bce2606e71b',1,'SDL_Surface']]],
+  ['matrix_5fmode_7',['matrix_mode',['../struct_g_p_u___target.html#a6afc0a2f4b7566d450f5c66fcbbd716e',1,'GPU_Target']]],
+  ['max_5ftexture_5fheight_8',['max_texture_height',['../struct_s_d_l___renderer_info.html#a87c6a13e8d535c2148f8913c05e13102',1,'SDL_RendererInfo']]],
+  ['max_5ftexture_5fwidth_9',['max_texture_width',['../struct_s_d_l___renderer_info.html#a6e6757e3d5c1f0922adaba39380edfa6',1,'SDL_RendererInfo']]],
+  ['message_10',['message',['../struct_s_d_l___message_box_data.html#ada6ae208a1f85adabbd7a7a08ca609c8',1,'SDL_MessageBoxData']]],
+  ['mgesture_11',['mgesture',['../union_s_d_l___event.html#ac19b3c6a6b5181a51eb4fbe2cbe726a9',1,'SDL_Event']]],
+  ['minor_12',['minor',['../struct_p_h_y_s_f_s___version.html#a753a884de5c4ef33bff3dfb2e0bb1a0c',1,'PHYSFS_Version::minor()'],['../struct_s_d_l__version.html#a6c35c7bf80245028d5970e6a504ecf57',1,'SDL_version::minor()']]],
+  ['mkdir_13',['mkdir',['../struct_p_h_y_s_f_s___archiver.html#abd95b2a3afb0f94025c486b514d72189',1,'PHYSFS_Archiver']]],
+  ['mod_14',['mod',['../struct_s_d_l___keysym.html#ab519d1b8a9939d3d035f7103f3208291',1,'SDL_Keysym']]],
+  ['mode_15',['mode',['../struct_s_d_l___window_shape_mode.html#a40ebd8b9a76d982cbd87563386cc05de',1,'SDL_WindowShapeMode']]],
+  ['modtime_16',['modtime',['../struct_p_h_y_s_f_s___stat.html#a7d2bab20e466bcc30cf2a811ac468cc8',1,'PHYSFS_Stat']]],
+  ['motion_17',['motion',['../union_s_d_l___event.html#ac3c89e190faacbe84280cd539453bab6',1,'SDL_Event']]],
+  ['mousex_18',['mouseX',['../struct_s_d_l___mouse_wheel_event.html#a602d03699be268ecd13feb8c53e6738b',1,'SDL_MouseWheelEvent']]],
+  ['mousey_19',['mouseY',['../struct_s_d_l___mouse_wheel_event.html#a7ed6f8543a20c43c12ba75e9db901081',1,'SDL_MouseWheelEvent']]],
+  ['msg_20',['msg',['../struct_s_d_l___sys_w_m_event.html#ad5e3dc68aa15582cd0641847d41c74e8',1,'SDL_SysWMEvent::msg()'],['../struct_s_d_l___sys_w_mmsg.html#a74894ed060d5508ab06aac584154d61e',1,'SDL_SysWMmsg::msg()']]]
 ];

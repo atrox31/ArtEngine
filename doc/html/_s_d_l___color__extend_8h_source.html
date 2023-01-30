@@ -93,20 +93,20 @@ $(document).ready(function(){initNavTree('_s_d_l___color__extend_8h_source.html'
   <div class="headertitle"><div class="title">SDL_Color_extend.h</div></div>
 </div><!--header-->
 <div class="contents">
-<a href="_s_d_l___color__extend_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;SDL_pixels.h&quot;</span></div>
+<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="_s_d_l__pixels_8h.html">SDL_pixels.h</a>&quot;</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">// color compare</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno"><a class="line" href="_s_d_l___color__extend_8h.html#a2ccc705caf8948cb706514130379a2b5">    5</a></span><span class="keyword">inline</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="_s_d_l___color__extend_8h.html#a2ccc705caf8948cb706514130379a2b5">operator==</a>(SDL_Color <span class="keyword">const</span>&amp; a, SDL_Color <span class="keyword">const</span>&amp; b)</div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<a class="code hl_struct" href="struct_s_d_l___color.html">SDL_Color</a> <span class="keyword">const</span>&amp; a, <a class="code hl_struct" href="struct_s_d_l___color.html">SDL_Color</a> <span class="keyword">const</span>&amp; b)</div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span>{</div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>    <span class="keywordflow">return</span> a.r == b.r &amp;&amp; a.g == b.g &amp;&amp; a.b == b.b &amp;&amp; a.a == b.a;</div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>}</div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="_s_d_l___color__extend_8h.html#adca04adcc00979044d3c324a9ad0099a">    9</a></span><span class="keyword">inline</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="_s_d_l___color__extend_8h.html#adca04adcc00979044d3c324a9ad0099a">operator!=</a>(SDL_Color <span class="keyword">const</span>&amp; a, SDL_Color <span class="keyword">const</span>&amp; b)</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">inline</span> <span class="keywordtype">bool</span> operator!=(<a class="code hl_struct" href="struct_s_d_l___color.html">SDL_Color</a> <span class="keyword">const</span>&amp; a, <a class="code hl_struct" href="struct_s_d_l___color.html">SDL_Color</a> <span class="keyword">const</span>&amp; b)</div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>{</div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keywordflow">return</span> a.r != b.r &amp;&amp; a.g != b.g &amp;&amp; a.b != b.b &amp;&amp; a.a != b.a;</div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>}</div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="comment">// Mix two colors together using middle value for every color</span></div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="_s_d_l___color__extend_8h.html#a82a30106b9283a54133992192873616a">   14</a></span><span class="keyword">inline</span> SDL_Color <a class="code hl_function" href="_s_d_l___color__extend_8h.html#a82a30106b9283a54133992192873616a">operator*</a>(SDL_Color <span class="keyword">const</span>&amp; a, SDL_Color <span class="keyword">const</span>&amp; b)</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">inline</span> <a class="code hl_struct" href="struct_s_d_l___color.html">SDL_Color</a> operator*(<a class="code hl_struct" href="struct_s_d_l___color.html">SDL_Color</a> <span class="keyword">const</span>&amp; a, <a class="code hl_struct" href="struct_s_d_l___color.html">SDL_Color</a> <span class="keyword">const</span>&amp; b)</div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>{</div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordflow">return</span> {</div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        <span class="keyword">static_cast&lt;</span>Uint8<span class="keyword">&gt;</span>((a.r + b.r) / 2),</div>
@@ -116,15 +116,14 @@ $(document).ready(function(){initNavTree('_s_d_l___color__extend_8h_source.html'
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        };</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>}</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
-<div class="ttc" id="a_s_d_l___color__extend_8h_html_a2ccc705caf8948cb706514130379a2b5"><div class="ttname"><a href="_s_d_l___color__extend_8h.html#a2ccc705caf8948cb706514130379a2b5">operator==</a></div><div class="ttdeci">bool operator==(SDL_Color const &amp;a, SDL_Color const &amp;b)</div><div class="ttdef"><b>Definition:</b> SDL_Color_extend.h:5</div></div>
-<div class="ttc" id="a_s_d_l___color__extend_8h_html_a82a30106b9283a54133992192873616a"><div class="ttname"><a href="_s_d_l___color__extend_8h.html#a82a30106b9283a54133992192873616a">operator*</a></div><div class="ttdeci">SDL_Color operator*(SDL_Color const &amp;a, SDL_Color const &amp;b)</div><div class="ttdef"><b>Definition:</b> SDL_Color_extend.h:14</div></div>
-<div class="ttc" id="a_s_d_l___color__extend_8h_html_adca04adcc00979044d3c324a9ad0099a"><div class="ttname"><a href="_s_d_l___color__extend_8h.html#adca04adcc00979044d3c324a9ad0099a">operator!=</a></div><div class="ttdeci">bool operator!=(SDL_Color const &amp;a, SDL_Color const &amp;b)</div><div class="ttdef"><b>Definition:</b> SDL_Color_extend.h:9</div></div>
+<div class="ttc" id="a_s_d_l__pixels_8h_html"><div class="ttname"><a href="_s_d_l__pixels_8h.html">SDL_pixels.h</a></div></div>
+<div class="ttc" id="astruct_s_d_l___color_html"><div class="ttname"><a href="struct_s_d_l___color.html">SDL_Color</a></div><div class="ttdef"><b>Definition:</b> SDL_pixels.h:310</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_cd18baaff0be5c4b5724714bc899523d.html">ArtCore</a></li><li class="navelem"><a class="el" href="dir_6a63e4309982e2083e10a737a6bdee60.html">Functions</a></li><li class="navelem"><a class="el" href="_s_d_l___color__extend_8h.html">SDL_Color_extend.h</a></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_cd18baaff0be5c4b5724714bc899523d.html">ArtCore</a></li><li class="navelem"><a class="el" href="dir_6a63e4309982e2083e10a737a6bdee60.html">Functions</a></li><li class="navelem"><b>SDL_Color_extend.h</b></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
   </ul>
 </div>

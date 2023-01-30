@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['x_0',['X',['../class_rect.html#a3a9f8744865d765da17e6f4c0832886b',1,'Rect']]],
-  ['x_1',['x',['../classvec2.html#acbedc70458fbe177e24770b64267f07d',1,'vec2']]],
-  ['xy_2',['XY',['../struct_core_1_1_mouse_state.html#ae34d3b55b0a41a06716023d72946c720',1,'Core::MouseState']]],
-  ['xyf_3',['XYf',['../struct_core_1_1_mouse_state.html#a34d09a383e0ab7fa1a805dfc07b98856',1,'Core::MouseState']]]
+  ['value_0',['value',['../struct_s_d_l___joy_axis_event.html#a53ee73e7c367934dd6edb69963be5556',1,'SDL_JoyAxisEvent::value()'],['../struct_s_d_l___joy_hat_event.html#a52b179a34407449941b61d988ca72ef4',1,'SDL_JoyHatEvent::value()'],['../struct_s_d_l___controller_axis_event.html#a1ed7f14255ed01b982d40a38791d475a',1,'SDL_ControllerAxisEvent::value()']]],
+  ['vendor_5fid_1',['vendor_id',['../struct_s_d_l__hid__device__info.html#a7bb9b5c173278a6699b3191953fcfe77',1,'SDL_hid_device_info::vendor_id()'],['../struct_s_d_l___virtual_joystick_desc.html#a109c5bc2cb3269bb0cbdbfff0dd35b1a',1,'SDL_VirtualJoystickDesc::vendor_id()']]],
+  ['version_2',['version',['../struct_p_h_y_s_f_s___io.html#aeeacb84ee2afaa3ef4012d54ecef7273',1,'PHYSFS_Io::version()'],['../struct_p_h_y_s_f_s___archiver.html#aa8b70f3e0cf85eea8b4959a3c6a5f695',1,'PHYSFS_Archiver::version()'],['../struct_s_d_l___virtual_joystick_desc.html#a0235964235067e3b18a7c50708e585a7',1,'SDL_VirtualJoystickDesc::version()']]]
 ];
