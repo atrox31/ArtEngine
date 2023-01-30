@@ -25,6 +25,27 @@
 var NAVTREE =
 [
   [ "ArtCore Engine", "index.html", [
+    [ "ArtCore Engine", "md_src__art_core__r_e_a_d_m_e.html", [
+      [ "ArtCore", "md_src__art_core__r_e_a_d_m_e.html#autotoc_md1", null ],
+      [ "Compilation", "md_src__art_core__r_e_a_d_m_e.html#autotoc_md2", null ],
+      [ "Game archive", "md_src__art_core__r_e_a_d_m_e.html#autotoc_md3", null ],
+      [ "Configuration", "md_src__art_core__r_e_a_d_m_e.html#autotoc_md4", null ],
+      [ "Technology", "md_src__art_core__r_e_a_d_m_e.html#autotoc_md5", null ],
+      [ "Scripts", "md_src__art_core__r_e_a_d_m_e.html#autotoc_md6", [
+        [ "Core.tar", "md_src__art_core__r_e_a_d_m_e.html#autotoc_md7", null ],
+        [ "ArtLibGenerator.exe", "md_src__art_core__r_e_a_d_m_e.html#autotoc_md8", null ]
+      ] ],
+      [ "Game Engine", "md_src__art_core__r_e_a_d_m_e.html#autotoc_md9", [
+        [ "Debug mode and game console", "md_src__art_core__r_e_a_d_m_e.html#autotoc_md10", null ],
+        [ "Engine workflow", "md_src__art_core__r_e_a_d_m_e.html#autotoc_md11", null ],
+        [ "Assets", "md_src__art_core__r_e_a_d_m_e.html#autotoc_md12", null ],
+        [ "Objects (Instances) aka Entity", "md_src__art_core__r_e_a_d_m_e.html#autotoc_md13", null ],
+        [ "Scene", "md_src__art_core__r_e_a_d_m_e.html#autotoc_md14", null ],
+        [ "Event system", "md_src__art_core__r_e_a_d_m_e.html#autotoc_md15", null ],
+        [ "Body, mask, collisions", "md_src__art_core__r_e_a_d_m_e.html#autotoc_md16", null ],
+        [ "ArtScript", "md_src__art_core__r_e_a_d_m_e.html#autotoc_md17", null ]
+      ] ]
+    ] ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ]
     ] ],
@@ -36,7 +57,8 @@ var NAVTREE =
         [ "All", "functions.html", "functions_dup" ],
         [ "Functions", "functions_func.html", "functions_func" ],
         [ "Variables", "functions_vars.html", null ],
-        [ "Enumerations", "functions_enum.html", null ]
+        [ "Enumerations", "functions_enum.html", null ],
+        [ "Related Functions", "functions_rela.html", null ]
       ] ]
     ] ],
     [ "Files", "files.html", [
@@ -55,9 +77,9 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "_art_code_8cpp.html",
-"class_core.html#addca96c32fba4567f592ed1e1eead069",
-"class_instance.html#adcfb7b381e285d730d69ffb43b95a9ad",
-"struct_func_1_1_data_values.html#a252b4cf3ef6fae6e367c5f69703a557d"
+"class_gui.html#a21d335da889bde2694bdc87939258fed",
+"class_instance.html#afefc6267c4b2a8bc960de8049af21c3e",
+"struct_art_code.html#ae26b5eac54f8272454063dc389d02c87ab1a326c06d88bf042f73d70f50197905"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

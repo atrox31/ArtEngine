@@ -28,7 +28,7 @@ var annotated_dup =
     [ "old_AStack", "structold___a_stack.html", "structold___a_stack" ],
     [ "Physics", "class_physics.html", null ],
     [ "Rect", "class_rect.html", "class_rect" ],
-    [ "Render", "class_render.html", null ],
+    [ "Render", "class_render.html", "class_render" ],
     [ "Scene", "class_scene.html", "class_scene" ],
     [ "SettingsData", "class_settings_data.html", null ],
     [ "Sprite", "class_sprite.html", "class_sprite" ],

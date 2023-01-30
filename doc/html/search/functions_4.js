@@ -18,7 +18,7 @@ var searchData=
   ['drawrectfilled_15',['DrawRectFilled',['../class_render.html#a7808e66d1adffc5c285b94d786f8e363',1,'Render']]],
   ['drawrectrounded_16',['DrawRectRounded',['../class_render.html#aa0a5d2cd7aca326fc66c812413914b37',1,'Render']]],
   ['drawrectroundedfilled_17',['DrawRectRoundedFilled',['../class_render.html#adf5f7521a5a4157cf83a5c84b3bd1ac7',1,'Render']]],
-  ['drawself_18',['DrawSelf',['../class_instance.html#a3db863a135adb9b7d951a9f8db5912ee',1,'Instance']]],
+  ['drawself_18',['DrawSelf',['../class_instance.html#af11cdf91e8d15303c4b1130fe247e027',1,'Instance']]],
   ['drawsprite_19',['DrawSprite',['../class_render.html#a4602a52aef240aabc2c97a045095214e',1,'Render']]],
   ['drawsprite_5fex_20',['DrawSprite_ex',['../class_render.html#ab79186cfc519e1f05aff4e16493e0a09',1,'Render']]],
   ['drawspritebox_21',['DrawSpriteBox',['../class_render.html#ac1a1114b1faa8cfeb7642561e5370ea9',1,'Render']]],

@@ -19,8 +19,8 @@ var searchData=
   ['trygetfloat_16',['TryGetFloat',['../class_func.html#ac2b16e7a45fa4b37ad8e78379ece05c6',1,'Func']]],
   ['trygetint_17',['TryGetInt',['../class_func.html#a047a360b44df44cb553d9107a4a12dec',1,'Func']]],
   ['twobytechartouint32_18',['TwoByteCharToUint32',['../class_convert.html#a060e9f1c269a796610bd7d7efd83fb8b',1,'Convert']]],
-  ['type_19',['Type',['../struct_instance_1_1body.html#a0107f6bd7bcc52b4155b87fbc773b62e',1,'Instance::body::Type()'],['../struct_scene_1_1_back_ground.html#a51abd73feea45b043840a488fc2a6547',1,'Scene::BackGround::Type()']]],
-  ['type_20',['type',['../struct_instance_1_1body.html#a75c1f87f15bb6d288d211298b1c43fc7',1,'Instance::body::type()'],['../struct_mask.html#a91709e3326b397470a1c8026134413ad',1,'Mask::type()']]],
+  ['type_19',['type',['../struct_instance_1_1body.html#a75c1f87f15bb6d288d211298b1c43fc7',1,'Instance::body::type()'],['../struct_mask.html#a91709e3326b397470a1c8026134413ad',1,'Mask::type()']]],
+  ['type_20',['Type',['../struct_instance_1_1body.html#a0107f6bd7bcc52b4155b87fbc773b62e',1,'Instance::body::Type()'],['../struct_scene_1_1_back_ground.html#a51abd73feea45b043840a488fc2a6547',1,'Scene::BackGround::Type()']]],
   ['type_21',['TYPE',['../struct_art_code.html#ae26b5eac54f8272454063dc389d02c87a948495146facadfe8859789036313d79',1,'ArtCode']]],
   ['typedef_22',['TYPEDEF',['../struct_art_code.html#ae26b5eac54f8272454063dc389d02c87a95fbf728908187e4bb160a31525824d5',1,'ArtCode']]]
 ];

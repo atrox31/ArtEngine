@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['x_5fenum_5fwith_5fstring_5fconversion_5ffrom_5fstring_5fcase_0',['X_ENUM_WITH_STRING_CONVERSION_FROM_STRING_CASE',['../_enum_extend_8h.html#a0fe5342f910f9e349799d123017d3145',1,'EnumExtend.h']]],
-  ['x_5fenum_5fwith_5fstring_5fconversion_5fto_5fstring_5fcase_1',['X_ENUM_WITH_STRING_CONVERSION_TO_STRING_CASE',['../_enum_extend_8h.html#a0d5c0abe8cf10f935108fba30bddaa46',1,'EnumExtend.h']]]
+  ['try_5fto_5finit_0',['TRY_TO_INIT',['../_core_8cpp.html#a604e163f43fcb8a25000bc1f2814f4ba',1,'Core.cpp']]],
+  ['try_5fto_5finit_5fcritic_1',['TRY_TO_INIT_CRITIC',['../_core_8cpp.html#aea56c7956985a66722fd2bf7a79807ea',1,'Core.cpp']]]
 ];

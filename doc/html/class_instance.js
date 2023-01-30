@@ -4,7 +4,7 @@ var class_instance =
     [ "Instance", "class_instance.html#a7405c71b6c544d9238a9256d1a436041", null ],
     [ "CheckMaskClick", "class_instance.html#a0cd206ec92131230a01b2de59e75fe31", null ],
     [ "Delete", "class_instance.html#a8e27372b79c56c7b6956fe4f51d4c078", null ],
-    [ "DrawSelf", "class_instance.html#a3db863a135adb9b7d951a9f8db5912ee", null ],
+    [ "DrawSelf", "class_instance.html#af11cdf91e8d15303c4b1130fe247e027", null ],
     [ "GetBodyMask", "class_instance.html#aa6627d8fe0e7e41c9e4f4db70f821e91", null ],
     [ "GetId", "class_instance.html#a33e043114c0110dbd9b19c23a1ae3e31", null ],
     [ "GetInstanceDefinitionId", "class_instance.html#a71ec22aafc145e6e0e00728f5343b013", null ],

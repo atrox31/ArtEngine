@@ -9,6 +9,7 @@ var searchData=
   ['isempty_6',['IsEmpty',['../struct_a_stack.html#a3d87bb900cc64a32b01bf71cc97362ea',1,'AStack::IsEmpty()'],['../structold___a_stack.html#ae480cd5a322153730c682f8c72f8bc30',1,'old_AStack::IsEmpty()']]],
   ['isend_7',['IsEnd',['../class_inspector.html#a0b00c068ff09e41ab56b9ca93c73356b',1,'Inspector']]],
   ['ishex_8',['IsHex',['../class_func.html#a7ca83a8dc48372f3898f5da305bf4c38',1,'Func']]],
-  ['isok_9',['IsOk',['../struct_func_1_1_data_values.html#a5acfe35ec4f4f43bd9e44b338103d7bb',1,'Func::DataValues']]],
-  ['istypenone_10',['IsTypeNone',['../struct_mask.html#a7efdd3e785fdc615cccf669391d36e17',1,'Mask']]]
+  ['ismusicplaying_9',['IsMusicPlaying',['../struct_scene_1_1_audio.html#a5c8ed1f915111ffababa2cec69cbd687',1,'Scene::Audio']]],
+  ['isok_10',['IsOk',['../struct_func_1_1_data_values.html#a5acfe35ec4f4f43bd9e44b338103d7bb',1,'Func::DataValues']]],
+  ['istypenone_11',['IsTypeNone',['../struct_mask.html#a7efdd3e785fdc615cccf669391d36e17',1,'Mask']]]
 ];

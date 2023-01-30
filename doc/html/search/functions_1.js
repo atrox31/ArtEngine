@@ -11,6 +11,6 @@ var searchData=
   ['archivegetfilebytes_8',['ArchiveGetFileBytes',['../class_func.html#ab3de9f47eb45119804254e003fb60d1e',1,'Func']]],
   ['archivegetfilerwops_9',['ArchiveGetFileRWops',['../class_func.html#ade9a51c77678d2c3da2d79aa07a4dcd9',1,'Func']]],
   ['archivegetfiletext_10',['ArchiveGetFileText',['../class_func.html#ac417206f674eb327f185f2ecd1faa59b',1,'Func']]],
-  ['assetmanager_11',['AssetManager',['../class_asset_manager.html#a750ae7b39b633fbb6594443aa3ca704b',1,'AssetManager']]],
+  ['assetmanager_11',['AssetManager',['../class_asset_manager.html#a48938b146fa7ad19270a11be5363472a',1,'AssetManager']]],
   ['astack_12',['AStack',['../struct_a_stack.html#a2cb26171427baea510b45ef87e2c97ee',1,'AStack']]]
 ];

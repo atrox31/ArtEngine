@@ -11,6 +11,7 @@ var hierarchy =
     [ "AStack< SDL_Color >", "struct_a_stack.html", null ],
     [ "AStack< SDL_FPoint >", "struct_a_stack.html", null ],
     [ "AStack< std::string >", "struct_a_stack.html", null ],
+    [ "Scene::Audio", "struct_scene_1_1_audio.html", null ],
     [ "Scene::BackGround", "struct_scene_1_1_back_ground.html", null ],
     [ "BackGroundRenderer", "class_back_ground_renderer.html", null ],
     [ "Instance::body", "struct_instance_1_1body.html", null ],

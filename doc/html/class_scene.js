@@ -1,5 +1,6 @@
 var class_scene =
 [
+    [ "Audio", "struct_scene_1_1_audio.html", "struct_scene_1_1_audio" ],
     [ "BackGround", "struct_scene_1_1_back_ground.html", "struct_scene_1_1_back_ground" ],
     [ "GetHeight", "class_scene.html#af54777f0d89377720f7781bb6b47a91a", null ],
     [ "GetLocalGuiSystem", "class_scene.html#aa276c4ee2852bd74067b1d192d303565", null ],

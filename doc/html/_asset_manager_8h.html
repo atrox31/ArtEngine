@@ -91,12 +91,12 @@ $(document).ready(function(){initNavTree('_asset_manager_8h.html',''); initResiz
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a>  </div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#define-members">Macros</a>  </div>
   <div class="headertitle"><div class="title">AssetManager.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;unordered_map&gt;</code><br />
-<code>#include &quot;<a class="el" href="_func_8h_source.html">ArtCore/Functions/Func.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="_func_8h_source.html">ArtCore/Functions/Func.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="_sprite_8h_source.html">ArtCore/Graphic/Sprite.h</a>&quot;</code><br />
 <code>#include &quot;FC_Fontcache/SDL_FontCache.h&quot;</code><br />
 <code>#include &quot;<a class="el" href="main_8h_source.html">ArtCore/main.h</a>&quot;</code><br />
@@ -106,8 +106,302 @@ $(document).ready(function(){initNavTree('_asset_manager_8h.html',''); initResiz
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_asset_manager.html">AssetManager</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Asset manager is full of macros, but it's very useful. Many lines of code is doubled.<br  />
+Contains all assets, and can load them from filelist.txt<br  />
+All data are stored in two containers: one for id and one for name.<br  />
+.  <a href="class_asset_manager.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:a7c1dbc21ead7e3237a7da90f6982824e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_asset_manager_8h.html#a7c1dbc21ead7e3237a7da90f6982824e">CREATE_DEBUG_LIST</a>(getter_name)</td></tr>
+<tr class="separator:a7c1dbc21ead7e3237a7da90f6982824e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c1efe264667b4b491b6d64b7fc44569"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_asset_manager_8h.html#a2c1efe264667b4b491b6d64b7fc44569">GENERATE_GETTER_FUNCTION_DEFINITION</a>(type,  getter_name)</td></tr>
+<tr class="separator:a2c1efe264667b4b491b6d64b7fc44569"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c6e3bdaabecf7ec747d63d7b33caccf"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_asset_manager_8h.html#a5c6e3bdaabecf7ec747d63d7b33caccf">GENERATE_GETTER_FUNCTION</a>(type,  asset_Name)</td></tr>
+<tr class="memdesc:a5c6e3bdaabecf7ec747d63d7b33caccf"><td class="mdescLeft">&#160;</td><td class="mdescRight">////////////////////////////////////////////////////////////////////// ///  <br /></td></tr>
+<tr class="separator:a5c6e3bdaabecf7ec747d63d7b33caccf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57737f6e1a7053cf383b87805e0c4bdb"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_asset_manager_8h.html#a57737f6e1a7053cf383b87805e0c4bdb">WRITE_DEBUG_LIST</a>(asset_Name)</td></tr>
+<tr class="memdesc:a57737f6e1a7053cf383b87805e0c4bdb"><td class="mdescLeft">&#160;</td><td class="mdescRight">///////////////////////////////////////////////////////////////////////// ///  <br /></td></tr>
+<tr class="separator:a57737f6e1a7053cf383b87805e0c4bdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f5a45dab5ecf0672c9ab77e3fb4da8b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_asset_manager_8h.html#a4f5a45dab5ecf0672c9ab77e3fb4da8b">CLEAN_DEBUG_LIST</a>(asset_Name)</td></tr>
+<tr class="separator:a4f5a45dab5ecf0672c9ab77e3fb4da8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f16056c95e8dbc3063539d7f78550c2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_asset_manager_8h.html#a5f16056c95e8dbc3063539d7f78550c2">ADD_CLEAR_ASSET</a>(asset_Name,  delete_method)</td></tr>
+<tr class="separator:a5f16056c95e8dbc3063539d7f78550c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14caa0d2a4de71002114f5ad285c9fe1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_asset_manager_8h.html#a14caa0d2a4de71002114f5ad285c9fe1">DEBUG_OUTPUT</a>(asset_Name)</td></tr>
+<tr class="memdesc:a14caa0d2a4de71002114f5ad285c9fe1"><td class="mdescLeft">&#160;</td><td class="mdescRight">///////////////////////////////////////////////////////////////////////// ///  <br /></td></tr>
+<tr class="separator:a14caa0d2a4de71002114f5ad285c9fe1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d24c85fed7c8a6c27eeeaf883d525f4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_asset_manager_8h.html#a3d24c85fed7c8a6c27eeeaf883d525f4">ADD_LOAD_ASSET</a>(type,  asset_Name,  method)</td></tr>
+<tr class="separator:a3d24c85fed7c8a6c27eeeaf883d525f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7adf2fdce14a4bcef54a9ce003689d9"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_asset_manager_8h.html#ae7adf2fdce14a4bcef54a9ce003689d9">FILL_ASSET_ID_LIST</a>(asset_Name)</td></tr>
+<tr class="separator:ae7adf2fdce14a4bcef54a9ce003689d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Macro Definition Documentation</h2>
+<a id="a5f16056c95e8dbc3063539d7f78550c2" name="a5f16056c95e8dbc3063539d7f78550c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f16056c95e8dbc3063539d7f78550c2">&#9670;&#160;</a></span>ADD_CLEAR_ASSET</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define ADD_CLEAR_ASSET</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">asset_Name, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">delete_method&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0;<span class="keyword">auto</span>* ref : _list_##asset_Name##_id) {                             \</div>
+<div class="line">delete_method;                                                                  \</div>
+<div class="line">WRITE_DEBUG_LIST(asset_Name)                                                    \</div>
+<div class="line">}                                                                               \</div>
+<div class="line">_list_##asset_Name##_id.clear();                                                \</div>
+<div class="line">_list_##asset_Name##_name.clear();                                              \</div>
+<div class="line">CLEAN_DEBUG_LIST(asset_Name)</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a3d24c85fed7c8a6c27eeeaf883d525f4" name="a3d24c85fed7c8a6c27eeeaf883d525f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d24c85fed7c8a6c27eeeaf883d525f4">&#9670;&#160;</a></span>ADD_LOAD_ASSET</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define ADD_LOAD_ASSET</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">type, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">asset_Name, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">method&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">    <span class="keywordflow">if</span>(asset_type == #asset_Name ) {                                            \</div>
+<div class="line">        type* tmp = method;                                                     \</div>
+<div class="line">        if (tmp == <span class="keyword">nullptr</span>) return false;                                       \</div>
+<div class="line">        _list_<span class="preprocessor">##asset_Name##_name.insert({ asset_data.second, tmp });           \</span></div>
+<div class="line"><span class="preprocessor">        DEBUG_OUTPUT(asset_Name)                                                \</span></div>
+<div class="line"><span class="preprocessor">        continue;                                                               \</span></div>
+<div class="line"><span class="preprocessor">    }</span></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a4f5a45dab5ecf0672c9ab77e3fb4da8b" name="a4f5a45dab5ecf0672c9ab77e3fb4da8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f5a45dab5ecf0672c9ab77e3fb4da8b">&#9670;&#160;</a></span>CLEAN_DEBUG_LIST</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define CLEAN_DEBUG_LIST</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">asset_Name</td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7c1dbc21ead7e3237a7da90f6982824e" name="a7c1dbc21ead7e3237a7da90f6982824e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c1dbc21ead7e3237a7da90f6982824e">&#9670;&#160;</a></span>CREATE_DEBUG_LIST</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define CREATE_DEBUG_LIST</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">getter_name</td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a14caa0d2a4de71002114f5ad285c9fe1" name="a14caa0d2a4de71002114f5ad285c9fe1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14caa0d2a4de71002114f5ad285c9fe1">&#9670;&#160;</a></span>DEBUG_OUTPUT</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DEBUG_OUTPUT</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">asset_Name</td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>///////////////////////////////////////////////////////////////////////// /// </p>
+
+</div>
+</div>
+<a id="ae7adf2fdce14a4bcef54a9ce003689d9" name="ae7adf2fdce14a4bcef54a9ce003689d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7adf2fdce14a4bcef54a9ce003689d9">&#9670;&#160;</a></span>FILL_ASSET_ID_LIST</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define FILL_ASSET_ID_LIST</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">asset_Name</td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">        <span class="keywordflow">for</span> (<span class="keyword">auto</span>* val : _list_##asset_Name##_name | std::views::values) {      \</div>
+<div class="line">            _list_##asset_Name##_id.push_back(val);                             \</div>
+<div class="line">        }</div>
+</div><!-- fragment --><p>///////////////////////////////////////////////////////////////////////// /// This fave 2 versions, with debug asset names and not </p>
+
+</div>
+</div>
+<a id="a5c6e3bdaabecf7ec747d63d7b33caccf" name="a5c6e3bdaabecf7ec747d63d7b33caccf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c6e3bdaabecf7ec747d63d7b33caccf">&#9670;&#160;</a></span>GENERATE_GETTER_FUNCTION</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define GENERATE_GETTER_FUNCTION</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">type, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">asset_Name&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">type* AssetManager::Get##asset_Name(<span class="keyword">const</span> <span class="keywordtype">int</span> <span class="keywordtype">id</span>) <span class="keyword">const</span>                         \</div>
+<div class="line">{                                                                               \</div>
+<div class="line">    if (<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<span class="keywordtype">id</span>) &lt; _list_##asset_Name##_id.size()) {             \</div>
+<div class="line">        <span class="keywordflow">return</span> _list_##asset_Name##_id[id];                                     \</div>
+<div class="line">    }                                                                           \</div>
+<div class="line">    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;                                                             \</div>
+<div class="line">}                                                                               \</div>
+<div class="line">type* AssetManager::Get##asset_Name(<span class="keyword">const</span> std::string&amp; name)                    \</div>
+<div class="line">{                                                                               \</div>
+<div class="line">    if (_list_##asset_Name##_name.contains(name)) {                             \</div>
+<div class="line">        <span class="keywordflow">return</span> _list_##asset_Name##_name[name];                                 \</div>
+<div class="line">    }                                                                           \</div>
+<div class="line">    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;                                                             \</div>
+<div class="line">}                                                                               \</div>
+<div class="line"><span class="keywordtype">int</span> AssetManager::Get##asset_Name##Id(<span class="keyword">const</span> std::string&amp; name) <span class="keyword">const</span>            \</div>
+<div class="line">{                                                                               \</div>
+<div class="line">    <span class="keywordtype">int</span> i = -1;                                                                 \</div>
+<div class="line">    for (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; key : _list_##asset_Name##_name | std::views::keys) {      \</div>
+<div class="line">        if (key == name) {                                                      \</div>
+<div class="line">            <span class="keywordflow">return</span> ++i;                                                         \</div>
+<div class="line">        }                                                                       \</div>
+<div class="line">        ++i;                                                                    \</div>
+<div class="line">    }                                                                           \</div>
+<div class="line">    <span class="keywordflow">return</span> -1;                                                                  \</div>
+<div class="line">}</div>
+</div><!-- fragment -->
+<p>////////////////////////////////////////////////////////////////////// /// </p>
+
+</div>
+</div>
+<a id="a2c1efe264667b4b491b6d64b7fc44569" name="a2c1efe264667b4b491b6d64b7fc44569"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c1efe264667b4b491b6d64b7fc44569">&#9670;&#160;</a></span>GENERATE_GETTER_FUNCTION_DEFINITION</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define GENERATE_GETTER_FUNCTION_DEFINITION</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">type, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">getter_name&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">    <span class="keyword">public</span>:                                                                     \</div>
+<div class="line">    type* Get##getter_name(<span class="keywordtype">int</span> <span class="keywordtype">id</span>) <span class="keyword">const</span>;                                       \</div>
+<div class="line">    type* Get##getter_name(<span class="keyword">const</span> std::string&amp; name);                            \</div>
+<div class="line">    <span class="keywordtype">int</span> Get##getter_name##Id(<span class="keyword">const</span> std::string&amp; name) <span class="keyword">const</span>;                    \</div>
+<div class="line">    CREATE_DEBUG_LIST(getter_name)                  \</div>
+<div class="line">    <span class="keyword">private</span>:                                                                    \</div>
+<div class="line">    std::vector&lt;type*&gt; _list_##getter_name##_id;                                \</div>
+<div class="line">    std::map&lt; std::string, type*&gt; _list_##getter_name##_name;</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a57737f6e1a7053cf383b87805e0c4bdb" name="a57737f6e1a7053cf383b87805e0c4bdb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57737f6e1a7053cf383b87805e0c4bdb">&#9670;&#160;</a></span>WRITE_DEBUG_LIST</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define WRITE_DEBUG_LIST</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">asset_Name</td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>///////////////////////////////////////////////////////////////////////// /// </p>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

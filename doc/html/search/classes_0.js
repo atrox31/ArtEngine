@@ -10,5 +10,6 @@ var searchData=
   ['astack_3c_20rect_20_3e_7',['AStack&lt; Rect &gt;',['../struct_a_stack.html',1,'']]],
   ['astack_3c_20sdl_5fcolor_20_3e_8',['AStack&lt; SDL_Color &gt;',['../struct_a_stack.html',1,'']]],
   ['astack_3c_20sdl_5ffpoint_20_3e_9',['AStack&lt; SDL_FPoint &gt;',['../struct_a_stack.html',1,'']]],
-  ['astack_3c_20std_3a_3astring_20_3e_10',['AStack&lt; std::string &gt;',['../struct_a_stack.html',1,'']]]
+  ['astack_3c_20std_3a_3astring_20_3e_10',['AStack&lt; std::string &gt;',['../struct_a_stack.html',1,'']]],
+  ['audio_11',['Audio',['../struct_scene_1_1_audio.html',1,'Scene']]]
 ];

@@ -5,7 +5,7 @@ var class_gui_element_1_1_slider =
     [ "OnClick", "class_gui_element_1_1_slider.html#a6d01f40db1d171af71e0daac024a10e0", null ],
     [ "Render", "class_gui_element_1_1_slider.html#a4f5305db9e9c7c6fd6ec346e9be601e3", null ],
     [ "SetShowValue", "class_gui_element_1_1_slider.html#a9ecaf2b8cd188bc1a04a32744dee12a5", null ],
-    [ "SetValue", "class_gui_element_1_1_slider.html#a6df6bf1706929d5754ca465f38a32f84", null ],
+    [ "SetValue", "class_gui_element_1_1_slider.html#ad6fdbcb6e96fe880ffb8f685d9ae6891", null ],
     [ "SetValueMax", "class_gui_element_1_1_slider.html#a44c00e48d0cec97e4b864b8f811de848", null ],
     [ "SetValueMin", "class_gui_element_1_1_slider.html#add6446e1f5adf4cab5e25f9eaefb1ea8", null ],
     [ "SetValueStep", "class_gui_element_1_1_slider.html#a08ce7a14416e9d59aeb1576cf0e5f191", null ],
